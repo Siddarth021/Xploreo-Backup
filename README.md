@@ -93,4 +93,3 @@ The admin oversees the platform to ensure smooth operation, security, and compli
 9. Reports and analytics generation
 
 The proposed tourism and trip-planning platform addresses the limitations of existing travel systems by providing a unified, customizable, and user-centric solution. By integrating customers, guides, and service partners within a single ecosystem, the system simplifies trip planning, enhances coordination, and improves transparency through real-time tracking features. The inclusion of intelligent recommendations, group travel, and expense sharing further enriches the travel experience, making it more affordable, social, and efficient. Overall, the platform aims to deliver a seamless, personalized, and collaborative tourism experience for all stakeholders.
-=======

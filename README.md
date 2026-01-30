@@ -1,4 +1,4 @@
-Problem Statement
+<b>Problem Statement</b>
 
 In the modern tourism ecosystem, travelers increasingly seek personalized, flexible, and socially connected travel experiences. However, existing tourism and trip-planning platforms largely depend on rigid travel packages, scattered service providers, and limited customization options. This forces travelers to use multiple applications for destination selection, itinerary planning, guide booking, service coordination, and group formation, resulting in inefficiency, higher costs, and a fragmented user experience.
 

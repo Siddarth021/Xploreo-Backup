@@ -9,6 +9,7 @@ From the supply side, local guides and service partners—including transportati
 To address these challenges, there is a need for a unified tourism and trip-planning platform that integrates customers, guides, and service partners into a single digital ecosystem. The proposed system enables customers to create highly personalized itineraries, opt for guided or independent travel, form or join small travel groups to reduce costs, and receive intelligent travel buddy and destination suggestions. Simultaneously, guides and service partners are empowered with dedicated dashboards to manage profiles, services, pricing, and availability while directly engaging with travelers.
 
 By bridging the gap between travelers and service providers, the platform aims to simplify trip planning, reduce travel costs, improve coordination, and deliver enriched, collaborative, and personalized tourism experiences.
+
 <h2>Identified Actors and their Features</h2>
 
 <h3>1. Customer (Traveler / Tourist)</h3>
@@ -92,3 +93,4 @@ The admin oversees the platform to ensure smooth operation, security, and compli
 9. Reports and analytics generation
 
 The proposed tourism and trip-planning platform addresses the limitations of existing travel systems by providing a unified, customizable, and user-centric solution. By integrating customers, guides, and service partners within a single ecosystem, the system simplifies trip planning, enhances coordination, and improves transparency through real-time tracking features. The inclusion of intelligent recommendations, group travel, and expense sharing further enriches the travel experience, making it more affordable, social, and efficient. Overall, the platform aims to deliver a seamless, personalized, and collaborative tourism experience for all stakeholders.
+=======

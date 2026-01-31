@@ -55,7 +55,8 @@ The guide provides destination-specific assistance and guided tour services.
 9. Manage ongoing and completed trips
 10. Payment management
 11. View customer ratings and reviews
-3. Service Partner
+
+<h3>3. Service Partner</h3>
 
 <h4>Description:</h4>
 
@@ -74,7 +75,7 @@ Examples: Transport providers, hotels, homestays, food services, activity organi
 8. Payment management
 9. View customer feedback and ratings
 
-4. Admin (System Administrator)
+<h3>4. Admin (System Administrator)</h3>
 
 <h4>Description:</h4>
 

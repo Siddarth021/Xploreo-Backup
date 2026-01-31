@@ -44,7 +44,7 @@ The guide provides destination-specific assistance and guided tour services.
 
 <h4>Features:</h4>
 
-1.Guide registration and profile management
+1. Guide registration and profile management
 2. Destination expertise and service listing
 3. Availability and schedule management
 4. Accept or reject trip and group requests

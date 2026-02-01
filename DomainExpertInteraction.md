@@ -5,10 +5,9 @@
     Date of interaction: 30-01-2026
     Mode of interaction: video call
     Duration (in-minutes): 75minutes
-    Publicly accessible Video link: 
+    Publicly accessible Video link: https://drive.google.com/file/d/1AlW3jiv0zrJ5ZyYugvCh6YpSzLo3u2Ve/view?usp=sharing
 ## Domain Expert Details
-    Role/ designation (Do not include personal or sensitive information): Product Manager – Travel & Hospitality
-
+    Role/ designation : Product Manager – Travel & Hospitality
     Experience in the domain : 19+ years in product management across airline systems, PSS/GDS platforms, and travel technology  
     Nature of work: Managerial
 ## Domain Context and Terminology
@@ -21,7 +20,7 @@ The purpose of this problem statement is to support travellers when they need to
 The primary goals are to simplify trip planning for users under any circumstances. The outcomes of platform are reduce planning effort, improve decision-making, enable flexible customization, and support smoother coordination throughout the travel journey.
 
 
-- List key terms used by the domain expert and their meanings (Copy these to definition.yml)
+- List of key terms used by the domain expert and their meanings
 
 | Term | Meaning as explained by the expert |
 |---|---|
@@ -32,7 +31,6 @@ The primary goals are to simplify trip planning for users under any circumstance
 
 
 ## Actors and Responsibilities
-- Identify the different roles involved and what they do in practice.
 
 | Actor / Role | Responsibilities |
 |---|---|
@@ -67,7 +65,7 @@ The primary goals are to simplify trip planning for users under any circumstance
   1. User adds, removes, or modifies destinations and services.  
   2. System updates the itinerary and recalculates costs and schedules.  
   3. User chooses between self-managed services or partner-managed services.  
-  4. User finalises the itinerary.
+  4. User finalizes the itinerary.
 
  **Outcome / End Condition:**  
   A final travel itinerary is confirmed with selected services.

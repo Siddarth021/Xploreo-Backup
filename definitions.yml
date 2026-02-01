@@ -1,0 +1,164 @@
+name: Travel Itinerary and Coordination Platform
+
+domainVisionStatement: >
+  To provide a unified digital ecosystem where travelers can create personalized
+  itineraries, collaborate with guides and service partners, form travel groups,
+  and manage bookings, payments, and trip tracking seamlessly.
+
+terms:
+
+  - name: Traveler
+    definition: >
+      An end user who plans, customizes, books, and tracks travel itineraries
+      using the platform.
+    aliases:
+      - Customer
+      - Tourist
+      - User
+    examples:
+      - "I customized my itinerary by removing one destination."
+      - "I joined a travel group to reduce overall trip cost."
+
+  - name: Guide
+    definition: >
+      A destination expert who provides guided tours, accepts or rejects trip
+      requests, and assists travelers during their journey.
+    aliases:
+      - Local Guide
+      - Tour Guide
+    examples:
+      - "The guide accepted my trip request."
+      - "I checked the guide’s availability before booking."
+
+  - name: Service Partner
+    definition: >
+      A third-party provider offering travel-related services such as transport,
+      accommodation, food, or activities.
+    aliases:
+      - Partner
+      - Vendor
+      - Service Provider
+    examples:
+      - "The hotel service partner confirmed my booking."
+      - "The transport partner updated service availability."
+
+  - name: Admin
+    definition: >
+      A system administrator responsible for managing users, monitoring activity,
+      handling disputes, and maintaining platform security.
+    aliases:
+      - System Administrator
+    examples:
+      - "The admin verified the guide profile."
+      - "The admin resolved a payment dispute."
+
+  - name: Itinerary
+    definition: >
+      A structured travel plan generated or customized by a traveler that includes
+      destinations, services, schedules, and trip flow.
+    aliases:
+      - Travel Plan
+      - Trip Plan
+    examples:
+      - "My itinerary includes two cities and a local guide."
+      - "I updated my itinerary preferences."
+
+  - name: Travel Package
+    definition: >
+      A predefined or customizable bundle of travel services offered by guides
+      or service partners.
+    aliases:
+      - Package
+      - Tour Package
+    examples:
+      - "I booked a weekend travel package."
+      - "The package was disabled due to unavailability."
+
+  - name: Booking
+    definition: >
+      A confirmed reservation of a travel service, guide, or package made by a traveler.
+    aliases:
+      - Reservation
+    examples:
+      - "My booking was confirmed successfully."
+      - "I cancelled my booking before the trip date."
+
+  - name: Payment
+    definition: >
+      A financial transaction made by a traveler to confirm bookings or services
+      through an external payment gateway.
+    aliases:
+      - Transaction
+    examples:
+      - "The payment was successful via UPI."
+      - "The payment status is pending."
+
+  - name: Invoice
+    definition: >
+      A document generated after payment that details charges for booked services
+      and transactions.
+    aliases:
+      - Bill
+      - Receipt
+    examples:
+      - "I downloaded my invoice after payment."
+      - "The invoice shows the total trip cost."
+
+  - name: Travel Group
+    definition: >
+      A group of travelers formed to share a trip, expenses, and itinerary.
+    aliases:
+      - Group Trip
+      - Travel Buddy Group
+    examples:
+      - "I joined a travel group going to the same destination."
+      - "Group expenses were split equally."
+
+  - name: Travel Buddy
+    definition: >
+      A compatible traveler matched based on preferences, schedule, or destination
+      to form a shared trip experience.
+    aliases:
+      - Co-traveler
+    examples:
+      - "I found a travel buddy through recommendations."
+      - "My travel buddy joined my itinerary."
+
+  - name: Availability
+    definition: >
+      The time slots or service status indicating whether a guide or service partner
+      is available for booking.
+    aliases:
+      - Schedule
+      - Service Status
+    examples:
+      - "The guide updated availability."
+      - "The service is currently unavailable."
+
+  - name: Trip Tracking
+    definition: >
+      The process of monitoring trip progress, destination status, and service updates
+      in real time or manually.
+    aliases:
+      - Journey Tracking
+    examples:
+      - "Trip tracking shows my current destination."
+      - "The journey timeline updated automatically."
+
+  - name: Notification
+    definition: >
+      A system-generated alert sent to users regarding bookings, payments, or trip updates.
+    aliases:
+      - Alert
+    examples:
+      - "I received a booking confirmation notification."
+      - "Payment status notification was sent via email."
+
+  - name: Payment Gateway
+    definition: >
+      An external system used to process online payments securely.
+    aliases:
+      - Gateway
+    examples:
+      - "Payment was processed through the gateway."
+      - "The gateway returned a failure status."

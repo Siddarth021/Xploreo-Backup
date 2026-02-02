@@ -82,7 +82,7 @@ Description of at least 2-3 real workflows as explained by the domain expert
    - Identity and contact verification is performed  
    - Changes such as traveller drop-outs are handled  
   ####  Outcome / End condition:  
-    A coordinated group itinerary is finalized  
+   - A coordinated group itinerary is finalized  
 
 ## Rules, Constraints, and Exceptions
 

@@ -33,8 +33,6 @@ The primary goals are to simplify trip planning, reduce manual effort, enable fl
 | API | A software interface that allows systems to exchange travel-related data and services |
 | Itinerary | A detailed plan of a trip including destinations, dates, activities, accommodation, and transport |
 | Travel Package | A bundled travel plan combining multiple travel services |
-| Service Partner | A third-party provider offering accommodation, transport, or activities |
-| Group Travel | Travel involving multiple travellers requiring coordination and cost sharing |
 
 ## Actors and Responsibilities
 

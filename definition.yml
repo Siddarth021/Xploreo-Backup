@@ -12,7 +12,7 @@ terms:
       - Customer
       - Tourist
     examples:
-      - "The Travel customized the itinerary by removing one destination."
+      - "The Traveler customized the itinerary by removing one destination."
       - "The traveller joined a travel group to reduce overall trip cost."
 
   - name: Guide

@@ -13,7 +13,7 @@ terms:
       - Tourist
     examples:
       - "The Traveler customized the itinerary by removing one destination."
-      - "The traveller joined a travel group to reduce overall trip cost."
+      - "The Traveler joined a travel group to reduce overall trip cost."
 
   - name: Guide
     definition: >
@@ -53,7 +53,7 @@ terms:
       - Trip Plan
     examples:
       - "the itinerary includes multiple destinations"
-      - "the traveller updated the itinerary before the trip."
+      - "the traveler updated the itinerary before the trip."
 
   - name: Travel Package
     definition: >
@@ -62,7 +62,7 @@ terms:
       - Package
       - Tour Package
     examples:
-      - "The traveller booked a travel package"
+      - "The traveler booked a travel package"
       - "The travel package included accommodation and transport"
 
   - name: Booking
@@ -72,7 +72,7 @@ terms:
       - Reservation
     examples:
       - "My booking was confirmed successfully."
-      - "The traveller cancelled the booking before the trip"
+      - "The traveler cancelled the booking before the trip"
 
   - name: Payment
     definition: >
@@ -90,7 +90,7 @@ terms:
       - Bill
       - Receipt
     examples:
-      - "The traveller downloaded my invoice after payment."
+      - "The traveler downloaded my invoice after payment."
       - "The invoice shows the total cost of the trip."
 
   - name: Travel Group

@@ -12,8 +12,8 @@ terms:
       - Customer
       - Tourist
     examples:
-      - "I customized my itinerary by removing one destination."
-      - "I joined a travel group to reduce overall trip cost."
+      - "The Travel customized the itinerary by removing one destination."
+      - "The traveller joined a travel group to reduce overall trip cost."
 
   - name: Guide
     definition: >

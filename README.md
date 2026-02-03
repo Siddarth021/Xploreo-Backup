@@ -1,3 +1,4 @@
+<h2><strong>Domain :</strong>Travel and Hospitality</h2>
 <h2>Problem Statement</h2>
 
 Today’s travelers want trips that feel personal, flexible, and social, but most tourism platforms still offer rigid packages and disconnected services. Planning a trip often means juggling multiple apps for destinations, guides, bookings, and group coordination, which is frustrating and time-consuming. Travelers have little control over what they want to see or skip, whether to travel with a guide or alone, or how to meet like-minded travel companions. Solo travelers especially struggle to find compatible buddies to share costs and experiences. At the same time, local guides and service providers find it hard to reach the right travelers or manage their services effectively. This disconnect creates a broken travel experience, highlighting the need for a single, user-friendly platform that brings travelers, guides, and services together in one place.

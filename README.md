@@ -20,6 +20,7 @@ The Traveler is the primary actor who uses the platform to plan, customize, and 
 3. Travelers can create or join travel groups, match with travel buddies, and share group expenses to reduce overall travel costs.
 4. Travelers can communicate with local guides and service partners to coordinate plans and receive support during the trip.
 5. Travelers receive notifications, trip progress updates, and access to past trips for easy reference.
+6. Travelers can give ratings and write reviews for guides and service partners based on their experience, helping other users make better choices.
 
 <h3>2. Guide</h3>
 
@@ -44,10 +45,10 @@ Service partners are third-party providers that offer travel-related services wh
 <h4>Features:</h4>
 
 1. Service partners can list travel-related services such as transport, accommodation, dining services, and activities with pricing and availability details.
-2. Partners can receive, confirm, and track bookings to ensure timely and reliable service delivery.
+2. Service Partners can receive, confirm, and track bookings to ensure timely and reliable service delivery.
 3. Services provided by partners are integrated into travelers’ plans for smooth coordination with other trip components.
 4. Service partners can manage payments and view booking history for completed and ongoing services.
-5. Partners can review traveler ratings and feedback to improve service quality.
+5. Service Partners can review traveler ratings and feedback to improve service quality.
 
 <h3>4. Admin (System Administrator)</h3>
 

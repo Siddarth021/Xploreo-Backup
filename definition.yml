@@ -170,6 +170,6 @@ terms:
       - Discount code
       - promo code
     examples:
-      - the traveler applied a coupon to reduce the booking cost
-      - A coupon was used during payment
+      - "the traveler applied a coupon to reduce the booking cost"
+      - "A coupon was used during payment"
      

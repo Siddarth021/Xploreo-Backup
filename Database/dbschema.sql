@@ -93,8 +93,10 @@ CREATE TABLE plan (
     plan_id INT AUTO_INCREMENT PRIMARY KEY,
     source VARCHAR(100) NOT NULL,
     destination VARCHAR(100) NOT NULL,
+    location_id INT NOT NULL,
     plan_title VARCHAR(100) NOT NULL,
-    plan_price DECIMAL(10,2) CHECK (plan_price >= 0)
+    plan_price DECIMAL(10,2) CHECK (plan_price >= 0),
+    FOREIGN KEY (location_id) REFERENCES location(location_id) DELETE ON CASCADE
 );
 
 -- TRIP
@@ -230,4 +232,34 @@ CREATE TABLE support_ticket (
     user_id INT NOT NULL,
     FOREIGN KEY (assigned_admin) REFERENCES admin(admin_id),
     FOREIGN KEY (user_id) REFERENCES users(uid)
+
 );
+
+-- LOCATION
+CREATE TABLE location (
+    location_id INT AUTO_INCREMENT PRIMARY KEY,
+    location_name VARCHAR(100) NOT NULL,
+
+);
+
+-- PROPOSAL
+CREATE TABLE proposal (
+    proposal_id INT AUTO_INCREMENT PRIMARY KEY,
+    proposal_status VARCHAR(50) DEFAULT 'pending',
+    proposal_details TEXT NOT NULL,
+    trip_id INT NOT NULL,
+    uid INT NOT NULL,
+    FOREIGN KEY (trip_id) REFERENCES trip(trip_id) DELETE ON CASCADE,
+    FOREIGN KEY (uid) REFERENCES users(uid)
+);
+
+--SERVICE PATNER ROLES
+CREATE TABLE sp_role (
+    sp_role_id INT AUTO_INCREMENT PRIMARY KEY,
+    assined_access VARCHAR(100),
+    assined_date DATE,
+    sp_admin_id INT NOT NULL,
+    sp_staff_id INT NOT NULL,
+    FOREIGN KEY (sp_admin_id) REFERENCES users(uid),
+    FOREIGN KEY (sp_staff_id) REFERENCES sp_staff(sp_staff_id) DELETE ON CASCADE,
+    )

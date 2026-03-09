@@ -11,7 +11,6 @@ terms:
     aliases:
       - Customer
       - Tourist
-      - pax
     examples:
       - "The Traveler customized the itinerary by removing one destination."
       - "The Traveler joined a travel group to reduce overall trip cost."

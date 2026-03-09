@@ -124,27 +124,16 @@ CREATE TABLE itinerary (
     FOREIGN KEY (trip_id) REFERENCES trip(trip_id)
 );
 
--- BOOKING
-CREATE TABLE booking (
-    booking_id INT AUTO_INCREMENT PRIMARY KEY,
-    traveller_id INT NOT NULL,
-    trip_id INT NOT NULL,
-    booking_status VARCHAR(50) DEFAULT 'pending',
-    price DECIMAL(10,2) CHECK(price >= 0),
-    FOREIGN KEY (traveller_id) REFERENCES traveller(traveller_id),
-    FOREIGN KEY (trip_id) REFERENCES trip(trip_id)
-);
-
 -- PAYMENTS
 CREATE TABLE payments (
     payment_id INT AUTO_INCREMENT PRIMARY KEY,
-    booking_id INT NOT NULL,
+    trip_id INT NOT NULL,
     amount DECIMAL(10,2) NOT NULL CHECK(amount > 0),
     payment_method VARCHAR(50) NOT NULL,
     payment_status VARCHAR(50) DEFAULT 'pending',
     payment_date DATE,
     payment_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (booking_id) REFERENCES booking(booking_id)
+    FOREIGN KEY (trip_id) REFERENCES trip(trip_id)
 );
 
 -- BANK DETAILS
@@ -263,3 +252,4 @@ CREATE TABLE sp_role (
     FOREIGN KEY (sp_admin_id) REFERENCES users(uid),
     FOREIGN KEY (sp_staff_id) REFERENCES sp_staff(sp_staff_id) DELETE ON CASCADE,
     )
+

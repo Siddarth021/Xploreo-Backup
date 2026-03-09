@@ -20,14 +20,16 @@ CREATE TABLE users (
 CREATE TABLE admin (
     admin_id INT PRIMARY KEY,
     rating DECIMAL(3,2) DEFAULT 0 CHECK (rating BETWEEN 0 AND 5),
-    FOREIGN KEY (admin_id) REFERENCES users(uid) ON DELETE CASCADE
+    user_id INT NOT NULL UNIQUE,
+    FOREIGN KEY (user_id) REFERENCES users(uid) ON DELETE CASCADE
 );
 
 -- TRAVELLER
 CREATE TABLE traveller (
     traveller_id INT PRIMARY KEY,
     rating DECIMAL(3,2) DEFAULT 0 CHECK (rating BETWEEN 0 AND 5),
-    FOREIGN KEY (traveller_id) REFERENCES users(uid) ON DELETE CASCADE
+    user_id INT NOT NULL UNIQUE,
+    FOREIGN KEY (user_id) REFERENCES users(uid) ON DELETE CASCADE
 );
 
 -- GUIDE
@@ -40,7 +42,8 @@ CREATE TABLE guide (
     rating DECIMAL(3,2) DEFAULT 0 CHECK (rating BETWEEN 0 AND 5),
     earning DECIMAL(10,2) DEFAULT 0 CHECK (earning >= 0),
     bio TEXT,
-    FOREIGN KEY (guide_id) REFERENCES users(uid) ON DELETE CASCADE
+    user_id INT NOT NULL UNIQUE,
+    FOREIGN KEY (user_id) REFERENCES users(uid) ON DELETE CASCADE
 );
 
 -- SERVICE PARTNER
@@ -162,22 +165,24 @@ CREATE TABLE ratings_reviews (
 CREATE TABLE conversation (
     conversation_id INT AUTO_INCREMENT PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(50) DEFAULT 'active'
+    sender_id INT NOT NULL,
+    reciver_id INT NOT NULL,
+    status VARCHAR(50) DEFAULT 'active',
+    FOREIGN KEY (reciver_id) REFERENCES users(uid),
+    FOREIGN KEY (sender_id) REFERENCES users(uid)
 );
 
 -- MESSAGE
 CREATE TABLE message (
     message_id INT AUTO_INCREMENT PRIMARY KEY,
     conversation_id INT NOT NULL,
-    sender_id INT NOT NULL,
     message_text TEXT NOT NULL,
     message_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (conversation_id) REFERENCES conversation(conversation_id),
-    FOREIGN KEY (sender_id) REFERENCES users(uid)
+    FOREIGN KEY (conversation_id) REFERENCES conversation(conversation_id)
 );
 
 -- TRACKING SESSION
-CREATE TABLE tracking_session (
+CREATE TABLE tracking_session 
     tracking_session_id INT AUTO_INCREMENT PRIMARY KEY,
     trip_id INT NOT NULL,
     start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -203,11 +208,13 @@ CREATE TABLE content_report (
     report_user_id INT NOT NULL,
     report_status VARCHAR(50) DEFAULT 'pending',
     review_admin_id INT,
+    report_guide_id INT,
     report_service_partner_id INT,
     review_notes TEXT,
     FOREIGN KEY (report_user_id) REFERENCES users(uid),
     FOREIGN KEY (review_admin_id) REFERENCES admin(admin_id),
-    FOREIGN KEY (report_service_partner_id) REFERENCES service_partner(service_id)
+    FOREIGN KEY (report_service_partner_id) REFERENCES service_partner(service_id),
+    FOREIGN KEY (report_guide_id) REFERENCES guide(guide_id)
 );
 
 -- SUPPORT TICKET
@@ -251,5 +258,4 @@ CREATE TABLE sp_role (
     sp_staff_id INT NOT NULL,
     FOREIGN KEY (sp_admin_id) REFERENCES users(uid),
     FOREIGN KEY (sp_staff_id) REFERENCES sp_staff(sp_staff_id) DELETE ON CASCADE,
-    )
-
+    );

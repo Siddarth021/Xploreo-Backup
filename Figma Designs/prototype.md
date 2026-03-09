@@ -1,1 +1,2 @@
-ProtoType Link : <a>https://www.figma.com/proto/eXdvD8uceZXYWY5Db9Zzts/Xploreo?node-id=749-6078&t=KV1wERSDM2ZB1NKL-1&scaling=scale-down-width&content-scaling=fixed&page-id=615%3A52</a>
+ProtoType Link : <a>https://www.figma.com/proto/eXdvD8uceZXYWY5Db9Zzts/Xploreo?node-id=744-308&t=KV1wERSDM2ZB1NKL-1&scaling=scale-down-width&content-scaling=fixed&page-id=615%3A52</a>
+

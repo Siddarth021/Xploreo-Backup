@@ -1,0 +1,122 @@
+.navbar {
+  position: fixed;         
+  top: 10px;               
+  left: 20px;
+  right:20px;           
+  width: 97%;             
+  max-width: 1680px;       
+  height: 57.6px;
+  border-radius: 25px;     
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding :0px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  background-color: #ffffff;
+  opacity: 0.85;
+}
+
+.navbar p{
+  color: #000000;
+  text-decoration:none;
+  font-weight:500;
+  white-space: nowrap;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight:500;
+  font-style: normal;
+}
+
+.nav-logo {
+  margin-right: 50px;
+  padding : 0 10px;
+  flex:none;
+}
+
+.nav-logo img {
+  height : 40px;
+  display : block;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap : 0px;
+    margin : 0px;
+    padding: 0;
+    flex : none;
+}
+
+.nav-links a {
+  color: #364153;
+  text-decoration:none;
+  white-space: nowrap;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight:200;
+  font-style: normal;
+  transition: all 0.3s ease-in-out;
+}
+
+.nav-links a::after {
+  content: attr(data-text);
+  height: 0;
+  visibility: hidden;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+  font-weight: 500;
+}
+
+.nav-links a:hover {
+  color: #000000;
+  text-decoration:none;
+  white-space: nowrap;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight:400;
+  font-style: normal;
+}
+
+.nav-links a.active {
+  color: #000000;
+  text-decoration:none;
+  white-space: nowrap;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight:600;
+  font-style: normal;
+}
+
+.nav-profile {
+  margin-left : auto;
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 0 10px;
+  flex:none;
+}
+
+
+.nav-profile img{
+  height: 25px;
+  width: 25px;
+  background-color: #ffffff;
+  opacity: 1;
+  border:2px solid #000000;
+  border-radius: 50%;
+  display: block;
+  margin :10px;
+  object-fit: cover;
+}
+
+.main {
+    background:linear-gradient(-15deg,#BDD6D9,#41d3d1);
+    min-height: 100vh;
+    padding:2rem;
+}

@@ -1,9 +1,9 @@
 const navlinks = [
-    {name:"Dashboard",path:"dashboard.html",roles:[guide,mainadmin,superadmin,techadmin,nontechadmin,opadmin]},
-    {name:"Tour Reqests",path:"tour-requests.html",roles:[guide]},
-    {name:"Schedule",path:"schedule.html",roles:[guide]},
-    {name:"Earnings",path:"earnings.html",roles:[guide]},
-    {name:"Reviews",path:"reviews.html",roles:[guide]}
+    {name:"Dashboard",path:"dashboard.html",roles:["guide","mainadmin","superadmin","techadmin","nontechadmin","opadmin"]},
+    {name:"Tour Reqests",path:"tour-requests.html",roles:["guide"]},
+    {name:"Schedule",path:"schedule.html",roles:["guide"]},
+    {name:"Earnings",path:"earnings.html",roles:["guide"]},
+    {name:"Reviews",path:"reviews.html",roles:["guide"]}
 ];
 
 export function getNavLinks(role){

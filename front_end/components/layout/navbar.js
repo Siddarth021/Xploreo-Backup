@@ -6,15 +6,17 @@ export function renderNavbar(user) {
   const navbar = `
     <nav class="navbar">
       <div class="navbar-left">
-        <div class="logo">
-          <span class="logo-icon">🌐</span>
-          <span class="logo-text">Xploreo</span>
-        </div>
+      <div class="logo">
+        <img src="logo.png" alt="Xploreo Logo" style="height: 30px;"> 
+        <span>Xploreo</span>
+      </div>
+
       </div>
       <div class="navbar-center">
         ${getNavLinks(user.role)}
       </div>
-      <!-- RIGHT: Actions -->
+      
+      
       <div class="navbar-right">
         ${getNotification()}
         ${getProfile(user)}

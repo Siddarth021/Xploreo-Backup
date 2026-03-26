@@ -12,7 +12,7 @@ export function getNavLinks(role){
         .filter(link => link.roles.includes(role))
         .map(link =>`
                     <a href ="${link.path}" class = "nav-link ${currentPage === link.path ? "active" : ""}">
-                        ${link.name}
+                        <img src="" alt="${link.name}"/> ${link.name}
                     </a>
                     `)
         .join("")

@@ -1,75 +1,237 @@
-.profile {
-  position: relative;
+/* ===== RESET ===== */
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #f9fafb;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 60px;
+  background-color: #f5f6f8;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* ===== LEFT ===== */
+.navbar-left {
   display: flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
+  min-width: fit-content;
 }
 
-.profile-img {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.profile-dropdown {
-  position: absolute;
-  top: 50px;
-  right: 0;
-  background: white;
-  border: 1px solid #ddd;
-  padding: 10px;
-  width: 150px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+.logo img {
+  height: 30px;
 }
 
-.hidden {
+.logo span {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* ===== CENTER ===== */
+.navbar-center {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* Hide scrollbar */
+.navbar-center::-webkit-scrollbar {
   display: none;
 }
 
-.notification {
-  position: relative;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.badge {
-  position: absolute;
-  top: -5px;
-  right: -8px;
-  background: red;
-  color: white;
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 50%;
-}
-
-.navbar {
+/* ===== NAV LINKS ===== */
+.nav-link {
+  flex-shrink: 0;
+  text-decoration: none;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 15px 30px;
-  background: #ffffff;
-  border-bottom: 1px solid #ddd;
-  box-shadow: 0px 10px 10px -5px rgba(0, 0, 0, 0.2);
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.navbar-center {
-  display: flex;
-  gap: 20px;
+/* ICON */
+.nav-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  filter: grayscale(100%);
+  opacity: 0.7;
 }
 
+/* HOVER */
+.nav-link:hover {
+  background: #eef2ff;
+  color: #1f2937;
+}
+
+/* ACTIVE */
+.nav-link.active {
+  background: #e8f0ff;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.nav-link.active .nav-icon {
+  filter: none;
+  opacity: 1;
+}
+
+/* ===== RIGHT ===== */
 .navbar-right {
   display: flex;
   align-items: center;
   gap: 15px;
+  min-width: fit-content;
+  justify-content: flex-end;
 }
 
-.logo {
-  font-weight: bold;
-  font-size: 18px;
+/* ===== NOTIFICATION ===== */
+.notification {
+  position: relative;
+  cursor: pointer;
 }
 
-body {
-    margin:0;
+.notification img {
+  width: 18px;
+  height: 18px;
+}
+
+/* BADGE */
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -6px;
+  background: red;
+  color: white;
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 50%;
+}
+
+/* ===== PROFILE ===== */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  position: relative;
+}
+
+.profile-img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.profile-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ===== DROPDOWN ===== */
+.profile-dropdown {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px;
+  width: 150px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.profile-dropdown p {
+  margin: 5px 0;
+  font-size: 13px;
+}
+
+.profile-dropdown ol {
+  padding-left: 16px;
+  margin: 6px 0;
+}
+
+.profile-dropdown li {
+  margin: 4px 0;
+  cursor: pointer;
+}
+
+.profile-dropdown button {
+  margin-top: 6px;
+  width: 100%;
+  padding: 5px;
+  border: none;
+  background: #ef4444;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.profile-dropdown button:hover {
+  background: #dc2626;
+}
+
+/* ===== HIDDEN ===== */
+.hidden {
+  display: none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+
+  .logo span {
+    display: none;
+  }
+
+  .profile-name {
+    display: none;
+  }
+
+  .navbar {
+    padding: 0 10px;
+  }
+}
+
+/* ===== EXTRA SMALL ===== */
+@media (max-width: 600px) {
+
+  .navbar-center {
+    gap: 12px;
+  }
+
+  .nav-link {
+    font-size: 13px;
+    padding: 4px 6px;
+  }
+
+  .nav-icon {
+    width: 14px;
+    height: 14px;
+  }
 }

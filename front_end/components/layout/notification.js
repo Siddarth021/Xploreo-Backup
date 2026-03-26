@@ -1,8 +1,8 @@
-export function getNotification(count = 3) {
+export function getNotification() {
   return `
     <div class="notification">
-      <span class="bell"><img src="" alt="notifications"/></span>
-      ${count > 0 ? `<span class="badge">${count}</span>` : ""}
+      <img src="../components/ui/notifications.png" class="nav-icon" />
+      <span class="badge">3</span>
     </div>
   `;
 }

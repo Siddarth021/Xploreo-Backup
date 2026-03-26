@@ -1,11 +1,10 @@
 export function getProfile(user){
     return `
         <div class="profile" onclick="toggleProfileMenu()">
-            <img src="" alt="user" class="profile-img"/>
+            <img src="../components/ui/profile.png" alt="user" class="profile-img"/>
             <span class="profile-name">${user.name}</span>
             <div id="profileDropdown" class="profile-dropdown hidden">
             <p>${user.name}</p>
-            <p>${user.email}</p>
             <ol>
              <li>Profile</li>
              <li>Support</li>

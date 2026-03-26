@@ -7,7 +7,7 @@ export function renderNavbar(user) {
     <nav class="navbar">
       <div class="navbar-left">
       <div class="logo">
-        <img src="logo.png" alt="Xploreo Logo" style="height: 30px;"> 
+       <img src="../components/ui/logo.png" alt="Xploreo Logo"> 
         <span>Xploreo</span>
       </div>
 

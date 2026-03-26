@@ -10,13 +10,11 @@ export function renderNavbar(user) {
         <img src="logo.png" alt="Xploreo Logo" style="height: 30px;"> 
         <span>Xploreo</span>
       </div>
-
+      
       </div>
       <div class="navbar-center">
         ${getNavLinks(user.role)}
       </div>
-      
-      
       <div class="navbar-right">
         ${getNotification()}
         ${getProfile(user)}

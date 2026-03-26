@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /* ===== RESET ===== */
 body {
   margin: 0;
@@ -10,27 +9,23 @@ body {
 .navbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 20px;
   height: 60px;
   background-color: #f5f6f8;
   border-bottom: 1px solid #e5e7eb;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
 }
 
 /* ===== LEFT ===== */
 .navbar-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: fit-content;
+  flex: 0 0 auto;
+  margin-right: 20px;
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .logo img {
@@ -45,10 +40,11 @@ body {
 
 /* ===== CENTER ===== */
 .navbar-center {
-  display: flex;
-  align-items: center;
-  gap: 20px;
   flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
   overflow-x: auto;
   white-space: nowrap;
 }
@@ -103,11 +99,11 @@ body {
 
 /* ===== RIGHT ===== */
 .navbar-right {
+  flex: 0 0 auto;
+  margin-left: 20px;
   display: flex;
   align-items: center;
   gap: 15px;
-  min-width: fit-content;
-  justify-content: flex-end;
 }
 
 /* ===== NOTIFICATION ===== */
@@ -164,7 +160,7 @@ body {
   padding: 10px;
   width: 150px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  z-index: 1000;
 }
 
 .profile-dropdown p {
@@ -236,5 +232,3 @@ body {
     height: 14px;
   }
 }
-=======
->>>>>>> 06908858f7630dc50aa1a67d84b49efaac519ff1

@@ -347,29 +347,34 @@ body {
 /* Blue Theme */
 .stat-card.blue:hover {
   background-color: #f0f7ff; /* Light blue fill */
+  transform: translateY(-4px);
   border-top: 4px solid #3b82f6;
 }
 
 /* Light Green Theme */
 .stat-card.light-green:hover {
   background-color: #f0fdf4;
+  transform: translateY(-4px);
   border-top: 4px solid #10b981;
 }
 
 /* Dark Green Theme */
 .stat-card.dark-green:hover {
   background-color: #ecfdf5;
+  transform: translateY(-4px);
   border-top: 4px solid #059669;
 }
 
 /* Orange Theme */
 .stat-card.orange:hover {
   background-color: #fffbeb;
+  transform: translateY(-4px);
   border-top: 4px solid #f59e0b;
 }
 
 /* Violet Theme */
 .stat-card.violet:hover {
   background-color: #f5f3ff;
+  transform: translateY(-4px);
   border-top: 4px solid #8b5cf6;
 }

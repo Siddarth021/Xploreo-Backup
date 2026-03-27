@@ -1,0 +1,29 @@
+[
+  {
+    "id": "001",
+    "name": "Sreekar",
+    "username": "sreekar_k",
+    "email": "sreekar@xploreo.com",
+    "role": "guide",
+    "profilePic": "../assets/profiles/sreekar.png",
+    "status": "active"
+  },
+  {
+    "id": "002",
+    "name": "John Williams",
+    "username": "john_w",
+    "email": "john.w@xploreo.com",
+    "role": "guide",
+    "profilePic": "../assets/profiles/john.jpg",
+    "status": "active"
+  },
+  {
+    "id": "003",
+    "name": "Admin Team",
+    "username": "admin_xploreo",
+    "email": "admin@xploreo.com",
+    "role": "superadmin",
+    "profilePic": "../assets/profiles/admin-default.png",
+    "status": "active"
+  }
+]

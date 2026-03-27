@@ -1,11 +1,9 @@
-/* ===== RESET ===== */
 body {
   margin: 0;
   font-family: "Segoe UI", sans-serif;
   background: #f9fafb;
 }
 
-/* ===== NAVBAR ===== */
 .navbar {
   display: flex;
   align-items: center;
@@ -16,7 +14,6 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-/* ===== LEFT ===== */
 .navbar-left {
   flex: 0 0 auto;
   margin-right: 20px;
@@ -38,7 +35,6 @@ body {
   color: #1f2937;
 }
 
-/* ===== CENTER ===== */
 .navbar-center {
   flex: 1;
   display: flex;
@@ -49,12 +45,10 @@ body {
   white-space: nowrap;
 }
 
-/* Hide scrollbar */
 .navbar-center::-webkit-scrollbar {
   display: none;
 }
 
-/* ===== NAV LINKS ===== */
 .nav-link {
   flex-shrink: 0;
   text-decoration: none;
@@ -70,7 +64,6 @@ body {
   white-space: nowrap;
 }
 
-/* ICON */
 .nav-icon {
   width: 16px;
   height: 16px;
@@ -79,13 +72,11 @@ body {
   opacity: 0.7;
 }
 
-/* HOVER */
 .nav-link:hover {
   background: #eef2ff;
   color: #1f2937;
 }
 
-/* ACTIVE */
 .nav-link.active {
   background: #e8f0ff;
   color: #2563eb;
@@ -97,7 +88,6 @@ body {
   opacity: 1;
 }
 
-/* ===== RIGHT ===== */
 .navbar-right {
   flex: 0 0 auto;
   margin-left: 20px;
@@ -106,7 +96,6 @@ body {
   gap: 15px;
 }
 
-/* ===== NOTIFICATION ===== */
 .notification {
   position: relative;
   cursor: pointer;
@@ -117,7 +106,6 @@ body {
   height: 18px;
 }
 
-/* BADGE */
 .badge {
   position: absolute;
   top: -5px;
@@ -129,7 +117,6 @@ body {
   border-radius: 50%;
 }
 
-/* ===== PROFILE ===== */
 .profile {
   display: flex;
   align-items: center;
@@ -149,7 +136,6 @@ body {
   font-weight: 500;
 }
 
-/* ===== DROPDOWN ===== */
 .profile-dropdown {
   position: absolute;
   top: 45px;
@@ -194,12 +180,10 @@ body {
   background: #dc2626;
 }
 
-/* ===== HIDDEN ===== */
 .hidden {
   display: none;
 }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
 
   .logo span {
@@ -215,7 +199,6 @@ body {
   }
 }
 
-/* ===== EXTRA SMALL ===== */
 @media (max-width: 600px) {
 
   .navbar-center {
@@ -233,7 +216,6 @@ body {
   }
 }
 
-/* ===== DASHBOARD LAYOUT ===== */
 .dashboard-wrapper {
   padding: 30px;
   max-width: 1400px;
@@ -259,21 +241,18 @@ body {
   font-size: 14px;
 }
 
-/* ===== STATS GRID (5 Columns) ===== */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 20px;
 }
 
-/* ===== COLOR THEMES FROM YOUR DESIGN ===== */
 .stat-card.blue { border-top-color: #3b82f6; }
 .stat-card.light-green { border-top-color: #10b981; }
 .stat-card.dark-green { border-top-color: #059669; }
 .stat-card.orange { border-top-color: #f59e0b; }
 .stat-card.violet { border-top-color: #8b5cf6; }
 
-/* ===== CARD CONTENT ===== */
 .icon-container {
   width: 40px;
   height: 40px;
@@ -283,7 +262,6 @@ body {
   justify-content: center;
 }
 
-/* Light background colors for icon boxes */
 .blue .icon-container { background: #eff6ff; }
 .light-green .icon-container { background: #ecfdf5; }
 .dark-green .icon-container { background: #f0fdf4; }
@@ -310,7 +288,6 @@ body {
   margin: 0;
 }
 
-/* ===== RESPONSIVE STATS ===== */
 @media (max-width: 1100px) {
   .stats-grid {
     grid-template-columns: repeat(3, 1fr); /* 3 cards per row on tablets */

@@ -1,7 +1,7 @@
-#name: Travel Itinerary and Coordination Platform
+name: Travel Itinerary and Coordination Platform
 
-#domainVisionStatement: >
-#  To help traveller plan trips,connect with others , and manage their journeys easily in one place
+domainVisionStatement: >
+  To help travelers plan trips,connect with others , and manage their journeys easily in one place
 
 terms:
 
@@ -12,8 +12,8 @@ terms:
       - Customer
       - Tourist
     examples:
-      - "The Traveler customized the itinerary by removing one destination."
-      - "The Traveler joined a travel group to reduce overall trip cost."
+      - "I customized my itinerary by removing one destination."
+      - "I joined a travel group to reduce overall trip cost."
 
   - name: Guide
     definition: >
@@ -53,7 +53,7 @@ terms:
       - Trip Plan
     examples:
       - "the itinerary includes multiple destinations"
-      - "the traveler updated the itinerary before the trip."
+      - "the traveller updated the itinerary before the trip."
 
   - name: Travel Package
     definition: >
@@ -62,7 +62,7 @@ terms:
       - Package
       - Tour Package
     examples:
-      - "The traveler booked a travel package"
+      - "The traveller booked a travel package"
       - "The travel package included accommodation and transport"
 
   - name: Booking
@@ -72,7 +72,7 @@ terms:
       - Reservation
     examples:
       - "My booking was confirmed successfully."
-      - "The traveler cancelled the booking before the trip"
+      - "The traveller cancelled the booking before the trip"
 
   - name: Payment
     definition: >
@@ -90,7 +90,7 @@ terms:
       - Bill
       - Receipt
     examples:
-      - "The traveler downloaded my invoice after payment."
+      - "The traveller downloaded my invoice after payment."
       - "The invoice shows the total cost of the trip."
 
   - name: Travel Group
@@ -102,6 +102,15 @@ terms:
     examples:
       - "the traveller joined a travel group going to the same destination."
       - "the expenses were shared amoung the travel group"
+
+  - name: Travel Buddy
+    definition: >
+      A traveller who goes on a trip with another traveller
+    aliases:
+      - Co-traveler
+    examples:
+      - "the traveller found a travel buddy for the trip"
+      - "The travel buddy joined the itinerary."
 
   - name: Availability
     definition: >
@@ -127,10 +136,18 @@ terms:
       A message sent to inform users about important updates.
     aliases:
       - Alert
-      - SMS
     examples:
       - "the traveller received the alert about the booking"
       - "A Notification was sent for a payment update"
+
+  - name: Payment Gateway
+    definition: >
+      A service that handles online payments.
+    aliases:
+      - Gateway
+    examples:
+      - "the payment processed through the payment gateway."
+      - "The gateway reported a failed transaction."
   
   - name: Destination
     definition: >
@@ -142,6 +159,26 @@ terms:
     examples:
       - "Charminar is the final destination of the trip"
       - "The hotel is hyderabad was a chosen destination"
+  
+  - name: Travel Purpose
+    definition: >
+      The core reason behind a journey
+    aliases:
+      - travel intent
+      - Reason for travel
+    examples:
+      - "visiting varanasi to perform religious rituals"
+      - "traveling to museum for scientific research"
+
+  - name: Type of travel
+    definition: >
+      how a person travels on a journey
+    aliases: 
+      - Travel Style
+      - Travel mode
+    examples:
+      - "Traveling alone is a solo travel"
+      - "travelling with a group of friends is group travel"
     
   - name: Budget
     definition: >
@@ -160,16 +197,6 @@ terms:
       - Feedback
       - user Review
     examples:
-      - "The travelers gave a high rating to the guide"
+      - "The travellers gave a high rating to the guide"
       - "The review described the overall trip experience"
-
-  - name: coupon
-    definition: >
-      A code or offer that provides a discount on a booking or service.
-    aliases:
-      - Discount code
-      - promo code
-    examples:
-      - "the traveler applied a coupon to reduce the booking cost"
-      - "A coupon was used during payment"
-     
+      

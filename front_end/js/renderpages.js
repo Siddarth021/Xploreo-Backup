@@ -4,15 +4,16 @@ import { renderdasboard } from "./dashboard.js";
 export function renderPageContent(user) {
     const path = window.location.pathname.split("/").pop();
 
-    // ===== GUIDE =====
     if (user.role === "guide" && path === "dashboard.html") {
+
         renderdasboard(user);
         document.getElementById("admin-dashboard").style.display = "none";
-    }
 
-    // ===== ADMIN =====
-    if (user.role === "superadmin" && path === "dashboard.html") {
+    } else if (user.role === "superadmin" && path === "dashboard.html") {
         renderAdminDashboard("admin-dashboard");
         document.getElementById("main").style.display = "none";
+
+    } else {
+        console.log("Unknown role:", user.role);
     }
 }

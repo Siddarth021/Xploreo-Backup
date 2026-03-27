@@ -1,28 +1,25 @@
 import { renderAdminDashboard } from "./adminDashboard.js";
-import { renderdasboard } from "./dashboard.js";
+import { renderDashboard } from "./dashboard.js";
+import { renderStats } from "./modules/stat-cards.js";
 
 export function renderPageContent(user) {
     const path = window.location.pathname.split("/").pop();
 
     if (user.role === "guide" && path === "dashboard.html") {
-<<<<<<< HEAD
 
-        renderdasboard(user);
-=======
-        renderdasboard(user);
+        renderDashboard(user);
         renderStats("stats-section");
->>>>>>> e00e351 (admin dashboard UI + charts + alerts completed)
+
         document.getElementById("admin-dashboard").style.display = "none";
 
     } else if (user.role === "superadmin" && path === "dashboard.html") {
-    renderAdminDashboard("admin-dashboard");
 
-    // ✅ SHOW admin
-    document.getElementById("admin-dashboard").style.display = "block";
+        renderAdminDashboard("admin-dashboard");
 
-    // ✅ HIDE guide
-    document.getElementById("main").style.display = "none";
-} else {
+        document.getElementById("admin-dashboard").style.display = "block";
+        document.getElementById("main").style.display = "none";
+
+    } else {
         console.log("Unknown role:", user.role);
     }
 }

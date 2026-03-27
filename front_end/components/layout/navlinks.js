@@ -2,7 +2,7 @@ const navlinks = [
   {
     name: "Dashboard",
     path: "../pages/dashboard.html",
-    icon: "../components/ui/dashboard.png",
+    icon: "../components/ui/dashboard.svg",
     roles: ["guide","superadmin","techadmin","nontechadmin","opadmin"]
   },
   {

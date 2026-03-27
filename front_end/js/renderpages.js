@@ -5,4 +5,5 @@ export function renderPageContent(user){
     if(user.role === "guide" && path == "dashboard.html" ){
         renderdasboard(user);
     }
+    
 }

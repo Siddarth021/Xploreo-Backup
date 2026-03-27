@@ -34,5 +34,5 @@ export const users = [
     role: "tourist",
     profilePic: "./profilepic/501.png",
     status: "active"
-  }
+  },
 ];

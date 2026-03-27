@@ -53,6 +53,12 @@ const navlinks = [
     icon: "../components/ui/reviews.svg",
     roles: ["guide"]
   },
+  {
+    name: "Wish List",
+    path: "../pages/wishlist.html",
+    icon: "../components/ui/wishlist.svg",
+    roles: ["traveller"]
+  }
 ];
 
 export function getNavLinks(role){

@@ -1,4 +1,4 @@
-export function renderTour(containerId, currentUser) {
+/*export function renderTour(containerId, currentUser) {
     const container = document.getElementById(containerId);
     const allRequests = JSON.parse(localStorage.getItem("tours")) || [];
     const myRequests = allRequests.filter(req => String(req.guideId).trim() == String(currentUser.id).trim());
@@ -12,12 +12,74 @@ export function renderTour(containerId, currentUser) {
     }
     else{
     container.innerHTML = `
-        <div class="stat-card darkblue">
+        <div class="stat-card dark-blue">
             <div class="card-header">
-                <div>
                     <h2>Tours</h2>
                     <p>Current pending tour requests for your review</p>
+            </div>
+            <table class="tour-table">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Destination</th>
+                        <th>Date & Time</th>
+                        <th>Guests</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${myRequests.map(req => `
+                        <tr>
+                            <td class="cust-name">${req.customer}</td>
+                            <td>${req.destination}</td>
+                            <td>${req.dateTime}</td>
+                            <td>${req.guests}</td>
+                            <td class="amount-cell">$${req.amount}</td>
+                            <td><span class="status-tag ${req.status}">${req.status}</span></td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+    }
+}*/
+
+export function renderTour(containerId, currentUser, showAll = false) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const allRequests = JSON.parse(localStorage.getItem("tours")) || [];
+    
+    // Filter by guide and pending status
+    let myRequests = allRequests.filter(req => 
+        String(req.guideId).trim() === String(currentUser.id).trim() //&& req.status === "Pending"
+    );
+
+    // If not 'showAll', only show the first 2-3 items for the dashboard
+    const displayData = showAll ? myRequests : myRequests.slice(0, 3);
+    if(myRequests.length==0){
+        container.innerHTML = `
+            <div class="stat-card dark-blue">
+                <h2>New Tour Requests</h2>
+                <p class='no-data'>No new requests for you today!</p>
+            </div>`;
+        return;
+    }
+    else{
+    container.innerHTML = `
+        <div class="stat-card dark-blue">
+            <div class="card-header">
+                <div>
+                    <h2>Upcoming Tour</h2>
+                    <p>Tours to be taken by you </p>
                 </div>
+                <span>
+                <button class="view-all-btn" onclick="toggleViewAll()">
+                    ${showAll ? 'Show Less' : 'View All'}
+                </button>
+                </span>
             </div>
             <table class="tour-table">
                 <thead>
@@ -47,3 +109,14 @@ export function renderTour(containerId, currentUser) {
     `;
     }
 }
+
+// Variable to track state
+let isViewAllOpen = false;
+
+window.toggleViewAll = () => {
+    isViewAllOpen = !isViewAllOpen;
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    
+    // Re-call the render function with the new state
+    renderTour("requests-section", user.id, isViewAllOpen);
+};

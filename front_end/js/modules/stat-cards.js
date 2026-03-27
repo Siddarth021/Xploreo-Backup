@@ -20,11 +20,11 @@ export function renderStats(containerId, data = null) {
             </div>
             ` : ""}
 
-            <p class="card-title">${stat.label}</p>
+            <p class="stat-label">${stat.label}</p>
 
-            <h2 class="card-value">${stat.value}</h2>
+            <h2 class="stat-value">${stat.value}</h2>
 
-            <p class="card-sub ${stat.subClass || ""}">
+            <p class="stat-subtext ${stat.subClass || ""}">
                 ${stat.subtext || ""}
             </p>
 

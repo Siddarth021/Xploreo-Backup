@@ -232,3 +232,144 @@ body {
     height: 14px;
   }
 }
+
+/* ===== DASHBOARD LAYOUT ===== */
+.dashboard-wrapper {
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.dashboard-header {
+  margin-bottom: 10px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #111827;
+}
+
+.dashboard-header p {
+  margin: 5px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* ===== STATS GRID (5 Columns) ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+
+/* ===== COLOR THEMES FROM YOUR DESIGN ===== */
+.stat-card.blue { border-top-color: #3b82f6; }
+.stat-card.light-green { border-top-color: #10b981; }
+.stat-card.dark-green { border-top-color: #059669; }
+.stat-card.orange { border-top-color: #f59e0b; }
+.stat-card.violet { border-top-color: #8b5cf6; }
+
+/* ===== CARD CONTENT ===== */
+.icon-container {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Light background colors for icon boxes */
+.blue .icon-container { background: #eff6ff; }
+.light-green .icon-container { background: #ecfdf5; }
+.dark-green .icon-container { background: #f0fdf4; }
+.orange .icon-container { background: #fffbeb; }
+.violet .icon-container { background: #f5f3ff; }
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.stat-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4b5563;
+  margin: 0;
+}
+
+.stat-subtext {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* ===== RESPONSIVE STATS ===== */
+@media (max-width: 1100px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 cards per row on tablets */
+  }
+}
+
+@media (max-width: 700px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 cards per row on small screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr; /* 1 card per row on mobile */
+  }
+}
+
+/* Update the base stat-card first */
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 2px solid transparent; /* Prepare for border hover */
+  border-top: 4px solid #e5e7eb;
+  transition: all 0.3s ease; /* Smooth transition for color and border */
+  cursor: pointer;
+}
+
+/* Specific Hover Logic for each theme */
+/* Blue Theme */
+.stat-card.blue:hover {
+  background-color: #f0f7ff; /* Light blue fill */
+  border-top: 4px solid #3b82f6;
+}
+
+/* Light Green Theme */
+.stat-card.light-green:hover {
+  background-color: #f0fdf4;
+  border-top: 4px solid #10b981;
+}
+
+/* Dark Green Theme */
+.stat-card.dark-green:hover {
+  background-color: #ecfdf5;
+  border-top: 4px solid #059669;
+}
+
+/* Orange Theme */
+.stat-card.orange:hover {
+  background-color: #fffbeb;
+  border-top: 4px solid #f59e0b;
+}
+
+/* Violet Theme */
+.stat-card.violet:hover {
+  background-color: #f5f3ff;
+  border-top: 4px solid #8b5cf6;
+}

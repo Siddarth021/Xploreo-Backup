@@ -28,7 +28,31 @@ const navlinks = [
     path: "../pages/system.html",
     icon: "../components/ui/system.png",
     roles: ["superadmin"]
-  }
+  },
+  {
+    name: "Tours",
+    path: "../pages/tours.html",
+    icon: "../components/ui/tours.svg",
+    roles: ["guide"]
+  },
+  {
+    name: "Schedule",
+    path: "../pages/schedule.html",
+    icon: "../components/ui/schedule.svg",
+    roles: ["guide"]
+  },
+  {
+    name: "Earning",
+    path: "../pages/earnings.html",
+    icon: "../components/ui/earnings.svg",
+    roles: ["guide"]
+  },
+  {
+    name: "Reviews",
+    path: "../pages/reviews.html",
+    icon: "../components/ui/reviews.svg",
+    roles: ["guide"]
+  },
 ];
 
 export function getNavLinks(role){
@@ -38,7 +62,6 @@ return navlinks
   .filter(link => link.roles.includes(role))
   .map(link => {
     const pageName = link.path.split("/").pop();
-
     return `
   <a href="${link.path}" class="nav-link ${currentPage === pageName ? "active" : ""}">
     <img src="${link.icon}" class="nav-icon" />

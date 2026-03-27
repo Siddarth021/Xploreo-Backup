@@ -1,9 +1,16 @@
 import { renderNavbar } from "../components/layout/navbar.js";
+import { renderPageContent} from "./renderpages.js"
+
 const user = {
   name: "Sreekar",
-  role: "superadmin"
-};
-
-console.log("App running");
-localStorage.setItem("currentUser", JSON.stringify(user));
-renderNavbar(user);
+  role: "guide"
+}
+if (user) {
+    renderNavbar(user);
+    document.addEventListener("DOMContentLoaded", () => {
+    renderPageContent(user); 
+});
+} else {
+    console.log("No user found, redirecting to login...");
+    window.location.href = "../pages/login.html"; 
+}

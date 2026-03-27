@@ -3,7 +3,7 @@ import { renderPageContent} from "./renderpages.js"
 
 const user = {
   name: "Sreekar",
-  role: "guide"
+  role: "superadmin"
 }
 if (user) {
     renderNavbar(user);

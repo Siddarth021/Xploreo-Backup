@@ -19,14 +19,20 @@ export function getProfile(user){
               </div>
             </div>
         </div>`;
-
-        
 }
 
-window.toggleProfileMenu = function () {
-  const menu = document.getElementById("profileDropdown");
-  menu.classList.toggle("hidden");
-};
+window.addEventListener("click", function (e) {
+    const profile = document.querySelector(".profile");
+    const dropdown = document.querySelector(".profile-dropdown");
+
+    if (!profile || !dropdown) return;
+
+    if (profile.contains(e.target)) {
+        dropdown.classList.toggle("hidden");
+    } else {
+        dropdown.classList.add("hidden");
+    }
+});
 
 window.logout = function () {
   localStorage.removeItem("currentUser");

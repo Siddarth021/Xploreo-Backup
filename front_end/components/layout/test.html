@@ -1,1 +1,14 @@
 <img src="../ui/Icon.svg" alt="Xploreo Logo" style="height: 30px;"></img>
+
+        <table>
+            ${myRequests.map(req => `
+                <tr>
+                    <td>${req.customer}</td>
+                    <td>${req.destination}</td>
+                    <td>${req.dateTime}</td>
+                    <td>${req.guests}</td>
+                    <td>${req.amount}</td>
+                    <td><span class="status-tag">${req.status}</span></td>
+                </tr>
+            `).join('')}
+        </table>

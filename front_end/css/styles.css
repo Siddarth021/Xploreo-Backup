@@ -200,6 +200,7 @@ body {
 .stat-card.dark-green { border-top-color: #059669; }
 .stat-card.orange { border-top-color: #f59e0b; }
 .stat-card.violet { border-top-color: #8b5cf6; }
+.stat-card.darkblue {border-top-color:#1d5ce3}
 
 .icon-container {
   width: 40px;
@@ -379,4 +380,46 @@ body {
 
 .hidden {
   display: none;
+}
+
+/* Cleaned Table Styling */
+.tour-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.tour-table th {
+    text-align: left;
+    padding: 15px 12px;
+    background-color: #f9fafb;
+    color: #4b5563;
+    font-size: 13px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tour-table td {
+    padding: 16px 12px;
+    border-bottom: 1px solid #f3f4f6;
+    color: #1f2937;
+}
+
+/* Updated Status Tag for Read-Only View */
+.status-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-tag.pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.amount-cell {
+    font-weight: 700;
+    color: #111827;
 }

@@ -13,7 +13,7 @@ export function getProfile(user){
                 <span>Support</span>
               </div>
               <hr class="dropdown-divider">
-              <div class="dropdown-item logout-item" onclick="handleLogout()">
+              <div class="dropdown-item logout-item" onclick="logout()">
                 <img src="../components/ui/logout.svg" class="dropdown-icon">
                 <span>Logout</span>
               </div>

@@ -3,6 +3,7 @@ import { renderPageContent} from "./renderpages.js";
 import { users } from "../data/user.js";
 import { tour } from "../data/tour.js";
 import {reviews } from "../data/review.js";
+import { partners } from "../data/partners.js";
 
 function initializeData() {
 
@@ -19,6 +20,10 @@ function initializeData() {
     }
 
     console.log("LocalStorage Seeded Successfully!");
+
+    if (!localStorage.getItem("partners")) {
+    localStorage.setItem("partners", JSON.stringify(partners));
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {

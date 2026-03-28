@@ -36,5 +36,7 @@ window.addEventListener("click", function (e) {
 
 window.logout = function () {
   localStorage.removeItem("currentUser");
-  window.location.href = "index.html";
+  localStorage.clear();
+  location.reload();
+  window.location.href = "dashboard.html";
 };

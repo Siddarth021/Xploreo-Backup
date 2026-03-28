@@ -51,14 +51,13 @@ export function renderTour(containerId, currentUser, showAll = false) {
     if (!container) return;
 
     const allRequests = JSON.parse(localStorage.getItem("tours")) || [];
-    
-    // Filter by guide and pending status
+
     let myRequests = allRequests.filter(req => 
-        String(req.guideId).trim() === String(currentUser.id).trim() //&& req.status === "Pending"
+        String(req.guideId).trim() === String(currentUser.id).trim() && req.status === "pending"
     );
 
-    // If not 'showAll', only show the first 2-3 items for the dashboard
-    const displayData = showAll ? myRequests : myRequests.slice(0, 3);
+    const preview = myRequests.slice(0, 3);
+
     if(myRequests.length==0){
         container.innerHTML = `
             <div class="stat-card dark-blue">
@@ -93,7 +92,7 @@ export function renderTour(containerId, currentUser, showAll = false) {
                     </tr>
                 </thead>
                 <tbody>
-                    ${myRequests.map(req => `
+                    ${preview.map(req => `
                         <tr>
                             <td class="cust-name">${req.customer}</td>
                             <td>${req.destination}</td>
@@ -114,9 +113,5 @@ export function renderTour(containerId, currentUser, showAll = false) {
 let isViewAllOpen = false;
 
 window.toggleViewAll = () => {
-    isViewAllOpen = !isViewAllOpen;
-    const user = JSON.parse(localStorage.getItem("currentUser"));
-    
-    // Re-call the render function with the new state
-    renderTour("requests-section", user.id, isViewAllOpen);
+    window.location.href = "./tours.html"
 };

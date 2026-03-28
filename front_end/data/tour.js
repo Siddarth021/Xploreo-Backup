@@ -19,7 +19,7 @@ export const tour = [
     destination: "Golconda Fort Sunset Tour",
     location: "Hyderabad, India",
     dateTime: "2026-03-31 | 04:30 PM",
-    status: "completed",
+    status: "pending",
     guests: 2,
     amount: 800
   },
@@ -31,8 +31,44 @@ export const tour = [
     destination: "French Quarter Cycle Tour",
     location: "Pondicherry, India",
     dateTime: "2026-04-01 | 07:00 AM",
+    status: "pending",
     guests: 1,
-    amount: 500,
-    status:"pending"
+    amount: 500
+  },
+    {
+    id: "004",
+    guideId: "101",
+    customer: "Michael Chen",
+    email: "m.chen@email.com",
+    destination: "Golconda Fort Sunset Tour",
+    location: "Hyderabad, India",
+    dateTime: "2026-03-31 | 04:30 PM",
+    statusofTour: "completed",
+    guests: 2,
+    amount: 800
+  },
+    {
+    id: "005",
+    guideId: "101",
+    customer: "Michael Chen",
+    email: "m.chen@email.com",
+    destination: "Golconda Fort Sunset Tour",
+    location: "Hyderabad, India",
+    dateTime: "2026-03-31 | 04:30 PM",
+    status: "ongoing",
+    guests: 2,
+    amount: 800
+  },
+    {
+    id: "006",
+    guideId: "101",
+    customer: "Michael Chen",
+    email: "m.chen@email.com",
+    destination: "Golconda Fort Sunset Tour",
+    location: "Hyderabad, India",
+    dateTime: "2026-03-31 | 04:30 PM",
+    status: "completed",
+    guests: 2,
+    amount: 800
   }
 ];

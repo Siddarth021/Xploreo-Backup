@@ -1,15 +1,34 @@
-export function renderStats(containerId, data = null) {
+import { avgrating } from "../utils/avgrating.js";
+import { upcomingtripcount } from "../utils/upcomingtripcount.js";
+
+export function renderStats(containerId,currentUser) {
     const container = document.getElementById(containerId);
 
-    const defaultStats = [
-        { label: "Today's Tours", value: "3", icon: "../components/ui/todaytours.svg", color: "blue" },
-        { label: "Upcoming Tours", value: "12", icon: "../components/ui/upcomingtours.svg", color: "light-green"},
+    const allReviews = JSON.parse(localStorage.getItem("reviews")) || [];
+    let myReviews = allReviews.filter(req => 
+        String(req.guideId).trim() === String(currentUser.id).trim()
+    );
+    const alltrips = JSON.parse(localStorage.getItem("tours")) || [];
+
+    let mytrips = alltrips.filter(req => 
+        String(req.guideId).trim() === String(currentUser.id).trim()
+    );
+
+    let upcomingtrips = mytrips.filter(req =>
+        req.status === "pending"
+    );
+
+    let ongoingtrips = mytrips.filter(req =>
+        req.status === "ongoing"
+    );
+
+    const stats = [
+        { label: "Today's Tours", value: upcomingtripcount(ongoingtrips), icon: "../components/ui/todaytours.svg", color: "blue" },
+        { label: "Upcoming Tours", value: upcomingtripcount(upcomingtrips), icon: "../components/ui/upcomingtours.svg", color: "light-green"},
         { label: "Monthly Earnings", value: "$3,248", icon: "../components/ui/montlyearning.svg", color: "dark-green" },
-        { label: "Average Rating", value: "4.8", icon: "../components/ui/avgrating.svg", color: "orange"},
+        { label: "Average Rating", value: avgrating(myReviews), icon: "../components/ui/avgrating.svg", color: "orange"},
         { label: "Recent Reviews", value: "8", icon: "../components/ui/recentreview.svg", color: "violet"}
     ];
-
-    const stats = data || defaultStats;
 
     container.innerHTML = stats.map(stat => `
         <div class="stat-card ${stat.color}">

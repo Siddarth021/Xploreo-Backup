@@ -4,7 +4,7 @@ export const reviews = [
     guideId: "101",
     customerName: "Alice Smith",
     customerPic: "../assets/profiles/tourist1.jpg",
-    rating: 5,
+    rating: 4,
     date: "2026-03-20",
     comment: "Sreekar was an amazing guide! He knew all the secret spots in Charminar.",
     status: "Published"

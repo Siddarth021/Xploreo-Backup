@@ -164,7 +164,7 @@ body {
   }
 }
 
-.dashboard-wrapper {
+.page-wrapper {
   padding: 30px;
   max-width: 1400px;
   margin: 0 auto;
@@ -459,4 +459,15 @@ body {
     background-color: #bfd4eb;
     color: #0e1016;
     border-color: #ffffff;
+}
+
+.welcome{
+    margin-top:5px;
+    margin-bottom:5px;
+}
+
+.welcome p {
+    margin-top:5px;
+    margin-bottom:5px;
+    color:#6A7282;
 }

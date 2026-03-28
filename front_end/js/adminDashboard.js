@@ -1,4 +1,4 @@
-import { renderStats } from "./modules/stat-cards.js";
+// Notice we removed the import for renderStats here!
 import { renderChart } from "./modules/chart.js";
 import { renderPartners } from "./modules/partners.js";
 import { renderAlerts } from "./modules/alerts.js";
@@ -37,17 +37,19 @@ function getActivePartners() {
     const active = partners.filter(p => p.bookings > 500);
     return active.length;
 }
-export function renderAdminDashboard(containerId) {
 
+export function renderAdminDashboard(containerId) {
     // header render separately
     const header = document.getElementById("admin-header");
 
-    header.innerHTML = `
-        <div class="dashboard-header">
-            <h1>Operations Dashboard</h1>
-            <p>Real-time performance monitoring and ecosystem health.</p>
-        </div>
-    `;
+    if (header) {
+        header.innerHTML = `
+            <div class="dashboard-header">
+                <h1>Operations Dashboard</h1>
+                <p>Real-time performance monitoring and ecosystem health.</p>
+            </div>
+        `;
+    }
 
     const adminData = [
         {
@@ -83,7 +85,28 @@ export function renderAdminDashboard(containerId) {
         }
     ];
 
-    renderStats("admin-stats", adminData);
+    // --- NEW DIRECT RENDERING LOGIC ---
+    // We bypass your teammate's stat-cards.js completely and draw the cards right here.
+    const statsContainer = document.getElementById("admin-stats");
+    
+    if (statsContainer) {
+        statsContainer.innerHTML = adminData.map(stat => `
+            <div class="stat-card ${stat.color || 'blue'}">
+                ${stat.icon ? `
+                <div class="card-icon">
+                    <img src="${stat.icon}" alt="icon">
+                </div>
+                ` : ""}
+                <p class="stat-label">${stat.label}</p>
+                <h2 class="stat-value">${stat.value}</h2>
+                <p class="stat-subtext ${stat.subClass || ""}">
+                    ${stat.subtext || ""}
+                </p>
+            </div>
+        `).join('');
+    }
+
+    // --- RENDER THE REST OF YOUR MODULES ---
     renderChart("admin-chart");
     renderPartners("admin-partners");
     renderAlerts("admin-alerts");

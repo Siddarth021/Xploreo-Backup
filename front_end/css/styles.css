@@ -1180,8 +1180,135 @@ body {
     border-radius: 2px;
 }
 
-
 /* Hover effect for better UX */
 .tab-btn:hover:not(.active) {
     color: #374151;
+}
+
+/* Stretches the Admin Dashboard cards to fill the full width */
+#admin-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Creates 4 equal-width columns */
+    gap: 24px; /* Adjust this number to match the spacing between your other cards */
+    width: 100%;
+}
+
+/* --- ECOSYSTEM ACTIVITY TIMELINE --- */
+
+.activity-card {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 12px; /* Adjust to match your other cards */
+    /* Add a box-shadow here if your other cards have them! */
+}
+
+.activity-card h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 28px;
+}
+
+.timeline {
+    display: flex;
+    flex-direction: column;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 16px;
+    position: relative;
+    padding-bottom: 32px; /* Space between items */
+}
+
+.timeline-item:last-child {
+    padding-bottom: 32px; /* Space before the button */
+}
+
+/* The vertical connecting line */
+.timeline-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 40px; /* Starts just below the icon */
+    left: 19px; /* Centers the line perfectly under the 40px icon */
+    bottom: 0;
+    width: 2px;
+    background-color: #f3f4f6; /* Light gray line */
+    z-index: 0;
+}
+
+/* The circular icons */
+.timeline-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 2px solid;
+    z-index: 1; /* Keeps icon above the line */
+    flex-shrink: 0;
+}
+
+.timeline-icon.icon-blue {
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+.timeline-icon.icon-green {
+    border-color: #059669;
+    color: #059669;
+}
+
+/* Text Content */
+.timeline-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 2px;
+}
+
+.timeline-content h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.timeline-content p {
+    font-size: 14px;
+    color: #4b5563;
+    margin: 0;
+}
+
+.text-blue {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.timeline-time {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+
+/* Action Button */
+.view-history-btn {
+    width: 100%;
+    padding: 14px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #374151;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.view-history-btn:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
 }

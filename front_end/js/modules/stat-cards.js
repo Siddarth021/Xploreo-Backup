@@ -26,6 +26,7 @@ export function renderStats(containerId,currentUser) {
         { label: "Today's Tours", value: upcomingtripcount(ongoingtrips), icon: "../components/ui/todaytours.svg", color: "blue" },
         { label: "Upcoming Tours", value: upcomingtripcount(upcomingtrips), icon: "../components/ui/upcomingtours.svg", color: "light-green"},
         { label: "Monthly Earnings", value: "$3,248", icon: "../components/ui/montlyearning.svg", color: "dark-green" },
+        { label: "Total Earnings", value: "$1300",icon: "../components/ui/totlayeanings.svg", color:"red"},
         { label: "Average Rating", value: avgrating(myReviews), icon: "../components/ui/avgrating.svg", color: "orange"},
         { label: "Recent Reviews", value: "8", icon: "../components/ui/recentreview.svg", color: "violet"}
     ];

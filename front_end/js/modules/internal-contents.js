@@ -48,6 +48,11 @@ export function renderinternalcontents(containerId,currentUser,currentActiveTab)
                                 <td>${req.guests}</td>
                                 <td class="amount-cell">$${req.amount}</td>
                                 <td><span class="status-tag ${req.status}">${req.status}</span></td>
+                                <td>
+                                    <button class="view-all-btn" onclick="openTourModal('${req.id}')">
+                                        View Details
+                                    </button>
+                                </td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -56,7 +61,27 @@ export function renderinternalcontents(containerId,currentUser,currentActiveTab)
         `;
         }
     }else if(currentActiveTab === 'ongoing'){
-        container.innerHTML=``
+        
     }
 }
 
+// Function to hide the modal
+window.closeModal = () => {
+    const modal = document.getElementById("tourModal");
+    
+    if (modal) {
+        // 1. Hide the container
+        modal.style.display = "none";
+        
+        // 2. Clear the body so it's fresh for the next click
+        document.getElementById("modalBody").innerHTML = "";
+    }
+};
+
+// Bonus: Close the modal if the user clicks the dark background
+window.addEventListener("click", (event) => {
+    const modal = document.getElementById("tourModal");
+    if (event.target === modal) {
+        closeModal();
+    }
+});

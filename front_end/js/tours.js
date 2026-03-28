@@ -18,3 +18,57 @@ window.switchTab = (status) => {
     const user = JSON.parse(localStorage.getItem("currentUser"));
     rendertourpage("main", user); 
 };
+
+window.openTourModal = (tourId) => {
+    const allTours = JSON.parse(localStorage.getItem("tours")) || [];
+    const tour = allTours.find(t => String(t.id) === String(tourId));
+
+    if (tour) {
+        const modal = document.getElementById("tourModal");
+        const body = document.getElementById("modalBody");
+        console.log(tour);
+        // Split itinerary string into an array
+        const itinerarySteps = tour.plan_iternary
+        body.innerHTML = `
+            <div class="modal-tour-title">
+                <h1>${tour.destination}</h1>
+            </div>
+
+            <div class="tour-info-grid">
+                <div class="info-group"><label>Customer</label><span>${tour.customer}</span></div>
+                <div class="info-group"><label>Group Size</label><span>${tour.guests} People</span></div>
+                <div class="info-group"><label>Date & Time</label><span>${tour.dateTime}</span></div>
+                <div class="info-group"><label>Total Price</label><span>$${tour.amount}</span></div>
+            </div>
+
+            <div class="itinerary-card">
+                <h3>Itinerary Schedule</h3>
+                <div class="timeline">
+                    ${itinerarySteps.map(step => `
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">${step.trim()}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        modal.style.setProperty('display', 'flex', 'important');
+    }
+};
+
+// Function to update LocalStorage and refresh the UI
+window.handleStatusUpdate = (tourId, newStatus) => {
+    let allTours = JSON.parse(localStorage.getItem("tours"));
+    const index = allTours.findIndex(t => String(t.id) === String(tourId));
+
+    if (index !== -1) {
+        allTours[index].status = newStatus;
+        localStorage.setItem("tours", JSON.stringify(allTours));
+        
+        // Close modal and refresh the specific container
+        document.getElementById("tourModal").style.display = "none";
+        const user = JSON.parse(localStorage.getItem("currentUser"));
+        rendertourpage("main", user); 
+    }
+};

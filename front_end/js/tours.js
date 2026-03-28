@@ -72,3 +72,35 @@ window.handleStatusUpdate = (tourId, newStatus) => {
         rendertourpage("main", user); 
     }
 };
+
+window.handleTourAction = (tourId) => {
+    let allTours = JSON.parse(localStorage.getItem("tours")) || [];
+    const tourIndex = allTours.findIndex(t => String(t.id) === String(tourId));
+
+    if (tourIndex !== -1) {
+        const tour = allTours[tourIndex];
+        const itinerary = tour.plan_iternary || [];
+        
+        // Find where we are right now
+        const currentIndex = itinerary.indexOf(tour.currentloction);
+        const nextIndex = currentIndex + 1;
+
+        if (nextIndex < itinerary.length) {
+            // Move to the next stop
+            tour.currentloction = itinerary[nextIndex];
+            console.log(`Moving to next stop: ${tour.currentloction}`);
+        } else {
+            // We reached the end of the list
+            tour.status = "completed"; 
+            tour.currentloction = "Trip Completion";
+            console.log("Tour Finished!");
+        }
+
+        // Save and Refresh
+        localStorage.setItem("tours", JSON.stringify(allTours));
+        
+        const user = JSON.parse(localStorage.getItem("currentUser"));
+        // Re-render the 'ongoing' or 'completed' tab accordingly
+        renderinternalcontents("internal-contents", user, tour.status); 
+    }
+};

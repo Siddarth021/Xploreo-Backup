@@ -70,10 +70,13 @@ export const tour = [
     guideId: "101",
     customer: "Michael Chen",
     email: "m.chen@email.com",
+    title: "hello",
     destination: "Golconda Fort Sunset Tour",
     location: "Hyderabad, India",
+    plan_iternary: ["a","b","c","d","e","f","g","h","i","j","k","l"],
+    currentloction: "b",
     dateTime: "2026-03-31 | 04:30 PM",
-    status: "completed",
+    status: "ongoing",
     guests: 2,
     amount: 800
   }

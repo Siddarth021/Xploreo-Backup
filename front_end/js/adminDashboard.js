@@ -1,4 +1,3 @@
-import { renderStats } from "./modules/stat-cards.js";
 import { renderChart } from "./modules/chart.js";
 import { renderPartners } from "./modules/partners.js";
 import { renderAlerts } from "./modules/alerts.js";
@@ -37,18 +36,32 @@ function getActivePartners() {
     const active = partners.filter(p => p.bookings > 500);
     return active.length;
 }
-export function renderAdminDashboard(containerId) {
 
-    // header render separately
+export function renderAdminDashboard(containerId) {
+    // 1. Force the Admin wrapper to be visible, and hide the Guide wrapper
+    const adminWrapper = document.getElementById("admin-dashboard");
+    const guideWrapper = document.getElementById("main");
+
+    if (adminWrapper) {
+        adminWrapper.style.display = "block"; 
+    }
+    if (guideWrapper) {
+        guideWrapper.style.display = "none"; 
+    }
+
+    // 2. Render the header
     const header = document.getElementById("admin-header");
 
-    header.innerHTML = `
-        <div class="dashboard-header">
-            <h1>Operations Dashboard</h1>
-            <p>Real-time performance monitoring and ecosystem health.</p>
-        </div>
-    `;
+    if (header) {
+        header.innerHTML = `
+            <div class="dashboard-header">
+                <h1 style="margin-top: 0;">Operations Dashboard</h1>
+                <p>Real-time performance monitoring and ecosystem health.</p>
+            </div>
+        `;
+    }
 
+    // 3. Define Admin Data
     const adminData = [
         {
             label: "TOTAL USERS",
@@ -83,7 +96,27 @@ export function renderAdminDashboard(containerId) {
         }
     ];
 
-    renderStats("admin-stats", adminData);
+    // 4. Render Admin Stats directly (bypassing stat-cards.js)
+    const statsContainer = document.getElementById("admin-stats");
+    
+    if (statsContainer) {
+        statsContainer.innerHTML = adminData.map(stat => `
+            <div class="stat-card ${stat.color || 'blue'}">
+                ${stat.icon ? `
+                <div class="card-icon">
+                    <img src="${stat.icon}" alt="icon">
+                </div>
+                ` : ""}
+                <p class="stat-label">${stat.label}</p>
+                <h2 class="stat-value">${stat.value}</h2>
+                <p class="stat-subtext ${stat.subClass || ""}">
+                    ${stat.subtext || ""}
+                </p>
+            </div>
+        `).join('');
+    }
+
+    // 5. Render the rest of your modules
     renderChart("admin-chart");
     renderPartners("admin-partners");
     renderAlerts("admin-alerts");

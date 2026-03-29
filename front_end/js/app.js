@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentUser = JSON.parse(localStorage.getItem("currentUser"));
     
     if (!currentUser) {
-        currentUser = users.find(u => u.id === "101");
+        currentUser = users.find(u => u.id === "001");
         localStorage.setItem("currentUser", JSON.stringify(currentUser));
     }
     renderNavbar(currentUser);
@@ -44,3 +44,7 @@ window.addEventListener("unload", (event) => {
     localStorage.clear();
     location.reload();
 });
+
+if (activeTab === "Operations & Bookings") {
+    renderOperationsPage("admin-dashboard"); // Uses the same main container
+}

@@ -1,4 +1,3 @@
-// Notice we removed the import for renderStats here!
 import { renderChart } from "./modules/chart.js";
 import { renderPartners } from "./modules/partners.js";
 import { renderAlerts } from "./modules/alerts.js";
@@ -39,18 +38,30 @@ function getActivePartners() {
 }
 
 export function renderAdminDashboard(containerId) {
-    // header render separately
+    // 1. Force the Admin wrapper to be visible, and hide the Guide wrapper
+    const adminWrapper = document.getElementById("admin-dashboard");
+    const guideWrapper = document.getElementById("main");
+
+    if (adminWrapper) {
+        adminWrapper.style.display = "block"; 
+    }
+    if (guideWrapper) {
+        guideWrapper.style.display = "none"; 
+    }
+
+    // 2. Render the header
     const header = document.getElementById("admin-header");
 
     if (header) {
         header.innerHTML = `
             <div class="dashboard-header">
-                <h1>Operations Dashboard</h1>
+                <h1 style="margin-top: 0;">Operations Dashboard</h1>
                 <p>Real-time performance monitoring and ecosystem health.</p>
             </div>
         `;
     }
 
+    // 3. Define Admin Data
     const adminData = [
         {
             label: "TOTAL USERS",
@@ -85,8 +96,7 @@ export function renderAdminDashboard(containerId) {
         }
     ];
 
-    // --- NEW DIRECT RENDERING LOGIC ---
-    // We bypass your teammate's stat-cards.js completely and draw the cards right here.
+    // 4. Render Admin Stats directly (bypassing stat-cards.js)
     const statsContainer = document.getElementById("admin-stats");
     
     if (statsContainer) {
@@ -106,7 +116,7 @@ export function renderAdminDashboard(containerId) {
         `).join('');
     }
 
-    // --- RENDER THE REST OF YOUR MODULES ---
+    // 5. Render the rest of your modules
     renderChart("admin-chart");
     renderPartners("admin-partners");
     renderAlerts("admin-alerts");

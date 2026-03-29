@@ -866,7 +866,7 @@ body {
 }
 
 .page-wrapper {
-  padding: 30px;
+  padding: 100px 30px 30px 30px; /* Top padding increased from 30px to 100px */
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
@@ -1518,10 +1518,11 @@ body {
 }
 /* Stretches the Admin Dashboard cards to fill the full width */
 #admin-stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Creates 4 equal-width columns */
-    gap: 24px; /* Adjust this number to match the spacing between your other cards */
-    width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 20px; 
+  width: 100%;
+  margin-top: 10px;
 }
 
 /* --- ECOSYSTEM ACTIVITY TIMELINE --- */
@@ -1649,4 +1650,10 @@ body {
     background: linear-gradient(90deg, #2563eb, #0ea5e9);
     border-radius: 10px;
     transition: width 0.5s ease-in-out; /* Animates the bar when it loads */
+}
+
+#ops-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
 }

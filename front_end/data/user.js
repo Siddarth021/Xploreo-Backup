@@ -1,6 +1,6 @@
 export const users = [
   {
-    id: "101",
+    id: "10001",
     name: "Sreekar",
     phno: 1234567890,
     address: "Alpha Street, Hyderabad",
@@ -14,7 +14,7 @@ export const users = [
     status: "active"
   },
   {
-    id: "102",
+    id: "00001",
     name: "Rahul Varma",
     phno: 9876543210,
     address: "Madhapur, Hyderabad",
@@ -28,7 +28,7 @@ export const users = [
     status: "active"
   },
   {
-    id: "103",
+    id: "20001",
     name: "Anjali Sharma",
     phno: 9123456780,
     address: "Banjara Hills, Hyderabad",
@@ -42,7 +42,7 @@ export const users = [
     status: "active"
   },
   {
-    id: "104",
+    id: "00101",
     name: "Kiran Reddy",
     phno: 9012345678,
     address: "Gachibowli, Hyderabad",
@@ -56,7 +56,7 @@ export const users = [
     status: "inactive"
   },
   {
-    id: "105",
+    id: "00201",
     name: "Sneha Patel",
     phno: 8899776655,
     address: "Whitefield, Bangalore",
@@ -70,7 +70,7 @@ export const users = [
     status: "active"
   },
   {
-    id: "106",
+    id: "00301",
     name: "Arjun Mehta",
     phno: 7788996655,
     address: "Andheri, Mumbai",
@@ -84,7 +84,7 @@ export const users = [
     status: "active"
   },
   {
-    id: "107",
+    id: "00002",
     name: "Priya Nair",
     phno: 6677889900,
     address: "Kochi, Kerala",
@@ -92,13 +92,13 @@ export const users = [
     dob: new Date("2001-01-10"),
     username: "priya_n",
     email: "priya@xploreo.com",
-    role: "admin",
+    role: "superadmin",
     profilePic: "./profilepic/107.png",
     password: "priya@123",
     status: "active"
   },
   {
-    id: "108",
+    id: "10002",
     name: "Vikram Singh",
     phno: 9988776655,
     address: "Jaipur, Rajasthan",
@@ -112,7 +112,7 @@ export const users = [
     status: "inactive"
   },
   {
-    id: "109",
+    id: "20002",
     name: "Meera Iyer",
     phno: 8877665544,
     address: "Chennai, Tamil Nadu",
@@ -126,7 +126,7 @@ export const users = [
     status: "active"
   },
   {
-    id: "110",
+    id: "30001",
     name: "Rohit Das",
     phno: 7766554433,
     address: "Kolkata, West Bengal",

@@ -3,6 +3,7 @@ import { getProfile } from "./profile.js";
 import { getNotification } from "./notification.js";
 
 export function renderNavbar(user) {
+  console.log(user);
   const navbar = `
     <nav class="navbar">
       <div class="navbar-left">

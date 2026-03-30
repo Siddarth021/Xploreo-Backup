@@ -28,6 +28,36 @@ const navlinks = [
     path: "../pages/system.html",
     icon: "../components/ui/system.png",
     roles: ["superadmin"]
+  },
+   {
+    name: "Tours",
+    path: "../pages/tours.html",
+    icon: "../components/ui/tours.svg",
+    roles: ["guide"]
+  },
+  {
+    name: "Schedule",
+    path: "../pages/schedule.html",
+    icon: "../components/ui/schedule.svg",
+    roles: ["guide"]
+  },
+  {
+    name: "Earning",
+    path: "../pages/earnings.html",
+    icon: "../components/ui/earnings.svg",
+    roles: ["guide"]
+  },
+  {
+    name: "Reviews",
+    path: "../pages/reviews.html",
+    icon: "../components/ui/reviews.svg",
+    roles: ["guide"]
+  },
+  {
+    name: "Wish List",
+    path: "../pages/wishlist.html",
+    icon: "../components/ui/wishlist.svg",
+    roles: ["traveller"]
   }
 ];
 

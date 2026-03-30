@@ -1,31 +1,13 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Operations & Bookings</title>
+    <head>
+        <title>Operations & Bookings</title>
+        <link rel="stylesheet" href="../css/styles.css">
+    </head>
+    <body>
+        <div id="navbar"></div>
+        <div id="main"></div>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="../css/styles.css">
-</head>
-
-<body>
-
-  <!-- Navbar -->
-  <div id="navbar"></div>
-
-  <!-- Content -->
-  <div id="ops-content"></div>
-
-  <!-- JS -->
-  <script type="module">
-    import { renderNavbar } from "../js/layout/navbar.js";
-    import { renderOperationsPage } from "../js/modules/operations.js";
-
-    const user = { role: "superadmin" };
-
-    renderNavbar(user);
-    renderOperationsPage();
-  </script>
-
-</body>
+        <script type="module" src="../js/app.js"></script>
+    </body>
 </html>

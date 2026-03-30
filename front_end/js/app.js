@@ -4,6 +4,7 @@ import { users } from "../data/user.js";
 import { tour } from "../data/tour.js";
 import {reviews } from "../data/review.js";
 import { partners } from "../data/partners.js";
+import { initOperations } from './modules/operations.js';
 
 function initializeData() {
 
@@ -32,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentUser = JSON.parse(localStorage.getItem("currentUser"));
     
     if (!currentUser) {
-        currentUser = users.find(u => u.id === "10001");
+        currentUser = users.find(u => u.id === "00001");
         localStorage.setItem("currentUser", JSON.stringify(currentUser));
     }
     renderNavbar(currentUser);
@@ -44,5 +45,9 @@ window.addEventListener("unload", (event) => {
     localStorage.clear();
     location.reload();
 });
+
+if (window.location.pathname.includes('opsbook.html')) {
+    initOperations();
+}
 
 

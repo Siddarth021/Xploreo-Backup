@@ -1,61 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Signup</title>
-
-    <!-- Fonts -->
-
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
-
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="../css/landing.css">
-
-</head>
-
-<body>
-
-<!-- HERO -->
-
-<section class="hero">
-
-    <video autoplay muted loop class="hero-bg">
-
-        <source
-            src="../components/ui/landing/beach.mp4"
-            type="video/mp4"
-        >
-
-    </video>
-
-    <div class="signup-hero-content">
-
-        <h1>
-            Sign Up
-        </h1>
-
-    </div>
-
-</section>
-
-<!-- SIGNUP SECTION -->
-
-<section class="signup-section">
-
-    <div class="signup-overlay">
-
-        <div class="signup-card">
-
-            <!-- ================= STEP 1 ================= -->
+ ================= STEP 1 =================
 
             <div class="signup-step step-1">
 
@@ -250,125 +193,114 @@
 
             </div>
 
-<!------------------- STEP 3 — -------------TRAVELER -->
 
-            <div class="signup-step step-3-traveler hidden">
 
-                <div class="signin-card">
+<!-- Step 3 : Guide Details -->
+
+            <div class="signup-step step-3 hidden">
+
+                <div class="signup-card">
 
                     <div class="progress-header">
-                        <span>Step 3 of 4</span>
-                        <span>75%</span>
+
+                        <span>
+                            Step 3 of 4
+                        </span>
+
+                        <span>
+                            75%
+                        </span>
+
                     </div>
 
                     <div class="progress-bar">
-                        <div class="progress-fill step3"></div>
+
+                        <div class="progress-fill"></div>
+
                     </div>
 
-                    <p class="step-label">
-                        Specific Details
-                    </p>
+                    <h3 class="form-title">
+                        Guide Details
+                    </h3>
 
-                    <div class="step3-traveler-grid">
+                    <div class="form-grid">
 
-                        <div class="step3-traveler-left">
-
-                            <label>
-                                Preferred Travel Style
-                            </label>
-
-                            <select class="step3-traveler-input">
-                                <option>
-                                    Select your style
-                                </option>
-                            </select>
+                        <div class="form-group">
 
                             <label>
-                                Budget Range
-                            </label>
-
-                            <select class="step3-traveler-input">
-                                <option>
-                                    Select budget range
-                                </option>
-                            </select>
-
-                            <label>
-                                Preferred Language
-                            </label>
-
-                            <select class="step3-traveler-input">
-                                <option>
-                                    English
-                                </option>
-                            </select>
-
-                            <label>
-                                Preferred Destination Types
-                                <span class="step3-traveler-optional">
-                                    (Optional)
-                                </span>
+                                Areas of Expertise
                             </label>
 
                             <input
                                 type="text"
-                                class="step3-traveler-input"
-                                placeholder="e.g. Coastal, Mountains, Urban"
+                                id="expertise"
+                                placeholder="e.g. Trekking, City Tours"
                             >
 
                         </div>
 
-
-
-                        <div class="step3-traveler-right">
+                        <div class="form-group">
 
                             <label>
-                                Travel Interests
+                                Languages Spoken
                             </label>
 
-                            <div class="step3-traveler-interest-list">
+                            <input
+                                type="text"
+                                id="languages"
+                                placeholder="e.g. English, Hindi"
+                            >
 
-                                <label class="step3-traveler-interest-card">
-                                    <input type="checkbox">
-                                    Adventure
-                                </label>
+                        </div>
 
-                                <label class="step3-traveler-interest-card">
-                                    <input type="checkbox">
-                                    Culture
-                                </label>
+                        <div class="form-group">
 
-                                <label class="step3-traveler-interest-card">
-                                    <input type="checkbox">
-                                    Food
-                                </label>
+                            <label>
+                                Years of Experience
+                            </label>
 
-                                <label class="step3-traveler-interest-card">
-                                    <input type="checkbox">
-                                    Nature
-                                </label>
+                            <input
+                                type="number"
+                                id="experience"
+                                placeholder="e.g. 5"
+                            >
 
-                                <label class="step3-traveler-interest-card">
-                                    <input type="checkbox">
-                                    History
-                                </label>
+                        </div>
 
-                            </div>
+                        <div class="form-group">
+
+                            <label>
+                                License Number
+                            </label>
+
+                            <input
+                                type="text"
+                                id="license"
+                                placeholder="Enter license ID"
+                            >
 
                         </div>
 
                     </div>
 
+                    <div class="form-actions">
 
+                        <button
+                            class="back-btn"
+                            id="step3BackBtn"
+                        >
 
-                    <div class="step3-traveler-buttons">
+                            Back
 
-                        <button class="back-btn">
-                            ← Back
                         </button>
 
-                        <button class="step3-traveler-complete-btn">
+                        <button
+                            class="next-btn"
+                            id="completeSignupBtn"
+                        >
+
                             Complete Sign Up
+
                         </button>
 
                     </div>
@@ -376,56 +308,3 @@
                 </div>
 
             </div>
-
-<!------------------- GUIDE DETAILS ----------------------------->
-            <div class="signup-step step-3-guide hidden">
-
-                <div class="signin-card">
-
-                    <h3>
-                        Guide Details Coming Soon
-                    </h3>
-
-                </div>
-
-            </div>
-
-<!----------- SERVICE PARTNER DETAILS ----------------------->
-            <div class="signup-step step-3-partner hidden">
-
-                <div class="signin-card">
-
-                    <h3>
-                        Service Partner Details Coming Soon
-                    </h3>
-
-                </div>
-
-            </div>
-
-        
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- NAVBAR -->
-
-<script type="module">
-
-import { renderLandingNavbar }
-from "../components/layout/navbar_landing.js";
-
-renderLandingNavbar();
-
-</script>
-
-<!-- SIGNUP LOGIC -->
-
-<script type="module" src="../js/signup.js"></script>
-
-</body>
-
-</html>

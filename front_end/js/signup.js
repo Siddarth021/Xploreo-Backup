@@ -1,75 +1,104 @@
-import {
-    generateOtp,
-    showOtpModal,
-    validateOtp
-}
-from "./modules/otp.js";
+import { users }
+from "../data/user.js";
 
-let generatedOtp = null;
+import { generateUniqueUserId }
+from "./utils/generateUserId.js"
+
+import { saveUser }
+from "./modules/userStorage.js"
+
+
+/* GLOBAL STATE */
+
+let selectedRole = null;
 
 document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+"DOMContentLoaded",
 
-        const cards =
-            document.querySelectorAll(
-                ".role-card"
-            );
+function () {
 
-        const step1 =
-            document.querySelector(
-                ".step-1"
-            );
+    /* ELEMENTS */
 
-        const step2 =
-            document.querySelector(
-                ".step-2"
-            );
-
-        const nextBtn =
-            document.querySelector(
-                ".step-1 .next-btn"
-            );
-
-        const backBtn =
-            document.querySelector(
-                ".step-2 .back-btn"
-            );
-
-        let selectedRole =
-            null;
-
-        cards.forEach(
-            function (card) {
-
-                card.addEventListener(
-                    "click",
-                    function () {
-
-                        cards.forEach(
-                            c =>
-                            c.classList.remove(
-                                "selected"
-                            )
-                        );
-
-                        card.classList.add(
-                            "selected"
-                        );
-
-                        selectedRole =
-                            card.querySelector(
-                                "h4"
-                            ).innerText;
-
-                    }
-                );
-
-            }
+    const cards =
+        document.querySelectorAll(
+            ".role-card"
         );
 
-        nextBtn.addEventListener(
+    const step1 =
+        document.querySelector(
+            ".step-1"
+        );
+
+    const step2 =
+        document.querySelector(
+            ".step-2"
+        );
+
+    const step1NextBtn =
+        document.querySelector(
+            ".step-1 .next-btn"
+        );
+
+    const step2NextBtn =
+        document.querySelector(
+            ".step-2 .next-btn"
+        );
+
+    const backBtn =
+        document.querySelector(
+            ".step-2 .back-btn"
+        );
+
+
+
+    /* ROLE SELECTION */
+
+    cards.forEach(
+        function (card) {
+
+            card.addEventListener(
+                "click",
+
+                function () {
+
+                    cards.forEach(
+                        c =>
+                        c.classList.remove(
+                            "selected"
+                        )
+                    );
+
+                    card.classList.add(
+                        "selected"
+                    );
+
+                    selectedRole =
+                        card.querySelector(
+                            "h4"
+                        ).innerText;
+
+                    console.log(
+                        "Selected Role:",
+                        selectedRole
+                    );
+
+                }
+
+            );
+
+        }
+
+    );
+
+
+
+    /* STEP 1 → STEP 2 */
+
+    if (step1NextBtn) {
+
+        step1NextBtn.addEventListener(
             "click",
+
             function () {
 
                 if (!selectedRole) {
@@ -82,123 +111,140 @@ document.addEventListener(
 
                 }
 
-                step1.classList.add(
-                    "hidden"
-                );
-
-                step2.classList.remove(
-                    "hidden"
-                );
+                showStep(2);
 
             }
-        );
 
-        backBtn.addEventListener(
-            "click",
-            function () {
-
-                step2.classList.add(
-                    "hidden"
-                );
-
-                step1.classList.remove(
-                    "hidden"
-                );
-
-            }
         );
 
     }
+
+
+
+    /* BACK BUTTON */
+
+    if (backBtn) {
+
+        backBtn.addEventListener(
+            "click",
+
+            function () {
+
+                showStep(1);
+
+            }
+
+        );
+
+    }
+
+
+
+    /* STEP 2 SUBMIT */
+
+    if (step2NextBtn) {
+
+        step2NextBtn.addEventListener(
+            "click",
+
+            function () {
+
+                // if (
+                //     validateStep2()
+                // ) {
+
+                    createUser(
+                        selectedRole
+                    );
+
+                    alert(
+                        "Step 2 completed successfully"
+                    );
+
+                    showRoleStep3(selectedRole);
+
+                // }
+
+            }
+
+        );
+
+    }
+
+}
+
 );
+
+
+
+/* STEP NAVIGATION */
 
 function showStep(stepNumber) {
 
-    document.querySelectorAll(".signup-step")
-        .forEach(step => step.classList.add("hidden"));
+    document
+        .querySelectorAll(
+            ".signup-step"
+        )
+        .forEach(
+            step =>
+            step.classList.add(
+                "hidden"
+            )
+        );
 
-    document.querySelector(".step-" + stepNumber)
-        .classList.remove("hidden");
-
-    const percent = stepNumber * 25;
-
-    document.querySelectorAll(".progress-fill")
-        .forEach(bar => {
-            bar.style.width = percent + "%";
-        });
-
-}
-
-
-function validateUsername(username) {
-
-    const regex = /^[A-Za-z]{6,}$/;
-
-    return regex.test(username);
+    document
+        .querySelector(
+            ".step-" + stepNumber
+        )
+        .classList.remove(
+            "hidden"
+        );
 
 }
 
-function validateUsername(username) {
 
-    const regex = /^[A-Za-z]{6,}$/;
 
-    return regex.test(username);
-
-}
-
-function validateUsername(username) {
-
-    const regex = /^[A-Za-z]{6,}$/;
-
-    return regex.test(username);
-
-}
-
-function validateEmail(email) {
-
-    const regex =
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    return regex.test(email);
-
-}
-
-function validatePasswordMatch(p1, p2) {
-
-    return p1 === p2;
-
-}
+/* VALIDATION */
 
 function validateStep2() {
 
     const fullName =
-        document.querySelector(
-            "#fullName"
+        document
+        .getElementById(
+            "fullName"
         ).value.trim();
 
     const username =
-        document.querySelector(
-            "#username"
+        document
+        .getElementById(
+            "username"
         ).value.trim();
 
     const email =
-        document.querySelector(
-            "#email"
+        document
+        .getElementById(
+            "email"
         ).value.trim();
 
     const phone =
-        document.querySelector(
-            "#phone"
+        document
+        .getElementById(
+            "phone"
         ).value.trim();
 
     const password =
-        document.querySelector(
-            "#password"
+        document
+        .getElementById(
+            "password"
         ).value;
 
     const confirmPassword =
-        document.querySelector(
-            "#confirmPassword"
+        document
+        .getElementById(
+            "confirmPassword"
         ).value;
+
+
 
     if (
         !fullName ||
@@ -217,8 +263,11 @@ function validateStep2() {
 
     }
 
+
+
     if (
-        !validateUsername(username)
+        !/^[A-Za-z]{6,}$/
+        .test(username)
     ) {
 
         alert(
@@ -229,35 +278,11 @@ function validateStep2() {
 
     }
 
-    if (
-        !validateEmail(email)
-    ) {
 
-        alert(
-            "Invalid email address"
-        );
-
-        return false;
-
-    }
 
     if (
-        !validatePhone(phone)
-    ) {
-
-        alert(
-            "Enter valid Indian mobile number"
-        );
-
-        return false;
-
-    }
-
-    if (
-        !validatePasswordMatch(
-            password,
-            confirmPassword
-        )
+        password !==
+        confirmPassword
     ) {
 
         alert(
@@ -272,33 +297,152 @@ function validateStep2() {
 
 }
 
-function openOtpModal() {
 
-    document
-        .querySelector(
-            ".otp-modal"
-        )
-        .classList.remove(
-            "hidden"
+
+/* SAVE USER */
+
+function createUser(role) {
+
+    /* GET FORM VALUES */
+
+    const name =
+        document
+        .getElementById(
+            "fullName"
+        ).value.trim();
+
+    const username =
+        document
+        .getElementById(
+            "username"
+        ).value.trim();
+
+    const email =
+        document
+        .getElementById(
+            "email"
+        ).value.trim();
+
+    const phone =
+        document
+        .getElementById(
+            "phone"
+        ).value.trim();
+
+
+
+    /* MERGE EXISTING USERS */
+
+    const storedUsers =
+        JSON.parse(
+            localStorage.getItem(
+                "users"
+            )
+        ) || [];
+
+    const allUsers =
+        [
+            ...users,
+            ...storedUsers
+        ];
+
+
+
+    /* GENERATE UNIQUE ID */
+
+    const newId =
+        generateUniqueUserId(
+            allUsers
         );
+
+
+
+    /* CREATE USER OBJECT */
+
+    const newUser = {
+
+        id: newId,
+
+        name: name,
+
+        username: username,
+
+        email: email,
+
+        phone: phone,
+
+        role: role.toLowerCase(),
+
+        profilePic: "",
+
+        status: "active"
+
+    };
+
+
+
+    /* SAVE TO STORAGE */
+
+    saveUser(
+        newUser
+    );
+
+
+
+    console.log(
+        "User Saved:",
+        newUser
+    );
 
 }
 
-document
-.querySelector(
-    ".next-btn"
-)
-.addEventListener(
-    "click",
-    function () {
+function showRoleStep3(role) {
 
-        if (
-            validateStep2()
-        ) {
+    document
+        .querySelectorAll(
+            ".signup-step"
+        )
+        .forEach(
+            step =>
+            step.classList.add(
+                "hidden"
+            )
+        );
 
-            openOtpModal();
+    if (role === "Traveler") {
 
-        }
+        document
+            .querySelector(
+                ".step-3-traveler"
+            )
+            .classList.remove(
+                "hidden"
+            );
 
     }
-);
+
+    else if (role === "Local Guide") {
+
+        document
+            .querySelector(
+                ".step-3-guide"
+            )
+            .classList.remove(
+                "hidden"
+            );
+
+    }
+
+    else if (role === "Service Partner") {
+
+        document
+            .querySelector(
+                ".step-3-partner"
+            )
+            .classList.remove(
+                "hidden"
+            );
+
+    }
+
+}

@@ -22,10 +22,9 @@ export const reviews = [
   {
     id: "903",
     guideId: "102",
-    customerName: "Sophia Lang",
-    customerPic: "../assets/profiles/tourist3.jpg",
+    custid: "",
     rating: 5,
-    date: "2026-03-24",
+    date: new Date(""),
     comment: "Best cycling tour ever! John is very energetic.",
     status: "Published"
   }

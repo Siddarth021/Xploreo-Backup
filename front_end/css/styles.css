@@ -186,6 +186,7 @@ body {
 .stat-card.light-green { border-top-color: #22c55e; }
 .stat-card.orange { border-top-color: #f59e0b; }
 .stat-card.violet { border-top-color: #8b5cf6; }
+.stat-card.red { border-top-color: #dc2626}
 
 /* HOVER COLORS */
 .stat-card.blue:hover { background: #eff6ff; }
@@ -193,6 +194,7 @@ body {
 .stat-card.dark-green:hover { background: #d1fae5; }
 .stat-card.orange:hover { background: #fffbeb; }
 .stat-card.violet:hover { background: #f5f3ff; }
+.stat-card.red:hover { background: #f0d0d0; }
 
 /* ICON */
 .card-icon {

@@ -1,7 +1,7 @@
 const internalnavlinks = [
   {
     name: "Upcoming",
-    status: "pending", // Used for filtering your tours
+    status: "pending", 
     pages: ["tours.html"],
   },
   {
@@ -17,6 +17,5 @@ const internalnavlinks = [
 ];
 
 export function getNavLinks(page) {
-  console.log(internalnavlinks);
   return internalnavlinks.filter(link => link.pages.includes(page)); 
 }

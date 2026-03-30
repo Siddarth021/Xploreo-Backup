@@ -42,7 +42,7 @@ const navlinks = [
     roles: ["guide"]
   },
   {
-    name: "Earning",
+    name: "Earnings",
     path: "../pages/earnings.html",
     icon: "../components/ui/earnings.svg",
     roles: ["guide"]

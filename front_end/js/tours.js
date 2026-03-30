@@ -104,3 +104,18 @@ window.handleTourAction = (tourId) => {
         renderinternalcontents("internal-contents", user, tour.status); 
     }
 };
+
+window.closeModal = () => {
+    const modal = document.getElementById("tourModal");
+    if (modal) {
+        modal.style.display = "none";
+        document.getElementById("modalBody").innerHTML = "";
+    }
+};
+
+window.addEventListener("click", (event) => {
+    const modal = document.getElementById("tourModal");
+    if (event.target === modal) {
+        closeModal();
+    }
+});

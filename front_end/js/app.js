@@ -23,7 +23,26 @@ function initializeData() {
     console.log("LocalStorage Seeded Successfully!");
 
     if (!localStorage.getItem("partners")) {
-    localStorage.setItem("partners", JSON.stringify(partners));
+        localStorage.setItem("partners", JSON.stringify(partners));
+    }
+
+    // Dynamic Date Logic Implementation
+    let storedTours = JSON.parse(localStorage.getItem("tours"));
+    if (storedTours) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        
+        storedTours.forEach(t => {
+            if (t.status !== 'completed') {
+                const tourDateStr = t.dateTime.split(' | ')[0];
+                if (tourDateStr === todayStr && t.status !== 'ongoing') {
+                    t.status = 'ongoing';
+                    if(!t.currentloction) t.currentloction = t.plan_iternary[0];
+                } else if (tourDateStr > todayStr && t.status !== 'pending') {
+                    t.status = 'pending'; // Treated as 'upcoming'
+                }
+            }
+        });
+        localStorage.setItem("tours", JSON.stringify(storedTours));
     }
 }
 
@@ -33,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentUser = JSON.parse(localStorage.getItem("currentUser"));
     
     if (!currentUser) {
-        currentUser = users.find(u => u.id === "00001");
+        currentUser = users.find(u => u.id === "10001");
         localStorage.setItem("currentUser", JSON.stringify(currentUser));
     }
     renderNavbar(currentUser);

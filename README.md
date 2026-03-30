@@ -12,11 +12,11 @@ By bridging the gap between travelers and service providers, the platform aims t
 
 <h2>Identified Actors and their Features</h2>
 
-<h3>1. Customer (Traveler / Tourist)</h3>
+<h3>1. Traveler </h3>
 
 <h4>Description:</h4>
 
-The customer is the primary actor who uses the platform to plan, customize, and track trips.
+The Traveler is the primary actor who uses the platform to plan, customize, and track trips.
 
 <h4>Features:</h4>
 

@@ -2253,8 +2253,8 @@ body {
 .dash-section-subtitle { margin: 4px 0 20px 0; color: #6b7280; font-size: 14px; }
 
 .dash-earnings-wrapper { display: flex; flex-direction: column; }
-.dash-chart-container { height: 180px; display: flex; align-items: flex-end; gap: 10px; justify-content: space-between; padding-top: 20px; border-bottom: 1px solid #eee; }
-.dash-chart-bar { width: 14%; background: linear-gradient(180deg, #60A5FA 0%, #3B82F6 100%); border-radius: 4px 4px 0 0; transition: height 0.5s ease; }
+.dash-chart-container { height: 180px; display: flex; align-items: flex-end; gap:70px; justify-content: space-between; padding-top: 20px; border-bottom: 1px solid #eee; }
+.dash-chart-bar { width: 5%; background: linear-gradient(180deg, #60A5FA 0%, #3B82F6 100%); border-radius: 4px 4px 0 0; transition: height 0.5s ease; }
 .dash-earnings-footer { display: flex; justify-content: space-between; margin-top: 20px; align-items: center; }
 .dash-earnings-label { font-size: 12px; color: #6b7280; }
 .dash-earnings-value { margin: 0; font-size: 24px; color: #10B981; }

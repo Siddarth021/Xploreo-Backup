@@ -170,10 +170,11 @@ body {
   flex: 1;
   position: relative;
   background: white;
-  border-radius: 12px;
-  padding: 18px;
-  border-top: 3px solid #e5e7eb;
+  border-radius: 16px; /* ⬅️ smoother corners */
+  padding: 20px;
+  border-top: 4px solid #e5e7eb; /* ⬅️ thicker like Figma */
   transition: 0.25s ease;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.04); /* ⬅️ add depth */
 }
 
 .stat-card:hover {
@@ -199,12 +200,12 @@ body {
 /* ICON */
 .card-icon {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 34px;
-  height: 34px;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
-  background: #f3f4f6;
+  background: #f1f5f9;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2353,4 +2354,5 @@ body {
 /* CHART UPGRADES */
 .dash-chart-bar-group { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; flex: 1; height: 100%; gap: 8px; }
 .dash-chart-bar { background: linear-gradient(180deg, #60A5FA 0%, #3B82F6 100%); border-radius: 4px 4px 0 0; transition: height 0.5s ease; width: 100%; }
-.chart-label { font-size: 11px; color: #9CA3AF; font-weight: 600; text-transform: uppercase; }
+.chart-label { font-size: 11px; color: #9CA3AF; font-weight: 600; text-transform: uppercase; }
+

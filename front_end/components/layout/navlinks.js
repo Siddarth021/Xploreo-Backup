@@ -82,8 +82,22 @@ const navlinks = [
    
   {
     name: "Wish List",
-    path: "../pages/wishlist.html",
-    icon: "../components/ui/wishlist.svg",
+    path: "../pages/travellerWishlist.html",
+    icon: "../components/ui/wishlistIcon.jpg",
+    roles: ["traveller"]
+  },
+
+  {
+    name: "Explore",
+    path: "../pages/travellerDashboard.html",
+    icon: "../components/ui/exploreIcon.jpg",
+    roles: ["traveller"]
+  },
+  
+  {
+    name: "My Trips",
+    path: "../pages/travellerMyTrips.html",
+    icon: "../components/ui/mytripsIcon.jpg",
     roles: ["traveller"]
   }
 ];

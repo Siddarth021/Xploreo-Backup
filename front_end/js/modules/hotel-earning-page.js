@@ -1,8 +1,23 @@
-import { renderStats } from "./stat-cards.js";
-
 export function renderHotelEarningPage() {
 
-    renderStats("earning-stats", [
+    renderEarningStats("earning-stats");
+
+    renderEarningPerformance("earning-performance");
+    renderEarningRevenue("earning-revenue");
+    renderEarningRefund("earning-refund");
+    renderEarningTransactions("earning-transactions");
+    renderEarningPayout("earning-payout");
+}
+
+
+/* =========================
+   STATS (NO IMPORT NOW)
+========================= */
+function renderEarningStats(containerId) {
+
+    const container = document.getElementById(containerId);
+
+    const stats = [
         {
             label: "Total Revenue",
             value: "$48,250",
@@ -23,7 +38,7 @@ export function renderHotelEarningPage() {
             label: "Refunded Payments",
             value: "$1,240",
             icon: "../components/ui/recentreview.svg",
-            color: "orange",
+            color: "violet",
             subtext: "-2.1%",
             subClass: "negative"
         },
@@ -31,52 +46,51 @@ export function renderHotelEarningPage() {
             label: "Avg Booking Value",
             value: "$185",
             icon: "../components/ui/avgrating.svg",
-            color: "violet",
+            color: "orange",
             subtext: "+5.4%",
             subClass: "positive"
         }
-    ]);
+    ];
 
-    renderEarningPerformance("earning-performance");
-    renderEarningRevenue("earning-revenue");
-    renderEarningRefund("earning-refund");
-    renderEarningTransactions("earning-transactions");
-    renderEarningPayout("earning-payout");
+    container.innerHTML = stats.map(stat => `
+        <div class="stat-card ${stat.color}">
+
+            ${stat.icon ? `
+            <div class="icon-container">
+                <img src="${stat.icon}" alt="icon" width="20">
+            </div>
+            ` : ""}
+
+            <p class="stat-label">${stat.label}</p>
+
+            <h2 class="stat-value">${stat.value}</h2>
+
+            <p class="stat-subtext ${stat.subClass || ""}">
+                ${stat.subtext || ""}
+            </p>
+
+        </div>
+    `).join('');
 }
 
-
-
+/* =========================
+   PERFORMANCE
+========================= */
 function renderEarningPerformance(containerId) {
 
     const el = document.getElementById(containerId);
 
     const data = [
-        {
-            title: "Deluxe Room",
-            subtitle: "Top Performing Room",
-            icon: "🏆"
-        },
-        {
-            title: "Saturday",
-            subtitle: "Highest Booking Day",
-            icon: "📅"
-        },
-        {
-            title: "78%",
-            subtitle: "Occupancy Rate",
-            icon: "🏠"
-        },
-        {
-            title: "2.6%",
-            subtitle: "Refund Rate",
-            icon: "📉"
-        }
+        { title: "Deluxe Room", subtitle: "Top Performing Room", icon: "🏆" },
+        { title: "Saturday", subtitle: "Highest Booking Day", icon: "📅" },
+        { title: "78%", subtitle: "Occupancy Rate", icon: "🏠" },
+        { title: "2.6%", subtitle: "Refund Rate", icon: "📉" }
     ];
 
     el.innerHTML = `
         <h3>Performance Insights</h3>
 
-        <div class="hotel-stats">
+        <div class="hotel-stats-grid">
             ${data.map(d => `
                 <div class="hotel-content-card perf-card">
                     <div class="perf-icon">${d.icon}</div>
@@ -88,6 +102,10 @@ function renderEarningPerformance(containerId) {
     `;
 }
 
+
+/* =========================
+   REVENUE
+========================= */
 function renderEarningRevenue(containerId) {
 
     const el = document.getElementById(containerId);
@@ -126,6 +144,10 @@ function renderEarningRevenue(containerId) {
     `;
 }
 
+
+/* =========================
+   REFUND
+========================= */
 function renderEarningRefund(containerId) {
 
     const el = document.getElementById(containerId);
@@ -150,6 +172,10 @@ function renderEarningRefund(containerId) {
     `;
 }
 
+
+/* =========================
+   TRANSACTIONS (DATA DRIVEN)
+========================= */
 function renderEarningTransactions(containerId) {
 
     const el = document.getElementById(containerId);
@@ -180,6 +206,10 @@ function renderEarningTransactions(containerId) {
     `;
 }
 
+
+/* =========================
+   PAYOUT
+========================= */
 function renderEarningPayout(containerId) {
 
     const el = document.getElementById(containerId);

@@ -139,5 +139,10 @@ export const users = [
     profilePic: "./profilepic/110.png",
     password: "rohit@123",
     status: "active"
+  },
+  {
+    id: "201",
+    name: "Hotel Manager",
+    role: "hotel"
   }
 ];

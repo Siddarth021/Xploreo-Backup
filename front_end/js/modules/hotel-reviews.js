@@ -1,22 +1,29 @@
 export function renderHotelReviews(containerId) {
     const container = document.getElementById(containerId);
 
-    const reviews = [
-        { name: "Lisa Anderson", text: "Amazing stay!", rating: 5 },
-        { name: "Robert Martinez", text: "Very comfortable.", rating: 4 }
-    ];
+    const reviews = JSON.parse(localStorage.getItem("hotelReviews")) || [];
 
     container.innerHTML = `
-        <div class="hotel-card-header">
+        <div class="hotel-card-header hotel-flex-header">
             <h2>Customer Reviews</h2>
+            <span class="hotel-link">View All Reviews</span>
         </div>
 
         <div class="hotel-review-grid">
             ${reviews.map(r => `
                 <div class="hotel-review-box">
-                    <p class="cust-name">${r.name}</p>
-                    <p>${r.text}</p>
-                    <div>${"⭐".repeat(r.rating)}</div>
+
+                    <div class="hotel-review-header">
+                        <p class="hotel-cust-name">${r.name}</p>
+                        <span class="hotel-sub-text">${r.date}</span>
+                    </div>
+
+                    <p class="hotel-review-text">${r.review}</p>
+
+                    <div class="hotel-stars">
+                        ${"⭐".repeat(r.rating)}
+                    </div>
+
                 </div>
             `).join("")}
         </div>

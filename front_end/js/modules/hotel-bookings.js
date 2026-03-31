@@ -6,7 +6,7 @@ export function renderBookings(containerId) {
     container.innerHTML = `
         <div class="hotel-card-header hotel-flex-header">
             <h2>Upcoming Bookings</h2>
-            <span class="hotel-link">View All</span>
+            
         </div>
 
         <div class="hotel-bookings-list">

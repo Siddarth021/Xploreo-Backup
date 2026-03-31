@@ -2,6 +2,7 @@ let selectedStatus = "active";
 let editServiceId = null;
 let uploadedImages = [];
 let selectedThumbnail = null;
+let selectedServiceId = null;
 
 /* =========================
 RENDER SERVICES
@@ -66,7 +67,7 @@ export function renderServicesPage() {
 
             <div class="hotel-service-actions">
                 <button class="btn-light" onclick="editService(${service.id})">Edit</button>
-                <button class="btn-blue">Manage Availability</button>
+                <button class="btn-blue" onclick="openAvailabilityModal(${service.id})">Manage Availability</button>
             </div>
 
         </div>
@@ -299,4 +300,61 @@ window.deleteImage = function(index) {
 window.setThumbnail = function(index) {
     selectedThumbnail = uploadedImages[index];
     renderImagePreview();
+};
+
+window.openAvailabilityModal = function(id) {
+
+    const services = JSON.parse(localStorage.getItem("hotelServices")) || [];
+    const service = services.find(s => s.id === id);
+
+    if (!service) return;
+
+    selectedServiceId = id;
+
+    document.getElementById("availabilityTitle").innerText =
+        `Manage Availability – ${service.name}`;
+
+    document.getElementById("totalRoomsInput").value = service.totalRooms;
+    document.getElementById("availableRoomsInput").value = service.availableRooms;
+
+    const occupied = service.totalRooms - service.availableRooms;
+    document.getElementById("occupiedRoomsInput").value = occupied;
+
+    // ✅ 👉 ADD YOUR CODE HERE
+    const input = document.getElementById("availableRoomsInput");
+
+    input.oninput = function () {
+        const total = Number(document.getElementById("totalRoomsInput").value);
+        const available = Number(this.value);
+
+        const occupied = total - available;
+
+        document.getElementById("occupiedRoomsInput").value =
+            occupied >= 0 ? occupied : 0;
+    };
+
+    // OPEN MODAL
+    document.getElementById("availability-modal").classList.remove("hidden");
+};
+
+window.saveAvailability = function() {
+
+    let services = JSON.parse(localStorage.getItem("hotelServices")) || [];
+
+    const available = Number(document.getElementById("availableRoomsInput").value);
+
+    services = services.map(s =>
+        s.id === selectedServiceId
+            ? { ...s, availableRooms: available }
+            : s
+    );
+
+    localStorage.setItem("hotelServices", JSON.stringify(services));
+
+    closeAvailabilityModal();
+    renderServicesPage();
+};
+
+window.closeAvailabilityModal = function () {
+    document.getElementById("availability-modal").classList.add("hidden");
 };

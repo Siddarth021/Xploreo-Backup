@@ -725,3 +725,79 @@ EARNINGS MODULE (NEW)
 .card-sub.negative {
     color: #dc2626;
 }
+
+/* PERFORMANCE */
+.perf-card {
+  text-align: center;
+}
+
+.perf-icon {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+/* REVENUE */
+.revenue-row {
+  margin-bottom: 18px;
+}
+
+.revenue-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.progress-bar {
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  margin: 6px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 10px;
+}
+
+.progress-fill.blue {
+  background: #2563eb;
+}
+
+.progress-fill.green {
+  background: #14b8a6;
+}
+
+.progress-fill.red {
+  background: #dc2626;
+}
+
+.percent {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* TOTAL */
+.revenue-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-weight: 600;
+}
+
+/* REFUND */
+.text-danger {
+  color: #dc2626;
+}
+
+.sub-text {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.refund-note {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 10px;
+}

@@ -7,7 +7,13 @@ export const hotelServices = [
     totalRooms: 30,
     availableRooms: 12,
     status: "active",
-    image: "dashboard.png"
+
+    images: [
+      "../components/ui/hotel-images/standard1.jpg",
+      "../components/ui/hotel-images/standard2.jpg"
+    ],
+
+    thumbnail: "../components/ui/hotel-images/standard1.jpg"
   },
   {
     id: 2,
@@ -17,6 +23,12 @@ export const hotelServices = [
     totalRooms: 20,
     availableRooms: 8,
     status: "active",
-    image: "dashboard.png"
+
+    images: [
+      "../components/ui/hotel-images/deluxe1.jpg",
+      "../components/ui/hotel-images/deluxe2.jpg"
+    ],
+
+    thumbnail: "../components/ui/hotel-images/deluxe1.jpg"
   }
 ];

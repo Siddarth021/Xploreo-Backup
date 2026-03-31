@@ -27,6 +27,41 @@
 
 </main>
 
+<div id="availability-modal" class="hotel-modal hidden">
+  <div class="hotel-modal-content">
+
+    <div class="hotel-modal-header">
+      <h2 id="availabilityTitle">Manage Availability</h2>
+      <span onclick="closeAvailabilityModal()">✕</span>
+    </div>
+
+    <div class="hotel-modal-body">
+
+      <div class="form-group">
+        <label>Total Rooms</label>
+        <input type="number" id="totalRoomsInput" disabled />
+      </div>
+
+      <div class="form-group">
+        <label>Available Rooms</label>
+        <input type="number" id="availableRoomsInput" />
+      </div>
+
+      <div class="form-group">
+        <label>Occupied Rooms</label>
+        <input type="number" id="occupiedRoomsInput" disabled />
+      </div>
+
+    </div>
+
+    <div class="hotel-modal-footer">
+      <button class="btn-light" onclick="closeAvailabilityModal()">Cancel</button>
+      <button class="btn-blue" onclick="saveAvailability()">Save</button>
+    </div>
+
+  </div>
+</div>
+
 <div id="add-service-modal" class="hotel-modal hidden">
 
   <div class="hotel-modal-box">

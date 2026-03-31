@@ -14,6 +14,8 @@ export function rendertourpage(containerId,currentUser) {
 }
 
 window.switchTab = (status) => {
+    const page = window.location.pathname.split("/").pop();
+    if (page !== "tours.html") return;
     currentActiveTab = status;
     const user = JSON.parse(localStorage.getItem("currentUser"));
     rendertourpage("main", user); 

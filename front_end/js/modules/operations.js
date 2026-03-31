@@ -367,7 +367,9 @@ export function initOperations() {
         });
     }
 
-    // 2. Resolve & Escalate Logic
+    // 2. Resolve & Escalate Logic (Updated with Row Removal)
+    let activeRowElement = null; // Keeps track of the currently selected row
+
     const resolveBtns = document.querySelectorAll('.btn-resolve');
     const escalateBtns = document.querySelectorAll('.btn-escalate');
     const resolveModal = document.getElementById('resolve-modal');
@@ -386,14 +388,16 @@ export function initOperations() {
     };
 
     resolveBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            activeRowElement = e.target.closest('tr'); // Capture the row before opening modal
             populateModal(resolveModal, btn);
             resolveModal.classList.add('active');
         });
     });
 
     escalateBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            activeRowElement = e.target.closest('tr'); // Capture the row before opening modal
             populateModal(escalateModal, btn);
             escalateModal.classList.add('active');
         });
@@ -405,6 +409,26 @@ export function initOperations() {
         btn.addEventListener('click', (e) => {
             const parentModal = e.target.closest('.modal-overlay');
             triggerSuccess(parentModal);
+
+            // Hide and remove the active row from the table
+            if (activeRowElement) {
+                // Smoothly fade it out
+                activeRowElement.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+                activeRowElement.style.opacity = "0";
+                activeRowElement.style.transform = "translateX(20px)";
+                
+                // Remove from DOM after the transition finishes
+                setTimeout(() => {
+                    activeRowElement.remove();
+                    activeRowElement = null; // Reset for next time
+
+                    // Optional: Show "All clear" message if table is empty
+                    const tbody = document.querySelector('.dispute-table tbody');
+                    if (tbody && tbody.children.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 32px; color: #718096; font-size: 14px;">All disputes resolved! 🎉</td></tr>`;
+                    }
+                }, 400);
+            }
         });
     });
 }

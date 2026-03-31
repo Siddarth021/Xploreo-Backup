@@ -1657,3 +1657,63 @@ body {
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 }
+
+
+/* ================================
+PASSWORD EYE ICON — FIXED
+================================ */
+
+.password-container {
+
+    position: relative;
+
+    width: 100%;
+
+}
+
+
+/* input spacing for icon */
+
+.password-container input {
+
+    width: 100%;
+
+    padding-right: 45px;
+
+}
+
+
+/* eye icon position */
+
+.toggle-password {
+
+    position: absolute;
+
+    right: 14px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #6B7280;
+
+    transition: 0.2s;
+
+}
+
+
+/* hover */
+
+.toggle-password:hover {
+
+    color: #0F4C4C;
+
+}

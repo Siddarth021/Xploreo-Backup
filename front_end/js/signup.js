@@ -24,16 +24,6 @@ function () {
             ".role-card"
         );
 
-    const step1 =
-        document.querySelector(
-            ".step-1"
-        );
-
-    const step2 =
-        document.querySelector(
-            ".step-2"
-        );
-
     const step1NextBtn =
         document.querySelector(
             ".step-1 .next-btn"
@@ -48,7 +38,6 @@ function () {
         document.querySelector(
             ".step-2 .back-btn"
         );
-
 
 
     /* ROLE SELECTION */
@@ -91,7 +80,6 @@ function () {
     );
 
 
-
     /* STEP 1 → STEP 2 */
 
     if (step1NextBtn) {
@@ -120,7 +108,6 @@ function () {
     }
 
 
-
     /* BACK BUTTON */
 
     if (backBtn) {
@@ -139,7 +126,6 @@ function () {
     }
 
 
-
     /* STEP 2 SUBMIT */
 
     if (step2NextBtn) {
@@ -149,9 +135,9 @@ function () {
 
             function () {
 
-                // if (
-                //     validateStep2()
-                // ) {
+                // keep validation (as you requested)
+
+                // if (validateStep2()) {
 
                     createUser(
                         selectedRole
@@ -161,9 +147,175 @@ function () {
                         "Step 2 completed successfully"
                     );
 
-                    showRoleStep3(selectedRole);
+                    showRoleStep3(
+                        selectedRole
+                    );
 
                 // }
+
+            }
+
+        );
+
+    }
+
+
+    /* ================================
+       STEP 3 — TRAVELER
+    ================================ */
+
+    const step3Traveler =
+        document.querySelector(
+            ".step-3-traveler"
+        );
+
+    const step3BackBtn =
+        document.querySelector(
+            ".step3-back-btn"
+        );
+
+    const step3CompleteBtn =
+        document.querySelector(
+            ".step3-traveler-complete-btn"
+        );
+
+
+    if (step3BackBtn) {
+
+        step3BackBtn.addEventListener(
+            "click",
+
+            function () {
+
+                showStep(2);
+
+            }
+
+        );
+
+    }
+
+
+    if (step3CompleteBtn) {
+
+        step3CompleteBtn.addEventListener(
+            "click",
+
+            function () {
+
+                console.log(
+                    "Traveler completing signup..."
+                );
+
+                saveTravelerPreferences();
+
+                alert(
+                    "Traveler signup completed!"
+                );
+
+                redirectToDashboard();
+
+            }
+
+        );
+
+    }
+
+
+    /* ================================
+       GUIDE STEP 3
+    ================================ */
+
+    const guideBackBtn =
+        document.querySelector(
+            ".guide-back-btn"
+        );
+
+    const guideCompleteBtn =
+        document.querySelector(
+            ".guide-complete-btn"
+        );
+
+    if (guideBackBtn) {
+
+        guideBackBtn.addEventListener(
+            "click",
+
+            function () {
+
+                showStep(2);
+
+            }
+
+        );
+
+    }
+
+    if (guideCompleteBtn) {
+
+        guideCompleteBtn.addEventListener(
+            "click",
+
+            function () {
+
+                alert(
+                    "Guide signup completed!"
+                );
+
+                redirectToDashboard();
+
+            }
+
+        );
+
+    }
+
+
+    /* ================================
+       PARTNER STEP 3
+    ================================ */
+
+    const partnerBackBtn =
+        document.getElementById(
+            "partner-back-btn"
+        );
+
+    const partnerCompleteBtn =
+        document.getElementById(
+            "partner-complete-btn"
+        );
+
+    if (partnerBackBtn) {
+
+        partnerBackBtn.addEventListener(
+            "click",
+
+            () => {
+
+                showStep(2);
+
+            }
+
+        );
+
+    }
+
+    if (partnerCompleteBtn) {
+
+        partnerCompleteBtn.addEventListener(
+            "click",
+
+            () => {
+
+                console.log(
+                    "Service Partner completed signup"
+                );
+
+                alert(
+                    "Signup Completed!"
+                );
+
+                redirectToDashboard();
 
             }
 
@@ -204,7 +356,7 @@ function showStep(stepNumber) {
 
 
 
-/* VALIDATION */
+/* VALIDATION — unchanged */
 
 function validateStep2() {
 
@@ -245,7 +397,6 @@ function validateStep2() {
         ).value;
 
 
-
     if (
         !fullName ||
         !username ||
@@ -263,8 +414,6 @@ function validateStep2() {
 
     }
 
-
-
     if (
         !/^[A-Za-z]{6,}$/
         .test(username)
@@ -277,8 +426,6 @@ function validateStep2() {
         return false;
 
     }
-
-
 
     if (
         password !==
@@ -299,11 +446,9 @@ function validateStep2() {
 
 
 
-/* SAVE USER */
+/* SAVE USER — unchanged */
 
 function createUser(role) {
-
-    /* GET FORM VALUES */
 
     const name =
         document
@@ -330,15 +475,13 @@ function createUser(role) {
         ).value.trim();
 
 
-
-    /* MERGE EXISTING USERS */
-
     const storedUsers =
         JSON.parse(
             localStorage.getItem(
                 "users"
             )
         ) || [];
+
 
     const allUsers =
         [
@@ -347,17 +490,11 @@ function createUser(role) {
         ];
 
 
-
-    /* GENERATE UNIQUE ID */
-
     const newId =
         generateUniqueUserId(
             allUsers
         );
 
-
-
-    /* CREATE USER OBJECT */
 
     const newUser = {
 
@@ -380,13 +517,9 @@ function createUser(role) {
     };
 
 
-
-    /* SAVE TO STORAGE */
-
     saveUser(
         newUser
     );
-
 
 
     console.log(
@@ -395,6 +528,10 @@ function createUser(role) {
     );
 
 }
+
+
+
+/* ROLE STEP 3 ROUTING — unchanged */
 
 function showRoleStep3(role) {
 
@@ -442,6 +579,73 @@ function showRoleStep3(role) {
             .classList.remove(
                 "hidden"
             );
+
+    }
+
+}
+
+
+
+/* TRAVELER PREFERENCES — unchanged */
+
+function saveTravelerPreferences() {
+
+    const interests =
+        [];
+
+    document
+        .querySelectorAll(
+            ".step3-traveler-interest-card input:checked"
+        )
+        .forEach(
+            checkbox => {
+
+                interests.push(
+                    checkbox.parentElement.innerText.trim()
+                );
+
+            }
+        );
+
+    console.log(
+        "Traveler Preferences:",
+        interests
+    );
+
+}
+
+
+function redirectToDashboard() {
+
+    const user =
+        JSON.parse(
+
+            localStorage.getItem(
+                "currentUser"
+            )
+
+        );
+
+    if (!user) return;
+
+    if (user.role === "traveler") {
+
+        window.location.href =
+            "/pages/traveler_dashboard.html";
+
+    }
+
+    else if (user.role === "local guide") {
+
+        window.location.href =
+            "/pages/guide_dashboard.html";
+
+    }
+
+    else if (user.role === "service partner") {
+
+        window.location.href =
+            "/pages/partner_dashboard.html";
 
     }
 

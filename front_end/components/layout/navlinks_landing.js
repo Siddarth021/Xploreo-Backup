@@ -1,23 +1,25 @@
+// const BASE_PATH = "/23_Xploreo/front_end";
+
 export const landingLinks = [
 
     {
         label: "Home",
-        href: "#"
+        href: "/index.html"
     },
 
     {
         label: "Tours",
-        href: "#"
+        href: "/pages/tours.html"
     },
 
     {
         label: "Partners",
-        href: "#"
+        href: "/pages/partners.html"
     },
 
     {
         label: "Support",
-        href: "#"
+        href: "/pages/support.html"
     }
 
 ];

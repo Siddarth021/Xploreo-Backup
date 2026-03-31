@@ -447,12 +447,7 @@
                                     class="file-input"
                                     accept="image/*"
                                 >
-
-                                <!-- <span>
-                                    Upload Photo
-                                </span> -->
-
-                            </div>
+                                </div>
 
                             <p class="upload-note">
                                 JPG, PNG up to 5MB
@@ -1010,75 +1005,24 @@
 
 </section>
 
-<!-- NAVBAR -->
-
+<!-- NAVBAR & UTILITIES -->
 <script type="module">
+    import { renderLandingNavbar } from "../components/layout/navbar_landing.js";
+    renderLandingNavbar();
 
-import {
-    renderLandingNavbar
-}
-from "../components/layout/navbar_landing.js";
+    const BASE_PATH = window.location.pathname.includes("23_Xploreo") ? "/23_Xploreo" : "";
 
-renderLandingNavbar();
-
-/* ===============================
-   NAVBAR BUTTON NAVIGATION
-=============================== */
-
-
-const BASE_PATH =
-    window.location.pathname
-        .includes("23_Xploreo")
-            ? "/23_Xploreo"
-            : "";
-
-/* =========================
-   NAVBAR BUTTON NAVIGATION
-========================= */
-
-document.addEventListener(
-    "click",
-    function (event) {
-
-        /* LOGIN */
-
-        const loginBtn =
-            event.target.closest(
-                "#login-btn"
-            );
-
-        if (loginBtn) {
-
-            window.location.href =
-                BASE_PATH +
-                "/front_end/pages/login.html";
-
+    document.addEventListener("click", function (event) {
+        if (event.target.closest("#login-btn")) {
+            window.location.href = BASE_PATH + "/front_end/pages/login.html";
         }
-
-        /* SIGNUP */
-
-        const signupBtn =
-            event.target.closest(
-                "#signup-btn"
-            );
-
-        if (signupBtn) {
-
-            window.location.href =
-                BASE_PATH +
-                "/front_end/pages/signup.html";
-
+        if (event.target.closest("#signup-btn")) {
+            window.location.href = BASE_PATH + "/front_end/pages/signup.html";
         }
-
-    }
-
-);
-
-
+    });
 </script>
 
 <!-- SIGNUP LOGIC -->
-
 <script type="module" src="../js/signup.js"></script>
 
 </body>

@@ -18,56 +18,12 @@
     <!-- Desktop Frame -->
     <div class="desktop-container">
 
-        <!-------------------------------------- ----------Top Navigation Bar --------------------------------------------->
-        <!-- <header class="top-bar">
-            
-            <div class="nav-left">
-                
-                <img
-                    src="./components/ui/landing/navbar-logo.png"
-                    class="logo"
-                    alt="Xploreo Logo"
-                    >
-                    
-                    <span class="brand">
-                        Xploreo
-                    </span>
-                    
-                </div>
-                
-                <nav class="nav-links">
-                    
-                    <a href="#">Home</a>
-                    <a href="#">Tours</a>
-                    <a href="#">Partners</a>
-                    <a href="#">Support</a>
-                    
-            </nav>
-            
-            <div class="nav-right">
-                
-                <button class="login-btn">
-                    Login
-                </button>
-                
-                <button class="signup-btn">
-                    Sign Up
-                </button>
-                
-            </div>
-            
-        </header> -->
+        <!-- Top Navigation Bar is injected centrally -->
 
 
         <!-------------------------------------- ----------Hero Section --------------------------------------------->
         <section class="hero">
-            
-            
-            <!-- <img
-            src="./components/ui/beach.jpg"
-            class="hero-bg"
-            alt="Travel background"
-            > -->
+
             <video autoplay muted loop class="hero-bg">
                 <source src="./components/ui/landing/beach.mp4" type="video/mp4">
             </video>
@@ -433,21 +389,12 @@
 
     </div>
 
+    <!-- SCRIPTS -->
     <script type="module">
-
-    import { renderLandingNavbar }
-    from "./components/layout/navbar_landing.js";
-
-    renderLandingNavbar();
-
+        import { renderLandingNavbar } from "./components/layout/navbar_landing.js";
+        renderLandingNavbar();
     </script>
-
     <script src="./js/landing.js"></script>
 
-
-
-
-
 </body>
-
 </html>

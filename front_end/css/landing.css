@@ -5,17 +5,14 @@
     padding: 0;
     box-sizing: border-box;
 }
-/* 
-html, body {
-    overflow-x: hidden;
-} */
+
 
 /* Desktop Frame */
 
 .desktop-container {
 
     width: 100%;
-    /* max-width: 1600px; */
+
 
     background-color: #FFFFFF;
 
@@ -318,7 +315,7 @@ html, body {
 .role-section {
 
     width: 1000px;
-    /* height: 700px; */
+
     max-width: 1000px;
 
     margin: 20px auto;
@@ -716,19 +713,7 @@ html, body {
     letter-spacing: 0.16em;
 }
 
-/* .card-description {
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
-
-    font-weight: 400;
-
-    font-size: 18px;
-
-    line-height: 100%;
-
-    letter-spacing: 0px;
-
-} */
 
 .card-description {
     margin-top: 15px;
@@ -789,9 +774,7 @@ html, body {
     will-change: transform, box-shadow;
 }
 
-/* .journey-title{
-    font-family: 'Montserrat', Regular;
-} */
+
 
 .features-container h2 {
     font-family: 'Montserrat', Regular;
@@ -892,12 +875,7 @@ html, body {
     font-weight: 600;
     margin: 0;
 }
-/* .footer-logo {
-    font-size: 20px;
-    font-weight: 600;
 
-    margin-bottom: 12px;
-} */
 
 .footer-description {
     font-size: 14px;
@@ -1153,14 +1131,7 @@ html, body {
         border-color 0.2s ease,
         box-shadow 0.2s ease;}
 
-/* .role-card:hover {
-    transform: translateY(-6px);
 
-    box-shadow:
-        0 10px 20px rgba(0,0,0,0.12);
-
-    border-color: #2F6F6D;
-} */
 
 
 
@@ -1291,19 +1262,7 @@ html, body {
 
 }
 
-/* .form-grid input {
-    height: 44px;
 
-    border: 1px solid #C8D8DA;
-
-    border-radius: 8px;
-
-    padding: 0 14px;
-
-    font-size: 14px;
-
-    font-family: 'Plus Jakarta Sans', sans-serif;
-} */
 
 .form-group input {
 
@@ -1589,15 +1548,7 @@ STEP 3 — TRAVELER FORM
 
 }
 
-/* .signin-card {
 
-    width: 900px;
-
-    max-width: 95%;
-
-    margin: auto;
-
-} */
 .signup-overlay {
 
     display: flex;
@@ -1609,9 +1560,7 @@ STEP 3 — TRAVELER FORM
 
 /* GUIDE STEP 3 */
 
-/* .signup-step step-3-guide hidden {
-    margin-top: 1000px;
-} */
+
 
 .step3-guide-top-grid {
 
@@ -1627,15 +1576,7 @@ STEP 3 — TRAVELER FORM
 
 .guide-photo-section p, .guide-certificate-section p {
     text-align: center;
-     /* 
-    display: block;
-   
-    font-size: 14px;
-    font-weight: 600;
 
-    color: #1F2937;
-
-    margin-bottom: 6px; */
 }
 
 .guide-photo-upload,
@@ -1818,69 +1759,11 @@ STEP 3 — TRAVELER FORM
 STEP-SPECIFIC SIGNUP CARDS
 ================================ */
 
-/* BASE CARD */
-/* 
-.signup-card {
-
-    width: 850px;
-
-    background: white;
-
-    border-radius: 16px;
-
-    padding: 40px;
-
-    box-shadow:
-        0 10px 30px rgba(0,0,0,0.15);
-
-} */
-
-/* .signup-card {
-    width: 850px;
-    min-height: 520px;   important
-
-    background: white;
-    border-radius: 16px;
-
-    margin: -190px 0 0 0;
-
-    padding: 40px;
-
-    text-align: center;
-
-    box-shadow:
-        0 10px 30px rgba(0,0,0,0.15);
-
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-} */
 
 
-/* =================================
-MAIN SIGNUP CARD (single container)
-================================= */
 
-/* .signup-card {
 
-    width: 850px;
 
-    background: white;
-
-    border-radius: 16px;
-
-    margin: -190px 0 0 0;
-
-    padding: 40px;
-
-    box-shadow:
-        0 10px 30px rgba(0,0,0,0.15);
-
-    display: flex;
-
-    flex-direction: column;
-
-} */
 /* STEP HEIGHT CONTROL ONLY */
 
 #signup-card-step1 {
@@ -1902,20 +1785,6 @@ MAIN SIGNUP CARD (single container)
 
     /* min-height: 600px; */
     padding-bottom: 20px;
-}
-
-#signup-card-step3-guide {
-    
-    /* padding-bottom: 10px; */
-    /* min-height: 760px; */
-    
-}
-
-#signup-card-step3-partner {
-    
-    /* padding-bottom: 20px; */
-    /* min-height: 520px; */
-
 }
 
 

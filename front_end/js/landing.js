@@ -1,58 +1,37 @@
-// console.log("Landing page loaded");
 function switchRole(role) {
-
     const videos = document.querySelectorAll(".role-video");
-
     const tabs = document.querySelectorAll(".tab");
 
     videos.forEach(video => {
-
         video.pause();
-
         video.classList.remove("active");
-
     });
 
     tabs.forEach(tab => {
-
         tab.classList.remove("active");
-
     });
 
-    if (role === "traveler") {
+    let activeVideo = null;
+    let tabIndex = 0;
 
-        const video = document.getElementById("travelerVideo");
-
-        video.classList.add("active");
-
-        video.play();
-
-        tabs[0].classList.add("active");
-
+    switch (role) {
+        case "traveler":
+            activeVideo = document.getElementById("travelerVideo");
+            tabIndex = 0;
+            break;
+        case "guide":
+            activeVideo = document.getElementById("guideVideo");
+            tabIndex = 1;
+            break;
+        case "service":
+            activeVideo = document.getElementById("serviceVideo");
+            tabIndex = 2;
+            break;
     }
 
-    if (role === "guide") {
-
-        const video = document.getElementById("guideVideo");
-
-        video.classList.add("active");
-
-        video.play();
-
-        tabs[1].classList.add("active");
-
+    if (activeVideo) {
+        activeVideo.classList.add("active");
+        activeVideo.play();
+        tabs[tabIndex].classList.add("active");
     }
-
-    if (role === "service") {
-
-        const video = document.getElementById("serviceVideo");
-
-        video.classList.add("active");
-
-        video.play();
-
-        tabs[2].classList.add("active");
-
-    }
-
 }

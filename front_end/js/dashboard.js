@@ -10,6 +10,6 @@ export function renderdasboard(containerId, currentUser) {
     if(document.getElementById("tour-section")) renderTour("tour-section", currentUser);
     
     // Execute imported modules for Earnings and Reviews cleanly
-    renderDashEarnings("earnings-section");
+    renderDashEarnings("earnings-section", currentUser);
     renderDashReviews("reviews-section", currentUser);
 }

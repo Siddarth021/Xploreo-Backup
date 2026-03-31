@@ -2,35 +2,33 @@ import { avgrating } from "../utils/avgrating.js";
 import { countreview } from "../utils/countreviews.js";
 import { totalAmount } from "../utils/totalamount.js";
 import { upcomingtripcount } from "../utils/upcomingtripcount.js";
+import { filterByGuide } from "../utils/filterByGuide.js";
+import { monthlyEarnings } from "../utils/monthlyEarnings.js";
+import { formatCurrency } from "../utils/formatCurrency.js";
 
-export function renderStats(containerId,currentUser) {
+export function renderStats(containerId, currentUser) {
     const container = document.getElementById(containerId);
 
     const allReviews = JSON.parse(localStorage.getItem("reviews")) || [];
-    let myReviews = allReviews.filter(req => 
-        String(req.guideId).trim() === String(currentUser.id).trim()
-    );
-    const alltrips = JSON.parse(localStorage.getItem("tours")) || [];
+    const myReviews = filterByGuide(allReviews, currentUser.id);
 
-    let mytrips = alltrips.filter(req => 
-        String(req.guideId).trim() === String(currentUser.id).trim()
-    );
+    const allTrips = JSON.parse(localStorage.getItem("tours")) || [];
+    const myTrips = filterByGuide(allTrips, currentUser.id);
 
-    let upcomingtrips = mytrips.filter(req =>
-        req.status === "pending"
-    );
+    const upcomingTrips = myTrips.filter(t => t.status === "pending");
+    const ongoingTrips = myTrips.filter(t => t.status === "ongoing");
 
-    let ongoingtrips = mytrips.filter(req =>
-        req.status === "ongoing"
-    );
+    // Dynamic monthly earnings for the current month
+    const now = new Date();
+    const currentMonthEarnings = monthlyEarnings(myTrips, now.getMonth(), now.getFullYear());
 
     const stats = [
-        { label: "Today's Tours", value: upcomingtripcount(ongoingtrips), icon: "../components/ui/todaytours.svg", color: "blue" },
-        { label: "Upcoming Tours", value: upcomingtripcount(upcomingtrips), icon: "../components/ui/upcomingtours.svg", color: "light-green"},
-        { label: "Monthly Earnings", value: "$3,248", icon: "../components/ui/montlyearning.svg", color: "dark-green" },
-        { label: "Total Earnings", value: `$ ${totalAmount(mytrips)}` ,icon: "../components/ui/totalearnings.svg", color:"red"},
-        { label: "Average Rating", value: avgrating(myReviews), icon: "../components/ui/avgrating.svg", color: "orange"},
-        { label: "Recent Reviews", value: countreview(myReviews), icon: "../components/ui/recentreview.svg", color: "violet"}
+        { label: "Today's Tours", value: upcomingtripcount(ongoingTrips), icon: "../components/ui/todaytours.svg", color: "blue" },
+        { label: "Upcoming Tours", value: upcomingtripcount(upcomingTrips), icon: "../components/ui/upcomingtours.svg", color: "light-green" },
+        { label: "Monthly Earnings", value: formatCurrency(currentMonthEarnings), icon: "../components/ui/montlyearning.svg", color: "dark-green" },
+        { label: "Total Earnings", value: formatCurrency(totalAmount(myTrips)), icon: "../components/ui/totalearnings.svg", color: "red" },
+        { label: "Average Rating", value: avgrating(myReviews), icon: "../components/ui/avgrating.svg", color: "orange" },
+        { label: "Recent Reviews", value: countreview(myReviews), icon: "../components/ui/recentreview.svg", color: "violet" }
     ];
 
     container.innerHTML = stats.map(stat => `

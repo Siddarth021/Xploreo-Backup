@@ -1,5 +1,9 @@
 import { renderAdminDashboard } from "./adminDashboard.js";
 import { renderdasboard } from "./dashboard.js";
+import { renderHotelDashboard } from "./modules/hotelDashboard.js";
+import { renderBookingsPage } from "./modules/hotel-bookings-page.js";
+import { renderServicesPage } from "./modules/hotel-services-page.js";
+import { renderHotelEarningPage } from "./modules/hotel-earning-page.js";
 import { rendertourpage } from "./tours.js";
 import { renderEarningsPage } from "./earnings.js";
 import { renderReviewsPage } from "./reviews.js";
@@ -17,8 +21,7 @@ export function renderPageContent(user) {
         renderAdminDashboard("admin-dashboard");
         document.getElementById("admin-dashboard").style.display = "block";
         document.getElementById("main").style.display = "none";
-
-    } else if (user.role === "superadmin" && path === "users.html") {
+    }else if (user.role === "superadmin" && path === "users.html") {
         
         // Safely check if admin-dashboard exists before hiding it
         const adminDash = document.getElementById("admin-dashboard");
@@ -63,7 +66,24 @@ export function renderPageContent(user) {
     } else if (user.role === "guide" && path === "reviews.html") {
         renderReviewsPage("main", user);
 
-    } else {
-        console.log("Unknown role or path:", user.role, path);
     }
+
+
+    // ==== HOTEL =====
+    else if (user.role === "hotel" && path === "hotelDashboard.html") {
+        renderHotelDashboard(user);
+    }
+
+    else if (user.role === "hotel" && path === "hotelBookings.html") {
+        renderBookingsPage();
+    }
+
+    else if (user.role === "hotel" && path === "hotelRooms.html") {
+        renderServicesPage();
+    }
+
+    else if (user.role === "hotel" && path === "hotelEarning.html") {
+        renderHotelEarningPage();
+    }
+
 }

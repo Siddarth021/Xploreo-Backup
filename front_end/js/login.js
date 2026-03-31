@@ -1,58 +1,108 @@
-const BASE_PATH = window.location.pathname.includes("23_Xploreo") ? "/23_Xploreo" : "";
+/* =======================================================
+   LOGIN MODULE
+======================================================= */
+export function initLogin() {
+    const BASE_PATH = window.location.pathname.includes("23_Xploreo") ? "/23_Xploreo" : "";
 
-/* ===============================
-   PASSWORD TOGGLE
-=============================== */
-const togglePassword = document.getElementById("toggle-password");
-const passwordInput = document.getElementById("login-password");
+    /* ===============================
+       PASSWORD TOGGLE
+    =============================== */
+    const togglePassword = document.getElementById("toggle-password");
+    const passwordInput = document.getElementById("login-password");
 
-if (togglePassword) {
-    togglePassword.addEventListener("click", function () {
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            togglePassword.innerText = "🙈";
-        } else {
-            passwordInput.type = "password";
-            togglePassword.innerText = "👁️";
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener("click", () => {
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                togglePassword.innerText = "🙈";
+            } else {
+                passwordInput.type = "password";
+                togglePassword.innerText = "👁️";
+            }
+        });
+    }
+
+    /* ===============================
+       LOGIN HANDLER
+    =============================== */
+    const loginForm = document.getElementById("login-form");
+
+    if (loginForm) {
+        loginForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const usernameElement = document.getElementById("login-username");
+            const passwordElement = document.getElementById("login-password");
+
+            const username = usernameElement.value.trim();
+            const password = passwordElement.value;
+
+            // Clear existing UI errors
+            clearError(usernameElement);
+            clearError(passwordElement);
+
+            if (!username) {
+                showError(usernameElement, "Username or Email is required.");
+                return;
+            }
+            if (!password) {
+                showError(passwordElement, "Password is required.");
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            
+            // Validate credentials against DB seed
+            const user = users.find(u => 
+                (u.username === username || u.email === username) && 
+                u.password === password
+            );
+
+            if (!user) {
+                showError(passwordElement, "Invalid username or password.");
+                return;
+            }
+
+            /* SAVE SESSION */
+            localStorage.setItem("currentUser", JSON.stringify(user));
+            redirectToDashboard();
+        });
+    }
+
+    /* ===============================
+       UI ERROR LOGIC
+    =============================== */
+    function showError(input, message) {
+        input.style.borderColor = "#EF4444";
+        const wrapper = input.parentElement;
+        let errorEl = wrapper.nextElementSibling;
+        
+        if (!errorEl || !errorEl.classList.contains('login-error-msg')) {
+            errorEl = document.createElement("small");
+            errorEl.className = "login-error-msg";
+            errorEl.style.color = "#EF4444";
+            errorEl.style.fontSize = "12px";
+            errorEl.style.marginTop = "4px";
+            errorEl.style.display = "block";
+            wrapper.parentNode.insertBefore(errorEl, wrapper.nextSibling);
         }
-    });
-}
+        errorEl.innerText = message;
+    }
 
-/* ===============================
-   LOGIN
-=============================== */
-const loginForm = document.getElementById("login-form");
-
-if (loginForm) {
-    loginForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        const username = document.getElementById("login-username").value.trim();
-        const password = document.getElementById("login-password").value;
-        const users = JSON.parse(localStorage.getItem("users")) || [];
-
-        const user = users.find(u => u.username === username || u.email === username);
-
-        if (!user) {
-            alert("User not found");
-            return;
+    function clearError(input) {
+        input.style.borderColor = "";
+        const wrapper = input.parentElement;
+        const errorEl = wrapper.nextElementSibling;
+        if (errorEl && errorEl.classList.contains('login-error-msg')) {
+            errorEl.remove();
         }
+    }
 
-        /* SAVE SESSION */
-        localStorage.setItem("currentUser", JSON.stringify(user));
-        redirectToDashboard(user.role);
-    });
-}
-
-/* ===============================
-   ROLE REDIRECT
-=============================== */
-function redirectToDashboard(role) {
-    if (role === "traveler") {
-        window.location.href = BASE_PATH + "/pages/traveler_dashboard.html";
-    } else if (role === "local guide") {
-        window.location.href = BASE_PATH + "/pages/guide_dashboard.html";
-    } else if (role === "service partner") {
-        window.location.href = BASE_PATH + "/pages/partner_dashboard.html";
+    /* ===============================
+       UNIVERSAL ROUTING
+    =============================== */
+    function redirectToDashboard() {
+        // Automatically redirects to universal dashboard layout handled dynamically by renderpages.js
+        window.location.href = BASE_PATH + "/pages/dashboard.html";
     }
 }

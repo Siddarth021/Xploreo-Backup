@@ -5,7 +5,7 @@ import { saveUser } from "./modules/userStorage.js";
 /* GLOBAL STATE */
 let selectedRole = null;
 
-window.togglePasswordVisibility = function(inputId, btn) {
+window.togglePasswordVisibility = function (inputId, btn) {
     const input = document.getElementById(inputId);
     if (input.type === "password") {
         input.type = "text";
@@ -16,7 +16,7 @@ window.togglePasswordVisibility = function(inputId, btn) {
     }
 };
 
-document.addEventListener("DOMContentLoaded", function () {
+export function initSignup() {
     /* ELEMENTS */
     const cards = document.querySelectorAll(".role-card");
     const step1NextBtn = document.querySelector(".step-1 .next-btn");
@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
             window.location.href = "/23_Xploreo/front_end/index.html";
         });
     }
-});
+}
 
 /* STEP NAVIGATION */
 function showStep(stepNumber) {
@@ -146,10 +146,10 @@ function showStep(stepNumber) {
 
 function showStep4() {
     document.querySelectorAll(".signup-step").forEach(step => step.classList.add("hidden"));
-    
+
     const step4 = document.querySelector(".step-4");
-    if(step4) step4.classList.remove("hidden");
-    
+    if (step4) step4.classList.remove("hidden");
+
     const signupCard = document.querySelector(".signup-card");
     if (signupCard) signupCard.classList.add("step4-active");
 
@@ -164,15 +164,15 @@ function showStep4() {
     const roleCapitalized = selectedRole || "Traveler";
     const usernameInput = document.getElementById("username") ? document.getElementById("username").value : "traveler_explorer";
     const usernameVal = usernameInput.trim() || "traveler_explorer";
-    
+
     const subtitleEl = document.getElementById("step4-dynamic-subtitle");
-    if(subtitleEl) subtitleEl.innerText = `Welcome to Xploreo! Your ${roleCapitalized.toLowerCase()} account is ready.`;
-    
+    if (subtitleEl) subtitleEl.innerText = `Welcome to Xploreo! Your ${roleCapitalized.toLowerCase()} account is ready.`;
+
     const userEl = document.getElementById("step4-username");
-    if(userEl) userEl.innerText = usernameVal;
-    
+    if (userEl) userEl.innerText = usernameVal;
+
     const roleEl = document.getElementById("step4-role");
-    if(roleEl) roleEl.innerText = roleCapitalized;
+    if (roleEl) roleEl.innerText = roleCapitalized;
 }
 
 function showError(input, message) {
@@ -230,11 +230,18 @@ function validateStep2() {
         showError(usernameInput, "Only alphabets accepted, at least 6 characters");
         if (!firstInvalid) firstInvalid = usernameInput;
     }
-    
+
     const phoneInput = document.getElementById("phone");
+
     if (phoneInput && phoneInput.value.trim()) {
-        const phoneVal = phoneInput.value.replace(/[\\s-]/g, '');
-        if (!/^\\d{10}$/.test(phoneVal)) {
+        const phoneVal = phoneInput.value
+            .replace(/\s/g, '')   // remove spaces
+            .replace(/-/g, '');   // remove dashes
+
+        console.log("Phone value:", phoneVal);
+        console.log("Length:", phoneVal.length);
+
+        if (!/^\d{10}$/.test(phoneVal)) {
             isValid = false;
             showError(phoneInput, "Please enter a valid 10-digit phone number");
             if (!firstInvalid) firstInvalid = phoneInput;
@@ -272,7 +279,7 @@ function validateStep3() {
     if (!container) return false;
 
     const inputs = container.querySelectorAll("input:not([type='file']):not([type='time']):not([type='checkbox']):not([type='radio']), select");
-    
+
     inputs.forEach(input => {
         clearError(input);
 
@@ -282,7 +289,7 @@ function validateStep3() {
         }
 
         const val = input.value.trim();
-        
+
         if (!val || val.startsWith("Select ")) {
             isValid = false;
             showError(input, "This field is required");
@@ -303,10 +310,17 @@ function createUser(role) {
     const username = document.getElementById("username").value.trim();
     const email = document.getElementById("email").value.trim();
     const phone = document.getElementById("phone").value.trim();
+    const password = document.getElementById("password").value;
 
     const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
     const allUsers = [...users, ...storedUsers];
     const newId = generateUniqueUserId(allUsers);
+
+    const roleMap = {
+        "Traveler": "traveller",
+        "Local Guide": "guide",
+        "Service Partner": "service_partner"
+    };
 
     const newUser = {
         id: newId,
@@ -314,7 +328,8 @@ function createUser(role) {
         username: username,
         email: email,
         phone: phone,
-        role: role.toLowerCase(),
+        password: password, // Save real password natively instead of dropping it
+        role: roleMap[role] || "traveller",
         profilePic: "",
         status: "active"
     };
@@ -349,14 +364,7 @@ function saveTravelerPreferences() {
 }
 
 function redirectToDashboard() {
-    const user = JSON.parse(localStorage.getItem("currentUser"));
-    if (!user) return;
-
-    if (user.role === "traveler") {
-        window.location.href = "/pages/traveler_dashboard.html";
-    } else if (user.role === "local guide") {
-        window.location.href = "/pages/guide_dashboard.html";
-    } else if (user.role === "service partner") {
-        window.location.href = "/pages/partner_dashboard.html";
-    }
+    // Left empty: User gets sent to login explicitly at step 4 interface
+    const BASE_PATH = window.location.pathname.includes("23_Xploreo") ? "/23_Xploreo" : "";
+    window.location.href = BASE_PATH + "/pages/login.html";
 }

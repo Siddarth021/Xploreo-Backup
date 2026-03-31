@@ -8,6 +8,7 @@ export const users = [
     dob: new Date("2006-12-07"),
     username: "sreekar_k",
     email: "sreekar@xploreo.com",
+    phone: "9876543210",
     role: "guide",
     profilePic: "./profilepic/101.png",
     password: "Arigathumuzaimas",

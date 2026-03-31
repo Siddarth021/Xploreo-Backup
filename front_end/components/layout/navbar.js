@@ -17,7 +17,7 @@ export function renderNavbar(user) {
         ${getNavLinks(user.role)}
       </div>
       <div class="navbar-right">
-        ${getNotification()}
+      <p> Welcome, Mr. ${user.name} </p>
         ${getProfile(user)}
       </div>
     </nav>

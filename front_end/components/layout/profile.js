@@ -38,5 +38,5 @@ window.logout = function () {
   localStorage.removeItem("currentUser");
   localStorage.clear();
   location.reload();
-  window.location.href = "dashboard.html";
+  window.location.href = "login.html";
 };

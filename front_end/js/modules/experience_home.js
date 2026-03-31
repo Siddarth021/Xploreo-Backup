@@ -1,157 +1,180 @@
-import { renderNavbar } from "../../components/layout/navbar.js";
-import { homeData } from "../../data/experience_home.js";
-console.log("HOME DATA:", homeData);
+import { homeData, homeTestimonials } from "../../data/experience_home.js";
+import { readStorage } from "./experience_shared.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+export function renderExperienceHomePage() {
+    const pageData = readStorage("experienceHome", homeData);
+    const stats = document.getElementById("stats");
+    const alerts = document.getElementById("alerts");
+    const schedule = document.getElementById("schedule");
+    const bookings = document.getElementById("bookings");
+    const reviews = document.getElementById("reviewsContainer");
+    const viewAllBookingsButton = document.querySelector(".home-view-all-btn");
+    const todayLabel = new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+    });
 
-    // ✅ NAVBAR
-    renderNavbar({ role: "experience" });
+    const alertItems = pageData.schedule.map((item) => {
+        const percent = (item.booked / item.total) * 100;
 
-    console.log("DATA CHECK:", homeData); // DEBUG
+        if (percent === 100) {
+            return {
+                ...item,
+                message: `${item.title} (${item.time}) is fully booked - demand is high - add another session to maximize bookings`,
+                tone: "high"
+            };
+        }
 
-    const statsDiv = document.getElementById("stats");
-    const alertsDiv = document.getElementById("alerts");
-    const scheduleDiv = document.getElementById("schedule");
-    const bookingsDiv = document.getElementById("bookings");
+        if (percent > 85) {
+            return {
+                ...item,
+                message: `${item.title} (${item.time}) is nearly full - consider adding an extra slot`,
+                tone: "medium"
+            };
+        }
 
-    // ===== STATS =====
-    function renderStats() {
-        statsDiv.innerHTML = `
-            <div class="stat-card blue">
+        if (percent < 40) {
+            return {
+                ...item,
+                message: `${item.title} (${item.time}) has low bookings - low demand - consider promotion or pricing adjustment`,
+                tone: "low"
+            };
+        }
+
+        return null;
+    }).filter(Boolean);
+
+    if (stats) {
+        stats.innerHTML = `
+            <div class="stat-card experience-stat-card blue">
                 <p>Today's Bookings</p>
-                <h2>${homeData.stats.today}</h2>
+                <h2>${pageData.stats.today}</h2>
+                <span>Guests arriving today</span>
             </div>
-            <div class="stat-card light-green">
+            <div class="stat-card experience-stat-card light-green">
                 <p>Upcoming Sessions</p>
-                <h2>${homeData.stats.upcoming}</h2>
+                <h2>${pageData.stats.upcoming}</h2>
+                <span>Future sessions scheduled</span>
             </div>
-            <div class="stat-card dark-green">
+            <div class="stat-card experience-stat-card dark-green">
                 <p>Total Bookings</p>
-                <h2>${homeData.stats.total}</h2>
+                <h2>${pageData.stats.total}</h2>
+                <span>Across all active experiences</span>
             </div>
-            <div class="stat-card orange">
+            <div class="stat-card experience-stat-card orange">
                 <p>Average Rating</p>
-                <h2>${homeData.stats.rating}</h2>
+                <h2>${pageData.stats.rating}</h2>
+                <span>Current guest sentiment</span>
             </div>
         `;
     }
 
-    // ===== ALERTS =====
-    function renderAlerts() {
-        alertsDiv.innerHTML = homeData.schedule.map(s => {
-            const percent = (s.booked / s.total) * 100;
+    if (alerts) {
+        alerts.innerHTML = alertItems.length
+            ? alertItems.map((item) => `
+                <article class="alert-main alert-banner alert-${item.tone}">
+                    <span class="alert-icon">${item.tone === "low" ? "i" : "!"}</span>
+                    <p>${item.message}</p>
+                </article>
+            `).join("")
+            : `<div class="empty-state compact"><h3>All clear</h3><p>No operational alerts for today.</p></div>`;
+    }
 
-            let message = "";
-            if (percent === 100) message = "Fully booked — add new slot";
-            else if (percent > 85) message = "Nearly full — consider adding slot";
-            else if (percent < 40) message = "Low bookings — consider promotion";
+    if (schedule) {
+        schedule.innerHTML = `
+            <p class="schedule-date-label">${todayLabel}</p>
+            <div class="schedule-stack">
+                ${pageData.schedule.map((item) => {
+                    const percent = (item.booked / item.total) * 100;
+                    let status = "Available";
+                    let statusClass = "available";
+                    let progressClass = "green";
 
-            if (!message) return "";
+                    if (percent > 85) {
+                        status = "Nearly Full";
+                        statusClass = "nearly-full";
+                        progressClass = "warning";
+                    }
+
+                    if (percent === 100) {
+                        status = "Full";
+                        statusClass = "full";
+                        progressClass = "red";
+                    }
+
+                    return `
+                        <article class="tour-card experience-schedule-row">
+                            <div class="schedule-row-top">
+                                <h2>${item.title}</h2>
+                                <button type="button" class="schedule-manage-btn" data-schedule-title="${item.title}">Manage Slots</button>
+                            </div>
+                            <p class="schedule-time">${item.time}</p>
+                            <div class="schedule-row-bottom">
+                                <p class="schedule-seat-count">${item.booked}/${item.total} seats</p>
+                                <span class="status-pill ${statusClass}">${status}</span>
+                            </div>
+                            <div class="progress-bar-container schedule-progress">
+                                <div class="progress-fill ${progressClass}" style="width:${percent}%"></div>
+                            </div>
+                        </article>
+                    `;
+                }).join("")}
+            </div>
+        `;
+
+        schedule.onclick = (event) => {
+            const button = event.target.closest(".schedule-manage-btn");
+            if (!button) return;
+
+            const scheduleTitle = button.dataset.scheduleTitle;
+            const params = new URLSearchParams();
+            if (scheduleTitle) params.set("manage", scheduleTitle);
+            window.location.href = `../pages/experience_experience.html${params.toString() ? `?${params.toString()}` : ""}`;
+        };
+    }
+
+    if (bookings) {
+        bookings.innerHTML = pageData.bookings.map((booking) => {
+            const guestName = booking.name || booking.guest || booking.user || "Guest";
+            const experienceName = booking.exp || booking.experience || booking.title || "Experience";
+            const bookingDate = booking.date || booking.day || "";
+            const bookingTime = booking.time || booking.slot || "";
+            const seats = booking.seats ?? booking.guests ?? 0;
 
             return `
-                <div class="alert-main">
-                    <h4>${s.title}</h4>
-                    <p>${message}</p>
-                </div>
+                <article class="transaction-row experience-transaction-row">
+                    <div class="booking-person">
+                        <strong>${guestName}</strong>
+                        <p>${experienceName}</p>
+                    </div>
+                    <div class="booking-datetime">
+                        <span>${bookingDate}</span>
+                        <span>${bookingTime}</span>
+                    </div>
+                    <span class="section-chip booking-seat-chip">${seats} seats</span>
+                </article>
             `;
         }).join("");
     }
 
-    // ===== SCHEDULE =====
-    function renderSchedule() {
-    scheduleDiv.innerHTML = homeData.schedule.map((s) => {
-        const percent = (s.booked / s.total) * 100;
-
-        let status = "Available";
-        if (percent > 85) status = "Nearly Full";
-        if (percent === 100) status = "Full";
-
-        return `
-            <div class="tour-card">
-                <div class="card-top-header">
-                    <h2>${s.title}</h2>
-                </div>
-
-                <p>${s.time}</p>
-                <p>${s.booked}/${s.total} seats</p>
-
-                <div class="progress-bar-container">
-                    <div class="progress-fill" style="width:${percent}%"></div>
-                </div>
-
-                <p class="status-tag">${status}</p>
-            </div>
-        `;
-    }).join("");
-}
-
-    // ===== BOOKINGS =====
-    function renderBookings() {
-        bookingsDiv.innerHTML = homeData.bookings.map(b => `
-            <div class="transaction-row">
-                <p>${b.name}</p>
-                <p>${b.exp}</p>
-                <p>${b.seats} seats</p>
-            </div>
-        `).join("");
+    if (viewAllBookingsButton) {
+        viewAllBookingsButton.onclick = () => {
+            window.location.href = "../pages/experience_bookings.html";
+        };
     }
 
-    // ===== BUTTON =====
-    document.addEventListener("click", (e) => {
-        if (e.target.classList.contains("manage-btn")) {
-            alert("Manage slots clicked");
-        }
-    });
-    // MOCK DATA GENERATOR
-function generateMockReviews(count = 8) {
-  const names = ["Aarav", "Priya", "Rohit", "Sneha", "Karthik", "Ananya"];
-  const comments = [
-    "Amazing experience, would totally recommend!",
-    "Very well organized and smooth.",
-    "Loved every moment of it.",
-    "Guide was friendly and knowledgeable.",
-    "Worth the price!",
-    "Beautiful locations and great vibe."
-  ];
-
-  return Array.from({ length: count }, (_, i) => ({
-    name: names[Math.floor(Math.random() * names.length)],
-    rating: Math.floor(Math.random() * 2) + 4,
-    comment: comments[Math.floor(Math.random() * comments.length)],
-    image: `https://i.pravatar.cc/100?img=${i + 10}`
-  }));
+    if (reviews) {
+        reviews.innerHTML = homeTestimonials.map((review) => `
+            <article class="review-card">
+                <img src="${review.image}" class="review-img" alt="${review.name}" />
+                <div class="review-content">
+                    <h3>${review.name}</h3>
+                    <div class="stars">${"⭐".repeat(review.rating)}</div>
+                    <p>${review.comment}</p>
+                </div>
+            </article>
+        `).join("");
+    }
 }
-
-// DATA
-const reviewsData = generateMockReviews(8);
-
-// RENDER FUNCTION
-function renderReviews() {
-  const container = document.getElementById("reviewsContainer");
-
-  if (!container) return;
-
-  container.innerHTML = reviewsData.map(review => `
-    <div class="review-card">
-      <img src="${review.image}" class="review-img" />
-
-      <div class="review-content">
-        <h3>${review.name}</h3>
-        <div class="stars">
-          ${"⭐".repeat(review.rating)}
-        </div>
-        <p>${review.comment}</p>
-      </div>
-    </div>
-  `).join("");
-}
-
-// CALL FUNCTION
-renderReviews();
-
-    renderStats();
-    renderAlerts();
-    renderSchedule();
-    renderBookings();
-
-});

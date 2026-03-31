@@ -1,163 +1,165 @@
 import { earningsData } from "../../data/experience_earningsData.js";
-import { renderNavbar } from "../../components/layout/navbar.js";
+import {
+    formatCurrency,
+    readStorage,
+    setElementText
+} from "./experience_shared.js";
 
-// NAVBAR
-renderNavbar({
-    name: "User",
-    role: "experience",
-    profilePic: "https://i.pravatar.cc/150"
-});
+export function renderExperienceEarningsPage() {
+    const data = readStorage("experienceEarnings", earningsData);
+    const table = document.getElementById("earningsTable");
+    const filter = document.getElementById("dateFilter");
+    const statusFilter = document.getElementById("transactionStatusFilter");
+    const refundBar = document.getElementById("refundBar");
+    const refundTrendText = document.getElementById("refundTrendText");
+    const refundNote = document.getElementById("refundNote");
+    const refundNoteTitle = document.getElementById("refundNoteTitle");
+    const refundNoteBody = document.getElementById("refundNoteBody");
 
-const table = document.getElementById("earningsTable");
-const filter = document.getElementById("dateFilter");
+    function getFilteredData(days) {
+        const latestDate = new Date(Math.max(...data.map((item) => new Date(item.date))));
 
-// =========================
-// FILTER
-// =========================
-function getFilteredData(days) {
-    const latestDate = new Date(
-        Math.max(...earningsData.map(d => new Date(d.date)))
-    );
+        return data.filter((item) => {
+            const diff = (latestDate - new Date(item.date)) / (1000 * 60 * 60 * 24);
+            return diff <= Number(days);
+        });
+    }
 
-    return earningsData.filter(item => {
-        const diff = (latestDate - new Date(item.date)) / (1000 * 60 * 60 * 24);
-        return diff <= days;
-    });
-}
+    function getMaxKey(obj) {
+        const keys = Object.keys(obj);
+        if (!keys.length) return "--";
+        return keys.reduce((a, b) => obj[a] > obj[b] ? a : b);
+    }
 
-// =========================
-// SAFE MAX
-// =========================
-function getMaxKey(obj) {
-    const keys = Object.keys(obj);
-    if (keys.length === 0) return "--";
-    return keys.reduce((a, b) => obj[a] > obj[b] ? a : b);
-}
+    function formatDisplayDate(value) {
+        return new Date(value).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+        });
+    }
 
-// =========================
-// RENDER
-// =========================
-function render(data) {
-    table.innerHTML = "";
+    function render(dataToRender) {
+        if (!table) return;
 
-    let total = 0;
-    let refunded = 0;
-    let bookings = data.length;
-    let expMap = {};
-    let dayMap = {};
-    let cancelled = 0;
+        let total = 0;
+        let refunded = 0;
+        const bookingsCount = dataToRender.length;
+        const expMap = {};
+        const dayMap = {};
+        let cancelled = 0;
 
-    data.forEach(item => {
-        total += item.amount;
+        table.innerHTML = dataToRender.map((item) => {
+            total += item.amount;
 
-        if (item.status === "Refunded") {
-            refunded += item.amount;
-            cancelled++;
+            if (item.status === "Refunded") {
+                refunded += item.amount;
+                cancelled += 1;
+            }
+
+            expMap[item.title] = (expMap[item.title] || 0) + item.amount;
+            const day = new Date(item.date).toLocaleDateString("en-US", { weekday: "long" });
+            dayMap[day] = (dayMap[day] || 0) + 1;
+
+            return `
+                <tr>
+                    <td>${item.user}</td>
+                    <td>${item.title}</td>
+                    <td>${formatCurrency(item.amount)}</td>
+                    <td>${formatDisplayDate(item.date)}</td>
+                    <td><span class="status-pill ${item.status === "Refunded" ? "cancelled" : "checked"}">${item.status}</span></td>
+                </tr>
+            `;
+        }).join("");
+
+        setElementText("totalRevenue", formatCurrency(total));
+        setElementText("totalRevenueText", formatCurrency(total));
+        setElementText("earnings", formatCurrency(total - refunded));
+        setElementText("refundAmount", formatCurrency(refunded));
+        setElementText("avgBooking", bookingsCount ? formatCurrency(Math.round(total / bookingsCount)) : "$0");
+        setElementText("topExperience", getMaxKey(expMap));
+        setElementText("bestDay", getMaxKey(dayMap));
+        setElementText("utilization", bookingsCount ? `${Math.min(100, bookingsCount * 10)}%` : "0%");
+        setElementText("cancelRate", bookingsCount ? `${((cancelled / bookingsCount) * 100).toFixed(1)}%` : "0%");
+
+        const refundPercent = total ? ((refunded / total) * 100).toFixed(1) : "0.0";
+        setElementText("refundAmountBig", formatCurrency(refunded));
+        setElementText("refundPercent", `${refundPercent}%`);
+        setElementText("refundRateText", `${refundPercent}%`);
+
+        const revenueSources = document.getElementById("revenueSources");
+        if (revenueSources) {
+            revenueSources.innerHTML = Object.entries(expMap).map(([name, amount], index) => {
+                const percent = total ? ((amount / total) * 100).toFixed(0) : 0;
+                const colorClass = index === 0 ? "blue" : "green";
+
+                return `
+                    <article class="source-item">
+                        <div class="source-top">
+                            <div class="source-label">
+                                <div class="dot ${colorClass}"></div>
+                                <span>${name}</span>
+                            </div>
+                            <div class="source-metrics">
+                                <span class="amount">${formatCurrency(amount)}</span>
+                                <span class="percent">${percent}%</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${colorClass}" style="width:${percent}%"></div>
+                        </div>
+                    </article>
+                `;
+            }).join("");
         }
 
-        // experience revenue map
-        expMap[item.title] = (expMap[item.title] || 0) + item.amount;
+        if (refundBar) {
+            refundBar.style.width = `${refundPercent}%`;
+        }
 
-        // day map
-        const day = new Date(item.date).toLocaleDateString("en-US", { weekday: "long" });
-        dayMap[day] = (dayMap[day] || 0) + 1;
+        if (refundTrendText) {
+            const numericRefund = Number(refundPercent);
+            const trendValue = Math.abs(numericRefund - 5).toFixed(1);
+            const sign = numericRefund > 5 ? "+" : "-";
+            refundTrendText.textContent = `${sign}${trendValue}% vs industry benchmark`;
+        }
 
-        // table row
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${item.user}</td>
-            <td>${item.title}</td>
-            <td>$${item.amount}</td>
-            <td>${item.date}</td>
-            <td class="${item.status === "Refunded" ? "red" : "green"}">
-                ${item.status}
-            </td>
-        `;
-        table.appendChild(row);
-    });
+        if (refundNoteTitle && refundNoteBody && refundNote) {
+            const numericRefund = Number(refundPercent);
 
-    // =========================
-    // TOP CARDS
-    // =========================
-    document.getElementById("totalRevenue").innerText = "$" + total;
-    document.getElementById("earnings").innerText = "$" + (total - refunded);
-    document.getElementById("refundAmount").innerText = "$" + refunded;
-    document.getElementById("avgBooking").innerText =
-        bookings ? "$" + Math.round(total / bookings) : "$0";
-
-    // =========================
-    // INSIGHTS
-    // =========================
-    document.getElementById("topExperience").innerText = getMaxKey(expMap);
-    document.getElementById("bestDay").innerText = getMaxKey(dayMap);
-
-    document.getElementById("utilization").innerText =
-        bookings ? Math.min(100, bookings * 10) + "%" : "0%";
-
-    document.getElementById("cancelRate").innerText =
-        bookings ? ((cancelled / bookings) * 100).toFixed(1) + "%" : "0%";
-
-    // =========================
-    // REVENUE SOURCES
-    // =========================
-    const container = document.getElementById("revenueSources");
-    container.innerHTML = "";
-
-    let index = 0;
-
-    for (let exp in expMap) {
-        const percent = total ? ((expMap[exp] / total) * 100).toFixed(0) : 0;
-        const colorClass = index === 0 ? "blue" : "green";
-
-        container.innerHTML += `
-            <div class="source-item">
-                <div class="source-top">
-                    <div class="dot ${colorClass}"></div>
-                    <span>${exp}</span>
-                    <span class="amount">$${expMap[exp]}</span>
-                </div>
-
-                <div class="progress-bar">
-                    <div class="progress-fill ${colorClass}" style="width:${percent}%"></div>
-                </div>
-
-                <div class="percent">${percent}%</div>
-            </div>
-        `;
-
-        index++;
+            if (numericRefund > 5) {
+                refundNote.classList.remove("good");
+                refundNoteTitle.textContent = "Refund Rate Above Target";
+                refundNoteBody.textContent = "Your refund rate is above the typical benchmark. Review cancellation and expectation-setting.";
+            } else {
+                refundNote.classList.add("good");
+                refundNoteTitle.textContent = "Low Refund Rate";
+                refundNoteBody.textContent = "Your refund rate is below industry average (5%).";
+            }
+        }
     }
 
-    
-    document.getElementById("totalRevenueText").innerText = "$" + total;
+    const getStatusFilteredData = (items, status) => {
+        if (!status || status === "all") {
+            return items;
+        }
 
-    // =========================
-    // REFUND SECTION
-    // =========================
-    const refundPercent = total ? ((refunded / total) * 100).toFixed(1) : "0";
+        return items.filter((item) => item.status === status);
+    };
 
-    document.getElementById("refundAmountBig").innerText = "$" + refunded;
-    document.getElementById("refundPercent").innerText = refundPercent + "%";
-    document.getElementById("refundRateText").innerText = refundPercent + "%";
+    const update = () => {
+        const dateFiltered = getFilteredData(filter?.value || 30);
+        const filtered = getStatusFilteredData(dateFiltered, statusFilter?.value || "all");
+        render(filtered.length ? filtered : data);
+    };
 
-    // progress bar
-    document.getElementById("refundBar").style.width = refundPercent + "%";
-}
-
-// =========================
-// UPDATE
-// =========================
-function update() {
-    let data = getFilteredData(filter.value);
-
-    if (data.length === 0) {
-        data = earningsData;
+    if (filter) {
+        filter.onchange = update;
     }
 
-    render(data);
+    if (statusFilter) {
+        statusFilter.onchange = update;
+    }
+
+    update();
 }
-
-filter.addEventListener("change", update);
-
-// INITIAL LOAD
-update();

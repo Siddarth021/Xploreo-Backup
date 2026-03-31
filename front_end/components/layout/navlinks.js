@@ -77,6 +77,30 @@ const navlinks = [
     icon: "../components/ui/earnings.svg",
     roles: ["hotel"]
   },
+  {
+    name: "Home",
+    path: "../pages/experience_home.html",
+    icon: "../components/ui/dashboard.svg",
+    roles: ["experience"]
+  },
+  {
+    name: "Bookings",
+    path: "../pages/experience_bookings.html",
+    icon: "../components/ui/operations.png",
+    roles: ["experience"]
+  },
+  {
+    name: "Experiences",
+    path: "../pages/experience_experience.html",
+    icon: "../components/ui/tours.svg",
+    roles: ["experience"]
+  },
+  {
+    name: "Earnings",
+    path: "../pages/experience_earnings.html",
+    icon: "../components/ui/earnings.svg",
+    roles: ["experience"]
+  },
 
   
    

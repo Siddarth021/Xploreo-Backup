@@ -6,39 +6,45 @@
   <link rel="stylesheet" href="../css/experiencestyles.css">
 </head>
 
-<body class="experience-page">
+<body class="experience-page experience-bookings-page">
 
-<!-- NAVBAR -->
 <div id="navbar"></div>
 
-<div class="page-container">
-
-  <div class="page-header">
-    <h1 class="page-title">Bookings</h1>
-    <p class="page-subtitle">Manage all your experience bookings</p>
-  </div>
-
-  <!-- FILTER BAR -->
-  <div class="content-card">
-    <div class="filter-bar">
-      <select>
-        <option>All Experiences</option>
-      </select>
-
-      <select>
-        <option>All Status</option>
-      </select>
+<main class="experience-shell">
+  <section class="page-header experience-toolbar">
+    <div>
+      <p class="experience-eyebrow">Guest Operations</p>
+      <h1 class="page-title">Bookings</h1>
+      <p class="page-subtitle">Manage all your experience bookings with quick filters and status actions.</p>
     </div>
-  </div>
+  </section>
 
-  <!-- BOOKINGS LIST -->
-  <div id="bookingList"></div>
+  <section class="content-card experience-card filter-panel">
+    <div class="filter-bar bookings-filter-bar">
+      <label class="experience-select-shell" for="experienceFilter">
+        <span>Experience</span>
+        <select id="experienceFilter">
+          <option value="all">All Experiences</option>
+        </select>
+      </label>
 
-</div>
+      <label class="experience-select-shell" for="statusFilter">
+        <span>Status</span>
+        <select id="statusFilter">
+          <option value="all">All Status</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="checked">Checked-In</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </label>
+    </div>
+  </section>
 
-<!-- 🔥 MODAL -->
+  <section id="bookingList" class="experience-bookings-stack"></section>
+</main>
+
 <div id="bookingModal" class="modal">
-  <div class="modal-box">
+  <div class="modal-box booking-modal-box">
 
     <div class="modal-header">
       <div>
@@ -49,7 +55,7 @@
         </div>
       </div>
 
-      <span class="close" onclick="closeModal()">✕</span>
+      <button type="button" class="close" id="bookingModalClose" aria-label="Close booking details">✕</button>
     </div>
 
     <hr />
@@ -116,18 +122,7 @@
   </div>
 </div>
 
-<!-- NAVBAR SCRIPT -->
-<script type="module">
-  import { renderNavbar } from "../components/layout/navbar.js";
-
-  renderNavbar({
-    name: "Experience User",
-    role: "experience"
-  });
-</script>
-
-<!-- BOOKINGS SCRIPT -->
-<script type="module" src="../js/modules/experience_bookings.js"></script>
+<script type="module" src="../js/app.js"></script>
 
 </body>
 </html>

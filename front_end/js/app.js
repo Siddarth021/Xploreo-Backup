@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentUser = JSON.parse(localStorage.getItem("currentUser"));
     
     if (!currentUser) {
-        currentUser = users.find(u => u.id === "00001");
+        currentUser = users.find(u => u.id === "10001");
         localStorage.setItem("currentUser", JSON.stringify(currentUser));
     }
     renderNavbar(currentUser);
@@ -104,3 +104,4 @@ window.addEventListener("unload", (event) => {
 if (window.location.pathname.includes('opsbook.html')) {
     initOperations();
 }
+

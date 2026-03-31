@@ -21,22 +21,68 @@ export function renderPageContent(user) {
         renderAdminDashboard("admin-dashboard");
         document.getElementById("admin-dashboard").style.display = "block";
         document.getElementById("main").style.display = "none";
+    }else if (user.role === "superadmin" && path === "users.html") {
+        
+        // Safely check if admin-dashboard exists before hiding it
+        const adminDash = document.getElementById("admin-dashboard");
+        if (adminDash) {
+            adminDash.style.display = "none";
+        }
+        
+        // Safely check if main exists before showing it
+        const mainDiv = document.getElementById("main");
+        if (mainDiv) {
+            mainDiv.style.display = "block";
+        }
+        
+        // Inject the Users & Partners HTML!
+        initUsers();
+
+    // 3. ADD THIS NEW BLOCK FOR THE FINANCE PAGE
+    } else if (user.role === "superadmin" && path === "finance.html") {
+        
+        // Safely check if admin-dashboard exists before hiding it
+        const adminDash = document.getElementById("admin-dashboard");
+        if (adminDash) {
+            adminDash.style.display = "none";
+        }
+        
+        // Safely check if main exists before showing it
+        const mainDiv = document.getElementById("main");
+        if (mainDiv) {
+            mainDiv.style.display = "block";
+        }
+        
+        // Inject the Finance HTML!
+        initFinance();
+
+    } else if (user.role === "guide" && path === "tours.html") {
+        rendertourpage("main",user)
+        console.log("in tourpage");
+
+    } else if (user.role === "guide" && path === "earnings.html") {
+        renderEarningsPage("main", user);
+
+    } else if (user.role === "guide" && path === "reviews.html") {
+        renderReviewsPage("main", user);
+
     }
 
+
     // ==== HOTEL =====
-    if (user.role === "hotel" && path === "hotelDashboard.html") {
+    else if (user.role === "hotel" && path === "hotelDashboard.html") {
         renderHotelDashboard(user);
     }
 
-    if (user.role === "hotel" && path === "hotelBookings.html") {
+    else if (user.role === "hotel" && path === "hotelBookings.html") {
         renderBookingsPage();
     }
 
-    if (user.role === "hotel" && path === "hotelRooms.html") {
+    else if (user.role === "hotel" && path === "hotelRooms.html") {
         renderServicesPage();
     }
 
-    if (user.role === "hotel" && path === "hotelEarning.html") {
+    else if (user.role === "hotel" && path === "hotelEarning.html") {
         renderHotelEarningPage();
     }
 

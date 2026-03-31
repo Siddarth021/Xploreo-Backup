@@ -5,7 +5,7 @@ import { upcomingtripcount } from "../utils/upcomingtripcount.js";
 import { filterByGuide } from "../utils/filterByGuide.js";
 import { monthlyEarnings } from "../utils/monthlyEarnings.js";
 import { formatCurrency } from "../utils/formatCurrency.js";
-
+    
 export function renderStats(containerId, currentUser) {
     const container = document.getElementById(containerId);
 
@@ -22,7 +22,10 @@ export function renderStats(containerId, currentUser) {
     const now = new Date();
     const currentMonthEarnings = monthlyEarnings(myTrips, now.getMonth(), now.getFullYear());
 
-    const stats = [
+    let stats;
+
+    if(currentUser.role === "guide"){
+     stats = [
         { label: "Today's Tours", value: upcomingtripcount(ongoingTrips), icon: "../components/ui/todaytours.svg", color: "blue" },
         { label: "Upcoming Tours", value: upcomingtripcount(upcomingTrips), icon: "../components/ui/upcomingtours.svg", color: "light-green" },
         { label: "Monthly Earnings", value: formatCurrency(currentMonthEarnings), icon: "../components/ui/montlyearning.svg", color: "dark-green" },
@@ -30,6 +33,14 @@ export function renderStats(containerId, currentUser) {
         { label: "Average Rating", value: avgrating(myReviews), icon: "../components/ui/avgrating.svg", color: "orange" },
         { label: "Recent Reviews", value: countreview(myReviews), icon: "../components/ui/recentreview.svg", color: "violet" }
     ];
+    } else if(currentUser.role === "hotel"){
+          stats = [
+          { label: "Total Bookings", value: "248", icon: "../components/ui/todaytours.svg", color: "blue" },
+          { label: "Revenue This Month", value: "$42,580", icon: "../components/ui/montlyearning.svg", color: "dark-green" },
+          { label: "Upcoming Bookings", value: "32", icon: "../components/ui/upcomingtours.svg", color: "light-green" },
+          { label: "Average Rating", value: "4.8", icon: "../components/ui/avgrating.svg", color: "orange" }
+        ]
+    }
 
     container.innerHTML = stats.map(stat => `
         <div class="stat-card ${stat.color}">
@@ -50,4 +61,5 @@ export function renderStats(containerId, currentUser) {
 
         </div>
     `).join('');
+
 }

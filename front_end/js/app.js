@@ -105,7 +105,9 @@ document.addEventListener("DOMContentLoaded", () => {
         currentUser = users.find(u => u.id === "00001");
         localStorage.setItem("currentUser", JSON.stringify(currentUser));
     }
-    renderNavbar(currentUser);
+    if (document.getElementById("navbar")) {
+        renderNavbar(currentUser);
+    }
     renderPageContent(currentUser);
 });
 

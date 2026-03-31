@@ -22,7 +22,7 @@ export function renderTravelerNavbar() {
             </div>
             
             <nav class="nav-links">
-                <a href="${BASE_PATH}/pages/traveler/dashboard.html" class="active">
+                <a href="${BASE_PATH}/pages/traveler/dashboard.html">
                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
                    Explore
                 </a>
@@ -64,6 +64,17 @@ export function renderTravelerNavbar() {
 }
 
 function attachNavbarEvents() {
+    // Dynamic Active Link State
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll(".nav-links a");
+    navLinks.forEach(link => {
+        const linkPath = new URL(link.href).pathname;
+        if (currentPath === linkPath) {
+            link.classList.add("active");
+        } else {
+            link.classList.remove("active");
+        }
+    });
     const logo = document.getElementById("home-logo");
     const profileBtn = document.getElementById("profile-dropdown-btn");
     const dropdown = document.getElementById("profile-dropdown-menu");

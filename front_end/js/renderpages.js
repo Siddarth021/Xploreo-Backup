@@ -9,10 +9,28 @@ import { renderEarningsPage } from "./earnings.js";
 import { renderReviewsPage } from "./reviews.js";
 import { initUsers } from "./modules/users.js"; 
 import { initFinance } from "./modules/finance.js";
+import { renderTravelerDashboard } from "./modules/travelerDashboard.js";
+import { renderTravelerWishlist } from "./modules/travelerWishlist.js";
+import { renderTravelerTrips } from "./modules/travelerTrips.js";
 
 export function renderPageContent(user) {
     const path = window.location.pathname.split("/").pop();
 
+    if (document.getElementById("traveler-app") || (user.role === "traveller" && path === "dashboard.html")) {
+        renderTravelerDashboard("traveler-app", user);
+        return;
+    } 
+
+    if (document.getElementById("wishlist-app") || (user.role === "traveller" && path === "wishlist.html")) {
+        renderTravelerWishlist("wishlist-app", user);
+        return;
+    } 
+
+    if (document.getElementById("mytrips-app") || (user.role === "traveller" && path === "mytrips.html")) {
+        renderTravelerTrips("mytrips-app", user);
+        return;
+    } 
+    
     if (user.role === "guide" && path === "dashboard.html") {
         renderdasboard("main",user);
         document.getElementById("admin-dashboard").style.display = "none";

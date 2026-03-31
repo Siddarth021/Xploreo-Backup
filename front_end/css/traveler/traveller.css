@@ -303,9 +303,17 @@ html, body {
 
 .search-inputs-row {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 16px;
     margin-bottom: 24px;
+}
+
+.full-width-input {
+    grid-column: 1 / -1;
+}
+
+.input-group.hidden {
+    display: none;
 }
 
 .input-group label {
@@ -920,4 +928,454 @@ html, body {
     font-size: 12px;
     font-weight: 600;
     color: var(--teal-accert);
+}
+
+/* ================== WISHLIST & TOAST NOTIFICATIONS ================== */
+.toast-notification {
+    position: fixed;
+    top: 90px;
+    right: 40px;
+    background: #111827;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    z-index: 9999;
+    transform: translateX(200%);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast-notification.show {
+    transform: translateX(0);
+}
+
+.toast-notification svg {
+    fill: #EF4444;
+    color: #EF4444;
+}
+
+/* Wishlist Page Specifics */
+.wishlist-header {
+    margin-bottom: 40px;
+    padding-top: 40px;
+}
+
+.wishlist-header h1 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 32px;
+    color: #0F172A;
+    margin: 0 0 8px 0;
+}
+
+.wishlist-header p {
+    color: #64748B;
+    font-size: 15px;
+    margin: 0;
+}
+
+.wishlist-grid-wrapper {
+    position: relative;
+    padding: 20px 0 60px 0;
+}
+
+/* Decorative dotted line */
+.wishlist-grid-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-image: linear-gradient(to right, var(--teal-accert) 50%, transparent 50%);
+    background-size: 12px 12px;
+    z-index: 0;
+    transform: translateY(-50%);
+    opacity: 0.8;
+}
+
+.wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+    position: relative;
+    z-index: 1;
+}
+
+.wishlist-card {
+    height: 280px;
+    border-radius: 20px;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    background-color: #f1f5f9;
+}
+
+.wishlist-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0; top: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+    z-index: 1;
+}
+
+.wishlist-card .card-info {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    color: white;
+    z-index: 2;
+    right: 60px; /* Leave room for bottom button */
+}
+
+.wishlist-card .card-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.wishlist-card .card-info p {
+    margin: 0;
+    font-size: 13px;
+    color: #cbd5e1;
+}
+
+.wishlist-actions {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 2;
+}
+
+.wishlist-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    color: #475569;
+    transition: transform 0.2s;
+}
+
+.wishlist-action-btn:hover {
+    transform: scale(1.1);
+}
+
+.wishlist-action-btn.active-heart {
+    color: #EF4444;
+}
+.wishlist-action-btn.active-heart svg {
+    fill: #EF4444;
+}
+
+/* Thumbs up specific formatting */
+.wishlist-action-btn.likes-btn {
+    width: auto;
+    border-radius: 20px;
+    padding: 0 12px;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    top: auto;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.wishlist-action-btn.likes-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.wishlist-team-banner {
+    text-align: center;
+    padding: 80px 0 40px 0;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.wishlist-team-banner h2 {
+    font-size: 26px;
+    color: #0F172A;
+    margin: 0 0 12px 0;
+    font-weight: 700;
+}
+
+.wishlist-team-banner p {
+    color: #64748B;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0 0 30px 0;
+}
+
+.btn-primary {
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+    transition: background 0.2s, transform 0.2s;
+}
+
+.btn-primary:hover {
+    background: #0284c7;
+    transform: translateY(-2px);
+}
+
+.saved-items-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.saved-items-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #0F172A;
+}
+
+.saved-items-header span {
+    color: #94A3B8;
+    font-size: 14px;
+}
+
+/* ================== MY TRIPS PAGE ================== */
+.trips-page-container {
+    padding: 20px 0 60px 0;
+}
+
+.trips-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+}
+
+.trips-header-left h1 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 32px;
+    color: #0F172A;
+    margin: 0 0 8px 0;
+}
+
+.trips-header-left p {
+    color: #64748B;
+    font-size: 15px;
+    margin: 0;
+}
+
+.trips-search {
+    position: relative;
+    width: 320px;
+}
+
+.trips-search input {
+    width: 100%;
+    padding: 12px 16px 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    background: #fff;
+    outline: none;
+}
+
+.trips-search .search-icon-btn {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    bottom: 4px;
+    background: #0ea5e9;
+    border: none;
+    width: 36px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+}
+
+/* Tabs */
+.trips-tabs {
+    display: flex;
+    gap: 32px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 30px;
+}
+
+.trip-tab {
+    padding: 12px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #64748B;
+    cursor: pointer;
+    background: none;
+    border: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.trip-tab.active {
+    color: #0d9488;
+}
+
+.trip-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #0d9488;
+}
+
+.trip-tab .pill-counter {
+    background: #f1f5f9;
+    color: #64748B;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+}
+
+.trip-tab.active .pill-counter {
+    background: #0d9488;
+    color: white;
+}
+
+/* Trip Card */
+.trip-card {
+    display: flex;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    gap: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    position: relative;
+}
+
+.trip-card-img {
+    width: 240px;
+    height: 160px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.trip-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.trip-card-body h2 {
+    font-size: 20px;
+    color: #0F172A;
+    margin: 0 0 12px 0;
+    padding-right: 120px; /* Room for badge */
+}
+
+.trip-meta {
+    display: flex;
+    gap: 16px;
+    color: #64748B;
+    font-size: 13px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.trip-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.trip-booking-id {
+    font-size: 12px;
+    color: #94A3B8;
+    margin-bottom: auto; /* Pushes buttons to bottom */
+}
+
+.trip-booking-id strong {
+    color: #475569;
+}
+
+.trip-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #ccfbf1;
+    color: #0f766e;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.trip-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.btn-solid-blue {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-solid-blue:hover {
+    background: #1d4ed8;
+}
+
+.btn-outline-teal {
+    background: transparent;
+    color: #0d9488;
+    border: 1px solid #0d9488;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-outline-teal:hover {
+    background: #f0fdfa;
 }

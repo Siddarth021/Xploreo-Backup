@@ -10,6 +10,8 @@ import { hotelServices } from "../data/hotelServices.js";
 import { partners } from "../data/partners.js";
 import { initOperations } from './modules/operations.js';
 import { initUsers } from './modules/users.js';
+import { initLogin } from './login.js';
+import { initSignup } from './signup.js';
 
 function initializeData() {
 
@@ -84,6 +86,18 @@ function initializeData() {
 
 document.addEventListener("DOMContentLoaded", () => {
     initializeData();
+
+    const path = window.location.pathname.split("/").pop();
+
+    if (path === "login.html") {
+        initLogin();
+        return;
+    }
+
+    if (path === "signup.html") {
+        initSignup();
+        return;
+    }
 
     let currentUser = JSON.parse(localStorage.getItem("currentUser"));
     

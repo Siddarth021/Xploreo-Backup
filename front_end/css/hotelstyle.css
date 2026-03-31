@@ -10,6 +10,10 @@ margin: 0 auto;
 padding: 20px;
 }
 
+.dashboard-wrapper {
+  padding-top: 90px;
+}
+
 /* Page Header */
 .hotel-page-header {
   margin-bottom: 20px;

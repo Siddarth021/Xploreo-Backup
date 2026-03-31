@@ -2337,9 +2337,12 @@ body {
     padding: 16px;
     border-radius: 8px;
     border: 1px solid #E5E7EB;
-    border-top: 4px solid #E879F9;
     margin-bottom: 12px;
     transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#reviews-section {
+    border-top: 4px solid #E879F9;
 }
 .review-inner-card:hover {
     transform: translateY(-3px);

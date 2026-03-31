@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Experiences</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/experiencestyles.css">
+</head>
+
+<body class="earnings-page">
+
+<div id="navbar"></div>
+
+<div class="page-container">
+
+  <div class="page-header">
+    <div>
+      <h1>Experiences</h1>
+      <p>Manage your experience offerings</p>
+    </div>
+
+    <button class="primary-btn" onclick="openAddModal()">+ Add Experience</button>
+  </div>
+
+  <div id="experienceList"></div>
+
+</div>
+
+<!-- ================= ADD MODAL ================= -->
+<div id="addModal" class="modal">
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <h2>Add New Experience</h2>
+      <span class="close" onclick="closeAddModal()">✕</span>
+    </div>
+
+    <div class="section">
+      <p class="label">Experience Name</p>
+      <input id="expName">
+
+      <p class="label">Price</p>
+      <input id="expPrice" type="number">
+
+      <p class="label">Duration</p>
+      <input id="expDuration">
+
+      <p class="label">Capacity</p>
+      <input id="expCapacity" type="number">
+      <p class="label">Experience Image</p>
+
+<input type="file" id="expImage" accept="image/*" onchange="previewImage(event)">
+
+<img id="imagePreview" style="width:150px; margin-top:10px; display:none; border-radius:8px;" />
+    </div>
+
+    <div class="modal-actions">
+      <button onclick="closeAddModal()">Cancel</button>
+      <button class="primary-btn" onclick="addExperience()">Save</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= EDIT MODAL ================= -->
+<div id="editModal" class="modal">
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <h2>Edit Experience</h2>
+      <span class="close" onclick="closeEditModal()">✕</span>
+    </div>
+
+    <div class="section">
+      <p class="label">Experience Name</p>
+      <input id="editName">
+
+      <p class="label">Price</p>
+      <input id="editPrice" type="number">
+
+      <p class="label">Duration</p>
+      <input id="editDuration">
+
+      <p class="label">Capacity</p>
+      <input id="editCapacity" type="number">
+    </div>
+
+    <div class="modal-actions">
+      <button onclick="closeEditModal()">Cancel</button>
+      <button class="primary-btn" onclick="saveEdit()">Save Changes</button>
+    </div>
+
+  </div>
+</div>
+<div id="slotsModal" class="modal">
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <h2>Manage Slots</h2>
+      <span class="close" onclick="closeSlotsModal()">✕</span>
+    </div>
+
+    <div class="section">
+      <p class="label">Next Slot Time</p>
+      <input id="slotTime">
+
+      <p class="label">Booked Seats</p>
+      <input id="slotBooked" type="number">
+
+      <p class="label">Capacity</p>
+      <input id="slotCapacity" type="number">
+    </div>
+
+    <div class="modal-actions">
+      <button onclick="closeSlotsModal()">Cancel</button>
+      <button class="primary-btn" onclick="saveSlots()">Save Changes</button>
+    </div>
+
+  </div>
+</div>
+
+<script type="module" src="../js/modules/experience_experience.js"></script>
+
+</body>
+</html>

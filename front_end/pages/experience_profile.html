@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Experience Profile</title>
+    <link rel="stylesheet" href="../css/experiencestyles.css">
+</head>
+
+<body>
+
+<div id="navbar"></div>
+
+<div class="profile-container">
+
+    <!-- HEADER -->
+    <div class="profile-header">
+        <div class="profile-left">
+            <div class="profile-icon">🧭</div>
+            <div>
+                <h2 id="companyName">Loading...</h2>
+                <p id="location">Loading...</p>
+            </div>
+        </div>
+
+        <button id="editBtn" class="btn btn-primary">Edit Profile</button>
+        <button id="saveBtn" class="btn btn-primary hidden">Save</button>
+    </div>
+
+    <div class="profile-grid">
+
+        <!-- LEFT -->
+        <div>
+
+            <div class="content-card">
+                <h3>Experience Details</h3>
+
+                <input id="title" placeholder="Title" disabled>
+                <input id="region" placeholder="Region" disabled>
+                <textarea id="description" placeholder="Description" disabled></textarea>
+
+                <div class="row-3">
+                    <input id="category" placeholder="Category" disabled>
+                    <input id="duration" placeholder="Duration" disabled>
+                    <input id="groupSize" placeholder="Group Size" disabled>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h3>Contact</h3>
+                <input id="phone" placeholder="Phone" disabled>
+                <input id="email" placeholder="Email" disabled>
+            </div>
+
+            <div class="content-card">
+                <h3>Business</h3>
+                <input id="gst" placeholder="GST" disabled>
+                <input id="bank" placeholder="Bank" disabled>
+            </div>
+
+            <div class="content-card">
+                <h3>Experience Settings</h3>
+
+                <div id="days" class="days-container"></div>
+                <div id="slots" class="slots-container"></div>
+
+                <button id="addSlot">+ Add Slot</button>
+
+                <label>
+                    Instant Booking
+                    <input type="checkbox" id="instant">
+                </label>
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="sidebar">
+
+            <div class="content-card">
+                <h3>Status</h3>
+                <span class="status active">✔ Active & Verified</span>
+            </div>
+
+            <div class="content-card">
+                <h3>Stats</h3>
+                <p>Total Experiences: 3</p>
+                <p>Active Bookings: 28</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script type="module" src="../js/modules/experience_profile.js"></script>
+
+</body>
+</html>

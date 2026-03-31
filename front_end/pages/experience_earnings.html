@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Earnings</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/experiencestyles.css">
+</head>
+
+<body class="earnings-page">
+
+<div id="navbar"></div>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="top-bar">
+        <div>
+            <h1>Earnings</h1>
+            <p>Track your revenue and financial performance</p>
+        </div>
+
+        <select id="dateFilter">
+            <option value="7">7 days</option>
+            <option value="30">1 month</option>
+            <option value="90" selected>3 months</option>
+        </select>
+    </div>
+
+    <!-- TOP CARDS -->
+    <div class="cards">
+
+  <div class="card stat">
+    <div class="card-top">
+      <div class="icon blue">$</div>
+      <span class="badge green">+12.5%</span>
+    </div>
+    <h2 id="totalRevenue">$0</h2>
+    <p>Total Revenue</p>
+  </div>
+
+  <div class="card stat">
+    <div class="card-top">
+      <div class="icon green">↗</div>
+      <span class="badge green">+8.2%</span>
+    </div>
+    <h2 id="earnings">$0</h2>
+    <p>Earnings</p>
+  </div>
+
+  <div class="card stat">
+    <div class="card-top">
+      <div class="icon orange">⟳</div>
+      <span class="badge red">-2.1%</span>
+    </div>
+    <h2 id="refundAmount">$0</h2>
+    <p>Refunded</p>
+  </div>
+
+  <div class="card stat">
+    <div class="card-top">
+      <div class="icon purple">💰</div>
+      <span class="badge green">+5.4%</span>
+    </div>
+    <h2 id="avgBooking">$0</h2>
+    <p>Avg Booking</p>
+  </div>
+
+</div>
+
+
+
+    <!-- INSIGHTS -->
+    <div class="insights-grid">
+
+    <div class="card blue">
+        <h3 id="topExperience">--</h3>
+        <p>Top Performing Experience</p>
+    </div>
+
+    <div class="card green">
+        <h3 id="bestDay">--</h3>
+        <p>Highest Booking Day</p>
+    </div>
+
+    <div class="card orange">
+        <h3 id="utilization">0%</h3>
+        <p>Capacity Utilization</p>
+    </div>
+
+    <div class="card purple">
+        <h3 id="cancelRate">0%</h3>
+        <p>Cancellation Rate</p>
+    </div>
+
+</div>
+
+   <!-- REVENUE + REFUND SECTION -->
+<div class="earnings-bottom">
+
+    <!-- REVENUE SOURCES -->
+    <div class="box revenue">
+        <h3>Revenue Sources</h3>
+
+        <div id="revenueSources"></div>
+
+        <div class="divider"></div>
+
+        <div class="total-row">
+            <span>Total Revenue</span>
+            <span id="totalRevenueText">$0</span>
+        </div>
+    </div>
+
+    <!-- REFUND BREAKDOWN -->
+    <div class="box refund">
+        <h3>Refund Breakdown</h3>
+
+        <p class="label">Total Refunded</p>
+        <h2 id="refundAmountBig">$0</h2>
+
+        <p class="label">Percentage of Revenue</p>
+        <div class="refund-percentage">
+            <span id="refundPercent">0%</span>
+            <span class="trend">+0% from last period</span>
+        </div>
+
+        <div class="refund-rate-row">
+            <span>Refund Rate</span>
+            <span id="refundRateText">0%</span>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill red" id="refundBar"></div>
+        </div>
+
+        <div class="refund-note">
+            <strong>Low Refund Rate</strong>
+            <p>Your refund rate is below industry average (5%)</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- TABLE -->
+<div class="box">
+    <h3>Transactions</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Experience</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="earningsTable"></tbody>
+    </table>
+</div>
+
+
+<script type="module" src="../js/modules/experience_earnings.js"></script>
+
+</body>
+</html>

@@ -13,6 +13,16 @@ const internalnavlinks = [
     name: "Completed",
     status: "completed",
     pages: ["tours.html"],
+  },
+  {
+    name: "Overview",
+    status: "overview",
+    pages: ["earnings.html"],
+  },
+  {
+    name: "Payout History",
+    status: "payout-history",
+    pages: ["earnings.html"],
   }
 ];
 

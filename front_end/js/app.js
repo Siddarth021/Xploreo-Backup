@@ -104,7 +104,3 @@ window.addEventListener("unload", (event) => {
 if (window.location.pathname.includes('opsbook.html')) {
     initOperations();
 }
-
-document.getElementById('nav-users-btn').addEventListener('click', () => {
-    initUsers();
-});

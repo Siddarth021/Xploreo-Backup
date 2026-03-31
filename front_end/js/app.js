@@ -5,6 +5,7 @@ import { tour } from "../data/tour.js";
 import {reviews } from "../data/review.js";
 import { partners } from "../data/partners.js";
 import { initOperations } from './modules/operations.js';
+import { initUsers } from './modules/users.js';
 
 function initializeData() {
 
@@ -52,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentUser = JSON.parse(localStorage.getItem("currentUser"));
     
     if (!currentUser) {
-        currentUser = users.find(u => u.id === "10001");
+        currentUser = users.find(u => u.id === "00001");
         localStorage.setItem("currentUser", JSON.stringify(currentUser));
     }
     renderNavbar(currentUser);
@@ -69,4 +70,6 @@ if (window.location.pathname.includes('opsbook.html')) {
     initOperations();
 }
 
-
+document.getElementById('nav-users-btn').addEventListener('click', () => {
+    initUsers();
+});

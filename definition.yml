@@ -1,9 +1,7 @@
 name: Travel Itinerary and Coordination Platform
 
 domainVisionStatement: >
-  To provide a unified digital ecosystem where travelers can create personalized
-  itineraries, collaborate with guides and service partners, form travel groups,
-  and manage bookings, payments, and trip tracking seamlessly.
+  To help travelers plan trips,connect with others , and manage their journeys easily in one place
 
 terms:
 
@@ -191,3 +189,14 @@ terms:
     examples:
       - "The traveler planned a low budget trip to reduce expenses"
       - "A high budget allowed staying in luxury hotels"
+
+  - name: Rating and Review
+    definition: >
+      Feedback given by travelers about a service or experience
+    aliases:
+      - Feedback
+      - user Review
+    examples:
+      - "The travellers gave a high rating to the guide"
+      - "The review described the overall trip experience"
+      

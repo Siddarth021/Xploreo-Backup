@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../css/landing.css">
+<link rel="stylesheet" href="../css/login.css">
+
+</head>
+
+<body>
+
+<!-- HERO -->
+
+<section class="hero">
+
+    <video
+        autoplay
+        muted
+        loop
+        class="hero-bg"
+    >
+
+        <source
+            src="../components/ui/landing/beach.mp4"
+            type="video/mp4"
+        >
+
+    </video>
+
+    <div class="login-hero-content">
+
+        <h1>
+            Join Xploreo
+        </h1>
+
+        <p>
+            Start your journey
+        </p>
+
+    </div>
+
+</section>
+
+<!-- LOGIN CARD -->
+
+<section class="login-section">
+
+<div class="login-card">
+
+    <h2 class="welcome-text">
+        Welcome
+    </h2>
+
+    <form id="login-form">
+
+        <div class="form-group">
+
+            <label>
+                Username or Email
+            </label>
+
+            <input
+                type="text"
+                id="login-username"
+                placeholder="Traveler_username"
+                required
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>
+                Password
+            </label>
+
+            <div class="password-container">
+
+                <input
+                    type="password"
+                    id="login-password"
+                    placeholder="********"
+                    required
+                >
+
+                <span
+                    class="toggle-password"
+                    id="toggle-password"
+                >
+
+                    👁️
+
+                </span>
+
+            </div>
+
+        </div>
+
+        <a
+            href="#"
+            class="forgot-link"
+        >
+            Forgot Password?
+        </a>
+
+        <button
+            type="submit"
+            class="form-submit-btn"
+        >
+
+            Log in →
+
+        </button>
+
+    </form>
+
+</div>
+
+</section>
+
+<!-- NAVBAR -->
+
+<script type="module">
+    import { renderLandingNavbar } from "../components/layout/navbar_landing.js";
+    renderLandingNavbar();
+
+    const BASE_PATH = window.location.pathname.includes("23_Xploreo") ? "/23_Xploreo" : "";
+
+    document.addEventListener("click", function (event) {
+        if (event.target.closest("#login-btn")) {
+            window.location.href = BASE_PATH + "/front_end/pages/login.html";
+        }
+        if (event.target.closest("#signup-btn")) {
+            window.location.href = BASE_PATH + "/front_end/pages/signup.html";
+        }
+    });
+</script>
+
+<!-- LOGIN LOGIC -->
+<script type="module" src="../js/login.js"></script>
+
+</body>
+
+</html>

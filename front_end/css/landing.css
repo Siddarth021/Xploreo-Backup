@@ -2099,3 +2099,133 @@ SERVICE PARTNER FORM
     border-bottom: 2px solid #0F4C4C;
 
 }
+
+/* ===============================
+   STEP 4 SUCCESS SCREEN
+=============================== */
+
+.step4-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    text-align: center;
+}
+
+@keyframes slideUpFade {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.signup-step.step-4 {
+    animation: slideUpFade 0.6s ease-out forwards;
+}
+
+.success-icon-container {
+    margin-bottom: 20px;
+}
+
+.step4-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #0c1a24;
+    margin-bottom: 10px;
+}
+
+.step4-subtitle {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 30px;
+    padding: 0 20px;
+}
+
+.step4-summary-box {
+    background-color: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.summary-label {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+}
+
+.summary-value {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.step4-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.step4-login-btn {
+    width: 100%;
+    background-color: #0F4C4C;
+    color: white;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 14px 0;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.step4-login-btn:hover {
+    background-color: #0B3838;
+}
+
+.step4-home-btn {
+    width: 100%;
+    background-color: white;
+    color: #8fa1a8;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 14px 0;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.step4-home-btn:hover {
+    border-color: #cbd5e1;
+    color: #64748b;
+}
+
+.signup-card.step4-active {
+    width: 680px;
+    margin-top: 50px;
+    transition: width 0.3s ease, margin-top 0.3s ease;
+}

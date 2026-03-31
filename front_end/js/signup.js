@@ -12,6 +12,17 @@ from "./modules/userStorage.js"
 
 let selectedRole = null;
 
+window.togglePasswordVisibility = function(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === "password") {
+        input.type = "text";
+        btn.innerText = "🙈";
+    } else {
+        input.type = "password";
+        btn.innerText = "👁️";
+    }
+};
+
 document.addEventListener(
 "DOMContentLoaded",
 
@@ -129,34 +140,12 @@ function () {
     /* STEP 2 SUBMIT */
 
     if (step2NextBtn) {
-
-        step2NextBtn.addEventListener(
-            "click",
-
-            function () {
-
-                // keep validation (as you requested)
-
-                // if (validateStep2()) {
-
-                    createUser(
-                        selectedRole
-                    );
-
-                    alert(
-                        "Step 2 completed successfully"
-                    );
-
-                    showRoleStep3(
-                        selectedRole
-                    );
-
-                // }
-
+        step2NextBtn.addEventListener("click", function () {
+            if (validateStep2()) {
+                createUser(selectedRole);
+                showRoleStep3(selectedRole);
             }
-
-        );
-
+        });
     }
 
 
@@ -197,28 +186,12 @@ function () {
 
 
     if (step3CompleteBtn) {
-
-        step3CompleteBtn.addEventListener(
-            "click",
-
-            function () {
-
-                console.log(
-                    "Traveler completing signup..."
-                );
-
-                saveTravelerPreferences();
-
-                alert(
-                    "Traveler signup completed!"
-                );
-
-                redirectToDashboard();
-
-            }
-
-        );
-
+        step3CompleteBtn.addEventListener("click", function () {
+            if (!validateStep3()) return;
+            console.log("Traveler completing signup...");
+            saveTravelerPreferences();
+            showStep4();
+        });
     }
 
 
@@ -252,22 +225,10 @@ function () {
     }
 
     if (guideCompleteBtn) {
-
-        guideCompleteBtn.addEventListener(
-            "click",
-
-            function () {
-
-                alert(
-                    "Guide signup completed!"
-                );
-
-                redirectToDashboard();
-
-            }
-
-        );
-
+        guideCompleteBtn.addEventListener("click", function () {
+            if (!validateStep3()) return;
+            showStep4();
+        });
     }
 
 
@@ -301,26 +262,27 @@ function () {
     }
 
     if (partnerCompleteBtn) {
+        partnerCompleteBtn.addEventListener("click", () => {
+            if (!validateStep3()) return;
+            console.log("Service Partner completed signup");
+            showStep4();
+        });
+    }
 
-        partnerCompleteBtn.addEventListener(
-            "click",
+    /* STEP 4 BUTTONS */
+    const step4LoginBtn = document.querySelector(".step4-login-btn");
+    const step4HomeBtn = document.querySelector(".step4-home-btn");
 
-            () => {
+    if (step4LoginBtn) {
+        step4LoginBtn.addEventListener("click", () => {
+            window.location.href = "/23_Xploreo/front_end/pages/login.html";
+        });
+    }
 
-                console.log(
-                    "Service Partner completed signup"
-                );
-
-                alert(
-                    "Signup Completed!"
-                );
-
-                redirectToDashboard();
-
-            }
-
-        );
-
+    if (step4HomeBtn) {
+        step4HomeBtn.addEventListener("click", () => {
+            window.location.href = "/23_Xploreo/front_end/index.html";
+        });
     }
 
 }
@@ -352,96 +314,164 @@ function showStep(stepNumber) {
             "hidden"
         );
 
+    const signupCard = document.querySelector(".signup-card");
+    if (signupCard) signupCard.classList.remove("step4-active");
+
+}
+
+function showStep4() {
+    document.querySelectorAll(".signup-step").forEach(step => step.classList.add("hidden"));
+    
+    const step4 = document.querySelector(".step-4");
+    if(step4) step4.classList.remove("hidden");
+    
+    const signupCard = document.querySelector(".signup-card");
+    if (signupCard) signupCard.classList.add("step4-active");
+
+    const heroContent = document.querySelector(".signup-hero-content");
+    if (heroContent) {
+        heroContent.innerHTML = `
+            <h1>Congratulations</h1>
+            <p style="font-family: 'Pacifico', cursive; font-size: 32px; font-weight: normal; margin-top: -10px;">Start your journey</p>
+        `;
+    }
+
+    const roleCapitalized = selectedRole || "Traveler";
+    const usernameInput = document.getElementById("username") ? document.getElementById("username").value : "traveler_explorer";
+    const usernameVal = usernameInput.trim() || "traveler_explorer";
+    
+    const subtitleEl = document.getElementById("step4-dynamic-subtitle");
+    if(subtitleEl) subtitleEl.innerText = `Welcome to Xploreo! Your ${roleCapitalized.toLowerCase()} account is ready.`;
+    
+    const userEl = document.getElementById("step4-username");
+    if(userEl) userEl.innerText = usernameVal;
+    
+    const roleEl = document.getElementById("step4-role");
+    if(roleEl) roleEl.innerText = roleCapitalized;
 }
 
 
 
-/* VALIDATION — unchanged */
+function showError(input, message) {
+    input.style.borderColor = "#FF4D4D";
+    let insertAfterElement = input;
+    if (input.parentElement.classList.contains('password-wrapper') || input.parentElement.classList.contains('phone-input-wrapper')) {
+        insertAfterElement = input.parentElement;
+    }
+    let errorEl = insertAfterElement.nextElementSibling;
+    if (!errorEl || !errorEl.classList.contains('validation-error-msg')) {
+        errorEl = document.createElement("small");
+        errorEl.className = "validation-error-msg";
+        errorEl.style.color = "#FF4D4D";
+        errorEl.style.fontSize = "12px";
+        errorEl.style.marginTop = "4px";
+        errorEl.style.display = "block";
+        insertAfterElement.parentNode.insertBefore(errorEl, insertAfterElement.nextSibling);
+    }
+    errorEl.innerText = message;
+}
+
+function clearError(input) {
+    input.style.borderColor = "";
+    let checkElement = input;
+    if (input.parentElement.classList.contains('password-wrapper') || input.parentElement.classList.contains('phone-input-wrapper')) {
+        checkElement = input.parentElement;
+    }
+    let errorEl = checkElement.nextElementSibling;
+    if (errorEl && errorEl.classList.contains('validation-error-msg')) {
+        errorEl.remove();
+    }
+}
 
 function validateStep2() {
+    let isValid = true;
+    let firstInvalid = null;
 
-    const fullName =
-        document
-        .getElementById(
-            "fullName"
-        ).value.trim();
+    const ids = ["fullName", "username", "email", "phone", "password", "confirmPassword"];
+    ids.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            clearError(input);
+            let val = input.value.trim();
+            if (!val) {
+                isValid = false;
+                showError(input, "This field is required");
+                if (!firstInvalid) firstInvalid = input;
+            }
+        }
+    });
 
-    const username =
-        document
-        .getElementById(
-            "username"
-        ).value.trim();
-
-    const email =
-        document
-        .getElementById(
-            "email"
-        ).value.trim();
-
-    const phone =
-        document
-        .getElementById(
-            "phone"
-        ).value.trim();
-
-    const password =
-        document
-        .getElementById(
-            "password"
-        ).value;
-
-    const confirmPassword =
-        document
-        .getElementById(
-            "confirmPassword"
-        ).value;
-
-
-    if (
-        !fullName ||
-        !username ||
-        !email ||
-        !phone ||
-        !password ||
-        !confirmPassword
-    ) {
-
-        alert(
-            "All fields are required"
-        );
-
-        return false;
-
+    const usernameInput = document.getElementById("username");
+    if (usernameInput && usernameInput.value.trim() && !/^[A-Za-z]{6,}$/.test(usernameInput.value.trim())) {
+        isValid = false;
+        showError(usernameInput, "Only alphabets accepted, at least 6 characters");
+        if (!firstInvalid) firstInvalid = usernameInput;
+    }
+    
+    const phoneInput = document.getElementById("phone");
+    if (phoneInput && phoneInput.value.trim()) {
+        const phoneVal = phoneInput.value.replace(/[\s-]/g, '');
+        if (!/^\d{10}$/.test(phoneVal)) {
+            isValid = false;
+            showError(phoneInput, "Please enter a valid 10-digit phone number");
+            if (!firstInvalid) firstInvalid = phoneInput;
+        }
     }
 
-    if (
-        !/^[A-Za-z]{6,}$/
-        .test(username)
-    ) {
-
-        alert(
-            "Username must contain only letters and be at least 6 characters"
-        );
-
-        return false;
-
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+    if (passwordInput && confirmPasswordInput && passwordInput.value && confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
+        isValid = false;
+        showError(confirmPasswordInput, "Passwords should match");
+        if (!firstInvalid) firstInvalid = confirmPasswordInput;
     }
 
-    if (
-        password !==
-        confirmPassword
-    ) {
-
-        alert(
-            "Passwords do not match"
-        );
-
-        return false;
-
+    if (!isValid && firstInvalid) {
+        firstInvalid.focus();
     }
 
-    return true;
+    return isValid;
+}
 
+function validateStep3() {
+    let isValid = true;
+    let firstInvalid = null;
+    let container = null;
+
+    if (selectedRole === "Traveler") {
+        container = document.querySelector(".step-3-traveler");
+    } else if (selectedRole === "Local Guide") {
+        container = document.querySelector(".step-3-guide");
+    } else if (selectedRole === "Service Partner") {
+        container = document.querySelector(".step-3-partner");
+    }
+
+    if (!container) return false;
+
+    const inputs = container.querySelectorAll("input:not([type='file']):not([type='time']):not([type='checkbox']):not([type='radio']), select");
+    
+    inputs.forEach(input => {
+        clearError(input);
+
+        // Skip the optional Preferred Destination Types input
+        if (input.placeholder && input.placeholder.includes("Coastal")) {
+            return;
+        }
+
+        const val = input.value.trim();
+        
+        if (!val || val.startsWith("Select ")) {
+            isValid = false;
+            showError(input, "This field is required");
+            if (!firstInvalid) firstInvalid = input;
+        }
+    });
+
+    if (!isValid && firstInvalid) {
+        firstInvalid.focus();
+    }
+
+    return isValid;
 }
 
 
@@ -545,6 +575,9 @@ function showRoleStep3(role) {
                 "hidden"
             )
         );
+
+    const signupCard = document.querySelector(".signup-card");
+    if (signupCard) signupCard.classList.remove("step4-active");
 
     if (role === "Traveler") {
 

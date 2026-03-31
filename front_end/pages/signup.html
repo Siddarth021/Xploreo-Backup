@@ -218,19 +218,32 @@
                         <input id="email" type="email" placeholder="hello@example.com">
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" style="width: 100%;">
                         <label>Phone Number</label>
-                        <input id="phone" type="tel" placeholder="+1 (555) 000-0000">
+                        <div class="phone-input-wrapper" style="display: flex; width: 100%;">
+                            <span style="display: flex; align-items: center; justify-content: center; background: #F5F7F8; border: 1px solid #D1D5DB; border-right: none; border-radius: 10px 0 0 10px; padding: 0 14px; color: #6B7B79; font-size: 14px; font-weight: 500;">+91</span>
+                            <input id="phone" type="tel" placeholder="98765 43210" style="border-radius: 0 10px 10px 0; flex: 1;">
+                        </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" style="width: 100%;">
                         <label>Password</label>
-                        <input id="password" type="password" placeholder="••••••••">
+                        <div class="password-wrapper" style="position: relative; width: 100%;">
+                            <input id="password" type="password" placeholder="••••••••" style="width: 100%;">
+                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility('password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #6B7B79;">
+                                👁️
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" style="width: 100%;">
                         <label>Confirm Password</label>
-                        <input id="confirmPassword" type="password" placeholder="••••••••">
+                        <div class="password-wrapper" style="position: relative; width: 100%;">
+                            <input id="confirmPassword" type="password" placeholder="••••••••" style="width: 100%;">
+                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility('confirmPassword', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #6B7B79;">
+                                👁️
+                            </button>
+                        </div>
                     </div>
 
                 </div>
@@ -276,9 +289,12 @@
                             </label>
 
                             <select class="step3-traveler-input">
-                                <option>
-                                    Select your style
-                                </option>
+                                <option value="">Select your style</option>
+                                <option value="Backpacking">Backpacking</option>
+                                <option value="Luxury">Luxury</option>
+                                <option value="Cultural">Cultural</option>
+                                <option value="Adventure">Adventure</option>
+                                <option value="Relaxation">Relaxation</option>
                             </select>
 
                             <label>
@@ -286,9 +302,10 @@
                             </label>
 
                             <select class="step3-traveler-input">
-                                <option>
-                                    Select budget range
-                                </option>
+                                <option value="">Select budget range</option>
+                                <option value="Budget">Budget ($)</option>
+                                <option value="Moderate">Moderate ($$)</option>
+                                <option value="Luxury">Luxury ($$$)</option>
                             </select>
 
                             <label>
@@ -954,6 +971,39 @@
             </div>
 
         
+        <!-- ================= STEP 4 ================= -->
+        <div id="signup-card-step4" class="signup-step step-4 hidden">
+            <div class="step4-content">
+                <div class="success-icon-container">
+                    <div class="success-icon">
+                        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="30" cy="30" r="24" fill="#A8B4B4"/>
+                            <path d="M22 30.5L27 35.5L38 24.5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <h2 class="step4-title">Account Created Successfully</h2>
+                <p class="step4-subtitle" id="step4-dynamic-subtitle">Welcome to Xploreo! Your traveler account is ready.</p>
+                
+                <div class="step4-summary-box">
+                    <div class="summary-row">
+                        <span class="summary-label">USERNAME</span>
+                        <span class="summary-value" id="step4-username">traveler_explorer</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">ROLE</span>
+                        <span class="summary-value" id="step4-role">Traveler</span>
+                    </div>
+                </div>
+                
+                <div class="step4-actions">
+                    <button class="step4-login-btn">Login</button>
+                    <button class="step4-home-btn">Return to Home</button>
+                </div>
+            </div>
+        </div>
+
         </div>
 
     </div>
@@ -975,11 +1025,16 @@ renderLandingNavbar();
    NAVBAR BUTTON NAVIGATION
 =============================== */
 
+
 const BASE_PATH =
     window.location.pathname
         .includes("23_Xploreo")
             ? "/23_Xploreo"
             : "";
+
+/* =========================
+   NAVBAR BUTTON NAVIGATION
+========================= */
 
 document.addEventListener(
     "click",
@@ -987,10 +1042,12 @@ document.addEventListener(
 
         /* LOGIN */
 
-        if (
-            event.target.id ===
-            "login-btn"
-        ) {
+        const loginBtn =
+            event.target.closest(
+                "#login-btn"
+            );
+
+        if (loginBtn) {
 
             window.location.href =
                 BASE_PATH +
@@ -1000,10 +1057,12 @@ document.addEventListener(
 
         /* SIGNUP */
 
-        if (
-            event.target.id ===
-            "signup-btn"
-        ) {
+        const signupBtn =
+            event.target.closest(
+                "#signup-btn"
+            );
+
+        if (signupBtn) {
 
             window.location.href =
                 BASE_PATH +
@@ -1014,6 +1073,7 @@ document.addEventListener(
     }
 
 );
+
 
 </script>
 

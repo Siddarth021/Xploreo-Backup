@@ -1,26 +1,13 @@
 import { landingLinks }
 from "./navlinks_landing.js";
 
-/* ===============================
-   BASE PATH
-=============================== */
-
 const BASE_PATH =
     "/23_Xploreo/front_end";
-
-/* ===============================
-   LOGO PATH
-=============================== */
 
 const logoPath =
     window.location.pathname.includes("/pages/")
         ? "../components/ui/landing/navbar-logo.png"
         : "./components/ui/landing/navbar-logo.png";
-
-
-/* ===============================
-   RENDER NAVBAR
-=============================== */
 
 export function renderLandingNavbar() {
 
@@ -84,10 +71,6 @@ export function renderLandingNavbar() {
 
 }
 
-/* ===============================
-   EVENTS
-=============================== */
-
 function attachNavbarEvents() {
 
     const logo =
@@ -105,62 +88,47 @@ function attachNavbarEvents() {
             "signup-btn"
         );
 
-    /* LOGO */
-
     if (logo) {
 
         logo.addEventListener(
-
             "click",
-
-            function () {
+            () => {
 
                 window.location.href =
                     BASE_PATH +
                     "/index.html";
 
             }
-
         );
 
     }
 
-    /* LOGIN */
-
     if (loginBtn) {
 
         loginBtn.addEventListener(
-
             "click",
-
-            function () {
+            () => {
 
                 window.location.href =
                     BASE_PATH +
                     "/pages/login.html";
 
             }
-
         );
 
     }
 
-    /* SIGNUP */
-
     if (signupBtn) {
 
         signupBtn.addEventListener(
-
             "click",
-
-            function () {
+            () => {
 
                 window.location.href =
                     BASE_PATH +
                     "/pages/signup.html";
 
             }
-
         );
 
     }

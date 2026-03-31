@@ -903,6 +903,7 @@ body {
 .stat-card.orange { border-top-color: #f59e0b; }
 .stat-card.violet { border-top-color: #8b5cf6; }
 .stat-card.dark-blue{ border-top-color:#0a3e91 ;}
+.stat-card.red{ border-top-color: #eb1515}
 
 .icon-container {
   width: 40px;
@@ -1005,6 +1006,12 @@ body {
   background-color: #f5f3ff;
   transform: translateY(-4px);
   border-top: 4px solid #8b5cf6;
+}
+
+.stat-card.red:hover {
+  background-color: rgb(232, 209, 211);
+  transform: translateY(-4px);
+  border-top: 4px solid #f6665c;
 }
 
 .navbar-right {

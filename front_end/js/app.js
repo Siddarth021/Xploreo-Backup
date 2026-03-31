@@ -21,13 +21,10 @@ function initializeData() {
         localStorage.setItem("reviews", JSON.stringify(reviews));
     }
 
-    console.log("LocalStorage Seeded Successfully!");
-
     if (!localStorage.getItem("partners")) {
         localStorage.setItem("partners", JSON.stringify(partners));
     }
 
-    // Dynamic Date Logic Implementation
     let storedTours = JSON.parse(localStorage.getItem("tours"));
     if (storedTours) {
         const todayStr = new Date().toISOString().split('T')[0];
@@ -53,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentUser = JSON.parse(localStorage.getItem("currentUser"));
     
     if (!currentUser) {
-        currentUser = users.find(u => u.id === "00001");
+        currentUser = users.find(u => u.id === "10001");
         localStorage.setItem("currentUser", JSON.stringify(currentUser));
     }
     renderNavbar(currentUser);

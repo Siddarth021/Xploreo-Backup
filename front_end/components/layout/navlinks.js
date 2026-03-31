@@ -53,6 +53,33 @@ const navlinks = [
     icon: "../components/ui/reviews.svg",
     roles: ["guide"]
   },
+  {
+    name: "Dashboard",
+    path: "../pages/hotelDashboard.html",
+    icon: "../components/ui/dashboard.svg",
+    roles: ["hotel"]
+  },
+  {
+    name: "Bookings",
+    path: "../pages/hotelBookings.html",
+    icon: "../components/ui/operations.png",
+    roles: ["hotel"]
+  },
+  {
+    name: "Services",
+    path: "../pages/hotelRooms.html",
+    icon: "../components/ui/tours.svg",
+    roles: ["hotel"]
+  },
+  {
+    name: "Earnings",
+    path: "../pages/hotelEarning.html",
+    icon: "../components/ui/earnings.svg",
+    roles: ["hotel"]
+  },
+
+  
+   
 ];
 
 export function getNavLinks(role){

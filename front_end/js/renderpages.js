@@ -1,5 +1,9 @@
 import { renderAdminDashboard } from "./adminDashboard.js";
 import { renderdasboard } from "./dashboard.js";
+import { renderHotelDashboard } from "./modules/hotelDashboard.js";
+import { renderBookingsPage } from "./modules/hotel-bookings-page.js";
+import { renderServicesPage } from "./modules/hotel-services-page.js";
+import { renderHotelEarningPage } from "./modules/hotel-earning-page.js";
 
 export function renderPageContent(user) {
     const path = window.location.pathname.split("/").pop();
@@ -15,4 +19,22 @@ export function renderPageContent(user) {
         renderAdminDashboard("admin-dashboard");
         document.getElementById("main").style.display = "none";
     }
+
+    // ==== HOTEL =====
+    if (user.role === "hotel" && path === "hotelDashboard.html") {
+        renderHotelDashboard(user);
+    }
+
+    if (user.role === "hotel" && path === "hotelBookings.html") {
+        renderBookingsPage();
+    }
+
+    if (user.role === "hotel" && path === "hotelRooms.html") {
+        renderServicesPage();
+    }
+
+    if (user.role === "hotel" && path === "hotelEarning.html") {
+        renderHotelEarningPage();
+    }
+
 }

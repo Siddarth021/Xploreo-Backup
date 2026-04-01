@@ -1,87 +1,129 @@
+let filters = {
+    search: "",
+    status: [],
+    checkIn: "",
+    checkOut: "",
+    roomType: []
+};
+
 export function renderBookingsPage() {
     renderControls();
-    renderList("all");
+    applyFilters();
 }
 
 function renderControls() {
     const container = document.getElementById("booking-controls");
 
     container.innerHTML = `
-        <div class="hotel-tabs">
-            <span class="active" data-filter="all">All</span>
-            <span data-filter="confirmed">Confirmed</span>
-            <span data-filter="checked-in">Checked-In</span>
-            <span data-filter="completed">Completed</span>
-            <span data-filter="cancelled">Cancelled</span>
+        <div class="hotel-filters" style="display:flex; justify-content:space-between; align-items:center;">
+            <input type="text" id="searchInput" placeholder="Search guest or booking ID" style="min-width: 300px;">
+            <button id="openFilterBtn" class="btn-light">
+                Filter
+            </button>
         </div>
 
-        <div class="hotel-filters">
+        <!-- Filter Modal -->
+        <div id="filterPanel" class="hotel-modal hidden">
+            <div class="hotel-modal-content" style="width: 450px;">
+                <span class="hotel-modal-close" id="closeFilterBtn">&times;</span>
+                <h2 style="margin-bottom: 20px;">Filters</h2>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight:600;display:block;margin-bottom:8px;">Status</label>
+                    <div style="display:flex;gap:15px;flex-wrap:wrap;">
+                        <label style="cursor:pointer; font-size: 14px;"><input type="checkbox" class="status-cb" value="confirmed"> Confirmed</label>
+                        <label style="cursor:pointer; font-size: 14px;"><input type="checkbox" class="status-cb" value="checked-in"> Checked-in</label>
+                        <label style="cursor:pointer; font-size: 14px;"><input type="checkbox" class="status-cb" value="completed"> Completed</label>
+                        <label style="cursor:pointer; font-size: 14px;"><input type="checkbox" class="status-cb" value="cancelled"> Cancelled</label>
+                    </div>
+                </div>
 
-    <input type="text" id="searchInput" placeholder="Search guest or booking ID">
+                <div style="margin-bottom: 20px;">
+                    <label style="font-weight:600;display:block;margin-bottom:8px;">Room Type</label>
+                    <div style="display:flex;gap:15px;flex-wrap:wrap;">
+                        <label style="cursor:pointer; font-size: 14px;"><input type="checkbox" class="room-cb" value="Deluxe Room"> Deluxe Room</label>
+                        <label style="cursor:pointer; font-size: 14px;"><input type="checkbox" class="room-cb" value="Standard Room"> Standard Room</label>
+                    </div>
+                </div>
 
-    <select id="roomFilter">
-        <option value="all">All Rooms</option>
-        <option value="Deluxe Room">Deluxe Room</option>
-        <option value="Standard Room">Standard Room</option>
-    </select>
+                <div style="display:flex; gap:15px; margin-bottom: 25px;">
+                    <div class="date-field" style="flex:1;">
+                        <label style="font-weight:600;display:block;margin-bottom:8px;">Check-in</label>
+                        <input type="date" id="filterCheckIn" style="width:100%; border:1px solid #ddd; padding:8px; border-radius:8px;">
+                    </div>
+                    <div class="date-field" style="flex:1;">
+                        <label style="font-weight:600;display:block;margin-bottom:8px;">Check-out</label>
+                        <input type="date" id="filterCheckOut" style="width:100%; border:1px solid #ddd; padding:8px; border-radius:8px;">
+                    </div>
+                </div>
 
-    <!-- ✅ Wrap date inputs -->
-    <div class="date-field">
-        <label>Check-in</label>
-        <input type="date" id="startDate">
-    </div>
-
-    <div class="date-field">
-        <label>Check-out</label>
-        <input type="date" id="endDate">
-    </div>
-
-</div>
+                <div class="hotel-actions">
+                    <button class="btn-cancel" id="clearFiltersBtn">Clear</button>
+                    <button class="btn-blue" id="applyFiltersBtn">Apply</button>
+                </div>
+            </div>
+        </div>
     `;
 
-    attachTabEvents();
     attachFilterEvents();
-}
-
-function attachTabEvents() {
-    const tabs = document.querySelectorAll(".hotel-tabs span");
-
-    tabs.forEach(tab => {
-        tab.addEventListener("click", () => {
-
-            // remove active
-            tabs.forEach(t => t.classList.remove("active"));
-
-            // add active
-            tab.classList.add("active");
-
-            const filter = tab.dataset.filter;
-
-            renderList(filter);
-        });
-    });
 }
 
 function attachFilterEvents() {
     const searchInput = document.getElementById("searchInput");
-    const roomFilter = document.getElementById("roomFilter");
-    const startDate = document.getElementById("startDate");
-    const endDate = document.getElementById("endDate");
-
     if (searchInput) {
-        searchInput.addEventListener("input", applyFilters);
+        searchInput.addEventListener("input", (e) => {
+            filters.search = e.target.value.toLowerCase();
+            applyFilters();
+        });
     }
 
-    if (roomFilter) {
-        roomFilter.addEventListener("change", applyFilters);
+    const openFilterBtn = document.getElementById("openFilterBtn");
+    const closeFilterBtn = document.getElementById("closeFilterBtn");
+    const filterPanel = document.getElementById("filterPanel");
+
+    if (openFilterBtn) {
+        openFilterBtn.addEventListener("click", () => {
+            filterPanel.classList.remove("hidden");
+        });
     }
 
-    if (startDate) {
-        startDate.addEventListener("change", applyFilters);
+    if (closeFilterBtn) {
+        closeFilterBtn.addEventListener("click", () => {
+            filterPanel.classList.add("hidden");
+        });
     }
 
-    if (endDate) {
-        endDate.addEventListener("change", applyFilters);
+    const applyFiltersBtn = document.getElementById("applyFiltersBtn");
+    if (applyFiltersBtn) {
+        applyFiltersBtn.addEventListener("click", () => {
+            filters.status = Array.from(document.querySelectorAll(".status-cb:checked")).map(cb => cb.value);
+            filters.roomType = Array.from(document.querySelectorAll(".room-cb:checked")).map(cb => cb.value);
+            filters.checkIn = document.getElementById("filterCheckIn").value;
+            filters.checkOut = document.getElementById("filterCheckOut").value;
+
+            applyFilters();
+            filterPanel.classList.add("hidden");
+        });
+    }
+
+    const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener("click", () => {
+            filters.search = "";
+            filters.status = [];
+            filters.checkIn = "";
+            filters.checkOut = "";
+            filters.roomType = [];
+
+            if (searchInput) searchInput.value = "";
+            document.querySelectorAll(".status-cb").forEach(cb => cb.checked = false);
+            document.querySelectorAll(".room-cb").forEach(cb => cb.checked = false);
+            document.getElementById("filterCheckIn").value = "";
+            document.getElementById("filterCheckOut").value = "";
+
+            applyFilters();
+            filterPanel.classList.add("hidden");
+        });
     }
 }
 
@@ -98,115 +140,53 @@ function isSameDate(dateStr) {
         today.getMonth() === date.getMonth() &&
         today.getDate() === date.getDate()
     );
-    //return true;
 }
+
 function applyFilters() {
-
-    const searchInput = document.getElementById("searchInput");
-    const roomFilter = document.getElementById("roomFilter");
-    const startDate = document.getElementById("startDate");
-    const endDate = document.getElementById("endDate");
-    const activeTabEl = document.querySelector(".hotel-tabs .active");
-
-    // SAFETY FALLBACKS
-    const searchValue = searchInput ? searchInput.value.toLowerCase() : "";
-    const roomValue = roomFilter ? roomFilter.value : "all";
-    const startDateVal = startDate ? startDate.value : "";
-    const endDateVal = endDate ? endDate.value : "";
-    const activeTab = activeTabEl ? activeTabEl.dataset.filter : "all";
-
     let bookings = JSON.parse(localStorage.getItem("hotelBookings")) || [];
 
-    // TAB FILTER
-    if (activeTab !== "all") {
-        bookings = bookings.filter(b => b.status === activeTab);
-    }
-
-    // SEARCH
-    if (searchValue) {
+    // Search (Instantly applies)
+    if (filters.search) {
         bookings = bookings.filter(b =>
-            b.customer.toLowerCase().includes(searchValue) ||
-            String(b.id).includes(searchValue)
+            b.customer.toLowerCase().includes(filters.search) ||
+            String(b.id).toLowerCase().includes(filters.search)
         );
     }
 
-    // ROOM
-    if (roomValue !== "all") {
-        bookings = bookings.filter(b => b.room === roomValue);
+    // Status (Panel)
+    if (filters.status && filters.status.length > 0) {
+        bookings = bookings.filter(b => filters.status.includes(b.status.toLowerCase()));
     }
 
-    // DATE RANGE
-    if (startDateVal && endDateVal) {
-        const start = new Date(startDateVal);
-        const end = new Date(endDateVal);
+    // Room Type (Panel)
+    if (filters.roomType && filters.roomType.length > 0) {
+        bookings = bookings.filter(b => filters.roomType.includes(b.room));
+    }
 
+    // Check-in Date (Panel)
+    if (filters.checkIn) {
+        const filterStart = new Date(filters.checkIn);
+        filterStart.setHours(0, 0, 0, 0);
         bookings = bookings.filter(b => {
-            const checkIn = parseDate(b.checkIn);
-            return checkIn >= start && checkIn <= end;
+            const checkInDate = parseDate(b.checkIn);
+            checkInDate.setHours(0, 0, 0, 0);
+            return checkInDate >= filterStart;
+        });
+    }
+
+    // Check-out Date (Panel)
+    if (filters.checkOut) {
+        const filterEnd = new Date(filters.checkOut);
+        filterEnd.setHours(0, 0, 0, 0);
+        bookings = bookings.filter(b => {
+            const checkOutDate = parseDate(b.checkOut);
+            checkOutDate.setHours(0, 0, 0, 0);
+            return checkOutDate <= filterEnd;
         });
     }
 
     renderFilteredList(bookings);
 }
-
-function renderList(filter) {
-    const container = document.getElementById("booking-list");
-    let bookings = JSON.parse(localStorage.getItem("hotelBookings")) || [];
-
-    if (filter !== "all") {
-        bookings = bookings.filter(b => b.status === filter);
-    }
-
-    if (bookings.length === 0) {
-        container.innerHTML = `<p class="hotel-sub-text">No bookings found</p>`;
-        return;
-    }
-
-    container.innerHTML = bookings.map(b => `
-        <div class="hotel-booking-card">
-
-            <div class="hotel-booking-left">
-                <p class="hotel-cust-name">
-                    ${b.customer}
-                    <span class="hotel-status ${b.status}">${b.status}</span>
-                </p>
-
-                <p class="hotel-sub-text">
-                    ${b.room} • ${b.guests} Guests • ID: ${b.id}
-                </p>
-            </div>
-
-            <div class="hotel-booking-middle">
-                <div>
-                    <p>${b.checkIn}</p>
-                    <span class="hotel-sub-text">Check-in</span>
-                </div>
-
-                <div>→</div>
-
-                <div>
-                    <p>${b.checkOut}</p>
-                    <span class="hotel-sub-text">Check-out</span>
-                </div>
-
-                <div class="hotel-badge">${b.nights} nights</div>
-            </div>
-
-            <div class="hotel-booking-right">
-                <h3>$${b.amount}</h3>
-
-                <div class="hotel-actions">
-                    <button class="btn-light" onclick="openBookingModal('${b.id}')">
-                        View Details
-                    </button>
-                    ${renderActionButton(b.status, b)}
-                </div>
-            </div>
-
-        </div>
-    `).join("");
-}
-
 function renderFilteredList(bookings) {
     const container = document.getElementById("booking-list");
 
@@ -298,7 +278,7 @@ function renderActionButton(status, booking) {
     return "";
 }
 
-window.openBookingModal = function(id) {
+window.openBookingModal = function (id) {
     const bookings = JSON.parse(localStorage.getItem("hotelBookings")) || [];
     const booking = bookings.find(b => String(b.id) === String(id));
 
@@ -335,7 +315,7 @@ if (closeBtn) {
     });
 }
 
-window.cancelBooking = function(id) {
+window.cancelBooking = function (id) {
     let bookings = JSON.parse(localStorage.getItem("hotelBookings")) || [];
 
     bookings = bookings.map(b => {
@@ -350,7 +330,7 @@ window.cancelBooking = function(id) {
     applyFilters(); // re-render
 };
 
-window.checkIn = function(id) {
+window.checkIn = function (id) {
     let bookings = JSON.parse(localStorage.getItem("hotelBookings")) || [];
 
     bookings = bookings.map(b => {
@@ -365,7 +345,7 @@ window.checkIn = function(id) {
     applyFilters(); // refresh UI
 };
 
-window.checkOut = function(id) {
+window.checkOut = function (id) {
     let bookings = JSON.parse(localStorage.getItem("hotelBookings")) || [];
 
     bookings = bookings.map(b => {

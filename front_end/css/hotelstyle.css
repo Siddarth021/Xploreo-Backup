@@ -3,17 +3,6 @@ HOTEL MODULE STYLES
 Fully isolated using prefix
 =========================== */
 
-/* Layout */
-#main {
-max-width: 1200px;
-margin: 0 auto;
-padding: 20px;
-}
-
-.dashboard-wrapper {
-  padding-top: 90px;
-}
-
 /* Page Header */
 .hotel-page-header {
   padding-top : 25px;

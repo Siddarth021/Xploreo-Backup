@@ -239,7 +239,9 @@ body {
     padding-top: 100px;
     padding-left: 60px;
     padding-right: 60px;
+    margin: 0;
 }
+
 
 .page-wrapper {
   padding: 100px 30px 30px 30px;

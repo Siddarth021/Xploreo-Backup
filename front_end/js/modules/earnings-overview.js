@@ -14,11 +14,8 @@ export function renderEarningsOverview(containerId, currentUser) {
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
-
-    // --- Stat calculations ---
     const thisMonthEarnings = monthlyEarnings(myTrips, currentMonth, currentYear);
     const { months, total: totalEarnings6Mo } = earningsByMonth(myTrips);
-    // Get last 6 months only for the chart
     const last6 = months.slice(-6);
     const toursThisMonth = myTrips.filter(t => {
         const d = new Date(t.dateTime.split(" | ")[0]);
@@ -27,15 +24,11 @@ export function renderEarningsOverview(containerId, currentUser) {
     const avgPerTour = completedTrips.length > 0
         ? Math.round(completedTrips.reduce((s, t) => s + (t.amount || 0), 0) / completedTrips.length)
         : 0;
-
-    // Growth percent (compare this month to last month)
     const lastMonthEarnings = monthlyEarnings(myTrips, currentMonth === 0 ? 11 : currentMonth - 1, currentMonth === 0 ? currentYear - 1 : currentYear);
     const growthPct = lastMonthEarnings > 0
         ? Math.round(((thisMonthEarnings - lastMonthEarnings) / lastMonthEarnings) * 100)
         : (thisMonthEarnings > 0 ? 100 : 0);
-    const totalGrowth = 8; // Simulated for total
-
-    // --- Line chart SVG ---
+    const totalGrowth = 8;
     const maxEarning = Math.max(...last6.map(m => m.amount), 1);
     const chartW = 400, chartH = 180, padX = 40, padY = 20;
     const usableW = chartW - padX * 2;
@@ -50,7 +43,6 @@ export function renderEarningsOverview(containerId, currentUser) {
     const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
     const areaPath = `${linePath} L${points[points.length - 1].x},${chartH - padY} L${points[0].x},${chartH - padY} Z`;
 
-    // Y-axis labels
     const yLabels = [0, Math.round(maxEarning / 2), maxEarning].map((val, i) => {
         const y = padY + usableH - (val / maxEarning) * usableH;
         return `<text x="${padX - 5}" y="${y + 4}" text-anchor="end" fill="#9CA3AF" font-size="11">${formatCurrency(val)}</text>
@@ -72,8 +64,6 @@ export function renderEarningsOverview(containerId, currentUser) {
             </defs>
         </svg>
     `;
-
-    // --- Doughnut chart (revenue by tour type — simulated categories) ---
     const tourTypes = {};
     completedTrips.forEach(t => {
         const dest = t.destination || t.location || "Other";

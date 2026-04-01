@@ -4,6 +4,6 @@
  * @param {string} prefix - Currency symbol (default "$")
  * @returns {string} Formatted string e.g. "$1,420"
  */
-export function formatCurrency(amount, prefix = "$") {
+export function formatCurrency(amount, prefix = "₹ ") {
     return `${prefix}${amount.toLocaleString("en-US")}`;
 }

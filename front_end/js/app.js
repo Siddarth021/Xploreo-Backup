@@ -13,7 +13,6 @@ import { hotelReviews } from "../data/hotelReviews.js";
 import { hotelActivity } from "../data/hotelActivity.js";
 import { hotelServices } from "../data/hotelServices.js";
 import { partners } from "../data/partners.js";
-import { initOperations } from "./modules/operations.js";
 import { initLogin } from "./login.js";
 import { initSignup } from "./signup.js";
 
@@ -123,7 +122,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderNavbar(currentUser);
     renderPageContent(currentUser);
-    initUsers();
 });
 
 

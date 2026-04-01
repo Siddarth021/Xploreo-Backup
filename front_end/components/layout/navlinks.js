@@ -23,12 +23,6 @@ const navlinks = [
     icon: "../components/ui/finance.png",
     roles: ["superadmin"]
   },
-  {
-    name: "System & Support",
-    path: "../pages/system.html",
-    icon: "../components/ui/system.png",
-    roles: ["superadmin"]
-  },
    {
     name: "Tours",
     path: "../pages/tours.html",

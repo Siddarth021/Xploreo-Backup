@@ -1,6 +1,6 @@
 // front_end/js/users.js
 
-import { initialUsersData, initialPartnersData } from '/front_end/data/usersData.js';
+import { initialUsersData, initialPartnersData } from '../../data/usersData.js';
 import { getUserStylesHTML } from './userStyles.js';
 import { getUserStatsHTML } from './userStats.js';
 import { getUserTableShellHTML, generateUserRowsHTML } from './userTable.js';

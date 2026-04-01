@@ -1,4 +1,4 @@
-import { opsData } from '../usersData.js';
+import { opsData } from '../../data/usersData.js';
 
 export function getUserStatsHTML() {
     return `

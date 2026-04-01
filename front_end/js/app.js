@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (!currentUser) {
 
-        currentUser = users.find(u => u.id === "00001");
+        currentUser = users.find(u => u.id === "201");
     }
     if (isExperienceRoute) {
         const servicePartnerUser = users.find((user) => user.role === "service_partner");

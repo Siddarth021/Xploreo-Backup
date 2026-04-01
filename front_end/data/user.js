@@ -142,7 +142,16 @@ export const users = [
   },
   {
     id: "201",
-    name: "Hotel Manager",
-    role: "hotel"
+    name: "ARC Hotels",
+    phno: 7766513370,
+    address: "Hyderabad, Telangana",
+    gender: "male",
+    dob: new Date("2000-08-01"),
+    username: "Acr",
+    email: "acrh@xploreo.com",
+    role: "hotel",
+    profilePic: "./profilepic/110.png",
+    password: "acr@12345",
+    status: "active"
   }
 ];

@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentUser = JSON.parse(localStorage.getItem("currentUser"));
     
     if (!currentUser) {
-        currentUser = users.find(u => u.id === "10001");
+        currentUser = users.find(u => u.id === "00001");
     }
     if (isExperienceRoute) {
         const servicePartnerUser = users.find((user) => user.role === "service_partner");
@@ -134,6 +134,6 @@ window.addEventListener("unload", () => {
     location.reload();
 });
 
-if (window.location.pathname.includes("opsbook.html")) {
+/*if (window.location.pathname.includes("opsbook.html")) {
     initOperations();
-}
+}*/

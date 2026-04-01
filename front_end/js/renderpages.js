@@ -14,6 +14,7 @@ import { renderExperienceEarningsPage } from "./modules/experience_earnings.js";
 import { renderExperienceBookingsPage } from "./modules/experience_bookings.js";
 import { renderExperienceCatalogPage } from "./modules/experience_experience.js";
 import { renderExperienceProfilePage } from "./modules/experience_profile.js";
+import { initOperations } from "./modules/operations.js";
 
 export function renderPageContent(user) {
     const path = window.location.pathname.split("/").pop();
@@ -36,7 +37,12 @@ export function renderPageContent(user) {
         if (mainDiv) mainDiv.style.display = "block";
 
         initUsers();
-    } else if (user.role === "superadmin" && path === "finance.html") {
+    }else if (user.role === "superadmin" && path === "opsbook.html"){
+        const mainDiv = document.getElementById("main");
+        if (mainDiv) mainDiv.style.display = "block";
+        initOperations();
+    } 
+    else if (user.role === "superadmin" && path === "finance.html") {
         const adminDash = document.getElementById("admin-dashboard");
         if (adminDash) adminDash.style.display = "none";
 

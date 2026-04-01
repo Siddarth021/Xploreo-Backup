@@ -9,10 +9,10 @@ window.togglePasswordVisibility = function (inputId, btn) {
     const input = document.getElementById(inputId);
     if (input.type === "password") {
         input.type = "text";
-        btn.innerText = "🙈";
+        btn.innerHTML = '<img src="../components/ui/eye.svg" alt="Hide Password" style="width: 20px; height: 20px;">';
     } else {
         input.type = "password";
-        btn.innerText = "👁️";
+        btn.innerHTML = '<img src="../components/ui/eye-closed.svg" alt="Show Password" style="width: 20px; height: 20px;">';
     }
 };
 
@@ -214,6 +214,11 @@ function validateStep2() {
     ids.forEach(id => {
         const input = document.getElementById(id);
         if (input) {
+            // Setup real-time red-state wiping upon keystroke natively
+            if (!input.dataset.listenerAttached) {
+                input.addEventListener("input", () => clearError(input));
+                input.dataset.listenerAttached = "true";
+            }
             clearError(input);
             let val = input.value.trim();
             if (!val) {
@@ -227,8 +232,18 @@ function validateStep2() {
     const usernameInput = document.getElementById("username");
     if (usernameInput && usernameInput.value.trim() && !/^[A-Za-z]{6,}$/.test(usernameInput.value.trim())) {
         isValid = false;
-        showError(usernameInput, "Only alphabets accepted, at least 6 characters");
+        showError(usernameInput, "Username can only contain alphabets (no numbers/special chars), min 6 characters.");
         if (!firstInvalid) firstInvalid = usernameInput;
+    }
+
+    const emailInput = document.getElementById("email");
+    if (emailInput && emailInput.value.trim()) {
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        if (!emailRegex.test(emailInput.value.trim())) {
+            isValid = false;
+            showError(emailInput, "Please enter a valid email address (e.g., example@domain.com, .in).");
+            if (!firstInvalid) firstInvalid = emailInput;
+        }
     }
 
     const phoneInput = document.getElementById("phone");

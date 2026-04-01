@@ -14,10 +14,50 @@ export function initLogin() {
         togglePassword.addEventListener("click", () => {
             if (passwordInput.type === "password") {
                 passwordInput.type = "text";
-                togglePassword.innerText = "🙈";
+                togglePassword.innerHTML = '<img src="../components/ui/eye.svg" alt="Hide Password" style="width: 20px; height: 20px;">';
             } else {
                 passwordInput.type = "password";
-                togglePassword.innerText = "👁️";
+                togglePassword.innerHTML = '<img src="../components/ui/eye-closed.svg" alt="Show Password" style="width: 20px; height: 20px;">';
+            }
+        });
+    }
+
+    /* ===============================
+       DYNAMIC ERROR CLEAR LOGIC
+    =============================== */
+    const usernameInput = document.getElementById("login-username");
+    if (usernameInput) {
+        usernameInput.addEventListener("input", () => clearError(usernameInput));
+    }
+    if (passwordInput) {
+        passwordInput.addEventListener("input", () => clearError(passwordInput));
+    }
+
+    /* ===============================
+       FORGOT PASSWORD OVERRIDE
+    =============================== */
+    const forgotLink = document.querySelector(".forgot-link");
+    if (forgotLink) {
+        forgotLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            const identifier = prompt("Enter your username or email to reset your password:");
+            
+            if (identifier) {
+                const users = JSON.parse(localStorage.getItem("users")) || [];
+                const targetIndex = users.findIndex(u => u.username === identifier || u.email === identifier);
+                
+                if (targetIndex !== -1) {
+                    const newPassword = prompt(`Account found for ${identifier}. Enter your new password:`);
+                    if (newPassword && newPassword.trim() !== "") {
+                        users[targetIndex].password = newPassword.trim();
+                        localStorage.setItem("users", JSON.stringify(users));
+                        alert("Password successfully reset! You can now log in.");
+                    } else {
+                        alert("Password reset cancelled. Cannot be blank.");
+                    }
+                } else {
+                    alert("No account found with that username or email.");
+                }
             }
         });
     }

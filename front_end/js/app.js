@@ -135,8 +135,3 @@ window.addEventListener("unload", () => {
     console.log("Refresh is starting...");
 
 });
-window.addEventListener("beforeunload", () => {
- 
-    localStorage.clear();
-    location.reload();
-});

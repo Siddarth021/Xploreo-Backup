@@ -1,5 +1,3 @@
-// front_end/js/usersData.js
-
 export const opsData = [
     { 
         label: "New Registrations", value: "1,284", 

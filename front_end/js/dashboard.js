@@ -5,11 +5,9 @@ import { renderDashEarnings } from "./modules/dash-earnings.js";
 import { renderDashReviews } from "./modules/dash-reviews.js";
 
 export function renderdasboard(containerId, currentUser) {
-    if(document.getElementById("welcome-section")) renderWelcomemsg("welcome-section", currentUser);
-    if(document.getElementById("stats-section")) renderStats("stats-section", currentUser);
-    if(document.getElementById("tour-section")) renderTour("tour-section", currentUser);
-    
-    // Execute imported modules for Earnings and Reviews cleanly
+    renderWelcomemsg("welcome-section", currentUser);
+    renderStats("stats-section", currentUser);
+    renderTour("tour-section", currentUser);
     renderDashEarnings("earnings-section", currentUser);
     renderDashReviews("reviews-section", currentUser);
 }

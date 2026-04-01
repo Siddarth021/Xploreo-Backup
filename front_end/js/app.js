@@ -115,7 +115,7 @@ window.addEventListener("unload", (event) => {
     location.reload();
 });
 
-if (window.location.pathname.includes('opsbook.html')) {
+/*if (window.location.pathname.includes('opsbook.html')) {
     initOperations();
-}
+}*/
 

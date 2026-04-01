@@ -15,45 +15,45 @@ export function renderPageContent(user) {
 
     if (user.role === "guide" && path === "dashboard.html") {
         renderdasboard("main",user);
+
+        document.getElementById("main").style.display = "block";
         document.getElementById("admin-dashboard").style.display = "none";
+        document.getElementById("hotel-dashboard").style.display = "none";
 
     } else if (user.role === "superadmin" && path === "dashboard.html") {
         renderAdminDashboard("admin-dashboard");
+
         document.getElementById("admin-dashboard").style.display = "block";
         document.getElementById("main").style.display = "none";
+        document.getElementById("hotel-dashboard").style.display = "none";
+
     }else if (user.role === "superadmin" && path === "users.html") {
         
-        // Safely check if admin-dashboard exists before hiding it
         const adminDash = document.getElementById("admin-dashboard");
         if (adminDash) {
             adminDash.style.display = "none";
         }
         
-        // Safely check if main exists before showing it
         const mainDiv = document.getElementById("main");
         if (mainDiv) {
             mainDiv.style.display = "block";
         }
         
-        // Inject the Users & Partners HTML!
         initUsers();
 
     // 3. ADD THIS NEW BLOCK FOR THE FINANCE PAGE
     } else if (user.role === "superadmin" && path === "finance.html") {
-        
-        // Safely check if admin-dashboard exists before hiding it
+    
         const adminDash = document.getElementById("admin-dashboard");
         if (adminDash) {
             adminDash.style.display = "none";
         }
         
-        // Safely check if main exists before showing it
         const mainDiv = document.getElementById("main");
         if (mainDiv) {
             mainDiv.style.display = "block";
         }
         
-        // Inject the Finance HTML!
         initFinance();
 
     } else if (user.role === "guide" && path === "tours.html") {
@@ -70,8 +70,13 @@ export function renderPageContent(user) {
 
 
     // ==== HOTEL =====
-    else if (user.role === "hotel" && path === "hotelDashboard.html") {
+    else if (user.role === "hotel" && path === "dashboard.html") {
         renderHotelDashboard(user);
+        document.getElementById("main").style.display = "none";
+        document.getElementById("admin-dashboard").style.display = "none";
+        document.getElementById("hotel-dashboard").style.display = "block";
+
+
     }
 
     else if (user.role === "hotel" && path === "hotelBookings.html") {

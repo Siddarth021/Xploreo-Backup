@@ -1,4 +1,4 @@
-﻿/* ========================================
+/* ========================================
    EARNINGS PAGE â€” Premium Redesign
    ======================================== */
 
@@ -29,6 +29,12 @@
     width: 100%;
     box-sizing: border-box;
     animation: earn-fadeInUp 0.5s ease-out;
+}
+
+#earnings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
 }
 
 /* --- Page Header with Gradient Accent --- */

@@ -120,14 +120,11 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
                     </div>
 
                     <div class="action-buttons-ongoing">
-                        <button class="btn btn-solid-blue flex-btn">
-                            <img src="../css/icons/phone-white.svg" alt="call" class="btn-icon" /> Call Customer
-                        </button>
                         <button class="btn btn-outline-blue flex-btn" onclick="openTourModal('${req.id}')">
-                            <img src="../css/icons/route-blue.svg" alt="route" class="btn-icon" /> View Route
+                            View Details
                         </button>
-                        <button class="btn btn-outline-green flex-btn" onclick="handleTourAction('${req.id}')">
-                            <img src="../css/icons/check-green.svg" alt="complete" class="btn-icon" /> Complete
+                        <button class="btn btn-solid-blue flex-btn" onclick="handleTourAction('${req.id}')">
+                            ${displayIndex >= totalSteps - 1 ? 'Finish Tour' : 'Next Stop'}
                         </button>
                     </div>
                 </div>

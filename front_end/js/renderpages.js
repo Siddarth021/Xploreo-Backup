@@ -16,7 +16,7 @@ import { renderExperienceCatalogPage } from "./modules/experience_experience.js"
 import { renderExperienceProfilePage } from "./modules/experience_profile.js";
 
 export function renderPageContent(user) {
-    const path = window.location.pathname.split("/").pop();
+    const path = window.location.pathname.split("/").pop() || "dashboard.html";
 
     if (user.role === "guide" && path === "dashboard.html") {
         renderdasboard("main", user);

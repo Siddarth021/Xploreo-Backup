@@ -20,11 +20,14 @@ export function renderPageContent(user) {
 
     if (user.role === "guide" && path === "dashboard.html") {
         renderdasboard("main", user);
+        document.getElementById("main").style.display = "block";
         document.getElementById("admin-dashboard").style.display = "none";
+        document.getElementById("hotel-dashboard").style.display = "none";
     } else if (user.role === "superadmin" && path === "dashboard.html") {
         renderAdminDashboard("admin-dashboard");
         document.getElementById("admin-dashboard").style.display = "block";
         document.getElementById("main").style.display = "none";
+        document.getElementById("hotel-dashboard").style.display = "none";
     } else if (user.role === "superadmin" && path === "users.html") {
         const adminDash = document.getElementById("admin-dashboard");
         if (adminDash) adminDash.style.display = "none";
@@ -47,8 +50,11 @@ export function renderPageContent(user) {
         renderEarningsPage("main", user);
     } else if (user.role === "guide" && path === "reviews.html") {
         renderReviewsPage("main", user);
-    } else if (user.role === "hotel" && path === "hotelDashboard.html") {
+    } else if (user.role === "hotel" && (path === "dashboard.html" || path === "hotelDashboard.html")) {
         renderHotelDashboard(user);
+        document.getElementById("main").style.display = "none";
+        document.getElementById("admin-dashboard").style.display = "none";
+        document.getElementById("hotel-dashboard").style.display = "block";
     } else if (user.role === "hotel" && path === "hotelBookings.html") {
         renderBookingsPage();
     } else if (user.role === "hotel" && path === "hotelRooms.html") {

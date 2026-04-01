@@ -8,6 +8,6 @@ export function renderHotelDashboard(user) {
     renderStats("hotel-stats", user);  
     renderRooms("rooms-section");
     renderBookings("bookings-section");
-    renderHotelReviews("reviews-section");
+    renderHotelReviews("reviews-section-h");
     renderActivity("activity-section");
 }

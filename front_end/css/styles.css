@@ -1,12 +1,3 @@
-/*
- * STYLES.CSS — Backwards-Compatible Import Hub
- * =============================================
- * This file imports all page-wise CSS files.
- * Any page still referencing styles.css will load everything.
- *
- * For optimal performance, update individual HTML pages
- * to reference only shared.css + their page-specific CSS.
- */
 
 @import url('./shared.css');
 @import url('./dashboard.css');

@@ -1,9 +1,9 @@
 export function renderHotelReviews(containerId) {
     const container = document.getElementById(containerId);
-
+    
     const reviews = JSON.parse(localStorage.getItem("hotelReviews")) || [];
-
-    container.innerHTML = `
+    console.log(reviews);
+    const html = `
         <div class="hotel-card-header hotel-flex-header">
             <h2>Customer Reviews</h2>
             <span class="hotel-link">View All Reviews</span>
@@ -28,4 +28,6 @@ export function renderHotelReviews(containerId) {
             `).join("")}
         </div>
     `;
+    console.log(html);
+    container.innerHTML = html;
 }

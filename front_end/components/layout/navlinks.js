@@ -3,7 +3,7 @@ const navlinks = [
     name: "Dashboard",
     path: "../pages/dashboard.html",
     icon: "../components/ui/dashboard.svg",
-    roles: ["guide","superadmin","techadmin","nontechadmin","opadmin"]
+    roles: ["guide","superadmin","techadmin","nontechadmin","opadmin","hotel"]
   },
   {
     name: "Operations & Bookings",
@@ -52,12 +52,6 @@ const navlinks = [
     path: "../pages/reviews.html",
     icon: "../components/ui/reviews.svg",
     roles: ["guide"]
-  },
-  {
-    name: "Dashboard",
-    path: "../pages/hotelDashboard.html",
-    icon: "../components/ui/dashboard.svg",
-    roles: ["hotel"]
   },
   {
     name: "Bookings",

@@ -16,17 +16,27 @@ function renderControls() {
         </div>
 
         <div class="hotel-filters">
-            <input type="text" id="searchInput" placeholder="Search guest or booking ID">
 
-            <select id="roomFilter">
-                <option value="all">All Rooms</option>
-                <option value="Deluxe Room">Deluxe Room</option>
-                <option value="Standard Room">Standard Room</option>
-            </select>
+    <input type="text" id="searchInput" placeholder="Search guest or booking ID">
 
-            <input type="date" id="startDate">
-            <input type="date" id="endDate">
-        </div>
+    <select id="roomFilter">
+        <option value="all">All Rooms</option>
+        <option value="Deluxe Room">Deluxe Room</option>
+        <option value="Standard Room">Standard Room</option>
+    </select>
+
+    <!-- ✅ Wrap date inputs -->
+    <div class="date-field">
+        <label>Check-in</label>
+        <input type="date" id="startDate">
+    </div>
+
+    <div class="date-field">
+        <label>Check-out</label>
+        <input type="date" id="endDate">
+    </div>
+
+</div>
     `;
 
     attachTabEvents();

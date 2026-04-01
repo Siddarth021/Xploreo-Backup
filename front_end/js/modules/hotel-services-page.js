@@ -107,6 +107,7 @@ window.closeServiceModal = function () {
     if (modalTitle) modalTitle.innerText = "Add Service";
 };
 
+
 /* =========================
 STATUS TOGGLE
 ========================= */
@@ -133,13 +134,20 @@ SAVE SERVICE
 ========================= */
 window.saveService = function () {
 
-    const name = document.getElementById("serviceName")?.value;
-    const price = document.getElementById("servicePrice")?.value;
-    const capacity = document.getElementById("serviceCapacity")?.value;
-    const total = document.getElementById("serviceTotal")?.value;
+    const name = document.getElementById("serviceName")?.value.trim();
+    const price = Number(document.getElementById("servicePrice")?.value);
+    const capacity = Number(document.getElementById("serviceCapacity")?.value);
+    const total = Number(document.getElementById("serviceTotal")?.value);
 
-    if (!name || !price || !capacity || !total) {
-        alert("Fill all fields");
+    // Check empty / invalid
+    if (!name || isNaN(price) || isNaN(capacity) || isNaN(total)) {
+        alert("Fill all fields correctly");
+        return;
+    }
+
+    // 🚫 BLOCK NEGATIVE VALUES
+    if (price < 0 || capacity < 0 || total < 0) {
+        alert("Negative values are not allowed");
         return;
     }
 
@@ -147,15 +155,14 @@ window.saveService = function () {
 
     if (editServiceId) {
 
-        // UPDATE EXISTING
         services = services.map(s =>
             s.id === editServiceId
                 ? {
                     ...s,
                     name,
-                    price: Number(price),
-                    capacity: Number(capacity),
-                    totalRooms: Number(total),
+                    price,
+                    capacity,
+                    totalRooms: total,
                     status: selectedStatus,
                     images: uploadedImages.length ? uploadedImages : s.images,
                     thumbnail: selectedThumbnail || s.thumbnail
@@ -167,14 +174,13 @@ window.saveService = function () {
 
     } else {
 
-        // CREATE NEW
         const newService = {
             id: Date.now(),
             name,
-            price: Number(price),
-            capacity: Number(capacity),
-            totalRooms: Number(total),
-            availableRooms: Number(total),
+            price,
+            capacity,
+            totalRooms: total,
+            availableRooms: total,
             status: selectedStatus,
             images: uploadedImages,
             thumbnail: selectedThumbnail
@@ -188,6 +194,27 @@ window.saveService = function () {
     closeServiceModal();
     renderServicesPage();
 };
+window.addEventListener("DOMContentLoaded", () => {
+    const numberInputs = ["servicePrice", "serviceCapacity", "serviceTotal"];
+
+    numberInputs.forEach(id => {
+        const input = document.getElementById(id);
+
+        if (!input) return;
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "-" || e.key === "e") {
+                e.preventDefault();
+            }
+        });
+
+        input.addEventListener("input", () => {
+            if (input.value < 0) {
+                input.value = 0;
+            }
+        });
+    });
+});
 /* =========================
 EDIT (PLACEHOLDER FOR NEXT)
 ========================= */

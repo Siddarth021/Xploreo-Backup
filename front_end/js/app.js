@@ -13,7 +13,6 @@ import { hotelReviews } from "../data/hotelReviews.js";
 import { hotelActivity } from "../data/hotelActivity.js";
 import { hotelServices } from "../data/hotelServices.js";
 import { partners } from "../data/partners.js";
-import { initOperations } from "./modules/operations.js";
 import { initLogin } from "./login.js";
 import { initSignup } from "./signup.js";
 
@@ -108,7 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentUser = JSON.parse(localStorage.getItem("currentUser"));
     
     if (!currentUser) {
-        currentUser = users.find(u => u.id === "10001");
+
+        currentUser = users.find(u => u.id === "201");
     }
 
     if (isExperienceRoute) {
@@ -116,7 +116,6 @@ document.addEventListener("DOMContentLoaded", () => {
         currentUser = servicePartnerUser
             ? { ...servicePartnerUser, role: "experience" }
             : { role: "experience" };
-    }
 
     if (!currentUser) {
         currentUser = users.find((u) => u.id === "00001");
@@ -129,6 +128,13 @@ document.addEventListener("DOMContentLoaded", () => {
     renderPageContent(currentUser);
 });
 
-if (window.location.pathname.includes("opsbook.html")) {
-    initOperations();
-}
+window.addEventListener("unload", () => {
+    const path = window.location.pathname.split("/").pop();
+
+    if (path.startsWith("experience_")) {
+        return;
+    }
+
+    console.log("Refresh is starting...");
+
+});

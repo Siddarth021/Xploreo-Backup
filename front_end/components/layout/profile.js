@@ -1,13 +1,22 @@
-export function getProfile(user){
+export function getProfile(user) {
+    let profileLink = 'adminProfile.html';
+    if (user && user.role === 'hotel') {
+        profileLink = 'hotelprofile.html';
+    } else if (user && user.role === 'experience') {
+        profileLink = 'experience_profile.html';
+    }
+
     return `
         <div class="profile" onclick="toggleProfileMenu()">
             <span class="profile-name">${user.name}</span>
             <img src="../components/ui/profile.png" alt="user" class="profile-img"/>
             <div class="profile-dropdown hidden" id="profile-dropdown">
-              <div class="dropdown-item">
+              
+              <div class="dropdown-item" onclick="window.location.href='${profileLink}'">
                 <img src="../components/ui/user.svg" class="dropdown-icon">
                 <span>Profile</span>
               </div>
+              
               <div class="dropdown-item">
                 <img src="../components/ui/support.svg" class="dropdown-icon">
                 <span>Support</span>
@@ -37,6 +46,5 @@ window.addEventListener("click", function (e) {
 window.logout = function () {
   localStorage.removeItem("currentUser");
   localStorage.clear();
-  location.reload();
   window.location.href = "login.html";
 };

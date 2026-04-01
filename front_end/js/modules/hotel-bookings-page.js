@@ -46,15 +46,18 @@ function renderControls() {
                     </div>
                 </div>
 
-                <div style="display:flex; gap:15px; margin-bottom: 25px;">
-                    <div class="date-field" style="flex:1;">
-                        <label style="font-weight:600;display:block;margin-bottom:8px;">Check-in</label>
-                        <input type="date" id="filterCheckIn" style="width:100%; border:1px solid #ddd; padding:8px; border-radius:8px;">
+                <div style="margin-bottom: 25px;">
+                    <div class="filter-date-row">
+                        <div class="filter-date-group">
+                            <label for="filterCheckIn">Check-in</label>
+                            <input type="date" id="filterCheckIn" class="filter-date-input">
+                        </div>
+                        <div class="filter-date-group">
+                            <label for="filterCheckOut">Check-out</label>
+                            <input type="date" id="filterCheckOut" class="filter-date-input">
+                        </div>
                     </div>
-                    <div class="date-field" style="flex:1;">
-                        <label style="font-weight:600;display:block;margin-bottom:8px;">Check-out</label>
-                        <input type="date" id="filterCheckOut" style="width:100%; border:1px solid #ddd; padding:8px; border-radius:8px;">
-                    </div>
+                    <div class="filter-date-error-text" id="filterDateError"></div>
                 </div>
 
                 <div class="hotel-actions">
@@ -118,12 +121,77 @@ function attachFilterEvents() {
             if (searchInput) searchInput.value = "";
             document.querySelectorAll(".status-cb").forEach(cb => cb.checked = false);
             document.querySelectorAll(".room-cb").forEach(cb => cb.checked = false);
-            document.getElementById("filterCheckIn").value = "";
-            document.getElementById("filterCheckOut").value = "";
+            
+            const localCheckInInput = document.getElementById("filterCheckIn");
+            const localCheckOutInput = document.getElementById("filterCheckOut");
+            const localDateError = document.getElementById("filterDateError");
+            
+            if (localCheckInInput) localCheckInInput.value = "";
+            if (localCheckOutInput) {
+                localCheckOutInput.value = "";
+                localCheckOutInput.min = "";
+                localCheckOutInput.classList.remove("is-invalid");
+            }
+            if (localDateError) localDateError.textContent = "";
+            if (applyFiltersBtn) applyFiltersBtn.disabled = false;
 
             applyFilters();
             filterPanel.classList.add("hidden");
         });
+    }
+
+    // --- Date Validation Logic ---
+    const filterCheckIn = document.getElementById("filterCheckIn");
+    const filterCheckOut = document.getElementById("filterCheckOut");
+    const filterDateError = document.getElementById("filterDateError");
+    // Re-fetch applyBtn locally
+    const filterApplyBtn = document.getElementById("applyFiltersBtn");
+
+    function validateDates() {
+        if (!filterCheckIn || !filterCheckOut) return;
+        
+        const inDateVal = filterCheckIn.value;
+        const outDateVal = filterCheckOut.value;
+
+        // If either is empty, simply clear any errors and leave it open
+        if (!inDateVal || !outDateVal) {
+            if (filterDateError) filterDateError.textContent = "";
+            filterCheckOut.classList.remove("is-invalid");
+            if (filterApplyBtn) filterApplyBtn.disabled = false;
+            return;
+        }
+
+        const cin = new Date(inDateVal);
+        const cout = new Date(outDateVal);
+
+        if (cout <= cin) {
+            if (filterDateError) filterDateError.textContent = "Check-out date must be after Check-in date";
+            filterCheckOut.classList.add("is-invalid");
+            if (filterApplyBtn) filterApplyBtn.disabled = true;
+        } else {
+            if (filterDateError) filterDateError.textContent = "";
+            filterCheckOut.classList.remove("is-invalid");
+            if (filterApplyBtn) filterApplyBtn.disabled = false;
+        }
+    }
+
+    if (filterCheckIn) {
+        filterCheckIn.addEventListener("change", (e) => {
+            if (e.target.value) {
+                const checkInDate = new Date(e.target.value);
+                checkInDate.setDate(checkInDate.getDate() + 1);
+                if (filterCheckOut) {
+                    filterCheckOut.min = checkInDate.toISOString().split("T")[0];
+                }
+            } else {
+                if (filterCheckOut) filterCheckOut.min = "";
+            }
+            validateDates();
+        });
+    }
+
+    if (filterCheckOut) {
+        filterCheckOut.addEventListener("change", validateDates);
     }
 }
 

@@ -37,6 +37,12 @@
     gap: 28px;
 }
 
+#earnings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
 /* --- Page Header with Gradient Accent --- */
 .earn-header {
     margin-bottom: 6px;

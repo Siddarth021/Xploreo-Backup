@@ -1,5 +1,4 @@
 export function renderinternalcontents(containerId, currentUser, currentActiveTab) {
-    console.log("DEBUG_SYNC_VERIFICATION_TOKEN_8899");
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -32,23 +31,23 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
                         
                         <div class="tour-meta-grid">
                             <div class="meta-item">
-                                <img src="../components/ui/user.svg" alt="user" class="meta-icon" />
+                                <img src="/components/ui/user.svg" alt="user" class="meta-icon" />
                                 <span>${req.customer}</span>
                             </div>
                             <div class="meta-item">
-                                <img src="../components/ui/support.svg" alt="phone" class="meta-icon" />
+                                <img src="/components/ui/support.svg" alt="phone" class="meta-icon" />
                                 <span>${req.phone || "N/A"}</span>
                             </div>
                             <div class="meta-item">
-                                <img src="../components/ui/upcomingtours.svg" alt="date" class="meta-icon" />
+                                <img src="/components/ui/upcomingtours.svg" alt="date" class="meta-icon" />
                                 <span>${req.dateTime.split(" | ")[0]}</span>
                             </div>
                             <div class="meta-item">
-                                <img src="../components/ui/schedule.svg" alt="time" class="meta-icon" />
+                                <img src="/components/ui/schedule.svg" alt="time" class="meta-icon" />
                                 <span>${req.dateTime.split(" | ")[1]}</span>
                             </div>
                             <div class="meta-item">
-                                <img src="../components/ui/tours.svg" alt="location" class="meta-icon" />
+                                <img src="/components/ui/tours.svg" alt="location" class="meta-icon" />
                                 <span>${req.destination}</span>
                             </div>
                         </div>
@@ -163,10 +162,10 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
                         <div class="comp-sub">
                             <div class="comp-icons">
                                 <span class="cust-info">
-                                    <img src="../components/ui/user.svg" alt="user" style="width:14px; opacity:0.6;" /> ${req.customer}
+                                    <img src="/components/ui/user.svg" alt="user" style="width:14px; opacity:0.6;" /> ${req.customer}
                                 </span>
                                 <span class="cust-info">
-                                    <img src="../components/ui/upcomingtours.svg" alt="date" style="width:14px; opacity:0.6;" /> ${req.dateTime.split(" | ")[0]}
+                                    <img src="/components/ui/upcomingtours.svg" alt="date" style="width:14px; opacity:0.6;" /> ${req.dateTime.split(" | ")[0]}
                                 </span>
                                 <span class="cust-info">${req.guests} guests</span>
                             </div>

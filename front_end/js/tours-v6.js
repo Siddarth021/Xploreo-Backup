@@ -1,6 +1,6 @@
 import { rendertourpagehearder } from "./modules/tour-page-header.js";
 import { renderinternalnavbar } from "./modules/internal-navbar.js";
-import { renderinternalcontents } from "./modules/internal-contents.js";
+import { renderinternalcontents } from "./modules/internal-contents-v6.js";
 
 let currentActiveTab = "pending"
 

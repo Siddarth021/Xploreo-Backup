@@ -2,18 +2,28 @@
 <html>
     <head>
         <title>Tours</title>
-        <link rel="stylesheet" href="../css/shared.css">
-        <link rel="stylesheet" href="../css/tours.css">
+        <link rel="stylesheet" href="../css/shared.css?v=cascade_v6">
+        <link rel="stylesheet" href="../css/tours.css?v=cascade_v6">
     </head>
-    <body>
-        <div id="navbar"></div>
-        <div id="main" class="page-wrapper">
-            <div id="tour-page-header" class="welcome"></div>
-            <div id="tours-internal-navbar" class="internal-navbar"></div>
-            <div id="interal-search-bar"></div>
-            <div id="internal-contents"></div>
+    <body data-page="tours">
+        <div id="app">
+            <!-- Navigation Sidebar -->
+            <div id="navbar"></div>
+
+            <!-- Main Content Area -->
+            <main class="main-content">
+                <!-- Header Section -->
+                <header id="tour-page-header"></header>
+
+                <!-- Internal Navbar (Tabs) -->
+                <nav id="tours-internal-navbar"></nav>
+
+                <!-- Content Area for Tours -->
+                <div id="internal-contents"></div>
+            </main>
         </div>
 
+        <!-- Modal for Tour Details -->
         <div id="tourModal" class="modal-overlay">
             <div class="modal-content">
                 <div class="modal-header">
@@ -27,6 +37,6 @@
             </div>
         </div>
 
-        <script type="module" src="../js/app.js"></script>
+        <script type="module" src="../js/app.js?v=final_fix_v5"></script>
     </body>
 </html>

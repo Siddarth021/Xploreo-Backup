@@ -116,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
         currentUser = servicePartnerUser
             ? { ...servicePartnerUser, role: "experience" }
             : { role: "experience" };
+    }
 
     if (!currentUser) {
         currentUser = users.find((u) => u.id === "00001");

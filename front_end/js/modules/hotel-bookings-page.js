@@ -297,7 +297,18 @@ function renderFilteredList(bookings) {
                 <h3>$${b.amount}</h3>
 
                 <div class="hotel-actions">
-                    <button class="btn-light">View Details</button>
+                    <button class="btn-light view-details-btn"
+                        data-name="${b.customer}"
+                        data-room="${b.room}"
+                        data-guests="${b.guests}"
+                        data-id="${b.id}"
+                        data-checkin="${b.checkIn}"
+                        data-checkout="${b.checkOut}"
+                        data-nights="${b.nights}"
+                        data-price="$${b.amount}"
+                        data-status="${b.status}">
+                        View Details
+                    </button>
                     ${renderActionButton(b.status, b)}
                 </div>
             </div>
@@ -346,42 +357,80 @@ function renderActionButton(status, booking) {
     return "";
 }
 
-window.openBookingModal = function (id) {
-    const bookings = JSON.parse(localStorage.getItem("hotelBookings")) || [];
-    const booking = bookings.find(b => String(b.id) === String(id));
+// Event delegation for opening the View Details modal
+document.addEventListener("click", function(e) {
+    const btn = e.target.closest('.view-details-btn');
+    if (btn) {
+        const data = btn.dataset;
+        const modal = document.getElementById("hotel-modal");
+        const body = document.getElementById("hotel-modal-body");
+        
+        if (!modal || !body) return;
 
+        // Clean SaaS-like UI injected into hotel-modal-body
+        body.innerHTML = `
+            <div style="margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 22px; color: #1e293b;">Booking Details</h2>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f8fafc; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div>
+                    <p style="margin: 0; font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Guest Name</p>
+                    <p style="margin: 4px 0 0; font-size: 15px; font-weight: 600; color: #0f172a;">${data.name}</p>
+                </div>
+                <div>
+                    <p style="margin: 0; font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Booking ID</p>
+                    <p style="margin: 4px 0 0; font-size: 15px; font-weight: 600; color: #0f172a;">#${data.id}</p>
+                </div>
+                <div>
+                    <p style="margin: 0; font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Room Type</p>
+                    <p style="margin: 4px 0 0; font-size: 15px; font-weight: 500; color: #334155;">${data.room}</p>
+                </div>
+                <div>
+                    <p style="margin: 0; font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Guests</p>
+                    <p style="margin: 4px 0 0; font-size: 15px; font-weight: 500; color: #334155;">${data.guests}</p>
+                </div>
+                <div>
+                    <p style="margin: 0; font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Check-in Date</p>
+                    <p style="margin: 4px 0 0; font-size: 15px; font-weight: 500; color: #334155;">${data.checkin}</p>
+                </div>
+                <div>
+                    <p style="margin: 0; font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Check-out Date</p>
+                    <p style="margin: 4px 0 0; font-size: 15px; font-weight: 500; color: #334155;">${data.checkout}</p>
+                </div>
+                <div>
+                    <p style="margin: 0; font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Nights</p>
+                    <p style="margin: 4px 0 0; font-size: 15px; font-weight: 500; color: #334155;">${data.nights}</p>
+                </div>
+                <div>
+                    <p style="margin: 0; font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Total Price</p>
+                    <p style="margin: 4px 0 0; font-size: 16px; font-weight: 700; color: #0f172a;">${data.price}</p>
+                </div>
+                <div style="grid-column: span 2; margin-top: 5px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                    <p style="margin: 0 0 8px; font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Status</p>
+                    <span class="hotel-status ${data.status.toLowerCase()}" style="display: inline-block; padding: 6px 12px; border-radius: 6px; font-weight: 600;">${data.status}</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; display: flex; justify-content: flex-end;">
+                <button class="btn-cancel" onclick="document.getElementById('hotel-modal').classList.add('hidden')" style="padding: 10px 20px; font-weight: 600;">Close</button>
+            </div>
+        `;
+
+        modal.classList.remove("hidden");
+    }
+});
+
+// Close modal when clicking close icon or outside the modal content
+document.addEventListener("click", (e) => {
     const modal = document.getElementById("hotel-modal");
-    const body = document.getElementById("hotel-modal-body");
-
-    body.innerHTML = `
-        <h2>${booking.customer}</h2>
-
-        <p><strong>Booking ID:</strong> ${booking.id}</p>
-        <p><strong>Room:</strong> ${booking.room}</p>
-        <p><strong>Guests:</strong> ${booking.guests}</p>
-        <p><strong>Status:</strong> ${booking.status}</p>
-
-        <hr>
-
-        <p><strong>Check-in:</strong> ${booking.checkIn}</p>
-        <p><strong>Check-out:</strong> ${booking.checkOut}</p>
-        <p><strong>Nights:</strong> ${booking.nights}</p>
-
-        <hr>
-
-        <p><strong>Total Amount:</strong> $${booking.amount}</p>
-    `;
-
-    modal.classList.remove("hidden");
-};
-
-const closeBtn = document.getElementById("closeModal");
-
-if (closeBtn) {
-    closeBtn.addEventListener("click", () => {
-        document.getElementById("hotel-modal").classList.add("hidden");
-    });
-}
+    if (!modal) return;
+    
+    // Check if clicked the overlay background itself or the close X span
+    if (e.target === modal || e.target.closest('#closeModal')) {
+        modal.classList.add("hidden");
+    }
+});
 
 window.cancelBooking = function (id) {
     let bookings = JSON.parse(localStorage.getItem("hotelBookings")) || [];

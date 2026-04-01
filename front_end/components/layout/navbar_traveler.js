@@ -1,4 +1,8 @@
-const BASE_PATH = "/23_Xploreo/front_end";
+const TRAVELER_PAGES_PATH = "./";
+const LOGIN_PATH = "../login.html";
+const PROFILE_PATH = "./profile.html";
+const SETTINGS_PATH = "../settings.html";
+const LOGO_PATH = "../../components/ui/landing/navbar-logo.png";
 
 export function renderTravelerNavbar() {
     let user = JSON.parse(localStorage.getItem("currentUser"));
@@ -17,20 +21,20 @@ export function renderTravelerNavbar() {
     const navbarHTML = `
         <header class="top-bar">
             <div class="nav-left">
-                <img src="../components/ui/landing/navbar-logo.png" class="logo" id="home-logo" style="cursor:pointer" alt="Xploreo Logo">
+                <img src="${LOGO_PATH}" class="logo" id="home-logo" style="cursor:pointer" alt="Xploreo Logo">
                 <span class="brand">Xploreo</span>
             </div>
             
             <nav class="nav-links">
-                <a href="${BASE_PATH}/pages/traveler/dashboard.html">
+                <a href="${TRAVELER_PAGES_PATH}dashboard.html">
                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
                    Explore
                 </a>
-                <a href="${BASE_PATH}/pages/traveler/wishlist.html">
+                <a href="${TRAVELER_PAGES_PATH}wishlist.html">
                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                    Wishlist
                 </a>
-                <a href="${BASE_PATH}/pages/traveler/mytrips.html">
+                <a href="${TRAVELER_PAGES_PATH}mytrips.html">
                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                    My Trips
                 </a>
@@ -50,8 +54,8 @@ export function renderTravelerNavbar() {
                         <p class="dropdown-email">${user.email || user.username}</p>
                     </div>
                     <hr>
-                    <a href="${BASE_PATH}/pages/traveler/profile.html">Manage Profile</a>
-                    <a href="${BASE_PATH}/pages/settings.html">Settings</a>
+                    <a href="${PROFILE_PATH}">Manage Profile</a>
+                    <a href="${SETTINGS_PATH}">Settings</a>
                     <hr>
                     <a href="#" id="logout-btn" class="logout-text">Log Out</a>
                 </div>
@@ -82,7 +86,7 @@ function attachNavbarEvents() {
 
     if (logo) {
         logo.addEventListener("click", () => {
-            window.location.href = BASE_PATH + "/pages/traveler/dashboard.html";
+            window.location.href = `${TRAVELER_PAGES_PATH}dashboard.html`;
         });
     }
 
@@ -104,7 +108,7 @@ function attachNavbarEvents() {
         logoutBtn.addEventListener("click", (e) => {
             e.preventDefault();
             localStorage.removeItem("currentUser");
-            window.location.href = BASE_PATH + "/pages/login.html";
+            window.location.href = LOGIN_PATH;
         });
     }
 }

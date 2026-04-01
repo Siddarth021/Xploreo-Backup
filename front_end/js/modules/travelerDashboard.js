@@ -3,6 +3,47 @@ import { travelerData } from "../../data/traveler.js";
 // Heart SVG helper
 const heartSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
 const heartIconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
+const FLIGHT_RESULTS_PAGE = "./flight-search.html";
+const HOTEL_RESULTS_PAGE = "./hotel-search.html";
+
+const searchState = {
+    activeTab: "flights",
+    tripType: "One Way",
+    results: [],
+    summary: "",
+    values: {
+        flights: {
+            from: "New York (JFK)",
+            to: "",
+            departure: "",
+            returnDate: "",
+            travellers: "1 Traveller, Economy"
+        },
+        hotels: {
+            city: "",
+            checkIn: "",
+            checkOut: "",
+            rooms: "1",
+            guestCount: "2",
+            guests: "1 Room, 2 Guests"
+        },
+        packages: {
+            fromCity: "",
+            destination: "",
+            departureDate: "",
+            rooms: "1",
+            guestCount: "2",
+            guests: "1 Room, 2 Guests"
+        },
+        experiences: {
+            destination: "",
+            activityDate: ""
+        }
+    }
+};
+
+initializeSearchState();
 
 export function renderTravelerDashboard(containerId, user) {
     const container = document.getElementById(containerId);
@@ -49,39 +90,44 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>From</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <input type="text" placeholder="City or airport" value="New York (JFK)">
+                                    <input type="text" id="flight-from" placeholder="City or airport" value="${searchState.values.flights.from}">
                                 </div>
+                                <span class="search-field-error" id="flight-from-error"></span>
                             </div>
                             <div class="input-group">
                                 <label>To</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <input type="text" placeholder="City or airport">
+                                    <input type="text" id="flight-to" placeholder="City or airport" value="${searchState.values.flights.to}">
                                 </div>
+                                <span class="search-field-error" id="flight-to-error"></span>
                             </div>
                             <div class="input-group">
                                 <label>Departure</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="text" placeholder="dd-mm-yyyy">
+                                    <input type="date" id="flight-departure" value="${searchState.values.flights.departure}">
                                 </div>
+                                <span class="search-field-error" id="flight-departure-error"></span>
                             </div>
                             <div class="input-group hidden" id="return-date-group">
                                 <label>Return</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="text" placeholder="dd-mm-yyyy">
+                                    <input type="date" id="flight-return" value="${searchState.values.flights.returnDate}" min="${getNextDateValue(searchState.values.flights.departure)}">
                                 </div>
+                                <span class="search-field-error" id="flight-return-error"></span>
                             </div>
                             <div class="input-group" id="travellers-group">
                                 <label>Travellers</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    <input type="text" value="1 Traveller, Economy" readonly>
+                                    <input type="number" id="flight-travellers" min="1" max="12" step="1" inputmode="numeric" value="${parseTravellerCount(searchState.values.flights.travellers)}">
                                 </div>
+                                <span class="search-field-error" id="flight-travellers-error"></span>
                             </div>
                         </div>
-                        <button class="search-submit-btn">
+                        <button class="search-submit-btn" data-search-submit="flights">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                             SEARCH FLIGHTS
                         </button>
@@ -93,32 +139,44 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>City</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <input type="text" placeholder="Enter city or hotel name">
+                                    <input type="text" id="hotel-city" placeholder="Enter city or hotel name" value="${searchState.values.hotels.city}">
                                 </div>
+                                <span class="search-field-error" id="hotel-city-error"></span>
                             </div>
                             <div class="input-group">
                                 <label>Check-in</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="text" placeholder="dd-mm-yyyy">
+                                    <input type="date" id="hotel-checkin" value="${searchState.values.hotels.checkIn}">
                                 </div>
+                                <span class="search-field-error" id="hotel-checkin-error"></span>
                             </div>
                             <div class="input-group">
                                 <label>Check-out</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="text" placeholder="dd-mm-yyyy">
+                                    <input type="date" id="hotel-checkout" value="${searchState.values.hotels.checkOut}" min="${getNextDateValue(searchState.values.hotels.checkIn)}">
                                 </div>
+                                <span class="search-field-error" id="hotel-checkout-error"></span>
                             </div>
-                            <div class="input-group full-width-input">
-                                <label>Rooms & Guests</label>
+                            <div class="input-group">
+                                <label>Rooms</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    <input type="text" placeholder="1 Room, 2 Guests">
+                                    <input type="number" id="hotel-rooms" min="1" max="8" step="1" inputmode="numeric" placeholder="1" value="${searchState.values.hotels.rooms || "1"}">
                                 </div>
+                                <span class="search-field-error" id="hotel-rooms-error"></span>
+                            </div>
+                            <div class="input-group">
+                                <label>Guests</label>
+                                <div class="input-wrapper">
+                                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    <input type="number" id="hotel-guests" min="1" max="20" step="1" inputmode="numeric" placeholder="2" value="${searchState.values.hotels.guestCount || "2"}">
+                                </div>
+                                <span class="search-field-error" id="hotel-guests-error"></span>
                             </div>
                         </div>
-                        <button class="search-submit-btn">
+                        <button class="search-submit-btn" data-search-submit="hotels">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                             SEARCH HOTELS
                         </button>
@@ -130,32 +188,44 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>From City</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <input type="text" placeholder="Your city">
+                                    <input type="text" id="package-from" placeholder="Your city" value="${searchState.values.packages.fromCity}">
                                 </div>
+                                <span class="search-field-error" id="package-from-error"></span>
                             </div>
                             <div class="input-group">
                                 <label>Destination</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <input type="text" placeholder="Where to?">
+                                    <input type="text" id="package-destination" placeholder="Where to?" value="${searchState.values.packages.destination}">
                                 </div>
+                                <span class="search-field-error" id="package-destination-error"></span>
                             </div>
                             <div class="input-group">
                                 <label>Departure Date</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="text" placeholder="dd-mm-yyyy">
+                                    <input type="date" id="package-departure" value="${searchState.values.packages.departureDate}">
                                 </div>
+                                <span class="search-field-error" id="package-departure-error"></span>
                             </div>
                             <div class="input-group">
-                                <label>Rooms & Guests</label>
+                                <label>Rooms</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    <input type="text" placeholder="1 Room, 2 Guests">
+                                    <input type="number" id="package-rooms" min="1" max="8" step="1" inputmode="numeric" placeholder="1" value="${searchState.values.packages.rooms || "1"}">
                                 </div>
+                                <span class="search-field-error" id="package-rooms-error"></span>
+                            </div>
+                            <div class="input-group">
+                                <label>Guests</label>
+                                <div class="input-wrapper">
+                                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    <input type="number" id="package-guests" min="1" max="20" step="1" inputmode="numeric" placeholder="2" value="${searchState.values.packages.guestCount || "2"}">
+                                </div>
+                                <span class="search-field-error" id="package-guests-error"></span>
                             </div>
                         </div>
-                        <button class="search-submit-btn">
+                        <button class="search-submit-btn" data-search-submit="packages">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                             SEARCH PACKAGES
                         </button>
@@ -167,18 +237,20 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>Destination</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <input type="text" placeholder="Where do you want to explore?">
+                                    <input type="text" id="experience-destination" placeholder="Where do you want to explore?" value="${searchState.values.experiences.destination}">
                                 </div>
+                                <span class="search-field-error" id="experience-destination-error"></span>
                             </div>
                             <div class="input-group full-width-input">
                                 <label>Activity Date</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="text" placeholder="dd-mm-yyyy">
+                                    <input type="date" id="experience-date" value="${searchState.values.experiences.activityDate}">
                                 </div>
+                                <span class="search-field-error" id="experience-date-error"></span>
                             </div>
                         </div>
-                        <button class="search-submit-btn">
+                        <button class="search-submit-btn" data-search-submit="experiences">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                             SEARCH EXPERIENCES
                         </button>
@@ -391,6 +463,7 @@ function attachDashboardEvents() {
             
             searchPanels.forEach(p => p.classList.remove("active"));
             const tabId = tab.getAttribute("data-tab");
+            searchState.activeTab = tabId;
             const activePanel = document.getElementById(tabId + "-panel");
             if (activePanel) activePanel.classList.add("active");
         });
@@ -408,14 +481,19 @@ function attachDashboardEvents() {
             
             // Toggle Round Trip Layout formatting for 2-column grid
             if (e.target.textContent === "Round Trip") {
+                searchState.tripType = "Round Trip";
                 returnDateGroup.classList.remove("hidden");
                 travellersGroup.classList.add("full-width-input");
             } else {
+                searchState.tripType = "One Way";
                 returnDateGroup.classList.add("hidden");
                 travellersGroup.classList.remove("full-width-input");
             }
         });
     });
+
+    hydrateFlightLayout();
+    bindSearchActions();
 
     // Initialize Wishlist State
     let wishlist = JSON.parse(localStorage.getItem("traveler_wishlist") || "[]");
@@ -486,6 +564,364 @@ function attachDashboardEvents() {
             localStorage.setItem("traveler_wishlist", JSON.stringify(wishlist));
         });
     });
+}
+
+function bindSearchActions() {
+    const submitButtons = document.querySelectorAll("[data-search-submit]");
+
+    submitButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            const tab = button.getAttribute("data-search-submit");
+            runSearch(tab);
+        });
+    });
+
+    bindIntegerField("flight-travellers", 1, 12);
+    bindIntegerField("hotel-rooms", 1, 8);
+    bindIntegerField("hotel-guests", 1, 20);
+    bindIntegerField("package-rooms", 1, 8);
+    bindIntegerField("package-guests", 1, 20);
+    bindDateRangeField("flight-departure", "flight-return");
+    bindDateRangeField("hotel-checkin", "hotel-checkout");
+}
+
+function hydrateFlightLayout() {
+    const returnDateGroup = document.getElementById("return-date-group");
+    const travellersGroup = document.getElementById("travellers-group");
+    const toggleBtns = document.querySelectorAll(".toggle-btn");
+
+    toggleBtns.forEach(btn => {
+        btn.classList.toggle("active", btn.textContent.trim() === searchState.tripType);
+    });
+
+    if (searchState.tripType === "Round Trip") {
+        returnDateGroup.classList.remove("hidden");
+        travellersGroup.classList.add("full-width-input");
+    } else {
+        returnDateGroup.classList.add("hidden");
+        travellersGroup.classList.remove("full-width-input");
+    }
+}
+
+function runSearch(tab) {
+    clearSearchErrors();
+    persistSearchValues();
+
+    const { errors, summary, results } = getSearchOutcome(tab);
+
+    if (Object.keys(errors).length > 0) {
+        renderSearchErrors(errors);
+        showToast("Please complete the highlighted search fields");
+        return;
+    }
+
+    searchState.activeTab = tab;
+    searchState.results = results;
+    searchState.summary = summary;
+    if (typeof localStorage !== "undefined") {
+        localStorage.setItem(SEARCH_STORAGE_KEY, JSON.stringify(searchState));
+    }
+
+    if (tab === "flights") {
+        window.location.href = FLIGHT_RESULTS_PAGE;
+        return;
+    }
+
+    if (tab === "hotels") {
+        window.location.href = HOTEL_RESULTS_PAGE;
+        return;
+    }
+
+    if (results.length === 0) {
+        showToast("No matches found. Try another destination or date");
+    } else {
+        showToast(`${results.length} result${results.length > 1 ? "s" : ""} found`);
+    }
+}
+
+function persistSearchValues() {
+    const flightTravellers = readNumericValue("flight-travellers", "1");
+    const hotelRooms = readNumericValue("hotel-rooms", "1");
+    const hotelGuests = readNumericValue("hotel-guests", "2");
+    const packageRooms = readNumericValue("package-rooms", "1");
+    const packageGuests = readNumericValue("package-guests", "2");
+
+    searchState.values.flights = {
+        from: readValue("flight-from"),
+        to: readValue("flight-to"),
+        departure: readValue("flight-departure"),
+        returnDate: readValue("flight-return"),
+        travellers: formatTravellerSummary(flightTravellers)
+    };
+
+    searchState.values.hotels = {
+        city: readValue("hotel-city"),
+        checkIn: readValue("hotel-checkin"),
+        checkOut: readValue("hotel-checkout"),
+        rooms: hotelRooms,
+        guestCount: hotelGuests,
+        guests: formatRoomsGuests(hotelRooms, hotelGuests)
+    };
+
+    searchState.values.packages = {
+        fromCity: readValue("package-from"),
+        destination: readValue("package-destination"),
+        departureDate: readValue("package-departure"),
+        rooms: packageRooms,
+        guestCount: packageGuests,
+        guests: formatRoomsGuests(packageRooms, packageGuests)
+    };
+
+    searchState.values.experiences = {
+        destination: readValue("experience-destination"),
+        activityDate: readValue("experience-date")
+    };
+}
+
+function getSearchOutcome(tab) {
+    if (tab === "flights") {
+        const values = searchState.values.flights;
+        const errors = {};
+
+        if (!values.from) errors["flight-from-error"] = "Enter a departure airport";
+        if (!values.to) errors["flight-to-error"] = "Enter a destination";
+        if (!values.departure) errors["flight-departure-error"] = "Choose a departure date";
+        if (!values.travellers) errors["flight-travellers-error"] = "Add traveller details";
+        if (searchState.tripType === "Round Trip" && !values.returnDate) {
+            errors["flight-return-error"] = "Choose a return date";
+        }
+        if (searchState.tripType === "Round Trip" && values.departure && values.returnDate && !isDateAfter(values.departure, values.returnDate)) {
+            errors["flight-return-error"] = "Return date must be after departure";
+        }
+
+        const results = travelerData.searchCatalog.flights.filter(item =>
+            includesText(item.origin, values.from) && includesText(item.destination, values.to)
+        );
+
+        return {
+            errors,
+            summary: `Flights from ${values.from} to ${values.to} for ${values.travellers}`,
+            results
+        };
+    }
+
+    if (tab === "hotels") {
+        const values = searchState.values.hotels;
+        const errors = {};
+
+        if (!values.city) errors["hotel-city-error"] = "Enter a city or hotel name";
+        if (!values.checkIn) errors["hotel-checkin-error"] = "Choose a check-in date";
+        if (!values.checkOut) errors["hotel-checkout-error"] = "Choose a check-out date";
+        if (!values.rooms) errors["hotel-rooms-error"] = "Add rooms";
+        if (!values.guestCount) errors["hotel-guests-error"] = "Add guests";
+        if (values.checkIn && values.checkOut && !isDateAfter(values.checkIn, values.checkOut)) {
+            errors["hotel-checkout-error"] = "Check-out must be after check-in";
+        }
+
+        const results = travelerData.searchCatalog.hotels.filter(item =>
+            includesText(item.city, values.city) || includesText(item.name, values.city)
+        );
+
+        return {
+            errors,
+            summary: `Hotels in ${values.city} for ${formatRoomsGuests(values.rooms, values.guestCount)}`,
+            results
+        };
+    }
+
+    if (tab === "packages") {
+        const values = searchState.values.packages;
+        const errors = {};
+
+        if (!values.fromCity) errors["package-from-error"] = "Enter a departure city";
+        if (!values.destination) errors["package-destination-error"] = "Choose a destination";
+        if (!values.departureDate) errors["package-departure-error"] = "Choose a departure date";
+        if (!values.rooms) errors["package-rooms-error"] = "Add rooms";
+        if (!values.guestCount) errors["package-guests-error"] = "Add guests";
+
+        const results = travelerData.searchCatalog.packages.filter(item =>
+            includesText(item.origin, values.fromCity) && includesText(item.destination, values.destination)
+        );
+
+        return {
+            errors,
+            summary: `Holiday packages from ${values.fromCity} to ${values.destination}`,
+            results
+        };
+    }
+
+    const values = searchState.values.experiences;
+    const errors = {};
+
+    if (!values.destination) errors["experience-destination-error"] = "Choose a destination";
+    if (!values.activityDate) errors["experience-date-error"] = "Choose an activity date";
+
+    const results = travelerData.searchCatalog.experiences.filter(item =>
+        includesText(item.destination, values.destination) || includesText(item.title, values.destination)
+    );
+
+    return {
+        errors,
+        summary: `Experiences in ${values.destination} on ${formatReadableDate(values.activityDate)}`,
+        results
+    };
+}
+
+function renderSearchErrors(errors) {
+    Object.entries(errors).forEach(([id, message]) => {
+        const node = document.getElementById(id);
+        if (node) {
+            node.textContent = message;
+        }
+    });
+}
+
+function clearSearchErrors() {
+    document.querySelectorAll(".search-field-error").forEach(error => {
+        error.textContent = "";
+    });
+}
+
+function readValue(id) {
+    const node = document.getElementById(id);
+    return node ? node.value.trim() : "";
+}
+
+function readNumericValue(id, fallback) {
+    const raw = readValue(id).replace(/[^\d]/g, "");
+    return raw || fallback;
+}
+
+function bindIntegerField(id, min, max) {
+    const field = document.getElementById(id);
+    if (!field) return;
+
+    field.addEventListener("input", () => {
+        const digitsOnly = field.value.replace(/[^\d]/g, "");
+
+        if (!digitsOnly) {
+            field.value = "";
+            return;
+        }
+
+        const clamped = Math.min(max, Math.max(min, Number.parseInt(digitsOnly, 10)));
+        field.value = String(clamped);
+    });
+}
+
+function bindDateRangeField(startId, endId) {
+    const startField = document.getElementById(startId);
+    const endField = document.getElementById(endId);
+    if (!startField || !endField) return;
+
+    const syncMin = () => {
+        const nextDate = getNextDateValue(startField.value);
+        if (nextDate) {
+            endField.min = nextDate;
+        } else {
+            endField.removeAttribute("min");
+        }
+    };
+
+    startField.addEventListener("input", syncMin);
+    startField.addEventListener("change", syncMin);
+    syncMin();
+}
+
+function includesText(source, input) {
+    return String(source || "").toLowerCase().includes(String(input || "").toLowerCase());
+}
+
+function formatReadableDate(dateString) {
+    if (!dateString) return "the selected date";
+    return new Date(dateString).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+    });
+}
+
+function formatRoomsGuests(rooms, guests) {
+    const roomCount = Math.max(1, Number.parseInt(rooms, 10) || 1);
+    const guestCount = Math.max(1, Number.parseInt(guests, 10) || 1);
+    return `${roomCount} Room${roomCount === 1 ? "" : "s"}, ${guestCount} Guest${guestCount === 1 ? "" : "s"}`;
+}
+
+function formatTravellerSummary(travellers) {
+    const travellerCount = Math.max(1, Number.parseInt(travellers, 10) || 1);
+    return `${travellerCount} Traveller${travellerCount === 1 ? "" : "s"}, Economy`;
+}
+
+function parseTravellerCount(summary) {
+    const text = String(summary || "");
+    const match = text.match(/(\d+)/);
+    return match ? match[1] : "1";
+}
+
+function isDateAfter(startDate, endDate) {
+    if (!startDate || !endDate) return true;
+    return new Date(`${endDate}T00:00:00`) > new Date(`${startDate}T00:00:00`);
+}
+
+function getNextDateValue(dateString) {
+    if (!dateString) return "";
+    const date = new Date(`${dateString}T00:00:00`);
+    if (Number.isNaN(date.getTime())) return "";
+    date.setDate(date.getDate() + 1);
+    return date.toISOString().slice(0, 10);
+}
+
+function parseRoomsGuestsSummary(summary) {
+    const text = String(summary || "");
+    const roomMatch = text.match(/(\d+)\s*Rooms?/i);
+    const guestMatch = text.match(/(\d+)\s*Guests?/i);
+
+    return {
+        rooms: roomMatch ? roomMatch[1] : "1",
+        guestCount: guestMatch ? guestMatch[1] : "2"
+    };
+}
+
+function initializeSearchState() {
+    if (typeof localStorage === "undefined") return;
+
+    const stored = localStorage.getItem(SEARCH_STORAGE_KEY);
+    if (!stored) return;
+
+    try {
+        const parsed = JSON.parse(stored);
+        Object.assign(searchState, parsed);
+        const flightValues = searchState.values?.flights || {};
+        const hotelValues = searchState.values?.hotels || {};
+        const parsedHotelOccupancy = parseRoomsGuestsSummary(hotelValues.guests);
+        const packageValues = searchState.values?.packages || {};
+        const parsedPackageOccupancy = parseRoomsGuestsSummary(packageValues.guests);
+
+        searchState.values.flights = {
+            ...flightValues,
+            travellers: formatTravellerSummary(parseTravellerCount(flightValues.travellers))
+        };
+        searchState.values.hotels = {
+            ...hotelValues,
+            rooms: hotelValues.rooms || parsedHotelOccupancy.rooms,
+            guestCount: hotelValues.guestCount || parsedHotelOccupancy.guestCount,
+            guests: formatRoomsGuests(
+                hotelValues.rooms || parsedHotelOccupancy.rooms,
+                hotelValues.guestCount || parsedHotelOccupancy.guestCount
+            )
+        };
+        searchState.values.packages = {
+            ...packageValues,
+            rooms: packageValues.rooms || parsedPackageOccupancy.rooms,
+            guestCount: packageValues.guestCount || parsedPackageOccupancy.guestCount,
+            guests: formatRoomsGuests(
+                packageValues.rooms || parsedPackageOccupancy.rooms,
+                packageValues.guestCount || parsedPackageOccupancy.guestCount
+            )
+        };
+    } catch (error) {
+        console.warn("Unable to restore traveler search state", error);
+    }
 }
 
 export function showToast(message) {

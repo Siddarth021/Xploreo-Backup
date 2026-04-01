@@ -1,11 +1,18 @@
 export function getProfile(user) {
+    let profileLink = 'adminProfile.html';
+    if (user && user.role === 'hotel') {
+        profileLink = 'hotelprofile.html';
+    } else if (user && user.role === 'experience') {
+        profileLink = 'experience_profile.html';
+    }
+
     return `
         <div class="profile" onclick="toggleProfileMenu()">
             <span class="profile-name">${user.name}</span>
             <img src="../components/ui/profile.png" alt="user" class="profile-img"/>
             <div class="profile-dropdown hidden" id="profile-dropdown">
               
-              <div class="dropdown-item" onclick="window.location.href='adminProfile.html'">
+              <div class="dropdown-item" onclick="window.location.href='${profileLink}'">
                 <img src="../components/ui/user.svg" class="dropdown-icon">
                 <span>Profile</span>
               </div>

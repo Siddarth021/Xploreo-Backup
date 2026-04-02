@@ -20,6 +20,7 @@ import { renderLandingNavbar } from "../components/layout/navbar_landing.js";
 import { initialScheduleData } from "../data/schedule.js";
 import { initialProfileData } from "../data/profile-data.js";
 import { initialSupportData } from "../data/support-data.js";
+import { techAdminData } from "../data/tech_admin_data.js";
 
 function initializeData() {
     if (!localStorage.getItem("users")) {
@@ -92,6 +93,10 @@ function initializeData() {
 
     if (!localStorage.getItem("supportData")) {
         localStorage.setItem("supportData", JSON.stringify(initialSupportData));
+    }
+    
+    if (!localStorage.getItem("techAdminData")) {
+        localStorage.setItem("techAdminData", JSON.stringify(techAdminData));
     }
     
     let storedTours = JSON.parse(localStorage.getItem("tours"));

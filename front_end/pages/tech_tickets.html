@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket Management - Technical Admin</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/techadmin.css">
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <div class="page-wrapper">
+        <div class="tech-page-header">
+            <h1>Ticket Management</h1>
+            <p>Manage user requests and technical issues</p>
+        </div>
+
+        <div class="filter-section content-card">
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-status="all">All Tickets</button>
+                <button class="filter-btn" data-status="pending">Pending</button>
+                <button class="filter-btn" data-status="in-progress">In-Progress</button>
+                <button class="filter-btn" data-status="resolved">Resolved</button>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="ticket-search" placeholder="Search by ID, User, or Subject...">
+            </div>
+        </div>
+
+        <div id="ticket-list" class="tech-content-card">
+            <table class="tech-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Subject</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="ticket-tbody">
+                    <!-- Tickets will be rendered here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Ticket Detail Modal -->
+    <div id="ticket-modal" class="modal hidden">
+        <div class="modal-content tech-content-card">
+            <div class="modal-header">
+                <h2 id="modal-ticket-id"></h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div id="modal-body">
+                <!-- Ticket details will be rendered here -->
+            </div>
+            <div class="modal-actions" id="modal-footer">
+                <!-- Actions will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/app.js"></script>
+</body>
+</html>

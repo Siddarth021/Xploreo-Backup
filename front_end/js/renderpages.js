@@ -21,6 +21,10 @@ import { initOperations } from "./modules/operations.js";
 import { renderTravelerDashboard } from "./modules/travelerDashboard.js";
 import { renderTravelerWishlist } from "./modules/travelerWishlist.js";
 import { renderTravelerTrips } from "./modules/travelerTrips.js";
+import { renderTechAdminDashboard } from "./techAdminDashboard.js";
+import { initTicketManagement } from "./modules/tech_tickets.js";
+import { initTechActivity } from "./modules/tech_activity.js";
+import { initTechLogs } from "./modules/tech_logs.js";
 
 export function renderPageContent(user) {
     const path = window.location.pathname.split("/").pop() || "dashboard.html";
@@ -77,6 +81,14 @@ export function renderPageContent(user) {
         if (mainDiv) mainDiv.style.display = "block";
 
         initFinance();
+    } else if (user.role === "techadmin" && path === "dashboard.html") {
+        renderTechAdminDashboard("tech-admin-dashboard");
+    } else if (user.role === "techadmin" && path === "tech_tickets.html") {
+        initTicketManagement();
+    } else if (user.role === "techadmin" && path === "tech_activity.html") {
+        initTechActivity();
+    } else if (user.role === "techadmin" && path === "tech_logs.html") {
+        initTechLogs();
     } else if (user.role === "guide" && path === "tours.html") {
         rendertourpage("main", user);
     } else if (user.role === "guide" && path === "earnings.html") {

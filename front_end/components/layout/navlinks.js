@@ -3,7 +3,37 @@ const navlinks = [
     name: "Dashboard",
     path: "../pages/dashboard.html",
     icon: "../components/ui/dashboard.svg",
-    roles: ["guide","superadmin","techadmin","nontechadmin","opadmin","hotel"]
+    roles: ["techadmin"]
+  },
+  {
+    name: "Tickets",
+    path: "../pages/tech_tickets.html",
+    icon: "../components/ui/support.svg",
+    roles: ["techadmin"]
+  },
+  {
+    name: "Activity",
+    path: "../pages/tech_activity.html",
+    icon: "../components/ui/users.png",
+    roles: ["techadmin"]
+  },
+  {
+    name: "System Logs",
+    path: "../pages/tech_logs.html",
+    icon: "../components/ui/operations.png",
+    roles: ["techadmin"]
+  },
+  {
+    name: "Profile",
+    path: "../pages/profile.html",
+    icon: "../components/ui/user.svg",
+    roles: ["techadmin"]
+  },
+  {
+    name: "Dashboard",
+    path: "../pages/dashboard.html",
+    icon: "../components/ui/dashboard.svg",
+    roles: ["guide","superadmin","nontechadmin","opadmin","hotel"]
   },
   {
     name: "Operations & Bookings",

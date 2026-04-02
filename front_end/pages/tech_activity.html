@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Activity Monitoring - Technical Admin</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/techadmin.css">
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <div class="page-wrapper">
+        <div class="tech-page-header">
+            <h1>User Activity Monitoring</h1>
+            <p>Track actions performed by Guides, Travelers, and Service Partners</p>
+        </div>
+
+        <div id="activity-list" class="tech-content-card">
+            <div class="card-header">
+                <h3>Activity Logs</h3>
+                <div class="search-bar">
+                    <input type="text" id="activity-search" placeholder="Search by User or Action...">
+                </div>
+            </div>
+            <table class="tech-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="activity-tbody">
+                    <!-- Activity logs will be rendered here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module" src="../js/app.js"></script>
+</body>
+</html>

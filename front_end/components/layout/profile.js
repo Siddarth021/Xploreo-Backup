@@ -2,9 +2,16 @@ export function getProfile(user) {
     let profileLink = 'adminProfile.html';
     if (user && user.role === 'hotel') {
         profileLink = 'hotelprofile.html';
-    } else if (user && (user.role === 'experience' || user.role === 'guide')) {
+    } else if (user && (user.role === 'experience' || user.role === 'guide' || user.role === 'techadmin')) {
         profileLink = 'profile.html';
     }
+
+    const supportItem = user.role !== 'techadmin' ? `
+              <div class="dropdown-item" onclick="window.location.href='support.html'">
+                <img src="../components/ui/support.svg" class="dropdown-icon">
+                <span>Support</span>
+              </div>
+    ` : '';
 
     return `
         <div class="profile" onclick="toggleProfileMenu()">
@@ -17,10 +24,7 @@ export function getProfile(user) {
                 <span>Profile</span>
               </div>
               
-              <div class="dropdown-item" onclick="window.location.href='support.html'">
-                <img src="../components/ui/support.svg" class="dropdown-icon">
-                <span>Support</span>
-              </div>
+              ${supportItem}
               <hr class="dropdown-divider">
               <div class="dropdown-item logout-item" onclick="logout()">
                 <img src="../components/ui/logout.svg" class="dropdown-icon">

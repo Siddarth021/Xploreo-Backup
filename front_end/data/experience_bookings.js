@@ -20,11 +20,11 @@ export const bookingsData = [
     ]
   },
   {
-    title: "Mountain Hiking Adventure",
+    title: "Hot Air Balloon Ride Over Desert",
     date: "March 27, 2026",
     time: "6:00 AM",
     users: [
-      { id: "BK-1240", name: "Emma Williams", seats: 3, status: "checked" },
+      { id: "BK-1240", name: "Meera Iyer", seats: 3, status: "checked" },
       { id: "BK-1241", name: "Oliver Taylor", seats: 4, status: "checked" },
       { id: "BK-1242", name: "Sophia Anderson", seats: 2, status: "confirmed" },
       { id: "BK-1243", name: "Liam Johnson", seats: 6, status: "cancelled" }

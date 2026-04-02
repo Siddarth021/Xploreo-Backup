@@ -156,10 +156,23 @@ document.addEventListener("DOMContentLoaded", () => {
         // PRIORITIZE: Actual logged-in user from localStorage
         let currentUser = JSON.parse(localStorage.getItem("currentUser"));
         
-        // FALLBACK: Only for demo/dev if not logged in
+        // FALLBACK: If not logged in, prompt for credentials instead of hardcoding 201
         if (!currentUser) {
-            currentUser = users.find(u => u.id === "30001");
+            let userParam = prompt("Please enter username for dashboard (or cancel for demo user):");
+            if (userParam) {
+                let passParam = prompt("Please enter password:");
+                currentUser = users.find(u => (u.username === userParam || u.email === userParam) && u.password === passParam);
+                if (!currentUser) {
+                    alert("Invalid credentials. Defaulting to Admin (201).");
+                }
+            }
+
+            if (!currentUser) {
+                currentUser = users.find(u => u.id === "201");
+            }
+
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            console.log("Logged in as:", currentUser.role);
         }
 
         renderNavbar(currentUser);
@@ -168,9 +181,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-window.addEventListener("unload", (event) => {
-    console.log("Refresh is starting...");
-    localStorage.clear();
-    location.reload();
-});
 

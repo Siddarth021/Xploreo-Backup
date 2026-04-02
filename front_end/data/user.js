@@ -86,16 +86,16 @@ export const users = [
   },
   {
     id: "00002",
-    name: "Priya Nair",
-    phno: 6677889900,
+    name: "Rahul varma",
+    phno: 9876543210,
     address: "Kochi, Kerala",
     gender: "female",
     dob: new Date("2001-01-10"),
-    username: "priya_n",
-    email: "priya@xploreo.com",
+    username: "rahul_v",
+    email: "rahul.varma@xploreo.com",
     role: "superadmin",
     profilePic: "./profilepic/107.png",
-    password: "priya@123",
+    password: "rahul@123",
     status: "active"
   },
   {

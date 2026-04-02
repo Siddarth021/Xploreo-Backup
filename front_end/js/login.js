@@ -96,6 +96,7 @@ export function initLogin(users) {
             }
 
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            window.location.href = BASE_PATH + "/front_end/pages/dashboard.html";
         });
     }
 

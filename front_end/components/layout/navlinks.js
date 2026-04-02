@@ -121,6 +121,13 @@ const navlinks = [
   },
 
   
+  {
+    name: "Explore",
+    path: "../pages/traveller_dashboard.html",
+    icon: "../components/ui/exploreIcon.jpg",
+    roles: ["traveller"]
+  },
+  
    
   {
     name: "Wish List",
@@ -129,13 +136,6 @@ const navlinks = [
     roles: ["traveller"]
   },
 
-  {
-    name: "Explore",
-    path: "../pages/traveller_dashboard.html",
-    icon: "../components/ui/exploreIcon.jpg",
-    roles: ["traveller"]
-  },
-  
   {
     name: "My Trips",
     path: "../pages/traveller_mytrips.html",

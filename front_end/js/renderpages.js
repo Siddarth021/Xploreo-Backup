@@ -39,6 +39,8 @@ import { renderTravelerFlightSearchPage } from "./modules/travelerFlightSearchPa
 import { renderTravelerFlightDetailPage } from "./modules/travelerFlightDetailPage.js";
 import { renderTravelerBookingConfirmationPage } from "./modules/travelerBookingConfirmationPage.js";
 import { renderTravelerBookingDetailsPage } from "./modules/travelerBookingDetailsPage.js";
+import { initTravelerProfilePage } from "./modules/travelerProfilePage.js";
+import { renderTravelerSupportPage } from "./modules/travelerSupportPage.js";
 
 import { renderTravelerExperienceSearchPage } from "./modules/travelerExperienceSearchPage.js";
 import { renderTravelerExperienceDetailPage } from "./modules/travelerExperienceDetailPage.js";
@@ -81,7 +83,9 @@ export function renderPageContent(user) {
             "traveller_experience-detail.html": renderTravelerExperienceDetailPage,
             "traveller_experience-booking.html": renderTravelerExperienceBookingPage,
             "traveller_experience-confirmation.html": renderTravelerExperienceConfirmationPage,
-            "traveller_trip-planning.html": initTripPlannerPage
+            "traveller_trip-planning.html": initTripPlannerPage,
+            "traveller_profile.html": initTravelerProfilePage,
+            "traveller_support.html": renderTravelerSupportPage
         };
 
         if (travelerRoutes[path]) {

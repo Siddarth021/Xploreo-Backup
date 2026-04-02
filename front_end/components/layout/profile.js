@@ -1,9 +1,13 @@
 export function getProfile(user) {
     // 1. Route the user to the correct profile page based on their role
     let profileLink = 'profile.html'; // Default fallback
+    let supportLink = 'support.html';
     
     if (user) {
-        if (user.role === 'hotel') {
+        if (user.role === 'traveller') {
+            profileLink = 'traveller_profile.html';
+            supportLink = 'traveller_support.html';
+        } else if (user.role === 'hotel') {
             profileLink = 'hotelprofile.html';
         } else if (user.role === 'superadmin') {
             profileLink = 'adminProfile.html'; // <-- Routes superadmin to the new page
@@ -14,7 +18,7 @@ export function getProfile(user) {
 
     // 2. Hide Support specifically for techadmin and superadmin
     const supportItem = (user && user.role !== 'techadmin' && user.role !== 'superadmin') ? `
-              <div class="dropdown-item" onclick="window.location.href='support.html'">
+              <div class="dropdown-item" onclick="window.location.href='${supportLink}'">
                 <img src="../components/ui/support.svg" class="dropdown-icon">
                 <span>Support</span>
               </div>

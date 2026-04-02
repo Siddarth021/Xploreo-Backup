@@ -141,11 +141,18 @@ export function renderExperienceBookingsPage() {
         renderBookings();
     }
 
+    function handleUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        const expFilter = params.get("experience");
+        if (expFilter && filterExperience) {
+            filterExperience.value = expFilter;
+            renderBookings();
+        }
+    }
+
     populateFilters();
     renderBookings();
-
-    if (filterExperience) filterExperience.onchange = renderBookings;
-    if (filterStatus) filterStatus.onchange = renderBookings;
+    handleUrlParams();
 
     if (container) {
         container.onclick = (event) => {

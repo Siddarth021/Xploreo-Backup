@@ -15,6 +15,7 @@ import {
     renderFieldError,
     showWorkspaceToast
 } from "./travelerWorkspaceUI.js";
+import { travelerData } from "../../data/traveler.js";
 
 const TRANSPORTS = ["Flight", "Train", "Bus", "Private Car"];
 
@@ -204,6 +205,27 @@ export function initTripPlannerPage(containerId) {
         `;
 
         bindEvents();
+        
+        const params = new URLSearchParams(window.location.search);
+        const planId = params.get("plan");
+        
+        if (planId && !state.editingPlanId) {
+            const catalog = travelerData?.searchCatalog?.packages || [];
+            const pkgMatch = catalog.find(p => p.id === planId) || catalog[0];
+            if (pkgMatch) {
+                hydrateForm({
+                    origin: pkgMatch.origin || "New Delhi",
+                    destination: pkgMatch.destination || "Destination",
+                    departure: new Date().toISOString().split("T")[0],
+                    duration: parseInt(String(pkgMatch.days || "5").replace(/\D/g, ""), 10) || 5,
+                    budget: (parseInt(String(pkgMatch.pricePerPerson).replace(/\D/g, ""), 10) || 5000),
+                    status: "Draft",
+                    notes: `Holiday Package Template: ${pkgMatch.title}\nIncludes: ${pkgMatch.activityLine || ""}`
+                });
+                return;
+            }
+        }
+        
         hydrateForm();
     }
 

@@ -40,8 +40,9 @@ export function initTravelerBookingDetailsPage(containerId) {
                     <p>Review your confirmed trip booking, payment split, itinerary preview, and downloadable documents.</p>
                 </div>
                 <div class="hero-link-group">
-                    <a class="traveler-link-chip" href="./bookings.html">Back to bookings</a>
-                    <button type="button" class="solid-btn" id="download-invoice-btn">Download invoice</button>
+                    <a class="traveler-link-chip" href="./traveller_bookings.html">Back to bookings</a>
+                    <button type="button" class="solid-btn" id="confirm-booking-btn">Confirm Package</button>
+                    <button type="button" class="ghost-btn" id="download-invoice-btn">Download invoice</button>
                 </div>
             </section>
 
@@ -169,6 +170,10 @@ export function initTravelerBookingDetailsPage(containerId) {
 
     container.querySelector("#download-invoice-btn")?.addEventListener("click", () => {
         showWorkspaceToast(`Invoice for ${booking.id} is ready for download.`);
+    });
+
+    container.querySelector("#confirm-booking-btn")?.addEventListener("click", () => {
+        window.location.href = `./traveller_booking-confirmation.html?booking=${booking.id}`;
     });
 
     container.querySelectorAll("[data-open-document], [data-download-document]").forEach((button) => {

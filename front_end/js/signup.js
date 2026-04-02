@@ -40,7 +40,38 @@ export function initSignup() {
                 alert("Please select a role first");
                 return;
             }
+            if (selectedRole === "Service Partner") {
+                showStep("1-partner");
+            } else {
+                showStep(2);
+            }
+        });
+    }
+
+    /* STEP 1.5 (PARTNER TYPE) NAVIGATORS */
+    const step1PartnerNextBtn = document.querySelector(".step1-partner-next-btn");
+    const step1PartnerBackBtn = document.querySelector(".step1-partner-back-btn");
+
+    if (step1PartnerNextBtn) {
+        step1PartnerNextBtn.addEventListener("click", function () {
+            // Must have selected Hotel or Experiences
+            if (selectedRole === "Service Partner") {
+                alert("Please choose a Service Type (Hotel or Experiences)");
+                return;
+            }
             showStep(2);
+        });
+    }
+
+    if (step1PartnerBackBtn) {
+        step1PartnerBackBtn.addEventListener("click", function () {
+            selectedRole = "Service Partner"; // Reset sub-role logically
+            showStep(1);
+            
+            // Re-select Service Partner visually
+            cards.forEach(c => c.classList.remove("selected"));
+            const partnerCard = Array.from(cards).find(c => c.querySelector("h4").innerText === "Service Partner");
+            if (partnerCard) partnerCard.classList.add("selected");
         });
     }
 
@@ -287,7 +318,7 @@ function validateStep3() {
         container = document.querySelector(".step-3-traveler");
     } else if (selectedRole === "Local Guide") {
         container = document.querySelector(".step-3-guide");
-    } else if (selectedRole === "Service Partner") {
+    } else if (selectedRole === "Service Partner" || selectedRole === "Hotel" || selectedRole === "Experiences") {
         container = document.querySelector(".step-3-partner");
     }
 
@@ -334,7 +365,9 @@ function createUser(role) {
     const roleMap = {
         "Traveler": "traveller",
         "Local Guide": "guide",
-        "Service Partner": "service_partner"
+        "Service Partner": "service_partner",
+        "Hotel": "hotel",
+        "Experiences": "experience"
     };
 
     const newUser = {
@@ -364,7 +397,7 @@ function showRoleStep3(role) {
         document.querySelector(".step-3-traveler").classList.remove("hidden");
     } else if (role === "Local Guide") {
         document.querySelector(".step-3-guide").classList.remove("hidden");
-    } else if (role === "Service Partner") {
+    } else if (role === "Service Partner" || role === "Hotel" || role === "Experiences") {
         document.querySelector(".step-3-partner").classList.remove("hidden");
     }
 }

@@ -96,3 +96,35 @@ export function getBookingStatusMeta(status) {
 
     return { label: "Cancelled", className: "cancelled" };
 }
+export function calculateDashboardStats(catalog, bookings) {
+    const todayStr = new Date().toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+    });
+
+    const stats = {
+        today: 0,
+        upcoming: 0,
+        total: 0,
+        rating: 4.8 // Default or average if not in data
+    };
+
+    // Calculate Today's Guests
+    bookings.forEach(b => {
+        if (b.date === todayStr || b.day === todayStr) {
+            stats.today += (b.seats || b.guests || 0);
+        }
+    });
+
+    // Calculate Upcoming Sessions (slots with availability or future dates)
+    const allSlots = catalog.flatMap(exp => exp.slots || []);
+    const todayRaw = new Date().toISOString().split("T")[0];
+    
+    stats.upcoming = allSlots.filter(slot => slot.date >= todayRaw && slot.available).length;
+    
+    // Total Bookings across all time
+    stats.total = bookings.reduce((sum, b) => sum + (b.seats || b.guests || 0), 0);
+
+    return stats;
+}

@@ -13,13 +13,13 @@ import { hotelReviews } from "../data/hotelReviews.js";
 import { hotelActivity } from "../data/hotelActivity.js";
 import { hotelServices } from "../data/hotelServices.js";
 import { partners } from "../data/partners.js";
-import { initOperations } from "./modules/operations.js";
 import { initLogin } from "./login.js";
 import { initSignup } from "./signup.js";
 import { renderLandingNavbar } from "../components/layout/navbar_landing.js";
 import { initialScheduleData } from "../data/schedule.js";
 import { initialProfileData } from "../data/profile-data.js";
 import { initialSupportData } from "../data/support-data.js";
+import { techAdminData } from "../data/tech_admin_data.js";
 
 function initializeData() {
     if (!localStorage.getItem("users")) {
@@ -94,6 +94,28 @@ function initializeData() {
         localStorage.setItem("supportData", JSON.stringify(initialSupportData));
     }
     
+    if (!localStorage.getItem("techAdminData")) {
+        // Merge tickets from supportData into techAdminData for unification
+        const allTickets = [
+            ...techAdminData.tickets,
+            ...initialSupportData.tickets.map(t => ({
+                id: t.id,
+                userId: "10001", // Default to Sreekar (Guide) for initial demo
+                userName: "Sreekar",
+                userRole: "guide",
+                subject: t.subject,
+                description: "Initial support request from guide.",
+                status: t.status.toLowerCase(),
+                priority: "medium",
+                category: t.category,
+                createdAt: new Date(t.date).toISOString()
+            }))
+        ];
+        const unifiedTechData = { ...techAdminData, tickets: allTickets };
+        localStorage.setItem("techAdminData", JSON.stringify(unifiedTechData));
+    }
+
+    
     let storedTours = JSON.parse(localStorage.getItem("tours"));
     if (storedTours && Array.isArray(storedTours)) {
         const todayStr = new Date().toISOString().split("T")[0];
@@ -134,10 +156,23 @@ document.addEventListener("DOMContentLoaded", () => {
         // PRIORITIZE: Actual logged-in user from localStorage
         let currentUser = JSON.parse(localStorage.getItem("currentUser"));
         
-        // FALLBACK: Only for demo/dev if not logged in
+        // FALLBACK: If not logged in, prompt for credentials instead of hardcoding 201
         if (!currentUser) {
-            currentUser = users.find(u => u.id === "20001");
+            let userParam = prompt("Please enter username for dashboard (or cancel for demo user):");
+            if (userParam) {
+                let passParam = prompt("Please enter password:");
+                currentUser = users.find(u => (u.username === userParam || u.email === userParam) && u.password === passParam);
+                if (!currentUser) {
+                    alert("Invalid credentials. Defaulting to Admin (201).");
+                }
+            }
+
+            if (!currentUser) {
+                currentUser = users.find(u => u.id === "201");
+            }
+
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            console.log("Logged in as:", currentUser.role);
         }
 
         renderNavbar(currentUser);
@@ -146,13 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-window.addEventListener("unload", (event) => {
-    console.log("Refresh is starting...");
-    localStorage.clear();
-    location.reload();
-});
 
 if (window.location.pathname.includes('opsbook.html')) {
     initOperations();
 }
-

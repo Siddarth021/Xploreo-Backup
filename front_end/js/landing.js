@@ -35,3 +35,5 @@ function switchRole(role) {
         tabs[tabIndex].classList.add("active");
     }
 }
+
+window.switchRole = switchRole;

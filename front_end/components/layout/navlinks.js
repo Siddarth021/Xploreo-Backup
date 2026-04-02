@@ -3,7 +3,37 @@ const navlinks = [
     name: "Dashboard",
     path: "../pages/dashboard.html",
     icon: "../components/ui/dashboard.svg",
-    roles: ["guide","superadmin","techadmin","nontechadmin","opadmin","hotel"]
+    roles: ["techadmin"]
+  },
+  {
+    name: "Tickets",
+    path: "../pages/tech_tickets.html",
+    icon: "../components/ui/support.svg",
+    roles: ["techadmin"]
+  },
+  {
+    name: "Activity",
+    path: "../pages/tech_activity.html",
+    icon: "../components/ui/users.png",
+    roles: ["techadmin"]
+  },
+  {
+    name: "System Logs",
+    path: "../pages/tech_logs.html",
+    icon: "../components/ui/operations.png",
+    roles: ["techadmin"]
+  },
+  {
+    name: "Profile",
+    path: "../pages/profile.html",
+    icon: "../components/ui/user.svg",
+    roles: ["techadmin"]
+  },
+  {
+    name: "Dashboard",
+    path: "../pages/dashboard.html",
+    icon: "../components/ui/dashboard.svg",
+    roles: ["guide","superadmin","nontechadmin","opadmin","hotel"]
   },
   {
     name: "Operations & Bookings",
@@ -67,7 +97,7 @@ const navlinks = [
   },
   {
     name: "Home",
-    path: "../pages/experience_home.html",
+    path: "../pages/dashboard.html",
     icon: "../components/ui/dashboard.svg",
     roles: ["experience"]
   },
@@ -91,15 +121,27 @@ const navlinks = [
   },
 
   
+  {
+    name: "Explore",
+    path: "../pages/traveller_dashboard.html",
+    icon: "../components/ui/exploreIcon.jpg",
+    roles: ["traveller"]
+  },
+  
    
   {
     name: "Wish List",
+<<<<<<< HEAD
     path: "../pages/traveller/wishlist.html",
+=======
+    path: "../pages/traveller_wishlist.html",
+>>>>>>> 65df0cd1df3340bb5b2ef70c7881d4dc92cba929
     icon: "../components/ui/wishlistIcon.jpg",
     roles: ["traveller"]
   },
 
   {
+<<<<<<< HEAD
     name: "Explore",
     path: "../pages/traveller/dashboard.html",
     icon: "../components/ui/exploreIcon.jpg",
@@ -109,6 +151,10 @@ const navlinks = [
   {
     name: "My Trips",
     path: "../pages/traveller/mytrips.html",
+=======
+    name: "My Trips",
+    path: "../pages/traveller_mytrips.html",
+>>>>>>> 65df0cd1df3340bb5b2ef70c7881d4dc92cba929
     icon: "../components/ui/mytripsIcon.jpg",
     roles: ["traveller"]
   }

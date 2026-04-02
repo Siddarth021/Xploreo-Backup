@@ -54,7 +54,7 @@ export function initTravelerProfilePage(containerId) {
                         </div>
                         <div class="inline-actions">
                             <button type="button" class="ghost-btn" id="toggle-profile-edit">${state.editing ? "Close editor" : "Edit profile"}</button>
-                            <a class="traveler-link-chip" href="./bookings.html">My bookings</a>
+                            <a class="traveler-link-chip" href="./traveller_bookings.html">My bookings</a>
                         </div>
                     </div>
                     <div class="traveler-stat-grid">
@@ -92,7 +92,7 @@ export function initTravelerProfilePage(containerId) {
                                     <h2>Saved destinations</h2>
                                     <p>Built from your current traveller bookings.</p>
                                 </div>
-                                <a class="traveler-link-chip" href="./trip-planning.html">View all plans</a>
+                                <a class="traveler-link-chip" href="./traveller_trip-planning.html">View all plans</a>
                             </div>
                             <div class="saved-destination-grid">
                                 ${destinations.length ? destinations.map((destination) => `

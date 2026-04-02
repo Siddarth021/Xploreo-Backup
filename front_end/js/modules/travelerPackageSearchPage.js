@@ -230,7 +230,8 @@ export function renderTravelerPackageSearchPage(containerId) {
 
         container.querySelectorAll("[data-package-details]").forEach((button) => {
             button.addEventListener("click", () => {
-                showPackageToast("Package details page will be added next.");
+                const packageId = button.getAttribute("data-package-details");
+                window.location.href = `./traveller_booking-details.html?plan=${encodeURIComponent(packageId)}`;
             });
         });
 

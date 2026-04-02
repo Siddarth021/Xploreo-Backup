@@ -17,7 +17,7 @@ export function renderTravelerFlightDetailPage(containerId) {
                 <div class="flight-detail-empty">
                     <h1>No flight selected</h1>
                     <p>Choose a flight from the search results page first.</p>
-                    <a class="flight-detail-back-link" href="./flight-search.html">Back to flight search</a>
+                    <a class="flight-detail-back-link" href="./traveller_flight-search.html">Back to flight search</a>
                 </div>
             </main>
         `;
@@ -209,7 +209,7 @@ function bindEvents(selectedFlight) {
         if (typeof sessionStorage !== "undefined") {
             sessionStorage.setItem(CONFIRMED_BOOKING_SESSION_KEY, JSON.stringify(bookingPayload));
         }
-        window.location.href = "./booking-confirmation.html";
+        window.location.href = "./traveller_booking-confirmation.html";
     });
 }
 

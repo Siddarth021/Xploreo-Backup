@@ -1,8 +1,9 @@
 import { landingLinks } from "./navlinks_landing.js";
 
-const BASE_PATH = "/23_Xploreo/front_end";
+const isPages = window.location.pathname.includes("/pages/");
+const rootPath = isPages ? ".." : ".";
 
-const logoPath = window.location.pathname.includes("/pages/")
+const logoPath = isPages
     ? "../components/ui/landing/navbar-logo.png"
     : "./components/ui/landing/navbar-logo.png";
 
@@ -15,7 +16,7 @@ export function renderLandingNavbar() {
             </div>
             <nav class="nav-links">
                 ${landingLinks.map(link => `
-                    <a href="${BASE_PATH}${link.href}">${link.label}</a>
+                    <a href="${rootPath}${link.href}">${link.label}</a>
                 `).join("")}
             </nav>
             <div class="nav-right">
@@ -25,7 +26,7 @@ export function renderLandingNavbar() {
         </header>
     `;
     const con = document.getElementById("navbar");
-    con.innerHTML = navbarHTML;
+    if (con) con.innerHTML = navbarHTML;
     attachNavbarEvents();
 }
 
@@ -36,19 +37,19 @@ function attachNavbarEvents() {
 
     if (logo) {
         logo.addEventListener("click", () => {
-            window.location.href = "./index.html";
+            window.location.href = `${rootPath}/index.html`;
         });
     }
 
     if (loginBtn) {
         loginBtn.addEventListener("click", () => {
-            window.location.href = "./pages/login.html";
+            window.location.href = `${rootPath}/pages/login.html`;
         });
     }
 
     if (signupBtn) {
         signupBtn.addEventListener("click", () => {
-            window.location.href = "./pages/signup.html";
+            window.location.href = `${rootPath}/pages/signup.html`;
         });
     }
 }

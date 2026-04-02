@@ -1,7 +1,7 @@
 const CONFIRMED_BOOKING_KEY = "traveler_confirmed_booking";
 const CONFIRMED_BOOKING_SESSION_KEY = "traveler_confirmed_booking_session";
 const MY_TRIPS_FOCUS_KEY = "traveler_mytrips_focus";
-const TRAVELER_HOME_PAGE = "./dashboard.html";
+const TRAVELER_HOME_PAGE = "./traveller_dashboard.html";
 
 export function renderTravelerBookingConfirmationPage(containerId) {
     const container = document.getElementById(containerId);
@@ -14,7 +14,7 @@ export function renderTravelerBookingConfirmationPage(containerId) {
                 <div class="flight-detail-empty">
                     <h1>No booking found</h1>
                     <p>Complete a booking from the flight detail page first.</p>
-                    <a class="flight-detail-back-link" href="./flight-search.html">Back to flight search</a>
+                    <a class="flight-detail-back-link" href="./traveller_flight-search.html">Back to flight search</a>
                 </div>
             </main>
         `;
@@ -112,7 +112,7 @@ function bindConfirmationEvents() {
         if (typeof sessionStorage !== "undefined") {
             sessionStorage.setItem(MY_TRIPS_FOCUS_KEY, "Upcoming");
         }
-        window.location.href = "./mytrips.html";
+        window.location.href = "./traveller_mytrips.html";
     });
 
     document.getElementById("continue-exploring-btn")?.addEventListener("click", () => {

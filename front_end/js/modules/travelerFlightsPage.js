@@ -33,7 +33,7 @@ export function renderTravelerFlightsPage(containerId) {
                                 <button type="button" class="traveler-trip-badge ${searchValues.tripType === "Round Trip" ? "" : "active"}" disabled>One Way</button>
                                 <button type="button" class="traveler-trip-badge ${searchValues.tripType === "Round Trip" ? "active" : ""}" disabled>Round Trip</button>
                             </div>
-                            <a class="traveler-search-edit-link" href="./dashboard.html">Modify Search</a>
+                            <a class="traveler-search-edit-link" href="./traveller_dashboard.html">Modify Search</a>
                         </div>
 
                         <div class="traveler-search-grid ${searchValues.tripType === "Round Trip" ? "round-trip" : "one-way"}">

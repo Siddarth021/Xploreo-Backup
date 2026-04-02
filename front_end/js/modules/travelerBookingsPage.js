@@ -120,7 +120,7 @@ export function initTravelerBookingsPage(containerId) {
                         <h1>My Bookings</h1>
                         <p>Manage confirmed trips, open travel documents, and adjust saved booking data with instant updates.</p>
                     </div>
-                    <a class="traveler-link-chip" href="./trip-planning.html">Plan another trip</a>
+                    <a class="traveler-link-chip" href="./traveller_trip-planning.html">Plan another trip</a>
                 </section>
 
                 <section class="traveler-card">
@@ -197,7 +197,7 @@ export function initTravelerBookingsPage(containerId) {
         container.querySelectorAll("[data-view-booking]").forEach((button) => {
             button.addEventListener("click", () => {
                 setSelectedBookingId(button.dataset.viewBooking);
-                window.location.href = "./booking-details.html";
+                window.location.href = "./traveller_booking-details.html";
             });
         });
 

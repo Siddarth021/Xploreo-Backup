@@ -1,14 +1,22 @@
-import { homeData, homeTestimonials } from "../../data/experience_home.js";
-import { readStorage } from "./experience_shared.js";
+import { homeTestimonials } from "../../data/experience_home.js";
+import { experiences as experienceCatalog } from "../../data/experience_experience_data.js";
+import { bookingsData } from "../../data/experience_bookings.js";
+import { calculateDashboardStats, readStorage } from "./experience_shared.js";
 
 export function renderExperienceHomePage() {
-    const pageData = readStorage("experienceHome", homeData);
+    const catalog = readStorage("experienceCatalog", experienceCatalog);
+    const bookingsList = readStorage("experienceBookings", bookingsData);
     const stats = document.getElementById("stats");
     const alerts = document.getElementById("alerts");
     const schedule = document.getElementById("schedule");
     const bookings = document.getElementById("bookings");
     const reviews = document.getElementById("reviewsContainer");
     const viewAllBookingsButton = document.querySelector(".home-view-all-btn");
+
+    // Dynamic Stats
+    const dynamicStats = calculateDashboardStats(catalog, bookingsList);
+
+    const todayRaw = new Date().toISOString().split("T")[0];
     const todayLabel = new Date().toLocaleDateString("en-US", {
         weekday: "long",
         month: "long",
@@ -16,8 +24,15 @@ export function renderExperienceHomePage() {
         year: "numeric"
     });
 
-    const alertItems = pageData.schedule.map((item) => {
-        const percent = (item.booked / item.total) * 100;
+    // Derive Today's Schedule from Catalog Slots
+    const todaySchedule = catalog.flatMap(exp => 
+        (exp.slots || [])
+            .filter(slot => slot.date === todayRaw)
+            .map(slot => ({ ...slot, title: exp.title }))
+    );
+
+    const alertItems = todaySchedule.map((item) => {
+        const percent = (item.booked / item.capacity) * 100;
 
         if (percent === 100) {
             return {
@@ -35,10 +50,10 @@ export function renderExperienceHomePage() {
             };
         }
 
-        if (percent < 40) {
+        if (percent < 40 && item.booked < 2) {
             return {
                 ...item,
-                message: `${item.title} (${item.time}) has low bookings - low demand - consider promotion or pricing adjustment`,
+                message: `${item.title} (${item.time}) has low bookings - consider promotion or pricing adjustment`,
                 tone: "low"
             };
         }
@@ -50,22 +65,22 @@ export function renderExperienceHomePage() {
         stats.innerHTML = `
             <div class="stat-card experience-stat-card blue">
                 <p>Today's Bookings</p>
-                <h2>${pageData.stats.today}</h2>
+                <h2>${dynamicStats.today}</h2>
                 <span>Guests arriving today</span>
             </div>
             <div class="stat-card experience-stat-card light-green">
                 <p>Upcoming Sessions</p>
-                <h2>${pageData.stats.upcoming}</h2>
+                <h2>${dynamicStats.upcoming}</h2>
                 <span>Future sessions scheduled</span>
             </div>
             <div class="stat-card experience-stat-card dark-green">
                 <p>Total Bookings</p>
-                <h2>${pageData.stats.total}</h2>
+                <h2>${dynamicStats.total}</h2>
                 <span>Across all active experiences</span>
             </div>
             <div class="stat-card experience-stat-card orange">
                 <p>Average Rating</p>
-                <h2>${pageData.stats.rating}</h2>
+                <h2>${dynamicStats.rating}</h2>
                 <span>Current guest sentiment</span>
             </div>
         `;
@@ -86,8 +101,8 @@ export function renderExperienceHomePage() {
         schedule.innerHTML = `
             <p class="schedule-date-label">${todayLabel}</p>
             <div class="schedule-stack">
-                ${pageData.schedule.map((item) => {
-                    const percent = (item.booked / item.total) * 100;
+                ${todaySchedule.length ? todaySchedule.map((item) => {
+                    const percent = (item.booked / item.capacity) * 100;
                     let status = "Available";
                     let statusClass = "available";
                     let progressClass = "green";
@@ -112,7 +127,7 @@ export function renderExperienceHomePage() {
                             </div>
                             <p class="schedule-time">${item.time}</p>
                             <div class="schedule-row-bottom">
-                                <p class="schedule-seat-count">${item.booked}/${item.total} seats</p>
+                                <p class="schedule-seat-count">${item.booked}/${item.capacity} seats</p>
                                 <span class="status-pill ${statusClass}">${status}</span>
                             </div>
                             <div class="progress-bar-container schedule-progress">
@@ -120,7 +135,7 @@ export function renderExperienceHomePage() {
                             </div>
                         </article>
                     `;
-                }).join("")}
+                }).join("") : `<div class="empty-state compact"><h3>No sessions today</h3><p>Enjoy your day off or add a new slot!</p></div>`}
             </div>
         `;
 
@@ -136,27 +151,32 @@ export function renderExperienceHomePage() {
     }
 
     if (bookings) {
-        bookings.innerHTML = pageData.bookings.map((booking) => {
-            const guestName = booking.name || booking.guest || booking.user || "Guest";
-            const experienceName = booking.exp || booking.experience || booking.title || "Experience";
-            const bookingDate = booking.date || booking.day || "";
-            const bookingTime = booking.time || booking.slot || "";
-            const seats = booking.seats ?? booking.guests ?? 0;
+        // Show only the 4 most recent upcoming bookings for the dashboard
+        const flattenedBookings = bookingsList.flatMap(exp => 
+            exp.users.map(u => ({
+                guestName: u.name,
+                experienceName: exp.title,
+                date: exp.date,
+                time: exp.time,
+                seats: u.seats
+            }))
+        ).sort((a,b) => new Date(a.date) - new Date(b.date));
 
+        bookings.innerHTML = flattenedBookings.length ? flattenedBookings.slice(0, 4).map((booking) => {
             return `
                 <article class="transaction-row experience-transaction-row">
                     <div class="booking-person">
-                        <strong>${guestName}</strong>
-                        <p>${experienceName}</p>
+                        <strong>${booking.guestName}</strong>
+                        <p>${booking.experienceName}</p>
                     </div>
                     <div class="booking-datetime">
-                        <span>${bookingDate}</span>
-                        <span>${bookingTime}</span>
+                        <span>${booking.date}</span>
+                        <span>${booking.time}</span>
                     </div>
-                    <span class="section-chip booking-seat-chip">${seats} seats</span>
+                    <span class="section-chip booking-seat-chip">${booking.seats} seats</span>
                 </article>
             `;
-        }).join("");
+        }).join("") : `<div class="empty-state compact"><h3>No upcoming bookings</h3><p>Keep sharing your experience!</p></div>`;
     }
 
     if (viewAllBookingsButton) {

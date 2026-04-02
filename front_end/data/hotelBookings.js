@@ -7,7 +7,7 @@ export const hotelBookings = [
     status: "confirmed",
     checkIn: "Apr 2, 2026",
     checkOut: "Apr 4, 2026",
-    nights: 3,
+    nights: 2,
     amount: 850
   },
   {
@@ -17,7 +17,7 @@ export const hotelBookings = [
     guests: 1,
     status: "checked-in",
     checkIn: "Mar 2, 2026",
-    checkOut: "Mar 26, 2026",
+    checkOut: "Mar 4, 2026",
     nights: 2,
     amount: 340
   },
@@ -38,8 +38,8 @@ export const hotelBookings = [
     room: "Standard Room",
     guests: 2,
     status: "cancelled",
-    checkIn: "Mar 27, 2026",
-    checkOut: "Mar 29, 2026",
+    checkIn: "Mar 31, 2026",
+    checkOut: "Apr 2, 2026",
     nights: 2,
     amount: 480
   },

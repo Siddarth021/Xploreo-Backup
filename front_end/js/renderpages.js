@@ -7,6 +7,9 @@ import { renderHotelEarningPage } from "./modules/hotel-earning-page.js";
 import { rendertourpage } from "./tours.js";
 import { renderEarningsPage } from "./earnings.js";
 import { renderReviewsPage } from "./reviews.js";
+import { renderSchedulePage } from "./schedule.js";
+import { renderProfilePage } from "./profile.js";
+import { renderSupportPage } from "./support.js";
 import { initUsers } from "./modules/users.js";
 import { initFinance } from "./modules/finance.js";
 import { renderExperienceHomePage } from "./modules/experience_home.js";
@@ -21,14 +24,20 @@ export function renderPageContent(user) {
 
     if (user.role === "guide" && path === "dashboard.html") {
         renderdasboard("main", user);
-        document.getElementById("main").style.display = "block";
-        document.getElementById("admin-dashboard").style.display = "none";
-        document.getElementById("hotel-dashboard").style.display = "none";
+        const main = document.getElementById("main");
+        const admin = document.getElementById("admin-dashboard");
+        const hotel = document.getElementById("hotel-dashboard");
+        if (main) main.style.display = "block";
+        if (admin) admin.style.display = "none";
+        if (hotel) hotel.style.display = "none";
     } else if (user.role === "superadmin" && path === "dashboard.html") {
         renderAdminDashboard("admin-dashboard");
-        document.getElementById("admin-dashboard").style.display = "block";
-        document.getElementById("main").style.display = "none";
-        document.getElementById("hotel-dashboard").style.display = "none";
+        const main = document.getElementById("main");
+        const admin = document.getElementById("admin-dashboard");
+        const hotel = document.getElementById("hotel-dashboard");
+        if (admin) admin.style.display = "block";
+        if (main) main.style.display = "none";
+        if (hotel) hotel.style.display = "none";
     } else if (user.role === "superadmin" && path === "users.html") {
         const adminDash = document.getElementById("admin-dashboard");
         if (adminDash) adminDash.style.display = "none";
@@ -56,11 +65,20 @@ export function renderPageContent(user) {
         renderEarningsPage("main", user);
     } else if (user.role === "guide" && path === "reviews.html") {
         renderReviewsPage("main", user);
+    } else if (user.role === "guide" && path === "schedule.html") {
+        renderSchedulePage("main", user);
+    } else if ((user.role === "guide" || user.role === "experience") && path === "profile.html") {
+        renderProfilePage("main", user);
+    } else if (user.role === "guide" && path === "support.html") {
+        renderSupportPage("main", user);
     } else if (user.role === "hotel" && (path === "dashboard.html" || path === "hotelDashboard.html")) {
         renderHotelDashboard(user);
-        document.getElementById("main").style.display = "none";
-        document.getElementById("admin-dashboard").style.display = "none";
-        document.getElementById("hotel-dashboard").style.display = "block";
+        const main = document.getElementById("main");
+        const admin = document.getElementById("admin-dashboard");
+        const hotel = document.getElementById("hotel-dashboard");
+        if (main) main.style.display = "none";
+        if (admin) admin.style.display = "none";
+        if (hotel) hotel.style.display = "block";
     } else if (user.role === "hotel" && path === "hotelBookings.html") {
         renderBookingsPage();
     } else if (user.role === "hotel" && path === "hotelRooms.html") {

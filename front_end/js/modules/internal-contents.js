@@ -1,10 +1,10 @@
 export function renderinternalcontents(containerId, currentUser, currentActiveTab) {
-    console.log("DEBUG_SYNC_VERIFICATION_TOKEN_8899");
     const container = document.getElementById(containerId);
     if (!container) return;
 
     const allRequests = JSON.parse(localStorage.getItem("tours")) || [];
     
+    // Defensive check for currentUser
     if (!currentUser) {
         currentUser = JSON.parse(localStorage.getItem("currentUser")) || { id: "00001" };
     }
@@ -13,7 +13,7 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
         String(req.guideId).trim() === String(currentUser.id).trim() && req.status === currentActiveTab
     );
 
-    if (currentActiveTab === "pending") {
+    if (currentActiveTab === "pending") { // Represents "Upcoming"
         if (myRequests.length === 0) {
             container.innerHTML = `
                 <div class="empty-state-card">
@@ -59,8 +59,8 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
                                 <p class="amount">$${req.amount}</p>
                             </div>
                             <div class="card-actions">
+                                <button class="btn btn-solid-blue" onclick="handleTourStart('${req.id}')">Start</button>
                                 <button class="btn btn-outline-blue" onclick="openTourModal('${req.id}')">Details</button>
-                                <button class="btn btn-solid-blue" onclick="handleTourStart('${req.id}')">Start Tour</button>
                             </div>
                         </div>
                     </div>
@@ -84,7 +84,7 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
             const currentStepIndex = itinerary.indexOf(req.currentloction);
             const displayIndex = currentStepIndex >= 0 ? currentStepIndex : 0;
             const progress = Math.round((displayIndex / (totalSteps - 1 || 1)) * 100);
-            const nextStop = itinerary[displayIndex + 1] || "Finishing Soon";
+            const nextStop = itinerary[displayIndex + 1] || "Arrived";
 
             return `
                 <div class="ongoing-tour-card">
@@ -127,13 +127,13 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
 
                     <div class="action-buttons-ongoing">
                         <button class="btn btn-solid-blue flex-btn">
-                             Call Customer
+                            <img src="../components/ui/support.svg" alt="call" class="btn-icon" style="filter: brightness(0) invert(1);" /> Call Customer
                         </button>
                         <button class="btn btn-outline-blue flex-btn" onclick="openTourModal('${req.id}')">
-                             View Route
+                            <img src="../components/ui/tours.svg" alt="route" class="btn-icon" /> View Route
                         </button>
                         <button class="btn btn-outline-green flex-btn" onclick="handleTourAction('${req.id}')">
-                             Complete
+                            <img src="../components/ui/schedule.svg" alt="complete" class="btn-icon" /> ${displayIndex >= totalSteps - 1 ? 'Finish Tour' : 'Complete'}
                         </button>
                     </div>
                 </div>
@@ -163,10 +163,10 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
                         <div class="comp-sub">
                             <div class="comp-icons">
                                 <span class="cust-info">
-                                    <img src="../components/ui/user.svg" alt="user" style="width:14px; opacity:0.6;" /> ${req.customer}
+                                    <img src="../components/ui/user.svg" alt="user" /> ${req.customer}
                                 </span>
                                 <span class="cust-info">
-                                    <img src="../components/ui/upcomingtours.svg" alt="date" style="width:14px; opacity:0.6;" /> ${req.dateTime.split(" | ")[0]}
+                                    <img src="../components/ui/upcomingtours.svg" alt="date" /> ${req.dateTime.split(" | ")[0]}
                                 </span>
                                 <span class="cust-info">${req.guests} guests</span>
                             </div>
@@ -175,7 +175,7 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
 
                         ${req.review ? `
                         <div class="customer-review-box">
-                            <label>Customer Review</label>
+                            <label><img src="../css/icons/message.svg" alt="chat" /> Customer Review</label>
                             <p>${req.review}</p>
                         </div>
                         ` : ''}

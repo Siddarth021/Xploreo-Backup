@@ -1,5 +1,5 @@
 import { renderNavbar } from "../components/layout/navbar.js";
-import { renderPageContent } from "./renderpages-v6.js";
+import { renderPageContent } from "./renderpages.js";
 import { users } from "../data/user.js";
 import { tour } from "../data/tour.js";
 import { reviews } from "../data/review.js";
@@ -13,8 +13,13 @@ import { hotelReviews } from "../data/hotelReviews.js";
 import { hotelActivity } from "../data/hotelActivity.js";
 import { hotelServices } from "../data/hotelServices.js";
 import { partners } from "../data/partners.js";
+import { initOperations } from "./modules/operations.js";
 import { initLogin } from "./login.js";
 import { initSignup } from "./signup.js";
+import { renderLandingNavbar } from "../components/layout/navbar_landing.js";
+import { initialScheduleData } from "../data/schedule.js";
+import { initialProfileData } from "../data/profile-data.js";
+import { initialSupportData } from "../data/support-data.js";
 
 function initializeData() {
     if (!localStorage.getItem("users")) {
@@ -67,17 +72,41 @@ function initializeData() {
     if (!localStorage.getItem("experienceProfile")) {
         localStorage.setItem("experienceProfile", JSON.stringify(experienceProfile));
     }
+
+    if (!localStorage.getItem("scheduleData")) {
+        localStorage.setItem("scheduleData", JSON.stringify(initialScheduleData));
+    }
+
+    // Multi-user Profile Integrity
+    let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (currentUser && currentUser.id) {
+        const userProfileKey = `profileData_${currentUser.id}`;
+        if (!localStorage.getItem(userProfileKey)) {
+            localStorage.setItem(userProfileKey, JSON.stringify(initialProfileData));
+        }
+    }
+
+    if (!localStorage.getItem("profileData")) {
+        localStorage.setItem("profileData", JSON.stringify(initialProfileData));
+    }
+
+    if (!localStorage.getItem("supportData")) {
+        localStorage.setItem("supportData", JSON.stringify(initialSupportData));
+    }
     
     let storedTours = JSON.parse(localStorage.getItem("tours"));
-    if (storedTours) {
+    if (storedTours && Array.isArray(storedTours)) {
         const todayStr = new Date().toISOString().split("T")[0];
         storedTours.forEach((t) => {
-            if (t.status !== "completed") {
-                const tourDateStr = t.dateTime.split(" | ")[0];
+            if (t.status !== "completed" && t.dateTime) {
+                const parts = t.dateTime.split(" | ");
+                const tourDateStr = parts[0];
                 if (tourDateStr === todayStr) {
                     if (t.status !== "ongoing") {
                         t.status = "ongoing";
-                        if (!t.currentloction) t.currentloction = t.plan_iternary[0];
+                        if (!t.currentloction && t.plan_iternary && t.plan_iternary.length > 0) {
+                            t.currentloction = t.plan_iternary[0];
+                        }
                     }
                 } else if (tourDateStr > todayStr && t.status !== "pending") {
                     t.status = "pending";
@@ -91,51 +120,27 @@ function initializeData() {
 document.addEventListener("DOMContentLoaded", () => {
     initializeData();
 
-    const path = window.location.pathname.split("/").pop();
+    const path = window.location.pathname.split("/").pop() || "index.html";
 
     if (path === "login.html") {
-        initLogin();
-        return;
-    }
-
-    if (path === "signup.html") {
+        renderLandingNavbar();
+        initLogin(users);
+    } else if (path === "signup.html") {
+        renderLandingNavbar();
         initSignup();
-        return;
+    } else if (path === "index.html") {
+        renderLandingNavbar();
+    } else {
+        // PRIORITIZE: Actual logged-in user from localStorage
+        let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        
+        // FALLBACK: Only for demo/dev if not logged in
+        if (!currentUser) {
+            currentUser = users.find(u => u.id === "10001");
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+        }
+
+        renderNavbar(currentUser);
+        renderPageContent(currentUser);
     }
-
-    const isExperienceRoute = path.startsWith("experience_");
-    let currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    
-    if (!currentUser) {
-
-        currentUser = users.find(u => u.id === "201");
-    }
-
-    if (isExperienceRoute) {
-        const servicePartnerUser = users.find((user) => user.role === "service_partner");
-        currentUser = servicePartnerUser
-            ? { ...servicePartnerUser, role: "experience" }
-            : { role: "experience" };
-    }
-
-    if (!currentUser) {
-        currentUser = users.find((u) => u.id === "00001");
-    }
-
-    // Always ensure currentUser has been stored in localStorage for modular scripts
-    localStorage.setItem("currentUser", JSON.stringify(currentUser));
-
-    renderNavbar(currentUser);
-    renderPageContent(currentUser);
-});
-
-window.addEventListener("unload", () => {
-    const path = window.location.pathname.split("/").pop();
-
-    if (path.startsWith("experience_")) {
-        return;
-    }
-
-    console.log("Refresh is starting...");
-
 });

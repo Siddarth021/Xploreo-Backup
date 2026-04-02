@@ -1,12 +1,9 @@
 /* =======================================================
    LOGIN MODULE
 ======================================================= */
-export function initLogin() {
+export function initLogin(users) {
     const BASE_PATH = window.location.pathname.includes("23_Xploreo") ? "/23_Xploreo" : "";
 
-    /* ===============================
-       PASSWORD TOGGLE
-    =============================== */
     const togglePassword = document.getElementById("toggle-password");
     const passwordInput = document.getElementById("login-password");
 
@@ -33,9 +30,7 @@ export function initLogin() {
         passwordInput.addEventListener("input", () => clearError(passwordInput));
     }
 
-    /* ===============================
-       FORGOT PASSWORD OVERRIDE
-    =============================== */
+
     const forgotLink = document.querySelector(".forgot-link");
     if (forgotLink) {
         forgotLink.addEventListener("click", (e) => {
@@ -89,23 +84,18 @@ export function initLogin() {
                 showError(passwordElement, "Password is required.");
                 return;
             }
-
-            const users = JSON.parse(localStorage.getItem("users")) || [];
             
-            // Validate credentials against DB seed
-            const user = users.find(u => 
+            const currentUser = users.find(u => 
                 (u.username === username || u.email === username) && 
                 u.password === password
             );
 
-            if (!user) {
+            if (!currentUser) {
                 showError(passwordElement, "Invalid username or password.");
                 return;
             }
 
-            /* SAVE SESSION */
-            localStorage.setItem("currentUser", JSON.stringify(user));
-            redirectToDashboard();
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
         });
     }
 
@@ -137,12 +127,13 @@ export function initLogin() {
             errorEl.remove();
         }
     }
-
-    /* ===============================
-       UNIVERSAL ROUTING
-    =============================== */
-    function redirectToDashboard() {
-        // Automatically redirects to universal dashboard layout handled dynamically by renderpages.js
-        window.location.href = BASE_PATH + "/pages/dashboard.html";
-    }
 }
+
+    document.addEventListener("click", function (event) {
+        if (event.target.closest("#login-btn")) {
+            window.location.href = BASE_PATH + "/front_end/pages/login.html";
+        }
+        if (event.target.closest("#signup-btn")) {
+            window.location.href = BASE_PATH + "/front_end/pages/signup.html";
+        }
+    });

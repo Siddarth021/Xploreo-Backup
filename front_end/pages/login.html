@@ -21,7 +21,7 @@
 
 <body>
 
-<!-- HERO -->
+<div id = "navbar" ></div>
 
 <section class="hero">
 
@@ -127,26 +127,6 @@
 </div>
 
 </section>
-
-<!-- NAVBAR -->
-
-<script type="module">
-    import { renderLandingNavbar } from "../components/layout/navbar_landing.js";
-    renderLandingNavbar();
-
-    const BASE_PATH = window.location.pathname.includes("23_Xploreo") ? "/23_Xploreo" : "";
-
-    document.addEventListener("click", function (event) {
-        if (event.target.closest("#login-btn")) {
-            window.location.href = BASE_PATH + "/front_end/pages/login.html";
-        }
-        if (event.target.closest("#signup-btn")) {
-            window.location.href = BASE_PATH + "/front_end/pages/signup.html";
-        }
-    });
-</script>
-
-<!-- LOGIN LOGIC -->
 <script type="module" src="../js/app.js"></script>
 
 </body>

@@ -38,7 +38,7 @@ window.openTourModal = (tourId) => {
         const body = document.getElementById("modalBody");
         console.log(tour);
         // Split itinerary string into an array
-        const itinerarySteps = tour.plan_iternary || [];
+        const itinerarySteps = tour.plan_iternary
         const currentStop = tour.currentloction;
         
         body.innerHTML = `
@@ -77,19 +77,19 @@ window.openTourModal = (tourId) => {
     }
 };
 
-window.handleTourStart = (tourId) => {
-    let allTours = JSON.parse(localStorage.getItem("tours")) || [];
-    const tourIndex = allTours.findIndex(t => String(t.id) === String(tourId));
+// Function to update LocalStorage and refresh the UI
+window.handleStatusUpdate = (tourId, newStatus) => {
+    let allTours = JSON.parse(localStorage.getItem("tours"));
+    const index = allTours.findIndex(t => String(t.id) === String(tourId));
 
-    if (tourIndex !== -1) {
-        const tour = allTours[tourIndex];
-        tour.status = "ongoing";
-        if (tour.plan_iternary && tour.plan_iternary.length > 0) {
-            tour.currentloction = tour.plan_iternary[0];
-        }
-
+    if (index !== -1) {
+        allTours[index].status = newStatus;
         localStorage.setItem("tours", JSON.stringify(allTours));
-        window.switchTab('ongoing');
+        
+        // Close modal and refresh the specific container
+        document.getElementById("tourModal").style.display = "none";
+        const user = JSON.parse(localStorage.getItem("currentUser"));
+        rendertourpage("main", user); 
     }
 };
 
@@ -100,18 +100,27 @@ window.handleTourAction = (tourId) => {
     if (tourIndex !== -1) {
         const tour = allTours[tourIndex];
         const itinerary = tour.plan_iternary || [];
+        
+        // Find where we are right now
         const currentIndex = itinerary.indexOf(tour.currentloction);
         const nextIndex = currentIndex + 1;
 
         if (nextIndex < itinerary.length) {
+            // Move to the next stop
             tour.currentloction = itinerary[nextIndex];
+            console.log(`Moving to next stop: ${tour.currentloction}`);
         } else {
+            // We reached the end of the list
             tour.status = "completed"; 
             tour.currentloction = "Trip Completion";
+            console.log("Tour Finished!");
         }
 
+        // Save and Refresh
         localStorage.setItem("tours", JSON.stringify(allTours));
+        
         const user = JSON.parse(localStorage.getItem("currentUser")) || { id: "00001" };
+        // Re-render the 'ongoing' or 'completed' tab accordingly
         renderinternalcontents("internal-contents", user, tour.status); 
     }
 };
@@ -121,6 +130,27 @@ window.closeModal = () => {
     if (modal) {
         modal.classList.remove('active');
         document.getElementById("modalBody").innerHTML = "";
+    }
+};
+
+window.handleTourStart = (tourId) => {
+    let allTours = JSON.parse(localStorage.getItem("tours")) || [];
+    const tourIndex = allTours.findIndex(t => String(t.id) === String(tourId));
+
+    if (tourIndex !== -1) {
+        const tour = allTours[tourIndex];
+        tour.status = "ongoing";
+        // Initialize to first stop if not already set
+        if (!tour.currentloction && tour.plan_iternary && tour.plan_iternary.length > 0) {
+            tour.currentloction = tour.plan_iternary[0];
+        }
+        
+        localStorage.setItem("tours", JSON.stringify(allTours));
+        
+        const user = JSON.parse(localStorage.getItem("currentUser")) || { id: "00001" };
+        // Re-render the 'ongoing' tab
+        currentActiveTab = "ongoing";
+        rendertourpage("main", user);
     }
 };
 

@@ -13,7 +13,7 @@ export const initialSupportData = {
         { id: "T-108", subject: "Customer cancellation policy", status: "Open", date: "2026-03-25", category: "Policies" }
     ],
     contactInfo: {
-        email: "support@travelguide.com",
+        email: "support@xploreo.com",
         phone: "+33 1 23 45 67 89",
         availability: "Mon-Fri, 9am-6pm CET"
     }

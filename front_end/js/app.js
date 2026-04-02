@@ -167,6 +167,31 @@ document.addEventListener("DOMContentLoaded", () => {
         renderPageContent(currentUser);
  
     }
+<<<<<<< HEAD
+=======
+
+    const isExperienceRoute = path.startsWith("experience_");
+    let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    
+    if (!currentUser) {
+
+        currentUser = users.find(u => u.id === "00001");
+    }
+    if (isExperienceRoute) {
+        const servicePartnerUser = users.find((user) => user.role === "service_partner");
+        currentUser = servicePartnerUser
+            ? { ...servicePartnerUser, role: "experience" }
+            : { role: "experience" };
+    } else if (!currentUser) {
+        currentUser = users.find((u) => u.id === "00001");
+        currentUser = users.find(u => u.id === "00001");
+
+        localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    }
+
+    renderNavbar(currentUser);
+    renderPageContent(currentUser);
+>>>>>>> 4fc13c8 (...)
 });
 
 window.addEventListener("unload", (event) => {

@@ -151,7 +151,7 @@ export function renderTravelerSupportPage(containerId) {
                             <div class="traveler-support-contact-icon">${mailIcon()}</div>
                             <div>
                                 <span class="traveler-support-contact-label">Email Support</span>
-                                <span class="traveler-support-contact-value">support@travelguide.com</span>
+                                <span class="traveler-support-contact-value">support@xploreo.com</span>
                                 <span class="traveler-support-contact-meta">Response within 24 hours</span>
                             </div>
                         </div>

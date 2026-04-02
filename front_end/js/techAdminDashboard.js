@@ -1,9 +1,9 @@
 export function renderTechAdminDashboard(containerId) {
+    console.log("Rendering Tech Admin Dashboard...");
     let techAdminData = JSON.parse(localStorage.getItem("techAdminData"));
     let users = JSON.parse(localStorage.getItem("users"));
-    if (!techAdminData) return;
-
-    // Show Tech Admin Dashboard, hide others
+    
+    // Explicitly show the dashboard before doing data processing
     const techDash = document.getElementById("tech-admin-dashboard");
     const adminDash = document.getElementById("admin-dashboard");
     const mainDash = document.getElementById("main");
@@ -14,23 +14,32 @@ export function renderTechAdminDashboard(containerId) {
     if (mainDash) mainDash.style.display = "none";
     if (hotelDash) hotelDash.style.display = "none";
 
-    // Dynamic Stats Calculation
-    const total = techAdminData.tickets.length;
-    const pending = techAdminData.tickets.filter(t => t.status === 'pending' || t.status === 'in-progress').length;
-    const resolved = techAdminData.tickets.filter(t => t.status === 'resolved').length;
-    
-    // Calculate Active Users (Guides + Travelers) from the shared users array
-    const activeUsersCount = users ? users.filter(u => (u.role === 'guide' || u.role === 'traveller') && u.status === 'active').length : 0;
-    
-    const criticalAlerts = techAdminData.systemLogs.filter(log => log.type === 'error').length;
+    if (!techAdminData) {
+        console.error("techAdminData not found in localStorage!");
+        if (techDash) {
+            techDash.innerHTML = `<div style="padding: 50px; text-align: center;"><h2>Error: Data not initialized. Please refresh.</h2></div>`;
+        }
+        return;
+    }
+
+    // Safely calculate stats
+    const tickets = techAdminData.tickets || [];
+    const logs = techAdminData.systemLogs || [];
+    const activity = techAdminData.userActivity || [];
+
+    const total = tickets.length;
+    const pendingTicketsCount = tickets.filter(t => t && (t.status === 'pending' || t.status === 'in-progress')).length;
+    const resolvedTicketsCount = tickets.filter(t => t && (t.status === 'resolved' || t.status === 'rejected')).length;
+    const activeUsersCount = users ? users.filter(u => u && (u.role === 'guide' || u.role === 'traveller') && u.status === 'active').length : 0;
+    const criticalAlerts = logs.filter(log => log && log.type === 'error').length;
 
     // 1. Render Stats
     const statsContainer = document.getElementById("tech-stats");
     if (statsContainer) {
         const stats = [
             { label: "Total Tickets", value: total, icon: "../components/ui/support.svg", color: "blue", path: "tech_tickets.html" },
-            { label: "Pending Tickets", value: pending, icon: "../components/ui/support.svg", color: "orange", path: "tech_tickets.html?status=pending" },
-            { label: "Resolved Tickets", value: resolved, icon: "../components/ui/support.svg", color: "light-green", path: "tech_tickets.html?status=resolved" },
+            { label: "Pending Tickets", value: pendingTicketsCount, icon: "../components/ui/support.svg", color: "orange", path: "tech_tickets.html?status=pending" },
+            { label: "Resolved Tickets", value: resolvedTicketsCount, icon: "../components/ui/support.svg", color: "light-green", path: "tech_tickets.html?status=resolved" },
             { label: "Active Users", value: activeUsersCount, icon: "../components/ui/users.png", color: "violet", path: "tech_activity.html" },
             { label: "System Alerts", value: criticalAlerts, icon: "../components/ui/operations.png", color: "red", path: "tech_logs.html" }
         ];
@@ -49,7 +58,7 @@ export function renderTechAdminDashboard(containerId) {
     // 2. Render Live Ticket Overview (Table)
     const ticketsContainer = document.getElementById("recent-tickets");
     if (ticketsContainer) {
-        const latestTickets = [...techAdminData.tickets].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+        const latestTickets = [...tickets].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
         ticketsContainer.innerHTML = `
             <div class="card-header">
                 <div>
@@ -69,7 +78,7 @@ export function renderTechAdminDashboard(containerId) {
                     </tr>
                 </thead>
                 <tbody>
-                    ${latestTickets.map(ticket => `
+                    ${latestTickets.length > 0 ? latestTickets.map(ticket => `
                         <tr>
                             <td style="font-weight: 600; color: #2563EB;">${ticket.id}</td>
                             <td>${ticket.userName}</td>
@@ -77,7 +86,7 @@ export function renderTechAdminDashboard(containerId) {
                             <td><span class="status-tag ${ticket.status}">${ticket.status}</span></td>
                             <td><span class="status-tag ${ticket.priority}">${ticket.priority}</span></td>
                         </tr>
-                    `).join('')}
+                    `).join('') : '<tr><td colspan="5" style="text-align: center; padding: 20px;">No recent tickets.</td></tr>'}
                 </tbody>
             </table>
         `;
@@ -111,7 +120,7 @@ export function renderTechAdminDashboard(containerId) {
                         <div class="progress-fill" style="width: ${cpuUtil}%; background: #2563EB; height: 100%; border-radius: 4px;"></div>
                     </div>
                 </div>
-                 <div class="metric" style="margin-bottom: 20px;">
+                <div class="metric" style="margin-bottom: 20px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                         <span style="font-size: 14px; font-weight: 600;">Memory Usage</span>
                         <span style="color: #8B5CF6; font-weight: 700;">${memUtil}%</span>
@@ -127,16 +136,16 @@ export function renderTechAdminDashboard(containerId) {
     // 4. Render Recent Activity Feed
     const alertsContainer = document.getElementById("tech-alerts");
     if (alertsContainer) {
-        const activities = techAdminData.userActivity.slice(0, 5);
+        const activities = activity.slice(0, 5);
         alertsContainer.innerHTML = `
             <div class="card-header">
                 <h2>Recent Activity Feed</h2>
             </div>
             <div class="activity-list" style="margin-top: 15px;">
-                ${activities.map(act => `
+                ${activities.length > 0 ? activities.map(act => `
                     <div class="activity-item" style="padding: 12px 0; border-bottom: 1px solid #F3F4F6; display: flex; gap: 12px; align-items: center;">
                         <div style="width: 36px; height: 36px; background: #EEF2FF; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                            <img src="../components/ui/user.svg" style="width: 18px; opacity: 0.8; filter: invert(30%) sepia(90%) some-color-adjust;">
+                            <img src="../components/ui/user.svg" style="width: 18px; opacity: 0.8; filter: brightness(0) saturate(100%) invert(30%) sepia(90%);">
                         </div>
                         <div style="flex: 1;">
                             <p style="margin: 0; font-size: 13px; font-weight: 600; color: #111827;">${act.userName}</p>
@@ -144,11 +153,12 @@ export function renderTechAdminDashboard(containerId) {
                         </div>
                         <span style="font-size: 11px; color: #9CA3AF; white-space: nowrap;">${new Date(act.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                     </div>
-                `).join('')}
+                `).join('') : '<p style="text-align: center; padding: 20px; font-size: 13px; color: #6B7280;">No recent activity.</p>'}
             </div>
             <button class="secondary-btn" style="width: 100%; margin-top: 20px; font-size: 13px; height: 40px;" onclick="window.location.href='tech_activity.html'">View Full Activity Log</button>
         `;
     }
 }
+
 
 

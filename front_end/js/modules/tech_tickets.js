@@ -42,11 +42,40 @@ export function initTicketManagement() {
                 <td><span class="status-tag ${ticket.status}">${ticket.status}</span></td>
                 <td><span style="font-size: 13px; color: #4B5563;">${ticket.category}</span></td>
                 <td style="text-align: right;">
-                    <button class="secondary-btn" style="padding: 6px 12px; font-size: 13px;" onclick="window.viewTicket('${ticket.id}')">View Details</button>
+                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                        <a href="tech_ticket_detail.html?id=${ticket.id}" class="secondary-btn" style="padding: 6px 12px; font-size: 13px; text-decoration: none;">View Detail</a>
+                        ${ticket.status === 'pending' ? `
+                            <button class="secondary-btn" onclick="window.quickAction('${ticket.id}', 'resolved')" style="border-color: #10B981; color: #10B981; padding: 6px 12px; font-size: 12px;">Approve</button>
+                            <button class="secondary-btn" onclick="window.quickAction('${ticket.id}', 'rejected')" style="border-color: #EF4444; color: #EF4444; padding: 6px 12px; font-size: 12px;">Reject</button>
+                        ` : ''}
+                    </div>
                 </td>
             </tr>
-        `).join('');
+        `).reverse().join('');
     };
+
+    window.quickAction = (id, newStatus) => {
+        const ticketIndex = techAdminData.tickets.findIndex(t => t.id === id);
+        if (ticketIndex !== -1) {
+            const oldStatus = techAdminData.tickets[ticketIndex].status;
+            techAdminData.tickets[ticketIndex].status = newStatus;
+            
+            // Log Activity
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            techAdminData.userActivity.unshift({
+                id: `ACT-${Date.now()}`,
+                userId: currentUser.id,
+                userName: currentUser.name,
+                action: `Quick-updated ticket ${id} from ${oldStatus} to ${newStatus}`,
+                timestamp: new Date().toISOString()
+            });
+
+            localStorage.setItem("techAdminData", JSON.stringify(techAdminData));
+            alert(`Ticket ${id} marked as ${newStatus}`);
+            renderTickets();
+        }
+    };
+
 
     // Filter Buttons
     document.querySelectorAll(".filter-btn").forEach(btn => {

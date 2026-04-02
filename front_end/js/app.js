@@ -13,7 +13,6 @@ import { hotelReviews } from "../data/hotelReviews.js";
 import { hotelActivity } from "../data/hotelActivity.js";
 import { hotelServices } from "../data/hotelServices.js";
 import { partners } from "../data/partners.js";
-import { initOperations } from "./modules/operations.js";
 import { initLogin } from "./login.js";
 import { initSignup } from "./signup.js";
 import { renderLandingNavbar } from "../components/layout/navbar_landing.js";
@@ -159,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // FALLBACK: Only for demo/dev if not logged in
         if (!currentUser) {
-            currentUser = users.find(u => u.id === "00201");
+            currentUser = users.find(u => u.id === "00001");
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
         }
 
@@ -169,13 +168,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-window.addEventListener("unload", (event) => {
-    console.log("Refresh is starting...");
-    localStorage.clear();
-    location.reload();
-});
-
-if (window.location.pathname.includes('opsbook.html')) {
-    initOperations();
-}
+// window.addEventListener("unload", (event) => {
+//     console.log("Refresh is starting...");
+//     localStorage.clear();
+//     location.reload();
+// });
 

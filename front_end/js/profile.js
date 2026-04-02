@@ -10,15 +10,45 @@ export function renderProfilePage(containerId, user) {
     profileData = JSON.parse(localStorage.getItem(profileKey));
 
     if (!profileData) {
-        // Fallback for safety if not initialized in app.js
         profileData = JSON.parse(localStorage.getItem("profileData"));
+    }
+
+    // Role-specific Stats Calculation
+    let extraStats = "";
+    if (currentUser.role === "techadmin") {
+        const techData = JSON.parse(localStorage.getItem("techAdminData"));
+        if (techData) {
+            const resolvedCount = techData.tickets.filter(t => t.status === 'resolved').length;
+            const logCount = techData.systemLogs.length;
+            extraStats = `
+                <div class="meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span>${resolvedCount} Tickets Resolved</span>
+                </div>
+                <div class="meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>${logCount} System Logs</span>
+                </div>
+            `;
+        }
+    } else {
+        extraStats = `
+            <div class="meta-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span>${profileData.location}</span>
+            </div>
+            <div class="meta-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>${profileData.experience}</span>
+            </div>
+        `;
     }
 
     container.innerHTML = `
         <div class="profile-page">
             <div class="profile-header">
-                <h1 class="profile-title">Profile</h1>
-                <p class="profile-subtitle">Manage your account information and settings</p>
+                <h1 class="profile-title">${currentUser.role === 'techadmin' ? 'Technical Admin Profile' : 'Profile'}</h1>
+                <p class="profile-subtitle">Manage your account information and system settings.</p>
             </div>
 
             <div class="profile-hero-card">
@@ -31,21 +61,14 @@ export function renderProfilePage(containerId, user) {
                 </div>
                 <div class="hero-info">
                     <h2 class="hero-name">${currentUser.name}</h2>
-                    <span class="hero-title">${profileData.professionalTitle}</span>
+                    <span class="hero-title">${currentUser.role === 'techadmin' ? 'System Administrator' : profileData.professionalTitle}</span>
                     <div class="hero-meta">
-                        <div class="meta-item">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                            <span>${profileData.location}</span>
-                        </div>
-                        <div class="meta-item">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                            <span>${profileData.experience}</span>
-                        </div>
+                        ${extraStats}
                     </div>
                 </div>
                 <div class="badges">
-                    <span class="badge verified">Verified</span>
-                    <span class="badge premium">Premium</span>
+                    <span class="badge verified">${currentUser.role === 'techadmin' ? 'Authorized' : 'Verified'}</span>
+                    <span class="badge premium">${currentUser.role === 'techadmin' ? 'System Full Access' : 'Premium'}</span>
                 </div>
             </div>
 
@@ -80,6 +103,7 @@ export function renderProfilePage(containerId, user) {
                     </div>
                 </div>
 
+                ${currentUser.role !== 'techadmin' ? `
                 <!-- Professional Details -->
                 <div class="profile-section">
                     <div class="section-header">
@@ -154,11 +178,25 @@ export function renderProfilePage(containerId, user) {
                         </div>
                     </div>
                 </div>
+                ` : `
+
+                <!-- Admin Security Log Context -->
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Admin Work Log</h3>
+                    </div>
+                    <div style="background: #F3F4F6; padding: 20px; border-radius: 10px; font-size: 14px; color: #4B5563;">
+                        <p><strong>Access Level:</strong> Superuser (Level 1)</p>
+                        <p><strong>Last System Sync:</strong> ${new Date().toLocaleString()}</p>
+                        <p style="margin-bottom: 0;"><strong>Active Tickets in Queue:</strong> ${JSON.parse(localStorage.getItem("techAdminData")).tickets.filter(t => t.status === 'pending').length}</p>
+                    </div>
+                </div>
+                `}
 
                 <!-- Security -->
                 <div class="profile-section">
                     <div class="section-header">
-                        <h3 class="section-title">Security</h3>
+                        <h3 class="section-title">Security & Password</h3>
                     </div>
                     <div class="form-grid">
                         <div class="input-group full">
@@ -180,12 +218,13 @@ export function renderProfilePage(containerId, user) {
                 </div>
 
                 <div class="save-all-container">
-                    <button type="button" class="secondary-btn">Cancel</button>
+                    <button type="button" class="secondary-btn" onclick="window.history.back()">Cancel</button>
                     <button type="submit" class="primary-btn">Save Changes</button>
                 </div>
             </form>
         </div>
     `;
+
 
     setupProfileListeners();
 }

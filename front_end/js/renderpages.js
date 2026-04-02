@@ -25,6 +25,7 @@ import { renderTechAdminDashboard } from "./techAdminDashboard.js";
 import { initTicketManagement } from "./modules/tech_tickets.js";
 import { initTechActivity } from "./modules/tech_activity.js";
 import { initTechLogs } from "./modules/tech_logs.js";
+import { renderTechTicketDetail } from "./modules/tech_ticket_detail.js";
 
 export function renderPageContent(user) {
     const path = window.location.pathname.split("/").pop() || "dashboard.html";
@@ -52,6 +53,7 @@ export function renderPageContent(user) {
         if (main) main.style.display = "block";
         if (admin) admin.style.display = "none";
         if (hotel) hotel.style.display = "none";
+
     } else if (user.role === "superadmin" && path === "dashboard.html") {
         renderAdminDashboard("admin-dashboard");
         const main = document.getElementById("main");
@@ -60,14 +62,16 @@ export function renderPageContent(user) {
         if (admin) admin.style.display = "block";
         if (main) main.style.display = "none";
         if (hotel) hotel.style.display = "none";
+        document.getElementById("tech-admin-dashboard").style.display ="none";
+
     } else if (user.role === "superadmin" && path === "users.html") {
         const adminDash = document.getElementById("admin-dashboard");
         if (adminDash) adminDash.style.display = "none";
-
         const mainDiv = document.getElementById("main");
         if (mainDiv) mainDiv.style.display = "block";
-
+        document.getElementById("tech-admin-dashboard").style.display ="none";
         initUsers();
+        
     }else if (user.role === "superadmin" && path === "opsbook.html"){
         const mainDiv = document.getElementById("main");
         if (mainDiv) mainDiv.style.display = "block";
@@ -82,9 +86,12 @@ export function renderPageContent(user) {
 
         initFinance();
     } else if (user.role === "techadmin" && path === "dashboard.html") {
-        renderTechAdminDashboard("tech-admin-dashboard");
+        renderTechAdminDashboard("tech-admin-dash");
+        document.getElementById("tech-admin-dash").style.display ="block";
     } else if (user.role === "techadmin" && path === "tech_tickets.html") {
         initTicketManagement();
+    } else if (user.role === "techadmin" && path === "tech_ticket_detail.html") {
+        renderTechTicketDetail("main");
     } else if (user.role === "techadmin" && path === "tech_activity.html") {
         initTechActivity();
     } else if (user.role === "techadmin" && path === "tech_logs.html") {
@@ -97,7 +104,7 @@ export function renderPageContent(user) {
         renderReviewsPage("main", user);
     } else if (user.role === "guide" && path === "schedule.html") {
         renderSchedulePage("main", user);
-    } else if ((user.role === "guide" || user.role === "experience") && path === "profile.html") {
+    } else if ((user.role === "guide" || user.role === "experience" || user.role === "techadmin") && path === "profile.html") {
         renderProfilePage("main", user);
     } else if (user.role === "guide" && path === "support.html") {
         renderSupportPage("main", user);

@@ -65,3 +65,11 @@ export const financeStats = [
         icon: "../components/ui/finance.png"
     }
 ];
+
+export const payoutData = [
+    { id: "PAY-8821", name: "Skyline Meridians", initials: "SM", amount: "₹12.4L", status: "paid", date: "Oct 24, 2023" },
+    { id: "PAY-8822", name: "Azure Voyages", initials: "AV", amount: "₹8.12L", status: "pending", date: "Oct 26, 2023" },
+    { id: "PAY-8823", name: "Tropical Pathways", initials: "TP", amount: "₹3.9L", status: "failed", date: "Oct 22, 2023" },
+    { id: "PAY-8824", name: "Nordic Blue Travel", initials: "NB", amount: "₹22.4L", status: "paid", date: "Oct 20, 2023" },
+    { id: "PAY-8825", name: "Global Compass", initials: "GC", amount: "₹5.6L", status: "pending", date: "Oct 28, 2023" } // Added an extra one to prove it's dynamic!
+];

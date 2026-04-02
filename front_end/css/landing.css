@@ -24,14 +24,16 @@
 
 }
 
+
 /* Top Bar */
 
 .top-bar {
 
-    position: sticky;
+    position: fixed;
 
     top: 19px;
-    left: 24px;
+    left: 0;
+    right: 0;
 
     /* width: 1552px; */
     height: 60px;
@@ -198,7 +200,7 @@
 
     height: 837px;
 
-    margin-top: 45px;
+    margin-top: 105px;
 
     margin-left: 24px;
 

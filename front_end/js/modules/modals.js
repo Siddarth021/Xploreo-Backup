@@ -1,4 +1,26 @@
 export function getModalsHTML() {
+    // 1. Fetch users from localStorage
+    const usersStr = localStorage.getItem("users");
+    let techAdminOptions = `<option disabled>No Tech Admins Found</option>`; // Fallback
+
+    if (usersStr) {
+        try {
+            const users = JSON.parse(usersStr);
+            // 2. Filter for only users with the role 'techadmin'
+            const techAdmins = users.filter(user => user.role === 'techadmin');
+
+            // 3. Create the <option> tags dynamically
+            if (techAdmins.length > 0) {
+                techAdminOptions = techAdmins.map(admin => 
+                    `<option value="${admin.username}">${admin.name}</option>`
+                ).join('');
+            }
+        } catch (e) {
+            console.error("Error parsing users for dropdown:", e);
+        }
+    }
+
+    // 4. Return the HTML, injecting our new dropdown options
     return `
         <div id="manage-queue-modal" class="modal-overlay">
             <div class="modal-content">
@@ -52,7 +74,7 @@ export function getModalsHTML() {
         <div id="escalate-modal" class="modal-overlay">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="dynamic-title">Escalate Case</h3>
+                    <h3 class="dynamic-title">Manage Case <span class="inject-case"></span></h3>
                     <button class="close-btn" data-target="escalate-modal">&times;</button>
                 </div>
                 <div class="modal-body form-state">
@@ -61,11 +83,13 @@ export function getModalsHTML() {
                         <strong>Ref:</strong> <span class="inject-ref"></span><br>
                         <strong>Issue:</strong> <span class="inject-issue"></span>
                     </div>
-                    <p>Select the appropriate department to review this escalation.</p>
+                    <p>Select the appropriate technical admin to review this escalation.</p>
+                    
                     <select style="width: 100%; padding: 10px; margin-bottom: 16px; border-radius: 6px; border: 1px solid #cbd5e0;">
-                        <option>Operations Admin</option>
-                        <option>Technical Admin</option>
-                        <option>Non Technical Admin</option>
+                        <option value="" disabled selected>Select Technical Admin...</option>
+                        <optgroup label="Technical Admins">
+                            ${techAdminOptions}
+                        </optgroup>
                     </select>
                     <textarea placeholder="Brief reason for escalation..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; margin-bottom: 16px; resize: none; font-family: inherit; box-sizing: border-box;" rows="3"></textarea>
                     <button class="btn btn-outline btn-confirm-action" style="width: 100%;">Submit Escalation</button>
@@ -73,7 +97,7 @@ export function getModalsHTML() {
                 <div class="modal-body success-state" style="display: none; text-align: center; padding: 10px 0 20px;">
                     <div style="font-size: 48px; color: #1e8e3e; margin-bottom: 12px; font-weight: bold;">✓</div>
                     <h3 style="margin: 0 0 8px 0; color: #1a202c; font-size: 20px;">Case Escalated</h3>
-                    <p style="margin: 0; color: #4a5568; font-size: 15px;">The ticket has been routed to the selected department.</p>
+                    <p style="margin: 0; color: #4a5568; font-size: 15px;">The ticket has been routed to the selected tech admin.</p>
                 </div>
             </div>
         </div>

@@ -1,21 +1,17 @@
 export function attachOperationsEvents() {
-    // Generic Modal Close Function
-    const closeButtons = document.querySelectorAll('.close-btn');
-    closeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const targetModalId = btn.getAttribute('data-target');
-            document.getElementById(targetModalId).classList.remove('active');
-        });
-    });
-
-    // Close on outside click
-    const allModals = document.querySelectorAll('.modal-overlay');
-    allModals.forEach(modal => {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('active');
-            }
-        });
+    // --- 1. GENERIC MODAL LOGIC ---
+    // Use Event Delegation to handle dynamic close buttons
+    document.addEventListener('click', (e) => {
+        // Handle Close Buttons
+        if (e.target.matches('.close-btn')) {
+            const targetModalId = e.target.getAttribute('data-target');
+            document.getElementById(targetModalId)?.classList.remove('active');
+        }
+        
+        // Handle Outside Overlay Clicks
+        if (e.target.matches('.modal-overlay')) {
+            e.target.classList.remove('active');
+        }
     });
 
     // Generic Success Trigger
@@ -45,32 +41,25 @@ export function attachOperationsEvents() {
         }, 2000);
     };
 
-    // 1. Manage Queue Logic
-    const openQueueBtn = document.getElementById('open-queue-btn');
-    const queueModal = document.getElementById('manage-queue-modal');
-    if (openQueueBtn && queueModal) {
-        openQueueBtn.addEventListener('click', (e) => {
+    // --- 2. MANAGE QUEUE LOGIC ---
+    document.addEventListener('click', (e) => {
+        if (e.target.id === 'open-queue-btn') {
             e.preventDefault(); 
-            queueModal.classList.add('active');
-        });
+            document.getElementById('manage-queue-modal')?.classList.add('active');
+        }
+        if (e.target.id === 'btn-escalate-queue') {
+            triggerSuccess(document.getElementById('manage-queue-modal'), "All pending cases escalated.");
+        }
+        if (e.target.id === 'btn-process-queue') {
+            triggerSuccess(document.getElementById('manage-queue-modal'), "Eligible refunds auto-processed.");
+        }
+    });
 
-        document.getElementById('btn-escalate-queue')?.addEventListener('click', () => {
-            triggerSuccess(queueModal, "All pending cases have been escalated to the team.");
-        });
-        document.getElementById('btn-process-queue')?.addEventListener('click', () => {
-            triggerSuccess(queueModal, "All eligible refunds have been auto-processed.");
-        });
-    }
 
-    // 2. Resolve & Escalate Logic
+    // --- 3. DYNAMIC RESOLVE & ESCALATE LOGIC ---
     let activeRowElement = null; 
+    let activeCaseId = null; // We need to track the ID to delete it from the database
 
-    const resolveBtns = document.querySelectorAll('.btn-resolve');
-    const escalateBtns = document.querySelectorAll('.btn-escalate');
-    const resolveModal = document.getElementById('resolve-modal');
-    const escalateModal = document.getElementById('escalate-modal');
-
-    // Function to inject dynamic data into a modal
     const populateModal = (modalElement, btnElement) => {
         const caseId = btnElement.getAttribute('data-case');
         const ref = btnElement.getAttribute('data-ref');
@@ -82,22 +71,30 @@ export function attachOperationsEvents() {
         modalElement.querySelector('.inject-issue').innerText = issue;
     };
 
-    resolveBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            activeRowElement = e.target.closest('tr');
-            populateModal(resolveModal, btn);
+    // Event Delegation for dynamically generated table buttons
+    document.addEventListener('click', (e) => {
+        const resolveBtn = e.target.closest('.btn-resolve');
+        const escalateBtn = e.target.closest('.btn-escalate');
+
+        if (resolveBtn) {
+            activeRowElement = resolveBtn.closest('tr');
+            activeCaseId = resolveBtn.getAttribute('data-case'); // Capture the ID
+            const resolveModal = document.getElementById('resolve-modal');
+            populateModal(resolveModal, resolveBtn);
             resolveModal.classList.add('active');
-        });
-    });
+        }
 
-    escalateBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            activeRowElement = e.target.closest('tr');
-            populateModal(escalateModal, btn);
+        if (escalateBtn) {
+            activeRowElement = escalateBtn.closest('tr');
+            activeCaseId = escalateBtn.getAttribute('data-case'); // Capture the ID
+            const escalateModal = document.getElementById('escalate-modal');
+            populateModal(escalateModal, escalateBtn);
             escalateModal.classList.add('active');
-        });
+        }
     });
 
+
+    // --- 4. PERSISTENT DATABASE UPDATES ---
     // Handle Confirm Buttons in Resolve/Escalate Modals
     const confirmButtons = document.querySelectorAll('.btn-confirm-action');
     confirmButtons.forEach(btn => {
@@ -105,7 +102,15 @@ export function attachOperationsEvents() {
             const parentModal = e.target.closest('.modal-overlay');
             triggerSuccess(parentModal);
 
-            if (activeRowElement) {
+            if (activeRowElement && activeCaseId) {
+                // 1. DELETE FROM DATABASE (LocalStorage)
+                let storedDisputes = JSON.parse(localStorage.getItem('disputes')) || [];
+                // Filter out the case we just resolved
+                storedDisputes = storedDisputes.filter(dispute => dispute.caseId !== activeCaseId);
+                // Save the new list back to storage
+                localStorage.setItem('disputes', JSON.stringify(storedDisputes));
+
+                // 2. DELETE FROM UI (Your smooth animations)
                 activeRowElement.style.transition = "opacity 0.4s ease, transform 0.4s ease";
                 activeRowElement.style.opacity = "0";
                 activeRowElement.style.transform = "translateX(20px)";
@@ -113,6 +118,7 @@ export function attachOperationsEvents() {
                 setTimeout(() => {
                     activeRowElement.remove();
                     activeRowElement = null; 
+                    activeCaseId = null;
 
                     const tbody = document.querySelector('.dispute-table tbody');
                     if (tbody && tbody.children.length === 0) {

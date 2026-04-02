@@ -81,3 +81,24 @@ export const initialPartnersData = [
         status: "Verified", joined: "Jan 15, 2020", revenue: 95
     }
 ];
+
+export function getPersistentUsers() {
+    const saved = localStorage.getItem('platformUsers');
+    if (saved) {
+        return JSON.parse(saved);
+    } else {
+        // First time ever visiting? Save the initial data to storage
+        localStorage.setItem('platformUsers', JSON.stringify(initialUsersData));
+        return initialUsersData;
+    }
+}
+
+export function getPersistentPartners() {
+    const saved = localStorage.getItem('partners');
+    if (saved) {
+        return JSON.parse(saved);
+    } else {
+        localStorage.setItem('partners', JSON.stringify(initialPartnersData));
+        return initialPartnersData;
+    }
+}

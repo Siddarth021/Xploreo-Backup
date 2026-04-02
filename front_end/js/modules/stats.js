@@ -1,9 +1,12 @@
-import { opsData } from '../../data/operationsData.js';
+import { getOpsData } from '../../data/operationsData.js';
 
 export function getStatsHTML() {
+    // We call getOpsData() here so it recalculates fresh numbers every time the page loads!
+    const currentStats = getOpsData();
+
     return `
         <div id="ops-stats" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
-            ${opsData.map(stat => `
+            ${currentStats.map(stat => `
                 <div class="stat-card ${stat.color}">
                     <div class="card-icon">
                         <img src="${stat.icon}" alt="icon">

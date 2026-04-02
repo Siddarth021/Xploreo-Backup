@@ -295,15 +295,6 @@ function validateStep2() {
     }
 
     const passwordInput = document.getElementById("password");
-    if (passwordInput && passwordInput.value) {
-        const passwordRegex = /^(?=.*[@$!%*?&.#\-_]).{8,}$/;
-        if (!passwordRegex.test(passwordInput.value)) {
-            isValid = false;
-            showError(passwordInput, "Password must be at least 8 characters long and contain at least 1 special character.");
-            if (!firstInvalid) firstInvalid = passwordInput;
-        }
-    }
-
     const confirmPasswordInput = document.getElementById("confirmPassword");
     if (passwordInput && confirmPasswordInput && passwordInput.value && confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
         isValid = false;

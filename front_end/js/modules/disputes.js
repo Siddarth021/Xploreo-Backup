@@ -1,4 +1,40 @@
+import { getDisputesData } from '../../data/disputesData.js';
+
 export function getDisputesHTML() {
+    // 1. Fetch the dynamic list of disputes
+    const disputes = getDisputesData();
+
+    // 2. Map the data into table rows
+    const tableRows = disputes.map(dispute => `
+        <tr>
+            <td><a href="#" class="case-link">${dispute.caseId}</a></td>
+            <td><span class="ref-text">${dispute.bookingRef}</span></td>
+            <td>
+                <span class="issue-main">${dispute.issueMain}</span>
+                <span class="issue-sub">${dispute.issueSub}</span>
+            </td>
+            <td><span class="${dispute.severityClass}">${dispute.severityText}</span></td>
+            <td>
+                <div class="flow-status">
+                    <span class="dot ${dispute.dotClass}"></span> ${dispute.flowStatus}
+                </div>
+            </td>
+            <td>
+                <div class="action-btns">
+                    <button class="btn-resolve" 
+                        data-case="${dispute.caseId}" 
+                        data-ref="${dispute.bookingRef}" 
+                        data-issue="${dispute.issueMain}">Resolve</button>
+                    <button class="btn-escalate" 
+                        data-case="${dispute.caseId}" 
+                        data-ref="${dispute.bookingRef}" 
+                        data-issue="${dispute.issueMain}">Escalate</button>
+                </div>
+            </td>
+        </tr>
+    `).join("");
+
+    // 3. Return the fully assembled UI
     return `
         <div class="dispute-header">
             <h2>Dispute Resolution Center</h2>
@@ -18,46 +54,7 @@ export function getDisputesHTML() {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><a href="#" class="case-link">4412</a></td>
-                        <td><span class="ref-text">97001</span></td>
-                        <td>
-                            <span class="issue-main">Partner No-Show Claim</span>
-                            <span class="issue-sub">Traveler documentation<br>provided via website</span>
-                        </td>
-                        <td><span class="severity-critical">CRITICAL</span></td>
-                        <td>
-                            <div class="flow-status">
-                                <span class="dot dot-red"></span> Open Inquiry
-                            </div>
-                        </td>
-                        <td>
-                            <div class="action-btns">
-                                <button class="btn-resolve" data-case="4412" data-ref="97001" data-issue="Partner No-Show Claim">Resolve</button>
-                                <button class="btn-escalate" data-case="4412" data-ref="97001" data-issue="Partner No-Show Claim">Escalate</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><a href="#" class="case-link">4410</a></td>
-                        <td><span class="ref-text">97055</span></td>
-                        <td>
-                            <span class="issue-main">Vehicle Logistics Quality</span>
-                            <span class="issue-sub">Reported AC failure<br>during desert excursion</span>
-                        </td>
-                        <td><span class="severity-standard">STANDARD</span></td>
-                        <td>
-                            <div class="flow-status">
-                                <span class="dot dot-yellow"></span> Gathering Evidence
-                            </div>
-                        </td>
-                        <td>
-                            <div class="action-btns">
-                                <button class="btn-resolve" data-case="4410" data-ref="97055" data-issue="Vehicle Logistics Quality">Resolve</button>
-                                <button class="btn-escalate" data-case="4410" data-ref="97055" data-issue="Vehicle Logistics Quality">Escalate</button>
-                            </div>
-                        </td>
-                    </tr>
+                    ${tableRows}
                 </tbody>
             </table>
         </div>

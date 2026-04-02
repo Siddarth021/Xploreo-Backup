@@ -1,21 +1,29 @@
 export function getProfile(user) {
-    let profileLink = 'adminProfile.html';
-    if (user && user.role === 'hotel') {
-        profileLink = 'hotelprofile.html';
-    } else if (user && (user.role === 'experience' || user.role === 'guide' || user.role === 'techadmin')) {
-        profileLink = 'profile.html';
+    // 1. Route the user to the correct profile page based on their role
+    let profileLink = 'profile.html'; // Default fallback
+    
+    if (user) {
+        if (user.role === 'hotel') {
+            profileLink = 'hotelprofile.html';
+        } else if (user.role === 'superadmin') {
+            profileLink = 'adminProfile.html'; // <-- Routes superadmin to the new page
+        } else if (user.role === 'experience' || user.role === 'guide' || user.role === 'techadmin') {
+            profileLink = 'profile.html';
+        }
     }
 
-    const supportItem = user.role !== 'techadmin' ? `
+    // 2. Hide Support specifically for techadmin and superadmin
+    const supportItem = (user && user.role !== 'techadmin' && user.role !== 'superadmin') ? `
               <div class="dropdown-item" onclick="window.location.href='support.html'">
                 <img src="../components/ui/support.svg" class="dropdown-icon">
                 <span>Support</span>
               </div>
     ` : '';
 
+    // 3. Render the dropdown (Profile is now back for everyone)
     return `
         <div class="profile" onclick="toggleProfileMenu()">
-            <span class="profile-name">${user.name}</span>
+            <span class="profile-name">${user ? user.name : 'User'}</span>
             <img src="../components/ui/profile.png" alt="user" class="profile-img"/>
             <div class="profile-dropdown hidden" id="profile-dropdown">
               
@@ -25,6 +33,7 @@ export function getProfile(user) {
               </div>
               
               ${supportItem}
+              
               <hr class="dropdown-divider">
               <div class="dropdown-item logout-item" onclick="logout()">
                 <img src="../components/ui/logout.svg" class="dropdown-icon">
@@ -34,6 +43,7 @@ export function getProfile(user) {
         </div>`;
 }
 
+// Handle opening/closing the dropdown
 window.addEventListener("click", function (e) {
     const profile = document.querySelector(".profile");
     const dropdown = document.querySelector(".profile-dropdown");
@@ -47,6 +57,7 @@ window.addEventListener("click", function (e) {
     }
 });
 
+// Handle Logout
 window.logout = function () {
   localStorage.removeItem("currentUser");
   localStorage.clear();

@@ -158,15 +158,10 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // FALLBACK: If not logged in, prompt for credentials instead of hardcoding 201
         if (!currentUser) {
-            let storedUsersForFallback = JSON.parse(localStorage.getItem("users"));
-            if (!storedUsersForFallback || storedUsersForFallback.length === 0) {
-                storedUsersForFallback = users;
-            }
-
             let userParam = prompt("Please enter username for dashboard (or cancel for demo user):");
             if (userParam) {
                 let passParam = prompt("Please enter password:");
-                currentUser = storedUsersForFallback.find(u => (u.username === userParam || u.email === userParam) && u.password === passParam);
+                currentUser = users.find(u => (u.username === userParam || u.email === userParam) && u.password === passParam);
                 if (!currentUser) {
                     alert("Invalid credentials. Defaulting to Admin (201).");
                 }
@@ -176,13 +171,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 currentUser = users.find(u => u.id === "201");
             }
 
+            currentUser = users.find(u => u.id === "00001");
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
             console.log("Logged in as:", currentUser.role);
-        }
-
-        if (currentUser && currentUser.role === "traveller" && path === "dashboard.html") {
-            window.location.replace("traveller_dashboard.html");
-            return;
         }
 
         renderNavbar(currentUser);

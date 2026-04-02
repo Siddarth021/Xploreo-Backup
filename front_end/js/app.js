@@ -128,19 +128,26 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (path === "signup.html") {
         renderLandingNavbar();
         initSignup();
-    } else if (path === "index.html") {
-        renderLandingNavbar();
-    } else {
-        // PRIORITIZE: Actual logged-in user from localStorage
-        let currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        
-        // FALLBACK: Only for demo/dev if not logged in
-        if (!currentUser) {
-            currentUser = users.find(u => u.id === "10001");
-            localStorage.setItem("currentUser", JSON.stringify(currentUser));
-        }
-
-        renderNavbar(currentUser);
-        renderPageContent(currentUser);
+        return;
     }
+
+    let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    
+    if (!currentUser) {
+        currentUser = users.find(u => u.id === "201");
+        localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    }
+    renderNavbar(currentUser);
+    renderPageContent(currentUser);
 });
+
+window.addEventListener("unload", (event) => {
+    console.log("Refresh is starting...");
+    localStorage.clear();
+    location.reload();
+});
+
+if (window.location.pathname.includes('opsbook.html')) {
+    initOperations();
+}
+

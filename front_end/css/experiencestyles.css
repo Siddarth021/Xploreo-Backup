@@ -84,8 +84,7 @@ body.experience-page {
   color: var(--experience-text);
 }
 
-.experience-stats-grid,
-.stats-grid {
+.experience-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;

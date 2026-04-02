@@ -160,8 +160,23 @@ export function renderExperienceProfilePage() {
             }
 
             writeStorage("experienceProfile", data);
+            
+            // Sync with Current User for Navbar and App-wide consistency
+            let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            if (currentUser) {
+                currentUser.name = data.title; // Assign title as name
+                localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            }
+
             toggleEditState(false);
+            setElementText("companyName", data.company || data.title);
+            setElementText("location", data.location || data.region);
             setFormMessage("profileFormMessage", "Profile updated successfully.", "success");
+            
+            // Trigger Navbar re-render if it exists
+            setTimeout(() => {
+                location.reload(); // Quickest way to sync all components
+            }, 1000);
         };
     }
 

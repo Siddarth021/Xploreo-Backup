@@ -158,9 +158,19 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // FALLBACK: Only for demo/dev if not logged in
         if (!currentUser) {
-            currentUser = users.find(u => u.id === "00201");
+            if (path.startsWith("experience_")) {
+                currentUser = users.find(u => u.role === "experience") || {
+                    id: "EXP001",
+                    name: "John Doe",
+                    role: "experience",
+                    email: "experience@example.com"
+                };
+            } else if (path.startsWith("tech_") || path === "tech_tickets.html") {
+                currentUser = users.find(u => u.id === "00201");
+            } else {
+                currentUser = users.find(u => u.id === "10001"); // Default to guide
+            }
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
-            console.log(currentUser.role);
         }
 
         renderNavbar(currentUser);

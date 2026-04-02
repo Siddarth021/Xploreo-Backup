@@ -97,7 +97,7 @@ const navlinks = [
   },
   {
     name: "Home",
-    path: "../pages/experience_home.html",
+    path: "../pages/dashboard.html",
     icon: "../components/ui/dashboard.svg",
     roles: ["experience"]
   },

@@ -420,7 +420,9 @@ export function renderExperienceCatalogPage() {
         const selectedExperience = experiences.find((item) => item.id === expId);
 
         if (actionButton.dataset.action === "view-bookings") {
-            window.location.href = "../pages/experience_bookings.html";
+            const params = new URLSearchParams();
+            if (selectedExperience) params.set("experience", selectedExperience.title);
+            window.location.href = `../pages/experience_bookings.html${params.toString() ? `?${params.toString()}` : ""}`;
             return;
         }
 

@@ -117,6 +117,13 @@ export function renderPageContent(user) {
         renderServicesPage();
     } else if (user.role === "hotel" && path === "hotelEarning.html") {
         renderHotelEarningPage();
+    } else if (user.role === "experience" && path === "dashboard.html") {
+        renderExperienceHomePage();
+        document.getElementById("experience-dashboard").style.display = "block";
+        document.getElementById("admin-dashboard").style.display = "none";
+        document.getElementById("main").style.display = "none";
+        document.getElementById("hotel-dashboard").style.display = "none";
+        document.getElementById("tech-admin-dash").style.display = "none";
     } else if (user.role === "experience" && path === "experience_home.html") {
         renderExperienceHomePage();
     } else if (user.role === "experience" && path === "experience_earnings.html") {

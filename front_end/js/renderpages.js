@@ -52,17 +52,17 @@ export function renderPageContent(user) {
     if (user.role === "traveller" && (path === "dashboard.html" || path === "traveller_dashboard.html" || path === "travelerDashboard.html")) {
         renderTravelerDashboard("main", user);
         return;
-    } 
+    }
 
     if (user.role === "traveller" && (path === "wishlist.html" || path === "traveller_wishlist.html")) {
         renderTravelerWishlist("main", user);
         return;
-    } 
+    }
 
     if (user.role === "traveller" && (path === "mytrips.html" || path === "traveller_mytrips.html")) {
         renderTravelerTrips("main", user);
         return;
-    } 
+    }
 
     if (user.role === "traveller") {
         const travelerRoutes = {
@@ -106,16 +106,16 @@ export function renderPageContent(user) {
         if (admin) admin.style.display = "block";
         if (main) main.style.display = "none";
         if (hotel) hotel.style.display = "none";
-        document.getElementById("tech-admin-dash").style.display ="none";
+        document.getElementById("tech-admin-dash").style.display = "none";
 
     } else if (user.role === "superadmin" && path === "users.html") {
         initUsers();
-        
-    }else if (user.role === "superadmin" && path === "opsbook.html"){
+
+    } else if (user.role === "superadmin" && path === "opsbook.html") {
         const mainDiv = document.getElementById("main");
         if (mainDiv) mainDiv.style.display = "block";
         initOperations();
-    } 
+    }
     else if (user.role === "superadmin" && path === "finance.html") {
         const adminDash = document.getElementById("admin-dashboard");
         if (adminDash) adminDash.style.display = "none";
@@ -126,7 +126,7 @@ export function renderPageContent(user) {
         initFinance();
     } else if (user.role === "techadmin" && path === "dashboard.html") {
         renderTechAdminDashboard("tech-admin-dash");
-        document.getElementById("tech-admin-dash").style.display ="block";
+        document.getElementById("tech-admin-dash").style.display = "block";
     } else if (user.role === "techadmin" && path === "tech_tickets.html") {
         initTicketManagement();
     } else if (user.role === "techadmin" && path === "tech_ticket_detail.html") {

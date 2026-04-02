@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xploreo - Booking Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/traveler/traveller.css">
+    <link rel="stylesheet" href="../../css/traveler/traveller-extended.css">
+    <style>
+        body { margin: 0; background: linear-gradient(180deg, #edf4ff 0%, #f8fbff 100%); font-family: "Inter", sans-serif; color: #10213a; }
+        .traveler-package-detail-page { width: min(1320px, calc(100% - 32px)); margin: 112px auto 48px; }
+        .traveler-detail-header-card, .traveler-panel { background: rgba(255,255,255,.96); border: 1px solid rgba(15,23,42,.08); box-shadow: 0 20px 50px rgba(15,23,42,.08); border-radius: 28px; }
+        .traveler-detail-header-card { padding: 28px; margin-bottom: 24px; }
+        .traveler-detail-breadcrumbs { display: flex; gap: 10px; flex-wrap: wrap; font-size: 15px; color: #64748b; margin-bottom: 22px; }
+        .traveler-detail-breadcrumbs a { color: inherit; text-decoration: none; }
+        .traveler-detail-title-row { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; }
+        .traveler-detail-title-row h1, .traveler-panel h2, .traveler-panel h3, .traveler-panel h4 { margin: 0; font-family: "Plus Jakarta Sans", sans-serif; }
+        .traveler-detail-title-row h1 { font-size: clamp(32px, 4vw, 48px); margin-bottom: 14px; }
+        .traveler-detail-submeta { display: flex; flex-wrap: wrap; gap: 18px; color: #64748b; font-size: 15px; }
+        .traveler-detail-submeta span { display: inline-flex; align-items: center; gap: 8px; }
+        .traveler-detail-submeta svg, .traveler-sidebar-input svg { width: 18px; height: 18px; }
+        .traveler-rating-pill { background: #14b8a6; color: #fff; padding: 6px 12px; border-radius: 12px; font-weight: 700; }
+        .traveler-detail-actions { display: flex; gap: 12px; }
+        .traveler-circle-action { width: 56px; height: 56px; border-radius: 50%; border: 1px solid #d7e0ea; background: #fff; color: #64748b; display: inline-flex; align-items: center; justify-content: center; }
+        .traveler-circle-action svg { width: 22px; height: 22px; }
+        .traveler-detail-layout { display: grid; grid-template-columns: minmax(0,2fr) minmax(320px,420px); gap: 24px; align-items: start; }
+        .traveler-detail-main, .traveler-detail-sidebar { display: grid; gap: 24px; }
+        .traveler-panel { padding: 28px; }
+        .traveler-gallery-panel { position: relative; overflow: hidden; }
+        .traveler-hero-image { width: 100%; height: 560px; border-radius: 24px; object-fit: cover; display: block; }
+        .traveler-gallery-counter { position: absolute; right: 44px; bottom: 160px; padding: 10px 14px; border-radius: 16px; background: rgba(15,23,42,.7); color: #fff; font-weight: 700; }
+        .traveler-gallery-strip { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-top: 18px; }
+        .traveler-gallery-thumb { padding: 0; border: 2px solid transparent; background: transparent; border-radius: 18px; overflow: hidden; cursor: pointer; }
+        .traveler-gallery-thumb.active { border-color: #14b8a6; }
+        .traveler-gallery-thumb img { display: block; width: 100%; height: 120px; object-fit: cover; }
+        .traveler-highlight-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; margin-top: 18px; }
+        .traveler-highlight-item, .traveler-itinerary-card, .traveler-add-day-card, .traveler-sidebar-summary, .traveler-entry-card, .traveler-field input, .traveler-field select { border-radius: 22px; }
+        .traveler-highlight-item { display: flex; align-items: center; gap: 16px; padding: 18px 20px; background: #f8fbff; border: 1px solid #e2e8f0; font-weight: 600; }
+        .traveler-highlight-icon, .traveler-itinerary-icon { width: 48px; height: 48px; border-radius: 16px; background: #e0f2fe; color: #14b8a6; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .traveler-highlight-icon svg, .traveler-itinerary-icon svg { width: 22px; height: 22px; }
+        .traveler-itinerary-icon-soft { background: #dbeafe; color: #2563eb; }
+        .traveler-section-heading { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+        .traveler-section-heading p { margin: 8px 0 0; color: #52637a; }
+        .traveler-section-heading span { color: #14b8a6; font-weight: 700; }
+        .traveler-itinerary-list { display: grid; gap: 24px; margin-top: 24px; }
+        .traveler-day-block { display: grid; grid-template-columns: 56px minmax(0,1fr); gap: 18px; }
+        .traveler-day-marker { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(180deg, #14b8a6 0%, #2563eb 100%); color: #fff; font-size: 28px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+        .traveler-day-content { display: grid; gap: 16px; }
+        .traveler-day-content h3 { font-size: 32px; margin-top: 6px; }
+        .traveler-itinerary-card, .traveler-add-day-card { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; padding: 20px 22px; background: #f8fbff; border: 1px solid #e2e8f0; }
+        .traveler-itinerary-copy { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: flex-start; }
+        .traveler-itinerary-copy p, .traveler-bullet-list span, .traveler-field span, .traveler-sidebar-label, .traveler-sidebar-total { color: #64748b; }
+        .traveler-itinerary-copy small { display: inline-block; margin-top: 8px; color: #2563eb; font-weight: 700; }
+        .traveler-itinerary-actions { display: flex; gap: 18px; flex-shrink: 0; }
+        .traveler-itinerary-actions button, .traveler-add-day-card button { border: none; background: transparent; font-weight: 700; cursor: pointer; }
+        .traveler-itinerary-actions button:first-child { color: #ff2d2d; }
+        .traveler-itinerary-actions button:last-child, .traveler-add-day-card button { color: #2563eb; }
+        .traveler-double-column { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 24px; }
+        .traveler-bullet-list { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 14px; }
+        .traveler-bullet-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; }
+        .traveler-bullet-list svg { width: 18px; height: 18px; color: #14b8a6; flex-shrink: 0; margin-top: 2px; }
+        .traveler-bullet-list-negative svg { color: #ff3b30; }
+        .traveler-sidebar-panel { position: sticky; top: 104px; }
+        .traveler-sidebar-label { margin: 0; font-size: 18px; }
+        .traveler-sidebar-price { color: #2563eb; font-size: 56px; font-weight: 800; line-height: 1; margin-top: 8px; }
+        .traveler-sidebar-field { display: grid; gap: 12px; margin-top: 28px; }
+        .traveler-sidebar-field > span { font-size: 18px; font-weight: 700; color: #64748b; }
+        .traveler-sidebar-input { display: flex; align-items: center; gap: 10px; padding: 16px 18px; border-radius: 18px; border: 1px solid #d9e2ec; background: #f8fbff; }
+        .traveler-sidebar-input input { border: none; background: transparent; font: inherit; width: 100%; color: #10213a; }
+        .traveler-traveler-stepper { display: grid; grid-template-columns: 52px 1fr 52px; gap: 18px; align-items: center; }
+        .traveler-traveler-stepper button { width: 52px; height: 52px; border-radius: 16px; border: 1px solid #d9e2ec; background: #f8fbff; font-size: 32px; color: #10213a; }
+        .traveler-traveler-stepper div { text-align: center; }
+        .traveler-traveler-stepper strong { display: block; font-size: 38px; }
+        .traveler-sidebar-summary { margin-top: 24px; padding: 18px 20px; background: #f8fbff; border: 1px solid #e2e8f0; display: grid; gap: 14px; }
+        .traveler-sidebar-summary div { display: flex; justify-content: space-between; gap: 16px; }
+        .traveler-sidebar-summary span { color: #64748b; }
+        .traveler-sidebar-summary strong { text-align: right; }
+        .traveler-primary-button, .traveler-secondary-button, .traveler-remove-button { border: none; text-decoration: none; cursor: pointer; font-weight: 700; transition: transform .2s ease, box-shadow .2s ease; }
+        .traveler-primary-button:hover, .traveler-secondary-button:hover, .traveler-remove-button:hover { transform: translateY(-1px); }
+        .traveler-primary-button, .traveler-secondary-button { display: inline-flex; align-items: center; justify-content: center; padding: 16px 20px; border-radius: 18px; }
+        .traveler-primary-button { background: linear-gradient(90deg, #1DB7A6, #1E5EEA); color: #fff; box-shadow: 0 18px 30px rgba(30,94,234,.18); }
+        .traveler-secondary-button { background: #e2e8f0; color: #10213a; }
+        .traveler-sidebar-book { width: 100%; margin-top: 30px; }
+        .traveler-assurance-list { list-style: none; padding: 22px 0 0; margin: 22px 0 0; border-top: 1px solid #e2e8f0; display: grid; gap: 14px; }
+        .traveler-assurance-list li { display: flex; gap: 10px; color: #14b8a6; font-weight: 500; }
+        .traveler-assurance-list svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; }
+        .traveler-traveler-form-panel { scroll-margin-top: 110px; }
+        .traveler-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; margin-top: 22px; }
+        .traveler-entry-card { padding: 20px; border: 1px solid #dbe4ef; background: #f8fbff; }
+        .traveler-entry-head, .traveler-action-row { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        .traveler-remove-button { padding: 10px 12px; border-radius: 12px; background: #fee2e2; color: #b91c1c; }
+        .traveler-field { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+        .traveler-field input, .traveler-field select { border: 1px solid #d5deea; padding: 14px 16px; font: inherit; background: #fff; color: #10213a; }
+        .traveler-action-row { margin-top: 24px; justify-content: flex-end; }
+        .traveler-feedback { min-height: 24px; margin: 14px 0 0; font-weight: 600; color: #0f766e; }
+        .traveler-feedback[data-error="true"] { color: #b91c1c; }
+        .traveler-modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, .45); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 2000; }
+        .traveler-modal { width: min(1240px, 100%); max-height: 88vh; overflow: auto; background: #fff; border-radius: 28px; box-shadow: 0 30px 80px rgba(15, 23, 42, .25); }
+        .traveler-modal-header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; padding: 28px; border-bottom: 1px solid #e2e8f0; }
+        .traveler-modal-header h3 { font-family: "Plus Jakarta Sans", sans-serif; font-size: 24px; margin: 0; }
+        .traveler-modal-header p { margin: 8px 0 0; color: #64748b; }
+        .traveler-modal-close { width: 44px; height: 44px; border: none; background: #f8fbff; border-radius: 14px; font-size: 32px; color: #64748b; cursor: pointer; }
+        .traveler-modal-body { display: grid; gap: 18px; padding: 28px; }
+        .traveler-modal-option { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 18px; border: 1px solid #dbe4ef; border-radius: 22px; padding: 20px; background: #fff; }
+        .traveler-modal-option.active { border-color: #14b8a6; box-shadow: inset 0 0 0 1px #14b8a6; }
+        .traveler-modal-option-media img { width: 100%; height: 160px; object-fit: cover; border-radius: 18px; display: block; }
+        .traveler-modal-option-content { display: grid; gap: 16px; }
+        .traveler-modal-option-top { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; }
+        .traveler-modal-option-top h4 { font-family: "Plus Jakarta Sans", sans-serif; font-size: 20px; margin: 0; }
+        .traveler-modal-option-top p { margin: 8px 0 0; color: #64748b; }
+        .traveler-option-selected { background: #14b8a6; color: #fff; padding: 8px 12px; border-radius: 999px; font-weight: 700; white-space: nowrap; }
+        .traveler-modal-chip-row { display: flex; flex-wrap: wrap; gap: 10px; }
+        .traveler-modal-chip-row span, .traveler-modal-rating { display: inline-flex; align-items: center; gap: 8px; color: #64748b; }
+        .traveler-modal-chip-row span { background: #f8fbff; border-radius: 999px; padding: 8px 12px; }
+        .traveler-modal-chip-row svg, .traveler-modal-rating svg { width: 16px; height: 16px; color: #14b8a6; }
+        .traveler-modal-rating { margin-top: 10px; font-weight: 700; color: #14b8a6; }
+        .traveler-modal-rating span { color: #64748b; font-weight: 500; }
+        .traveler-modal-option-footer { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        .traveler-modal-option-footer strong { color: #2563eb; font-size: 18px; }
+        .traveler-modal-select { min-width: 132px; }
+        .traveler-modal-link { border: none; background: transparent; color: #2563eb; font-weight: 700; cursor: pointer; padding: 0; }
+        @media (max-width: 960px) {
+            .traveler-package-detail-page { width: min(100% - 20px, 1320px); margin-top: 96px; }
+            .traveler-detail-layout, .traveler-double-column, .traveler-form-grid, .traveler-highlight-grid, .traveler-gallery-strip { grid-template-columns: 1fr; }
+            .traveler-detail-title-row, .traveler-action-row, .traveler-entry-head, .traveler-itinerary-card, .traveler-add-day-card, .traveler-section-heading { flex-direction: column; align-items: stretch; }
+            .traveler-hero-image { height: 320px; }
+            .traveler-gallery-counter { right: 30px; bottom: 200px; }
+            .traveler-day-block { grid-template-columns: 1fr; }
+            .traveler-modal-option { grid-template-columns: 1fr; }
+            .traveler-modal-option-footer, .traveler-modal-option-top { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <div id="traveler-booking-details-app"></div>
+    <script type="module">
+        import { renderTravelerNavbar } from "../../components/layout/navbar_traveler.js";
+        renderTravelerNavbar();
+    </script>
+    <script type="module" src="../../js/traveler/booking-details.js"></script>
+</body>
+</html>

@@ -23,6 +23,16 @@ const internalnavlinks = [
     name: "Payout History",
     status: "payout-history",
     pages: ["earnings.html"],
+  },
+  {
+    name: "Calendar",
+    status: "calendar",
+    pages: ["schedule.html"],
+  },
+  {
+    name: "Availability",
+    status: "availability",
+    pages: ["schedule.html"],
   }
 ];
 

@@ -2,8 +2,8 @@ export function getProfile(user) {
     let profileLink = 'adminProfile.html';
     if (user && user.role === 'hotel') {
         profileLink = 'hotelprofile.html';
-    } else if (user && user.role === 'experience') {
-        profileLink = 'experience_profile.html';
+    } else if (user && (user.role === 'experience' || user.role === 'guide')) {
+        profileLink = 'profile.html';
     }
 
     return `
@@ -17,7 +17,7 @@ export function getProfile(user) {
                 <span>Profile</span>
               </div>
               
-              <div class="dropdown-item">
+              <div class="dropdown-item" onclick="window.location.href='support.html'">
                 <img src="../components/ui/support.svg" class="dropdown-icon">
                 <span>Support</span>
               </div>

@@ -24,8 +24,8 @@ export function renderLandingNavbar() {
             </div>
         </header>
     `;
-
-    document.body.insertAdjacentHTML("afterbegin", navbarHTML);
+    const con = document.getElementById("navbar");
+    con.innerHTML = navbarHTML;
     attachNavbarEvents();
 }
 
@@ -36,19 +36,19 @@ function attachNavbarEvents() {
 
     if (logo) {
         logo.addEventListener("click", () => {
-            window.location.href = BASE_PATH + "/index.html";
+            window.location.href = "./index.html";
         });
     }
 
     if (loginBtn) {
         loginBtn.addEventListener("click", () => {
-            window.location.href = BASE_PATH + "/pages/login.html";
+            window.location.href = "./pages/login.html";
         });
     }
 
     if (signupBtn) {
         signupBtn.addEventListener("click", () => {
-            window.location.href = BASE_PATH + "/pages/signup.html";
+            window.location.href = "./pages/signup.html";
         });
     }
 }

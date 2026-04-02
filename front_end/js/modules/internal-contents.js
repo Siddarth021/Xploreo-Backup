@@ -3,6 +3,12 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
     if (!container) return;
 
     const allRequests = JSON.parse(localStorage.getItem("tours")) || [];
+    
+    // Defensive check for currentUser
+    if (!currentUser) {
+        currentUser = JSON.parse(localStorage.getItem("currentUser")) || { id: "00001" };
+    }
+
     let myRequests = allRequests.filter(req => 
         String(req.guideId).trim() === String(currentUser.id).trim() && req.status === currentActiveTab
     );
@@ -26,23 +32,23 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
                         
                         <div class="tour-meta-grid">
                             <div class="meta-item">
-                                <img src="../css/icons/user.svg" alt="user" class="meta-icon" />
+                                <img src="../components/ui/user.svg" alt="user" class="meta-icon" />
                                 <span>${req.customer}</span>
                             </div>
                             <div class="meta-item">
-                                <img src="../css/icons/phone.svg" alt="phone" class="meta-icon" />
+                                <img src="../components/ui/support.svg" alt="phone" class="meta-icon" />
                                 <span>${req.phone || "N/A"}</span>
                             </div>
                             <div class="meta-item">
-                                <img src="../css/icons/calendar.svg" alt="date" class="meta-icon" />
+                                <img src="../components/ui/upcomingtours.svg" alt="date" class="meta-icon" />
                                 <span>${req.dateTime.split(" | ")[0]}</span>
                             </div>
                             <div class="meta-item">
-                                <img src="../css/icons/clock.svg" alt="time" class="meta-icon" />
+                                <img src="../components/ui/schedule.svg" alt="time" class="meta-icon" />
                                 <span>${req.dateTime.split(" | ")[1]}</span>
                             </div>
                             <div class="meta-item">
-                                <img src="../css/icons/location.svg" alt="location" class="meta-icon" />
+                                <img src="../components/ui/tours.svg" alt="location" class="meta-icon" />
                                 <span>${req.destination}</span>
                             </div>
                         </div>
@@ -53,8 +59,8 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
                                 <p class="amount">$${req.amount}</p>
                             </div>
                             <div class="card-actions">
-                                <button class="btn btn-outline-blue">Contact</button>
-                                <button class="btn btn-solid-blue" onclick="openTourModal('${req.id}')">Details</button>
+                                <button class="btn btn-solid-blue" onclick="handleTourStart('${req.id}')">Start</button>
+                                <button class="btn btn-outline-blue" onclick="openTourModal('${req.id}')">Details</button>
                             </div>
                         </div>
                     </div>
@@ -78,7 +84,7 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
             const currentStepIndex = itinerary.indexOf(req.currentloction);
             const displayIndex = currentStepIndex >= 0 ? currentStepIndex : 0;
             const progress = Math.round((displayIndex / (totalSteps - 1 || 1)) * 100);
-            const nextStop = itinerary[displayIndex + 1] || "Finishing Soon";
+            const nextStop = itinerary[displayIndex + 1] || "Arrived";
 
             return `
                 <div class="ongoing-tour-card">
@@ -121,13 +127,13 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
 
                     <div class="action-buttons-ongoing">
                         <button class="btn btn-solid-blue flex-btn">
-                            <img src="../css/icons/phone-white.svg" alt="call" class="btn-icon" /> Call Customer
+                            <img src="../components/ui/support.svg" alt="call" class="btn-icon" style="filter: brightness(0) invert(1);" /> Call Customer
                         </button>
                         <button class="btn btn-outline-blue flex-btn" onclick="openTourModal('${req.id}')">
-                            <img src="../css/icons/route-blue.svg" alt="route" class="btn-icon" /> View Route
+                            <img src="../components/ui/tours.svg" alt="route" class="btn-icon" /> View Route
                         </button>
                         <button class="btn btn-outline-green flex-btn" onclick="handleTourAction('${req.id}')">
-                            <img src="../css/icons/check-green.svg" alt="complete" class="btn-icon" /> Complete
+                            <img src="../components/ui/schedule.svg" alt="complete" class="btn-icon" /> ${displayIndex >= totalSteps - 1 ? 'Finish Tour' : 'Complete'}
                         </button>
                     </div>
                 </div>
@@ -157,10 +163,10 @@ export function renderinternalcontents(containerId, currentUser, currentActiveTa
                         <div class="comp-sub">
                             <div class="comp-icons">
                                 <span class="cust-info">
-                                    <img src="../css/icons/user.svg" alt="user" /> ${req.customer}
+                                    <img src="../components/ui/user.svg" alt="user" /> ${req.customer}
                                 </span>
                                 <span class="cust-info">
-                                    <img src="../css/icons/calendar.svg" alt="date" /> ${req.dateTime.split(" | ")[0]}
+                                    <img src="../components/ui/upcomingtours.svg" alt="date" /> ${req.dateTime.split(" | ")[0]}
                                 </span>
                                 <span class="cust-info">${req.guests} guests</span>
                             </div>

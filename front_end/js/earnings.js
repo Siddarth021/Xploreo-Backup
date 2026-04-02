@@ -38,7 +38,7 @@ window.switchTab = (status) => {
     const page = window.location.pathname.split("/").pop();
     if (page === "earnings.html") {
         currentActiveTab = status;
-        const user = JSON.parse(localStorage.getItem("currentUser"));
+        const user = JSON.parse(localStorage.getItem("currentUser")) || { id: "00001" };
         renderEarningsPage("main", user);
     } else if (_origSwitchTab) {
         _origSwitchTab(status);

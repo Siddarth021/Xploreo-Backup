@@ -8,7 +8,7 @@
 export function monthlyEarnings(tours, month, year) {
     return tours
         .filter(t => {
-            if (t.status !== "completed") return false;
+            if (t.status !== "completed" || !t.dateTime) return false;
             const dateStr = t.dateTime.split(" | ")[0];
             const d = new Date(dateStr);
             return d.getMonth() === month && d.getFullYear() === year;

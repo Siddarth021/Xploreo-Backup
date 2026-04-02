@@ -13,12 +13,20 @@ export function rendertourpage(containerId,currentUser) {
     renderinternalcontents("internal-contents",currentUser,currentActiveTab);
 }
 
+const _origSwitchTab = window.switchTab;
 window.switchTab = (status) => {
     const page = window.location.pathname.split("/").pop();
-    if (page !== "tours.html") return;
-    currentActiveTab = status;
-    const user = JSON.parse(localStorage.getItem("currentUser"));
-    rendertourpage("main", user); 
+    if (page === "tours.html") {
+        currentActiveTab = status;
+        const user = JSON.parse(localStorage.getItem("currentUser")) || { id: "00001" };
+        rendertourpage("main", user); 
+    } else if (page === "earnings.html") {
+        currentActiveTab = status;
+        const user = JSON.parse(localStorage.getItem("currentUser")) || { id: "00001" };
+        renderEarningsPage("main", user);
+    } else if (_origSwitchTab) {
+        _origSwitchTab(status);
+    }
 };
 
 window.openTourModal = (tourId) => {
@@ -31,9 +39,12 @@ window.openTourModal = (tourId) => {
         console.log(tour);
         // Split itinerary string into an array
         const itinerarySteps = tour.plan_iternary
+        const currentStop = tour.currentloction;
+        
         body.innerHTML = `
             <div class="modal-tour-title">
-                <h1>${tour.destination}</h1>
+                <h1 style="font-size: 24px; color: #111827; margin-bottom: 8px;">${tour.destination}</h1>
+                <p style="color: #6B7280; font-size: 14px;">${tour.title}</p>
             </div>
 
             <div class="tour-info-grid">
@@ -43,18 +54,25 @@ window.openTourModal = (tourId) => {
                 <div class="info-group"><label>Total Price</label><span>$${tour.amount}</span></div>
             </div>
 
-            <div class="itinerary-card">
-                <h3>Itinerary Schedule</h3>
-                <div class="timeline">
-                    ${itinerarySteps.map(step => `
-                        <div class="timeline-item">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-content">${step.trim()}</div>
-                        </div>
-                    `).join('')}
+            <div class="itinerary-card" style="background: #111827; border-radius: 16px; padding: 24px; color: white;">
+                <h3 style="font-size: 16px; margin-bottom: 20px; color: #f8fafc;">Itinerary Schedule</h3>
+                <div class="itinerary-list" style="list-style: none; padding-left: 20px; border-left: 1px solid #333333; margin-left: 10px;">
+                    ${itinerarySteps.map(step => {
+                        const isDone = itinerarySteps.indexOf(step) < itinerarySteps.indexOf(currentStop);
+                        const isCurrent = step === currentStop;
+                        const dotColor = isCurrent ? "#3B82F6" : (isDone ? "#10B981" : "#4B5563");
+                        return `
+                            <div class="itinerary-item" style="position: relative; padding-bottom: 20px; font-size: 14px; color: ${isCurrent ? 'white' : '#94A3B8'}">
+                                <div style="position: absolute; left: -25px; top: 5px; width: 10px; height: 10px; background: ${dotColor}; border-radius: 50%; box-shadow: 0 0 0 4px ${isCurrent ? 'rgba(59, 130, 246, 0.2)' : 'transparent'}"></div>
+                                <span style="${isCurrent ? 'font-weight: 700; color: #60A5FA;' : ''}">${step.trim()}</span>
+                                ${isCurrent ? '<span style="display: block; font-size: 11px; color: #60A5FA; font-weight: 500;">Current Stop</span>' : ''}
+                            </div>
+                        `;
+                    }).join('')}
                 </div>
             </div>
         `;
+        modal.classList.add('active');
         modal.style.setProperty('display', 'flex', 'important');
     }
 };
@@ -101,7 +119,7 @@ window.handleTourAction = (tourId) => {
         // Save and Refresh
         localStorage.setItem("tours", JSON.stringify(allTours));
         
-        const user = JSON.parse(localStorage.getItem("currentUser"));
+        const user = JSON.parse(localStorage.getItem("currentUser")) || { id: "00001" };
         // Re-render the 'ongoing' or 'completed' tab accordingly
         renderinternalcontents("internal-contents", user, tour.status); 
     }
@@ -110,8 +128,29 @@ window.handleTourAction = (tourId) => {
 window.closeModal = () => {
     const modal = document.getElementById("tourModal");
     if (modal) {
-        modal.style.display = "none";
+        modal.classList.remove('active');
         document.getElementById("modalBody").innerHTML = "";
+    }
+};
+
+window.handleTourStart = (tourId) => {
+    let allTours = JSON.parse(localStorage.getItem("tours")) || [];
+    const tourIndex = allTours.findIndex(t => String(t.id) === String(tourId));
+
+    if (tourIndex !== -1) {
+        const tour = allTours[tourIndex];
+        tour.status = "ongoing";
+        // Initialize to first stop if not already set
+        if (!tour.currentloction && tour.plan_iternary && tour.plan_iternary.length > 0) {
+            tour.currentloction = tour.plan_iternary[0];
+        }
+        
+        localStorage.setItem("tours", JSON.stringify(allTours));
+        
+        const user = JSON.parse(localStorage.getItem("currentUser")) || { id: "00001" };
+        // Re-render the 'ongoing' tab
+        currentActiveTab = "ongoing";
+        rendertourpage("main", user);
     }
 };
 

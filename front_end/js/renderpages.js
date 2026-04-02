@@ -149,7 +149,7 @@ export function renderPageContent(user) {
         renderSchedulePage("main", user);
     } else if ((user.role === "guide" || user.role === "experience" || user.role === "techadmin") && path === "profile.html") {
         renderProfilePage("main", user);
-    } else if (user.role === "guide" && path === "support.html") {
+    } else if ((user.role === "guide" || user.role === "hotel" || user.role === "experience") && path === "support.html") {
         renderSupportPage("main", user);
     } else if (user.role === "hotel" && (path === "dashboard.html" || path === "hotelDashboard.html")) {
         renderHotelDashboard(user);

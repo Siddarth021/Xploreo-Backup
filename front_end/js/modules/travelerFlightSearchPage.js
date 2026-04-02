@@ -3,7 +3,7 @@ import { travelerData } from "../../data/traveler.js";
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const SELECTED_FLIGHT_KEY = "traveler_selected_flight";
 const FLIGHT_WISHLIST_KEY = "traveler_flight_wishlist";
-const FLIGHT_DETAIL_PAGE = "./flight-detail.html";
+const FLIGHT_DETAIL_PAGE = "./traveller_flight-detail.html";
 
 export function renderTravelerFlightSearchPage(containerId) {
     const container = document.getElementById(containerId);

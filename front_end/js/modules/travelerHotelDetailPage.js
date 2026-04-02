@@ -1,8 +1,8 @@
 import { travelerData } from "../../data/traveler.js";
 
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
-const HOTEL_BOOKING_PAGE = "./hotel-booking.html";
-const HOTEL_RESULTS_PAGE = "./hotel-search.html";
+const HOTEL_BOOKING_PAGE = "./traveller_hotel-booking.html";
+const HOTEL_RESULTS_PAGE = "./traveller_hotel-search.html";
 const WISHLIST_STORAGE_KEY = "traveler_wishlist";
 const ROOM_OPTIONS = ["1", "2", "3", "4", "5", "6", "7", "8"];
 const GUEST_OPTIONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];

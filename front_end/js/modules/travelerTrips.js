@@ -141,7 +141,7 @@ export function renderTravelerTrips(containerId, user) {
                 localStorage.setItem(PLAN_SOURCE_KEY, "mytrips");
             }
 
-            window.location.href = `./plan-detail.html?plan=${encodeURIComponent(matchingPlan.id || matchingPlan.title)}`;
+            window.location.href = `./traveller_plan-detail.html?plan=${encodeURIComponent(matchingPlan.id || matchingPlan.title)}`;
         });
     });
 
@@ -322,7 +322,7 @@ function openFlightTrip(trip) {
     if (!payload || typeof localStorage === "undefined") return;
 
     localStorage.setItem(SELECTED_FLIGHT_KEY, JSON.stringify(payload));
-    window.location.href = `./flight-detail.html?flight=${encodeURIComponent(payload.id || trip.flightId || trip.bookingId)}`;
+    window.location.href = `./traveller_flight-detail.html?flight=${encodeURIComponent(payload.id || trip.flightId || trip.bookingId)}`;
 }
 
 function openExperienceTrip(trip) {
@@ -330,7 +330,7 @@ function openExperienceTrip(trip) {
     if (!experience || typeof localStorage === "undefined") return;
 
     localStorage.setItem(SELECTED_EXPERIENCE_KEY, JSON.stringify(experience));
-    window.location.href = `./experience-detail.html?experience=${encodeURIComponent(experience.id)}`;
+    window.location.href = `./traveller_experience-detail.html?experience=${encodeURIComponent(experience.id)}`;
 }
 
 function openExperienceBookingTrip(trip) {
@@ -353,7 +353,7 @@ function openExperienceBookingTrip(trip) {
 
     localStorage.setItem(SELECTED_EXPERIENCE_KEY, JSON.stringify(experience));
     localStorage.setItem(EXPERIENCE_BOOKING_DRAFT_KEY, JSON.stringify(draft));
-    window.location.href = "./experience-booking.html";
+    window.location.href = "./traveller_experience-booking.html";
 }
 
 function openPackageBookingTrip(trip) {
@@ -361,7 +361,7 @@ function openPackageBookingTrip(trip) {
 
     const packageSelection = buildPackageSelectionFromTrip(trip);
     localStorage.setItem(SELECTED_PACKAGE_KEY, JSON.stringify(packageSelection));
-    window.location.href = "./booking-details.html";
+    window.location.href = "./traveller_booking-details.html";
 }
 
 function buildFlightPayloadFromTrip(trip) {

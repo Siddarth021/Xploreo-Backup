@@ -26,7 +26,7 @@ export function renderLandingNavbar() {
         </header>
     `;
     const con = document.getElementById("navbar");
-    if(con) con.innerHTML = navbarHTML;
+    if (con) con.innerHTML = navbarHTML;
     attachNavbarEvents();
 }
 

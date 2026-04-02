@@ -1,10 +1,6 @@
 const EXPERIENCE_CONFIRMATION_KEY = "traveler_experience_booking_confirmation";
 
-document.addEventListener("DOMContentLoaded", () => {
-    renderTravelerExperienceConfirmationPage("traveler-experience-confirmation-app");
-});
-
-function renderTravelerExperienceConfirmationPage(containerId) {
+export function renderTravelerExperienceConfirmationPage(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -15,7 +11,7 @@ function renderTravelerExperienceConfirmationPage(containerId) {
                 <section class="traveler-experience-confirmation-shell traveler-experience-confirmation-empty">
                     <h1>No experience confirmation found</h1>
                     <p>Please complete the experience booking flow first.</p>
-                    <a href="./experience-search.html">Go to experiences</a>
+                    <a href="./traveller_experience-search.html">Go to experiences</a>
                 </section>
             </main>
         `;
@@ -83,8 +79,8 @@ function renderTravelerExperienceConfirmationPage(containerId) {
                             <li>${checkCircleIcon()} Show this booking at the activity location</li>
                             <li>${checkCircleIcon()} Free cancellation available within policy window</li>
                         </ul>
-                        <a class="traveler-experience-primary-link" href="./mytrips.html">View My Trips</a>
-                        <a class="traveler-experience-secondary-link" href="./experience-search.html">Continue Exploring</a>
+                        <a class="traveler-experience-primary-link" href="./traveller_mytrips.html">View My Trips</a>
+                        <a class="traveler-experience-secondary-link" href="./traveller_experience-search.html">Continue Exploring</a>
                     </article>
                 </aside>
             </section>

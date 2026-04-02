@@ -1,3 +1,15 @@
+@import url("traveller_card.css");
+@import url("traveller_flight-search.css");
+@import url("traveller_flights.css");
+@import url("traveller_hotel-booking.css");
+@import url("traveller_hotel-confirmation.css");
+@import url("traveller_hotel-detail.css");
+@import url("traveller_hotel-search.css");
+@import url("traveller_package-search.css");
+@import url("traveller_plan-detail.css");
+@import url("traveller_traveller-extended.css");
+@import url("traveller_experience.css");
+
 /* 
   =========================================
   XPLOREO - TRAVELER DASHBOARD STYLES

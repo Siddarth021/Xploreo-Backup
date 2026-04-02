@@ -182,3 +182,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+if (window.location.pathname.includes('opsbook.html')) {
+    initOperations();
+}

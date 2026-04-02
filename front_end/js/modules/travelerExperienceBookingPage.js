@@ -2,11 +2,7 @@ const SELECTED_EXPERIENCE_KEY = "traveler_selected_experience";
 const EXPERIENCE_BOOKING_DRAFT_KEY = "traveler_experience_booking_draft";
 const EXPERIENCE_CONFIRMATION_KEY = "traveler_experience_booking_confirmation";
 
-document.addEventListener("DOMContentLoaded", () => {
-    renderTravelerExperienceBookingPage("traveler-experience-booking-app");
-});
-
-function renderTravelerExperienceBookingPage(containerId) {
+export function renderTravelerExperienceBookingPage(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -17,7 +13,7 @@ function renderTravelerExperienceBookingPage(containerId) {
                 <section class="traveler-experience-booking-shell traveler-experience-booking-empty">
                     <h1>No experience booking selected</h1>
                     <p>Please choose an experience option before entering traveler details.</p>
-                    <a href="./experience-search.html">Go to experiences</a>
+                    <a href="./traveller_experience-search.html">Go to experiences</a>
                 </section>
             </main>
         `;
@@ -85,7 +81,7 @@ function renderTravelerExperienceBookingPage(containerId) {
                                         <p>${state.draft.adults} ${state.draft.adults === 1 ? "Adult" : "Adults"}</p>
                                     </div>
                                 </div>
-                                <a class="traveler-experience-change-link" href="./experience-detail.html">Change Selection</a>
+                                <a class="traveler-experience-change-link" href="./traveller_experience-detail.html">Change Selection</a>
                             </article>
 
                             <article class="traveler-experience-booking-card">
@@ -245,7 +241,7 @@ function renderTravelerExperienceBookingPage(containerId) {
                 travelers: state.travelers.map((traveler) => ({ ...traveler }))
             });
             persistExperienceConfirmation(confirmation);
-            window.location.href = "./experience-confirmation.html";
+            window.location.href = "./traveller_experience-confirmation.html";
         });
     }
 

@@ -4,11 +4,11 @@ import { travelerData } from "../../data/traveler.js";
 const heartSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
 const heartIconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
-const FLIGHT_RESULTS_PAGE = "./flight-search.html";
-const HOTEL_RESULTS_PAGE = "./hotel-search.html";
-const PACKAGE_RESULTS_PAGE = "./package-search.html";
-const EXPERIENCE_RESULTS_PAGE = "./experience-search.html";
-const PLAN_DETAIL_PAGE = "./plan-detail.html";
+const FLIGHT_RESULTS_PAGE = "./traveller_flight-search.html";
+const HOTEL_RESULTS_PAGE = "./traveller_hotel-search.html";
+const PACKAGE_RESULTS_PAGE = "./traveller_package-search.html";
+const EXPERIENCE_RESULTS_PAGE = "./traveller_experience-search.html";
+const PLAN_DETAIL_PAGE = "./traveller_plan-detail.html";
 const SELECTED_PLAN_KEY = "traveler_selected_plan";
 const SELECTED_FLIGHT_KEY = "traveler_selected_flight";
 const PLAN_SOURCE_KEY = "traveler_plan_source";
@@ -604,7 +604,7 @@ function bindPlanActions() {
                 if (typeof localStorage !== "undefined") {
                     localStorage.setItem(SELECTED_FLIGHT_KEY, JSON.stringify(itinerary.flightDetail));
                 }
-                window.location.href = `./flight-detail.html?flight=${encodeURIComponent(itinerary.flightDetail.id || itinerary.id)}`;
+                window.location.href = `./traveller_flight-detail.html?flight=${encodeURIComponent(itinerary.flightDetail.id || itinerary.id)}`;
                 return;
             }
 

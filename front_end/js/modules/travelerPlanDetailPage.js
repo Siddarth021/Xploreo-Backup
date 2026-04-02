@@ -3,7 +3,7 @@ import { travelerData } from "../../data/traveler.js";
 const SELECTED_PLAN_KEY = "traveler_selected_plan";
 const SELECTED_FLIGHT_KEY = "traveler_selected_flight";
 const PLAN_SOURCE_KEY = "traveler_plan_source";
-const FLIGHT_DETAIL_PAGE = "./flight-detail.html";
+const FLIGHT_DETAIL_PAGE = "./traveller_flight-detail.html";
 const DEFAULT_PLAN_IMAGE = "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=1200";
 
 export function renderTravelerPlanDetailPage(containerId) {
@@ -89,6 +89,7 @@ function renderState(container, state) {
                         <div class="plan-detail-actions">
                             <span class="plan-detail-status">${escapeHtml(plan.status)}</span>
                             <div class="plan-detail-action-row">
+                                <button class="plan-detail-cta-btn" id="plan-detail-confirm-btn">Confirm Booking</button>
                                 <button class="plan-detail-ghost-btn" data-top-action="support">${chatIcon()} Contact Support</button>
                                 <button class="plan-detail-danger-btn" data-top-action="cancel">${xIcon()} Cancel Trip</button>
                             </div>
@@ -386,6 +387,10 @@ function bindEvents(container, state) {
         });
     });
 
+    container.querySelector("#plan-detail-confirm-btn")?.addEventListener("click", () => {
+        window.location.href = `./traveller_booking-confirmation.html?plan=${encodeURIComponent(state.plan.id)}`;
+    });
+
     container.querySelectorAll("[data-top-action]").forEach((button) => {
         button.addEventListener("click", () => {
             const action = button.getAttribute("data-top-action");
@@ -502,8 +507,8 @@ function getBackLinkMeta() {
     }
 
     return source === "mytrips"
-        ? { href: "./mytrips.html", label: "Back to My Trips" }
-        : { href: "./dashboard.html", label: "Back to dashboard" };
+        ? { href: "./traveller_mytrips.html", label: "Back to My Trips" }
+        : { href: "./traveller_dashboard.html", label: "Back to dashboard" };
 }
 
 function formatLongDate(value) {

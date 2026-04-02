@@ -1,7 +1,7 @@
 import { getHotelDetailDataById } from "./travelerHotelDetailPage.js";
 
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
-const HOTEL_CONFIRMATION_PAGE = "./hotel-confirmation.html";
+const HOTEL_CONFIRMATION_PAGE = "./traveller_hotel-confirmation.html";
 
 export function renderTravelerHotelBookingPage(containerId) {
     const container = document.getElementById(containerId);

@@ -5,13 +5,12 @@ const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const WISHLIST_STORAGE_KEY = "traveler_wishlist";
 const SELECTED_EXPERIENCE_KEY = "traveler_selected_experience";
 
-const EXPERIENCE_RESULTS = buildExperienceCatalog();
+let EXPERIENCE_RESULTS = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-    renderTravelerExperienceSearchPage("traveler-experience-search-app");
-});
-
-function renderTravelerExperienceSearchPage(containerId) {
+export function renderTravelerExperienceSearchPage(containerId) {
+    if (!EXPERIENCE_RESULTS) {
+        EXPERIENCE_RESULTS = buildExperienceCatalog();
+    }
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -161,7 +160,7 @@ function renderTravelerExperienceSearchPage(containerId) {
                 const item = EXPERIENCE_RESULTS.find((entry) => entry.id === button.dataset.experienceDetails);
                 if (!item) return;
                 persistSelectedExperience(item);
-                window.location.href = "./experience-detail.html";
+                window.location.href = "./traveller_experience-detail.html";
             });
         });
     }

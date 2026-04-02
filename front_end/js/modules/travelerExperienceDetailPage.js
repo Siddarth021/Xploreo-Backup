@@ -3,11 +3,7 @@ import { travelerData } from "../../data/traveler.js";
 const SELECTED_EXPERIENCE_KEY = "traveler_selected_experience";
 const EXPERIENCE_BOOKING_DRAFT_KEY = "traveler_experience_booking_draft";
 
-document.addEventListener("DOMContentLoaded", () => {
-    renderTravelerExperienceDetailPage("traveler-experience-detail-app");
-});
-
-function renderTravelerExperienceDetailPage(containerId) {
+export function renderTravelerExperienceDetailPage(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -18,7 +14,7 @@ function renderTravelerExperienceDetailPage(containerId) {
                 <section class="traveler-experience-detail-frame traveler-experience-empty">
                     <h1>No experience selected</h1>
                     <p>Choose an experience from the search page to view its full details.</p>
-                    <a href="./experience-search.html">Go to experiences</a>
+                    <a href="./traveller_experience-search.html">Go to experiences</a>
                 </section>
             </main>
         `;
@@ -248,7 +244,7 @@ function renderTravelerExperienceDetailPage(containerId) {
                 totalPrice: currentOption.price * state.adults
             });
 
-            window.location.assign("./experience-booking.html");
+            window.location.assign("./traveller_experience-booking.html");
         });
     }
 

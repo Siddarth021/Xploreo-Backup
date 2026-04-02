@@ -36,7 +36,7 @@ export function renderTravelerFlightSearchPage(containerId) {
                             <button class="trip-mode-btn ${state.tripType === "Round Trip" ? "active" : ""}" data-trip-mode="Round Trip">Round Trip</button>
                         </div>
 
-                        <div class="flight-search-summary-grid">
+                        <div class="flight-search-summary-grid ${state.tripType === "Round Trip" ? "round-trip-layout" : "one-way-layout"}">
                             <div class="flight-search-field field-with-icon">
                                 <span>From</span>
                                 <strong>${getSummaryLocationLabel(searchValues.from || "New York (JFK)")}</strong>
@@ -56,7 +56,7 @@ export function renderTravelerFlightSearchPage(containerId) {
                                     <strong>${formatDate(searchValues.returnDate || selectedDate)}</strong>
                                 </div>
                             ` : ""}
-                            <div class="flight-search-field field-with-icon">
+                            <div class="flight-search-field field-with-icon traveler-count-field">
                                 <span>Travellers</span>
                                 <strong>${searchValues.travellers || "1 Traveller, Economy"}</strong>
                             </div>
@@ -126,6 +126,11 @@ export function renderTravelerFlightSearchPage(containerId) {
                         <div class="flight-card-list">
                             ${limitedFlights.length ? limitedFlights.map(flight => `
                                 <article class="flight-result-card">
+                                    <div class="flight-card-save-corner">
+                                        <span class="save-chip">${getSaveLabel(flight, sortMode)}</span>
+                                        <button class="wishlist-chip-btn ${wishlist.includes(flight.id) ? "active" : ""}" data-flight-save="${flight.id}" aria-label="Save flight">♡</button>
+                                    </div>
+
                                     <div class="flight-card-left">
                                         <div class="airline-badge">${getAirlineCode(flight.airline)}</div>
                                         <div class="flight-airline-meta">
@@ -135,33 +140,30 @@ export function renderTravelerFlightSearchPage(containerId) {
                                     </div>
 
                                     <div class="flight-card-middle">
-                                        <div class="flight-times-row">
-                                            <div class="flight-time-block">
-                                                <strong>${getDisplayTime(flight, "departure")}</strong>
-                                                <span>${getResultsAirportCode(searchValues.from || flight.origin)}</span>
+                                        <div class="flight-time-block flight-time-departure">
+                                            <strong>${getDisplayTime(flight, "departure")}</strong>
+                                            <span>${getResultsAirportCode(searchValues.from || flight.origin)}</span>
+                                        </div>
+                                        <div class="flight-duration-block">
+                                            <div class="flight-duration-line">
+                                                <span class="flight-line"></span>
+                                                <span class="flight-line-plane">✈</span>
+                                                <span class="flight-line"></span>
                                             </div>
-                                            <div class="flight-duration-block">
-                                                <div class="flight-line"><span class="flight-line-plane">✈</span></div>
-                                                <strong>${flight.duration}</strong>
-                                                <span>${flight.stops}</span>
-                                            </div>
-                                            <div class="flight-time-block">
-                                                <strong>${getDisplayTime(flight, "arrival")}</strong>
-                                                <span>${getResultsAirportCode(searchValues.to || flight.destination)}</span>
-                                            </div>
+                                            <strong>${flight.duration}</strong>
+                                            <span>${flight.stops}</span>
+                                        </div>
+                                        <div class="flight-time-block flight-time-arrival">
+                                            <strong>${getDisplayTime(flight, "arrival")}</strong>
+                                            <span>${getResultsAirportCode(searchValues.to || flight.destination)}</span>
                                         </div>
                                     </div>
 
                                     <div class="flight-card-right">
-                                        <div class="flight-card-actions-top">
-                                            <span class="save-chip">${getSaveLabel(flight, sortMode)}</span>
-                                            <button class="wishlist-chip-btn ${wishlist.includes(flight.id) ? "active" : ""}" data-flight-save="${flight.id}" aria-label="Save flight">♡</button>
-                                        </div>
                                         <div class="flight-price-panel">
                                             <strong>${formatMoney(flight.price)}</strong>
                                             <small>per person</small>
                                         </div>
-                                        <div class="flight-price-divider" aria-hidden="true"></div>
                                         <button class="view-details-btn" data-flight-action="${flight.id}">View Details</button>
                                     </div>
                                 </article>
@@ -220,7 +222,19 @@ export function renderTravelerFlightSearchPage(containerId) {
 
     function bindEvents() {
         container.querySelector("#flight-search-back-btn")?.addEventListener("click", () => {
-            window.location.href = "./dashboard.html";
+            state.values.flights.departure = selectedDate || state.values.flights.departure;
+
+            if (typeof localStorage !== "undefined") {
+                localStorage.setItem(SEARCH_STORAGE_KEY, JSON.stringify(state));
+            }
+
+            visibleCount = 4;
+            render();
+
+            container.querySelector(".flight-results-main")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
         });
 
         container.querySelector("#load-more-flights-btn")?.addEventListener("click", () => {

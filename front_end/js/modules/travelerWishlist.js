@@ -39,13 +39,6 @@ export function renderTravelerWishlist(containerId, user) {
                 </div>
                 ${emptyState}
             </div>
-
-            <div class="wishlist-team-banner">
-                <h2>Create Your Dream Trip Together!</h2>
-                <p>Save stays to your wishlist. Share, vote, and plan your next getaway as a team.</p>
-                <button class="btn-primary" onclick="alert('Creating new collaborative wishlist...')">CREATE NEW WISHLIST</button>
-            </div>
-            
             <div class="saved-items-header">
                 <h3>All Saved Items</h3>
                 <span>${wishlist.length} items</span>

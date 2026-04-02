@@ -26,6 +26,7 @@ export function renderTravelerFlightDetailPage(containerId) {
 
     const totalAmount = selectedFlight.price + selectedFlight.taxes;
     const isSaved = getFlightWishlist().includes(selectedFlight.id);
+    const travelerForm = getTravelerFormDefaults();
 
     container.innerHTML = `
         <main class="flight-detail-page">
@@ -114,6 +115,33 @@ export function renderTravelerFlightDetailPage(containerId) {
                                 <strong>${selectedFlight.passengers}</strong>
                             </div>
 
+                            <div class="flight-traveler-form">
+                                <h3>Traveler Details</h3>
+                                <div class="flight-traveler-grid">
+                                    <label class="flight-traveler-field">
+                                        <span>Full Name</span>
+                                        <input type="text" id="flight-traveler-name" placeholder="Enter traveler name" value="${escapeAttribute(travelerForm.fullName)}">
+                                    </label>
+                                    <label class="flight-traveler-field">
+                                        <span>Email</span>
+                                        <input type="email" id="flight-traveler-email" placeholder="Enter email" value="${escapeAttribute(travelerForm.email)}">
+                                    </label>
+                                    <label class="flight-traveler-field">
+                                        <span>Phone Number</span>
+                                        <input type="tel" id="flight-traveler-phone" placeholder="Enter phone number" value="${escapeAttribute(travelerForm.phone)}">
+                                    </label>
+                                    <label class="flight-traveler-field">
+                                        <span>Gender</span>
+                                        <select id="flight-traveler-gender">
+                                            ${renderGenderOption("Male", travelerForm.gender)}
+                                            ${renderGenderOption("Female", travelerForm.gender)}
+                                            ${renderGenderOption("Other", travelerForm.gender)}
+                                        </select>
+                                    </label>
+                                </div>
+                                <p class="flight-traveler-error" id="flight-traveler-error"></p>
+                            </div>
+
                             <button class="book-now-btn" id="book-flight-btn">Book Now →</button>
                             <p class="flight-note">${selectedFlight.cancellation}</p>
                             <p class="flight-confirm">${selectedFlight.confirmation}</p>
@@ -161,7 +189,20 @@ function bindEvents(selectedFlight) {
     });
 
     document.getElementById("book-flight-btn")?.addEventListener("click", () => {
-        const bookingPayload = buildConfirmedBookingPayload(selectedFlight);
+        const travelerDetails = getTravelerFormValues();
+        const validationError = validateTravelerForm(travelerDetails);
+
+        if (validationError) {
+            const errorNode = document.getElementById("flight-traveler-error");
+            if (errorNode) errorNode.textContent = validationError;
+            showFlightDetailToast("Please complete traveler details");
+            return;
+        }
+
+        const errorNode = document.getElementById("flight-traveler-error");
+        if (errorNode) errorNode.textContent = "";
+
+        const bookingPayload = buildConfirmedBookingPayload(selectedFlight, travelerDetails);
         if (typeof localStorage !== "undefined") {
             localStorage.setItem(CONFIRMED_BOOKING_KEY, JSON.stringify(bookingPayload));
         }
@@ -368,7 +409,7 @@ function getDisplayTime(flight, type) {
     return type === "departure" ? flight.departureTime : flight.arrivalTime;
 }
 
-function buildConfirmedBookingPayload(selectedFlight) {
+function buildConfirmedBookingPayload(selectedFlight, travelerDetails) {
     const bookedOn = new Date();
     const bookingId = Number(`${bookedOn.getFullYear()}${String(Math.floor(Math.random() * 9000) + 1000)}`);
 
@@ -377,10 +418,58 @@ function buildConfirmedBookingPayload(selectedFlight) {
         bookingId,
         bookedOn: bookedOn.toISOString(),
         totalAmount: selectedFlight.price + selectedFlight.taxes,
+        travelerDetails: travelerDetails || null,
         whatsNext: [
             "Confirmation email sent to your inbox",
             "Booking details saved in My Trips",
             "Download tickets 24 hours before departure"
         ]
     };
+}
+
+function getTravelerFormDefaults() {
+    if (typeof localStorage === "undefined") {
+        return { fullName: "", email: "", phone: "", gender: "Male" };
+    }
+
+    try {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+        return {
+            fullName: currentUser?.name || currentUser?.fullName || "",
+            email: currentUser?.email || "",
+            phone: currentUser?.phone || "",
+            gender: currentUser?.gender || "Male"
+        };
+    } catch (error) {
+        return { fullName: "", email: "", phone: "", gender: "Male" };
+    }
+}
+
+function renderGenderOption(value, selectedValue) {
+    return `<option value="${value}" ${value === selectedValue ? "selected" : ""}>${value}</option>`;
+}
+
+function getTravelerFormValues() {
+    return {
+        fullName: String(document.getElementById("flight-traveler-name")?.value || "").trim(),
+        email: String(document.getElementById("flight-traveler-email")?.value || "").trim(),
+        phone: String(document.getElementById("flight-traveler-phone")?.value || "").trim(),
+        gender: String(document.getElementById("flight-traveler-gender")?.value || "").trim()
+    };
+}
+
+function validateTravelerForm(details) {
+    if (!details.fullName) return "Enter the traveler full name.";
+    if (!details.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(details.email)) return "Enter a valid email address.";
+    if (!details.phone || details.phone.replace(/[^\d]/g, "").length < 8) return "Enter a valid phone number.";
+    if (!details.gender) return "Select a gender.";
+    return "";
+}
+
+function escapeAttribute(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
 }

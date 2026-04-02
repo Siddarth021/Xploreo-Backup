@@ -7,7 +7,7 @@ export const users = [
     gender: "male",
     dob: new Date("2006-12-07"),
     username: "sreekar_k",
-    email: "sreekar@xploreo.com",
+    email: "sreekar@gmail.com",
     phone: "9876543210",
     role: "guide",
     profilePic: "./profilepic/101.png",

@@ -94,7 +94,7 @@ export const travelerData = {
         {
             title: "Beach Hopping Adventure",
             desc: "Explore hidden beaches with a local guide",
-            image: "https://images.unsplash.com/photo-1506169466986-63cd4fbec844?auto=format&fit=crop&q=80&w=600",
+            image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=600",
             duration: "4 hours",
             price: "$ 89",
             rating: "4.8",
@@ -103,7 +103,7 @@ export const travelerData = {
         {
             title: "Temple & Culture Tour",
             desc: "Discover ancient temples and traditions",
-            image: "https://images.unsplash.com/photo-1606768393527-0248464fc8b9?auto=format&fit=crop&q=80&w=600",
+            image: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&q=80&w=600",
             duration: "6 hours",
             price: "$ 65",
             rating: "4.9",
@@ -133,28 +133,28 @@ export const travelerData = {
         {
             title: "Adventure",
             desc: "245 experiences",
-            image: "https://images.unsplash.com/photo-1522199755839-a2bacb67c546?auto=format&fit=crop&q=80&w=800",
+            image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&q=80&w=800",
             color: "#EA580C",
             svg: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="m3 21 9-14 9 14h-5l-4-6-4 6H3z"/></svg>`
         },
         {
             title: "Beaches",
             desc: "189 destinations",
-            image: "https://images.unsplash.com/photo-1506169466986-63cd4fbec844?auto=format&fit=crop&q=80&w=800",
+            image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&q=80&w=800",
             color: "#0EA5E9",
             svg: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1"/><path d="M4 17l8-15 8 15"/><path d="M12 9v8"/></svg>`
         },
         {
             title: "Mountains",
             desc: "167 trails",
-            image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800",
+            image: "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&q=80&w=800",
             color: "#8B5CF6",
             svg: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>`
         },
         {
             title: "Cultural",
             desc: "312 sites",
-            image: "https://images.unsplash.com/photo-1590847772658-00518778f5ae?auto=format&fit=crop&q=80&w=800",
+            image: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&q=80&w=800",
             color: "#D97706",
             svg: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2v20"/><path d="M5 10v12"/><path d="M19 10v12"/><path d="M2 10h20"/><path d="m2 10 10-8 10 8"/></svg>`
         }
@@ -183,7 +183,9 @@ export const travelerData = {
 
     itineraries: [
         {
+            id: "itinerary-europe",
             title: "Best of Europe",
+            type: "package",
             tags: ["Paris", "Rome", "Barcelona"],
             image: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=800",
             days: 12,
@@ -191,10 +193,17 @@ export const travelerData = {
             reviews: "456",
             travelers: "2.3k",
             features: ["All accommodations", "Local guides", "3 experiences"],
-            price: "$2499"
+            price: "$2499",
+            bookingId: 2499,
+            location: "Paris, Rome & Barcelona",
+            startDate: "2026-04-10",
+            endDate: "2026-04-21",
+            status: "Upcoming"
         },
         {
+            id: "itinerary-japan",
             title: "Japan Discovery",
+            type: "package",
             tags: ["Tokyo", "Kyoto", "Osaka"],
             image: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&q=80&w=800",
             days: 10,
@@ -202,10 +211,17 @@ export const travelerData = {
             reviews: "328",
             travelers: "1.8k",
             features: ["Cultural experiences", "Food tours", "Temple visits"],
-            price: "$3299"
+            price: "$3299",
+            bookingId: 3299,
+            location: "Tokyo, Kyoto & Osaka",
+            startDate: "2026-05-12",
+            endDate: "2026-05-21",
+            status: "Upcoming"
         },
         {
+            id: "itinerary-mediterranean",
             title: "Mediterranean Magic",
+            type: "package",
             tags: ["Santorini", "Mykonos", "Crete"],
             image: "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?auto=format&fit=crop&q=80&w=800",
             days: 8,
@@ -213,7 +229,12 @@ export const travelerData = {
             reviews: "294",
             travelers: "1.5k",
             features: ["Beach resorts", "Island hopping", "Sunset cruises"],
-            price: "$1899"
+            price: "$1899",
+            bookingId: 1899,
+            location: "Santorini, Mykonos & Crete",
+            startDate: "2026-06-08",
+            endDate: "2026-06-15",
+            status: "Upcoming"
         }
     ],
 
@@ -257,7 +278,7 @@ export const travelerData = {
         {
             title: "Maldives Beach Resort",
             desc: "Maldives",
-            image: "https://images.unsplash.com/photo-1506169466986-63cd4fbec844?auto=format&fit=crop&q=80&w=600",
+            image: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?auto=format&fit=crop&q=80&w=600",
             badge: "Destination",
             duration: "Yesterday",
             price: "$ 350",
@@ -266,7 +287,7 @@ export const travelerData = {
         {
             title: "Photography Tour",
             desc: "Santorini, Greece",
-            image: "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?auto=format&fit=crop&q=80&w=600",
+            image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&q=80&w=600",
             badge: "Guide",
             duration: "3 days ago",
             price: "$ 120",
@@ -396,6 +417,294 @@ export const travelerData = {
                 stops: "Non-stop",
                 classType: "Economy",
                 refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-1",
+                airline: "Japan Airlines",
+                flightNumber: "JL 411",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-11",
+                arrival: "2026-04-11",
+                departureTime: "06:20 AM",
+                arrivalTime: "06:15 PM",
+                duration: "8h 55m",
+                price: "$ 865",
+                stops: "Non-stop",
+                classType: "Economy",
+                refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-2",
+                airline: "All Nippon Airways",
+                flightNumber: "NH 288",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-11",
+                arrival: "2026-04-11",
+                departureTime: "09:45 AM",
+                arrivalTime: "09:10 PM",
+                duration: "9h 25m",
+                price: "$ 935",
+                stops: "1 stop",
+                classType: "Economy",
+                refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-3",
+                airline: "Cathay Pacific",
+                flightNumber: "CX 190",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-12",
+                arrival: "2026-04-12",
+                departureTime: "08:10 AM",
+                arrivalTime: "08:55 PM",
+                duration: "10h 45m",
+                price: "$ 905",
+                stops: "1 stop",
+                classType: "Economy",
+                refundable: false
+            },
+            {
+                id: "flight-dxb-kyo-4",
+                airline: "Japan Airlines",
+                flightNumber: "JL 423",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-12",
+                arrival: "2026-04-12",
+                departureTime: "11:40 PM",
+                arrivalTime: "11:15 AM",
+                duration: "8h 35m",
+                price: "$ 799",
+                stops: "Non-stop",
+                classType: "Economy",
+                refundable: false
+            },
+            {
+                id: "flight-dxb-kyo-5",
+                airline: "Singapore Airlines",
+                flightNumber: "SQ 612",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-13",
+                arrival: "2026-04-14",
+                departureTime: "07:30 PM",
+                arrivalTime: "08:50 AM",
+                duration: "10h 20m",
+                price: "$ 845",
+                stops: "2+ stops",
+                classType: "Economy",
+                refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-6",
+                airline: "ANA",
+                flightNumber: "NH 302",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-13",
+                arrival: "2026-04-14",
+                departureTime: "10:05 AM",
+                arrivalTime: "09:35 PM",
+                duration: "8h 30m",
+                price: "$ 920",
+                stops: "1 stop",
+                classType: "Economy",
+                refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-7",
+                airline: "Japan Airlines",
+                flightNumber: "JL 710",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-14",
+                arrival: "2026-04-14",
+                departureTime: "08:10 AM",
+                arrivalTime: "11:20 PM",
+                duration: "15h 10m",
+                price: "$ 840",
+                stops: "Non-stop",
+                classType: "Economy",
+                refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-8",
+                airline: "All Nippon Airways",
+                flightNumber: "NH 411",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-14",
+                arrival: "2026-04-14",
+                departureTime: "09:20 AM",
+                arrivalTime: "10:55 PM",
+                duration: "9h 35m",
+                price: "$ 915",
+                stops: "1 stop",
+                classType: "Economy",
+                refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-9",
+                airline: "Cathay Pacific",
+                flightNumber: "CX 441",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-14",
+                arrival: "2026-04-15",
+                departureTime: "01:05 PM",
+                arrivalTime: "01:25 AM",
+                duration: "10h 20m",
+                price: "$ 980",
+                stops: "1 stop",
+                classType: "Economy",
+                refundable: false
+            },
+            {
+                id: "flight-dxb-kyo-10",
+                airline: "Singapore Airlines",
+                flightNumber: "SQ 771",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-14",
+                arrival: "2026-04-15",
+                departureTime: "06:45 PM",
+                arrivalTime: "09:15 AM",
+                duration: "11h 30m",
+                price: "$ 799",
+                stops: "2+ stops",
+                classType: "Economy",
+                refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-11",
+                airline: "Emirates",
+                flightNumber: "EK 218",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-14",
+                arrival: "2026-04-14",
+                departureTime: "11:55 PM",
+                arrivalTime: "10:10 AM",
+                duration: "8h 15m",
+                price: "$ 1099",
+                stops: "Non-stop",
+                classType: "Premium Economy",
+                refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-12",
+                airline: "Qatar Airways",
+                flightNumber: "QR 562",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-14",
+                arrival: "2026-04-15",
+                departureTime: "05:30 AM",
+                arrivalTime: "04:20 PM",
+                duration: "9h 50m",
+                price: "$ 875",
+                stops: "1 stop",
+                classType: "Economy",
+                refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-13",
+                airline: "Japan Airlines",
+                flightNumber: "JL 725",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-15",
+                arrival: "2026-04-15",
+                departureTime: "08:25 AM",
+                arrivalTime: "11:40 PM",
+                duration: "15h 15m",
+                price: "$ 920",
+                stops: "Non-stop",
+                classType: "Economy",
+                refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-14",
+                airline: "ANA",
+                flightNumber: "NH 355",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-15",
+                arrival: "2026-04-15",
+                departureTime: "10:15 AM",
+                arrivalTime: "11:55 PM",
+                duration: "9h 40m",
+                price: "$ 890",
+                stops: "1 stop",
+                classType: "Economy",
+                refundable: false
+            },
+            {
+                id: "flight-dxb-kyo-15",
+                airline: "Singapore Airlines",
+                flightNumber: "SQ 608",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-15",
+                arrival: "2026-04-16",
+                departureTime: "07:10 PM",
+                arrivalTime: "09:50 AM",
+                duration: "11h 40m",
+                price: "$ 845",
+                stops: "2+ stops",
+                classType: "Economy",
+                refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-16",
+                airline: "Emirates",
+                flightNumber: "EK 221",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-16",
+                arrival: "2026-04-16",
+                departureTime: "11:15 PM",
+                arrivalTime: "10:05 AM",
+                duration: "8h 50m",
+                price: "$ 999",
+                stops: "Non-stop",
+                classType: "Economy",
+                refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-17",
+                airline: "Cathay Pacific",
+                flightNumber: "CX 458",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-16",
+                arrival: "2026-04-17",
+                departureTime: "01:30 PM",
+                arrivalTime: "02:10 AM",
+                duration: "10h 40m",
+                price: "$ 920",
+                stops: "1 stop",
+                classType: "Economy",
+                refundable: true
+            },
+            {
+                id: "flight-dxb-kyo-18",
+                airline: "Qatar Airways",
+                flightNumber: "QR 595",
+                origin: "Dubai (DXB)",
+                destination: "Kyoto",
+                departure: "2026-04-16",
+                arrival: "2026-04-17",
+                departureTime: "05:50 AM",
+                arrivalTime: "04:45 PM",
+                duration: "10h 05m",
+                price: "$ 875",
+                stops: "1 stop",
+                classType: "Economy",
+                refundable: false
             },
             {
                 id: "flight-santorini-1",
@@ -1171,63 +1480,742 @@ export const travelerData = {
         })),
         packages: [
             {
-                id: "package-japan-1",
-                origin: "New York",
-                destination: "Kyoto",
-                title: "Kyoto Cultural Escape",
-                image: "https://images.unsplash.com/photo-1528164344705-47542687000d?auto=format&fit=crop&q=80&w=900",
-                duration: "5 days",
-                inclusions: "Flights, hotel, tea ceremony, guide",
-                price: "$ 2,499"
-            },
-            {
-                id: "package-greece-1",
-                origin: "New York",
-                destination: "Santorini",
-                title: "Santorini Sunset Retreat",
-                image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&q=80&w=900",
-                duration: "7 days",
-                inclusions: "Flights, cliffside suite, cruise",
-                price: "$ 3,150"
-            },
-            {
-                id: "package-bali-1",
-                origin: "New York",
+                id: "package-bali-escape",
+                origin: "New Delhi",
                 destination: "Bali",
-                title: "Bali Wellness Escape",
-                image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=900",
-                duration: "6 days",
-                inclusions: "Resort, transfers, wellness sessions",
-                price: "$ 1,980"
+                title: "Magical Bali - Island Paradise Escape",
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1400",
+                nights: 5,
+                days: 6,
+                withFlight: true,
+                hotelCategory: 4,
+                stayLine: "4★ Resort with Pool",
+                mealsLine: "Breakfast & Dinner Included",
+                transferLine: "Airport Transfers Included",
+                activityLine: "2 Tours & 1 Water Activity",
+                perk: "FREE Couple Spa Session",
+                pricePerPerson: 899,
+                totalPrice: 1798,
+                emi: 150
+            },
+            {
+                id: "package-maldives-honeymoon",
+                origin: "New Delhi",
+                destination: "Maldives",
+                title: "Maldives Luxury Honeymoon Package",
+                image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&q=80&w=1400",
+                nights: 4,
+                days: 5,
+                withFlight: true,
+                hotelCategory: 5,
+                stayLine: "5★ Overwater Villa",
+                mealsLine: "All Meals Included",
+                transferLine: "Seaplane Transfer Included",
+                activityLine: "Snorkeling & Sunset Cruise",
+                perk: "FREE Candlelight Dinner",
+                pricePerPerson: 1499,
+                totalPrice: 2998,
+                emi: 250
+            },
+            {
+                id: "package-dubai-gold",
+                origin: "New Delhi",
+                destination: "Dubai",
+                title: "Dubai - The City of Gold Experience",
+                image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=1400",
+                nights: 4,
+                days: 5,
+                withFlight: true,
+                hotelCategory: 5,
+                stayLine: "5★ Hotel near Downtown",
+                mealsLine: "Breakfast Included",
+                transferLine: "All Transfers Included",
+                activityLine: "Burj Khalifa & Desert Safari",
+                perk: "FREE Mall Shopping Tour",
+                pricePerPerson: 1199,
+                totalPrice: 2398,
+                emi: 200
+            },
+            {
+                id: "package-thailand-phuket",
+                origin: "New Delhi",
+                destination: "Thailand",
+                title: "Thailand Beach Paradise - Phuket & Krabi",
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1400",
+                nights: 6,
+                days: 7,
+                withFlight: false,
+                hotelCategory: 4,
+                stayLine: "4★ Beachfront Resort",
+                mealsLine: "Breakfast Included",
+                transferLine: "Inter-city Transfers",
+                activityLine: "Island Hopping & Phi Phi Tour",
+                perk: "FREE Thai Massage Session",
+                pricePerPerson: 799,
+                totalPrice: 1598,
+                emi: 133
+            },
+            {
+                id: "package-switzerland-alps",
+                origin: "Mumbai",
+                destination: "Switzerland",
+                title: "Switzerland Alps Adventure",
+                image: "https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&q=80&w=1400",
+                nights: 7,
+                days: 8,
+                withFlight: true,
+                hotelCategory: 4,
+                stayLine: "4★ Mountain Resort",
+                mealsLine: "Breakfast & Dinner Included",
+                transferLine: "Swiss Travel Pass Included",
+                activityLine: "Cable Car Rides & City Tours",
+                perk: "FREE Chocolate Factory Visit",
+                pricePerPerson: 1899,
+                totalPrice: 3798,
+                emi: 317
+            },
+            {
+                id: "package-goa-carnival",
+                origin: "Mumbai",
+                destination: "Goa",
+                title: "Goa Beach Carnival - North & South",
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1400",
+                nights: 3,
+                days: 4,
+                withFlight: false,
+                hotelCategory: 3,
+                stayLine: "3★ Beach Resort",
+                mealsLine: "Breakfast Included",
+                transferLine: "Airport Pickup & Drop",
+                activityLine: "Water Sports & Beach Party",
+                perk: "FREE Casino Entry Voucher",
+                pricePerPerson: 349,
+                totalPrice: 698,
+                emi: 58
+            },
+            {
+                id: "package-singapore-family",
+                origin: "Bengaluru",
+                destination: "Singapore",
+                title: "Singapore Family Fun Escape",
+                image: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&q=80&w=1400",
+                nights: 5,
+                days: 6,
+                withFlight: true,
+                hotelCategory: 4,
+                stayLine: "4★ City Hotel with Breakfast",
+                mealsLine: "Daily Breakfast Included",
+                transferLine: "Airport Transfers Included",
+                activityLine: "Universal Studios & Night Safari",
+                perk: "FREE Sentosa Cable Car Ride",
+                pricePerPerson: 999,
+                totalPrice: 1998,
+                emi: 167
+            },
+            {
+                id: "package-bali-ubud-retreat",
+                origin: "Mumbai",
+                destination: "Bali",
+                title: "Bali Ubud Luxury Wellness Retreat",
+                image: "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80&w=1400",
+                nights: 6,
+                days: 7,
+                withFlight: false,
+                hotelCategory: 5,
+                stayLine: "5★ Private Villa Stay",
+                mealsLine: "Breakfast & Floating Brunch",
+                transferLine: "Private Airport Transfers",
+                activityLine: "Temple Tour & Rice Terrace Visit",
+                perk: "FREE Balinese Massage",
+                pricePerPerson: 1099,
+                totalPrice: 2198,
+                emi: 183
+            },
+            {
+                id: "package-vietnam-halong",
+                origin: "New Delhi",
+                destination: "Vietnam",
+                title: "Vietnam Discovery - Hanoi & Halong Bay",
+                image: "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=1400",
+                nights: 4,
+                days: 5,
+                withFlight: true,
+                hotelCategory: 4,
+                stayLine: "4★ Bay Cruise + Boutique Hotel",
+                mealsLine: "Breakfast Included",
+                transferLine: "Cruise Transfers Included",
+                activityLine: "Old Quarter Walk & Bay Excursion",
+                perk: "FREE Water Puppet Show",
+                pricePerPerson: 699,
+                totalPrice: 1398,
+                emi: 117
+            },
+            {
+                id: "package-dubai-luxury",
+                origin: "Mumbai",
+                destination: "Dubai",
+                title: "Dubai Luxury Escape - Marina & Desert",
+                image: "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&q=80&w=1400",
+                nights: 5,
+                days: 6,
+                withFlight: false,
+                hotelCategory: 5,
+                stayLine: "5★ Marina View Hotel",
+                mealsLine: "Breakfast & Desert BBQ Included",
+                transferLine: "Private Transfers Included",
+                activityLine: "Marina Cruise & Desert Safari",
+                perk: "FREE Museum of the Future Pass",
+                pricePerPerson: 1299,
+                totalPrice: 2598,
+                emi: 217
             }
         ],
         experiences: [
             {
-                id: "experience-bali-1",
-                destination: "Bali",
-                title: "Temple & Culture Tour",
-                image: "https://images.unsplash.com/photo-1606768393527-0248464fc8b9?auto=format&fit=crop&q=80&w=900",
-                time: "6 hours",
-                rating: "4.9",
-                price: "$ 65"
-            },
-            {
-                id: "experience-paris-1",
-                destination: "Paris",
-                title: "Hidden Paris Walk",
-                image: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=900",
+                id: "experience-dubai-balloon",
+                destination: "Dubai",
+                title: "Hot Air Balloon Ride Over Desert",
+                image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&q=80&w=1200",
+                gallery: [
+                    "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1519996529931-28324d5a630e?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1482192505345-5655af888cc4?auto=format&fit=crop&q=80&w=1200"
+                ],
+                location: "Dubai Desert Conservation Reserve",
+                category: "Adventure",
+                badge: "Adventure",
                 time: "3 hours",
                 rating: "4.8",
-                price: "$ 54"
+                reviews: 245,
+                price: "$ 139",
+                customizable: true,
+                description: [
+                    "Experience Dubai's desert from a completely different perspective as you float over golden dunes at sunrise.",
+                    "Expert pilots guide your journey while you enjoy panoramic views, peaceful skies, and a soft landing followed by refreshments.",
+                    "This experience is ideal for couples, small groups, and travelers looking for one unforgettable signature moment in Dubai."
+                ],
+                audience: [
+                    "Adventure seekers looking for a signature Dubai moment",
+                    "Couples celebrating a special occasion",
+                    "Photography lovers chasing sunrise views",
+                    "Families with children aged 5+"
+                ],
+                expectations: [
+                    { icon: "pickup", title: "Hotel Pickup (Pre-Dawn)", desc: "Comfortable transfer from your hotel to the launch point." },
+                    { icon: "sunrise", title: "Sunrise Flight", desc: "Soar above the dunes with clear views of the desert landscape." },
+                    { icon: "meal", title: "Breakfast & Certificate", desc: "Light breakfast and a keepsake flight certificate after landing." }
+                ],
+                highlights: [
+                    { icon: "sunrise", title: "Breathtaking Sunrise Views", desc: "Watch the desert glow with the first light of day." },
+                    { icon: "camera", title: "Perfect for Photography", desc: "Wide open skies and dramatic dune patterns below." },
+                    { icon: "shield", title: "Safety Equipment Included", desc: "Certified crew, briefing, and secure flight operations." },
+                    { icon: "sparkle", title: "Free Cancellation", desc: "Cancel up to 24 hours before the experience." },
+                    { icon: "meal", title: "Gourmet Breakfast", desc: "Enjoy refreshments after your landing." },
+                    { icon: "pickup", title: "Hotel Transfers", desc: "Pickup and drop-off from central Dubai hotels." }
+                ],
+                options: [
+                    {
+                        id: "balloon-morning-standard",
+                        title: "Morning Slot - Standard",
+                        time: "5:00 AM - 8:00 AM",
+                        price: 129,
+                        features: ["Hotel Pickup", "1 Hour Flight", "Light Breakfast", "Certificate"]
+                    },
+                    {
+                        id: "balloon-evening-standard",
+                        title: "Evening Slot - Standard",
+                        time: "4:00 PM - 7:00 PM",
+                        price: 139,
+                        popular: true,
+                        features: ["Hotel Pickup", "1 Hour Flight", "Refreshments", "Certificate"]
+                    },
+                    {
+                        id: "balloon-vip-sunrise",
+                        title: "VIP Experience - Sunrise",
+                        time: "4:30 AM - 8:30 AM",
+                        price: 249,
+                        features: ["Private Transfer", "Priority Boarding", "Premium Breakfast", "Photo Package"]
+                    }
+                ],
+                cancellation: [
+                    "Free cancellation up to 24 hours before the experience starts",
+                    "50% refund if cancelled 12-24 hours before start time",
+                    "No refund for cancellations made less than 12 hours before",
+                    "Weather-related cancellations receive full refund or rescheduling option"
+                ],
+                bring: [
+                    "Comfortable walking shoes",
+                    "Sunglasses and sunscreen",
+                    "Hat or cap",
+                    "Light jacket for early morning weather",
+                    "Camera or smartphone",
+                    "Water bottle"
+                ],
+                requirements: [
+                    "Minimum age: 5 years",
+                    "Not recommended for pregnant travelers",
+                    "Report 15 minutes before pickup time",
+                    "Carry a valid photo ID"
+                ]
             },
             {
-                id: "experience-dubai-1",
+                id: "experience-dubai-scuba",
                 destination: "Dubai",
-                title: "Desert Sunset Safari",
-                image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=900",
-                time: "5 hours",
+                title: "Scuba Diving Experience with Instructor",
+                image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80&w=1200",
+                gallery: [
+                    "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1551244072-5d12893278ab?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1560275619-4662e36fa65c?auto=format&fit=crop&q=80&w=1200"
+                ],
+                location: "Jumeirah Beach Dive Center",
+                category: "Water Activities",
+                badge: "Water Activities",
+                time: "4 hours",
+                rating: "4.9",
+                reviews: 412,
+                price: "$ 89",
+                customizable: true,
+                description: [
+                    "Dive into clear blue waters with a certified instructor and beginner-friendly safety briefing.",
+                    "Whether it is your first time or a refresher session, the activity is designed to feel smooth and welcoming.",
+                    "Equipment, guidance, and underwater memories come together in one of Dubai's most exciting water experiences."
+                ],
+                audience: [
+                    "First-time divers wanting professional guidance",
+                    "Friends looking for a fun half-day activity",
+                    "Couples who want a memorable water experience"
+                ],
+                expectations: [
+                    { icon: "shield", title: "Guided Safety Briefing", desc: "Complete introduction before entering the water." },
+                    { icon: "water", title: "Supervised Dive Session", desc: "Certified instructors stay with you throughout." },
+                    { icon: "camera", title: "Photo Add-ons Available", desc: "Optional underwater photo pack for your dive." }
+                ],
+                highlights: [
+                    { icon: "shield", title: "Professional Instructors", desc: "Certified trainers guide each dive session." },
+                    { icon: "water", title: "All Gear Included", desc: "Masks, fins, suit, tank, and safety gear provided." },
+                    { icon: "sparkle", title: "Beginner Friendly", desc: "Designed for new divers and relaxed pacing." },
+                    { icon: "camera", title: "Underwater Memories", desc: "Photo and video upgrade options available." }
+                ],
+                options: [
+                    {
+                        id: "scuba-standard",
+                        title: "Standard Guided Dive",
+                        time: "9:00 AM - 1:00 PM",
+                        price: 89,
+                        popular: true,
+                        features: ["Equipment Included", "Professional Guide", "Practice Session", "Refreshments"]
+                    },
+                    {
+                        id: "scuba-premium",
+                        title: "Premium Guided Dive",
+                        time: "1:00 PM - 5:00 PM",
+                        price: 129,
+                        features: ["Small Group", "Underwater Photos", "Extended Dive Time", "Snacks"]
+                    }
+                ],
+                cancellation: [
+                    "Free cancellation up to 24 hours before start time",
+                    "Experiences may be rescheduled due to sea conditions"
+                ],
+                bring: [
+                    "Swimwear",
+                    "Quick-dry towel",
+                    "Flip-flops",
+                    "Change of clothes"
+                ],
+                requirements: [
+                    "Minimum age: 10 years",
+                    "Basic swimming comfort required",
+                    "Do not fly within 18 hours after diving"
+                ]
+            },
+            {
+                id: "experience-dubai-burj",
+                destination: "Dubai",
+                title: "Dubai Burj Khalifa Skip-the-Line Ticket",
+                image: "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&q=80&w=1200",
+                gallery: [
+                    "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1526498460520-4c246339dccb?auto=format&fit=crop&q=80&w=1200"
+                ],
+                location: "Downtown Dubai",
+                category: "Attraction Tickets",
+                badge: "Attraction Tickets",
+                time: "2 hours",
                 rating: "4.7",
-                price: "$ 89"
+                reviews: 1523,
+                price: "$ 45",
+                description: [
+                    "Fast-track your way into one of Dubai's most iconic attractions and enjoy panoramic skyline views.",
+                    "This ticket is ideal for travelers who want a flexible and efficient city highlight without long queues."
+                ],
+                audience: [
+                    "First-time Dubai visitors",
+                    "Families looking for an easy city activity",
+                    "Travelers on a short stopover"
+                ],
+                expectations: [
+                    { icon: "ticket", title: "Priority Entry", desc: "Save time with faster access to the attraction." },
+                    { icon: "camera", title: "Observation Deck Views", desc: "Take in sweeping skyline and desert views." }
+                ],
+                highlights: [
+                    { icon: "ticket", title: "Skip-the-Line Access", desc: "Spend less time waiting and more time exploring." },
+                    { icon: "camera", title: "Best City Views", desc: "Capture the Dubai skyline from above." },
+                    { icon: "sparkle", title: "Instant Confirmation", desc: "Book now and receive your mobile ticket quickly." }
+                ],
+                options: [
+                    {
+                        id: "burj-standard",
+                        title: "Standard Entry",
+                        time: "Flexible entry throughout the day",
+                        price: 45,
+                        popular: true,
+                        features: ["Mobile Ticket", "Priority Entry", "Observation Deck Access"]
+                    },
+                    {
+                        id: "burj-sunset",
+                        title: "Sunset Entry",
+                        time: "5:00 PM - 7:00 PM",
+                        price: 65,
+                        features: ["Prime Sunset Slot", "Priority Entry", "Observation Deck Access"]
+                    }
+                ],
+                cancellation: [
+                    "Free cancellation up to 24 hours before the booked slot",
+                    "No refund once the entry window begins"
+                ],
+                bring: [
+                    "Valid ID or passport",
+                    "Charged phone for mobile ticket",
+                    "Camera"
+                ],
+                requirements: [
+                    "Arrive 15 minutes before your selected slot",
+                    "Large bags may not be permitted at entry"
+                ]
+            },
+            {
+                id: "experience-bali-temple",
+                destination: "Bali",
+                title: "Temple & Culture Tour",
+                image: "https://images.unsplash.com/photo-1606768393527-0248464fc8b9?auto=format&fit=crop&q=80&w=1200",
+                gallery: [
+                    "https://images.unsplash.com/photo-1606768393527-0248464fc8b9?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1512100356356-de1b84283e18?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=1200"
+                ],
+                location: "Ubud & Central Bali",
+                category: "Culture",
+                badge: "Culture",
+                time: "6 hours",
+                rating: "4.9",
+                reviews: 318,
+                price: "$ 65",
+                description: [
+                    "Discover Bali's spiritual heart with visits to scenic temples, rice terraces, and cultural villages.",
+                    "This experience blends heritage, local storytelling, and relaxed sightseeing in one well-paced day."
+                ],
+                audience: [
+                    "Culture-focused travelers",
+                    "Couples and families looking for a full-day guided outing"
+                ],
+                expectations: [
+                    { icon: "compass", title: "Guided Temple Visits", desc: "See iconic temple sites with cultural context." },
+                    { icon: "camera", title: "Scenic Rice Terrace Stop", desc: "Enjoy beautiful viewpoints and photo moments." }
+                ],
+                highlights: [
+                    { icon: "compass", title: "Temple Storytelling", desc: "Understand local customs and rituals." },
+                    { icon: "camera", title: "Rice Terrace Views", desc: "Capture Bali's iconic landscapes." },
+                    { icon: "meal", title: "Local Lunch Stop", desc: "Enjoy Balinese flavors during the route." }
+                ],
+                options: [
+                    {
+                        id: "bali-culture-standard",
+                        title: "Shared Guided Tour",
+                        time: "8:00 AM - 2:00 PM",
+                        price: 65,
+                        popular: true,
+                        features: ["Hotel Pickup", "Temple Entry", "Guide Included", "Lunch Stop"]
+                    },
+                    {
+                        id: "bali-culture-private",
+                        title: "Private Car Tour",
+                        time: "Flexible full-day timing",
+                        price: 110,
+                        features: ["Private Vehicle", "Flexible Stops", "Local Guide", "Refreshments"]
+                    }
+                ],
+                cancellation: [
+                    "Free cancellation up to 24 hours before start"
+                ],
+                bring: [
+                    "Comfortable clothing",
+                    "Temple-appropriate attire",
+                    "Sunscreen",
+                    "Camera"
+                ],
+                requirements: [
+                    "Moderate walking involved",
+                    "Carry cash for optional personal purchases"
+                ]
+            },
+            {
+                id: "experience-paris-walk",
+                destination: "Paris",
+                title: "Hidden Paris Walk",
+                image: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=1200",
+                gallery: [
+                    "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1522093007474-d86e9bf7ba6f?auto=format&fit=crop&q=80&w=1200"
+                ],
+                location: "Le Marais & Latin Quarter",
+                category: "Tours",
+                badge: "Tours",
+                time: "3 hours",
+                rating: "4.8",
+                reviews: 203,
+                price: "$ 54",
+                description: [
+                    "Wander through charming lanes, tucked-away courtyards, and neighborhood stories that most visitors miss.",
+                    "Perfect for travelers who want a slower, more intimate introduction to Paris."
+                ],
+                audience: [
+                    "Solo travelers",
+                    "Couples",
+                    "Photography enthusiasts"
+                ],
+                expectations: [
+                    { icon: "compass", title: "Local Neighborhood Walk", desc: "Move through curated lanes with a local guide." },
+                    { icon: "meal", title: "Cafe Recommendations", desc: "Get insider food and coffee stops along the way." }
+                ],
+                highlights: [
+                    { icon: "compass", title: "Small Group Format", desc: "A more relaxed and personal walking experience." },
+                    { icon: "camera", title: "Photo-Friendly Stops", desc: "Beautiful streets, facades, and hidden corners." },
+                    { icon: "sparkle", title: "Local Stories", desc: "Understand the history behind the neighborhoods." }
+                ],
+                options: [
+                    {
+                        id: "paris-walk-morning",
+                        title: "Morning Walk",
+                        time: "9:00 AM - 12:00 PM",
+                        price: 54,
+                        popular: true,
+                        features: ["Small Group", "Guide Included", "Cafe Tips", "Photo Stops"]
+                    },
+                    {
+                        id: "paris-walk-evening",
+                        title: "Golden Hour Walk",
+                        time: "4:00 PM - 7:00 PM",
+                        price: 64,
+                        features: ["Small Group", "Sunset Streets", "Guide Included", "Food Tips"]
+                    }
+                ],
+                cancellation: [
+                    "Free cancellation up to 24 hours before the tour"
+                ],
+                bring: [
+                    "Comfortable walking shoes",
+                    "Light jacket",
+                    "Camera or phone"
+                ],
+                requirements: [
+                    "Moderate walking required"
+                ]
+            },
+            {
+                id: "experience-south-island-explorer",
+                destination: "New Zealand",
+                title: "South Island Explorer",
+                image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200",
+                gallery: [
+                    "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=1200"
+                ],
+                location: "Queenstown & Fiordland",
+                category: "Adventure",
+                badge: "Adventure",
+                time: "10 days",
+                rating: "4.9",
+                reviews: 214,
+                price: "$ 249",
+                customizable: true,
+                description: [
+                    "Explore the dramatic landscapes of New Zealand's South Island with a route built around alpine roads, glacial lakes, and unforgettable viewpoints.",
+                    "This experience blends scenic drives, guided nature moments, and flexible adventure time for travelers who want an immersive outdoor journey."
+                ],
+                audience: [
+                    "Adventure-first travelers",
+                    "Road trip lovers looking for iconic South Island scenery",
+                    "Photographers chasing mountains, lakes, and open roads"
+                ],
+                expectations: [
+                    { icon: "compass", title: "Scenic Route Planning", desc: "Curated stops across Queenstown, Wanaka, and Fiordland." },
+                    { icon: "camera", title: "Viewpoint Stops", desc: "Frequent photo-friendly pauses at signature landscapes." },
+                    { icon: "shield", title: "Flexible Guided Support", desc: "Balanced structure with room for personal exploration." }
+                ],
+                highlights: [
+                    { icon: "compass", title: "Epic South Island Route", desc: "Move through the island's most scenic corridors." },
+                    { icon: "camera", title: "Photo-Focused Stops", desc: "Ideal for dramatic mountain and road-trip visuals." },
+                    { icon: "sparkle", title: "Adventure Pace", desc: "A mix of guided moments and free time outdoors." }
+                ],
+                options: [
+                    {
+                        id: "south-island-standard",
+                        title: "Explorer Route",
+                        time: "10 days curated journey",
+                        price: 249,
+                        popular: true,
+                        features: ["Scenic Stops", "Local Guidance", "Flexible Pace", "Instant Confirmation"]
+                    },
+                    {
+                        id: "south-island-premium",
+                        title: "Premium Explorer Route",
+                        time: "10 days with upgraded add-ons",
+                        price: 329,
+                        features: ["Priority Experiences", "Premium Stays", "Custom Add-ons", "Photo Route Pack"]
+                    }
+                ],
+                cancellation: [
+                    "Free cancellation up to 48 hours before the experience starts",
+                    "Route elements may shift slightly due to weather conditions"
+                ],
+                bring: [
+                    "Layered outdoor clothing",
+                    "Comfortable shoes",
+                    "Camera or phone",
+                    "Reusable water bottle"
+                ],
+                requirements: [
+                    "Suitable for travelers comfortable with extended day trips",
+                    "Weather conditions can affect some outdoor segments"
+                ]
+            },
+            {
+                id: "experience-bali-surf-camp",
+                destination: "Bali",
+                title: "Bali Surf Camp",
+                image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=1200",
+                gallery: [
+                    "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&q=80&w=1200"
+                ],
+                location: "Canggu, Bali",
+                category: "Water Activities",
+                badge: "Water Activities",
+                time: "7 days",
+                rating: "4.8",
+                reviews: 186,
+                price: "$ 189",
+                customizable: true,
+                description: [
+                    "Settle into a surf-first Bali escape with coached sessions, beach time, and a relaxed camp atmosphere in Canggu.",
+                    "Ideal for beginners and intermediate riders, this experience combines wave practice, social energy, and recovery time by the coast."
+                ],
+                audience: [
+                    "Beginner and intermediate surfers",
+                    "Solo travelers who want a social surf setup",
+                    "Beach lovers looking for an active Bali stay"
+                ],
+                expectations: [
+                    { icon: "water", title: "Daily Surf Sessions", desc: "Guided instruction based on current conditions." },
+                    { icon: "shield", title: "Instructor Support", desc: "Technique coaching and safety guidance throughout." },
+                    { icon: "meal", title: "Chill Recovery Time", desc: "Downtime between sessions with local food nearby." }
+                ],
+                highlights: [
+                    { icon: "water", title: "Surf Coaching", desc: "Structured sessions to improve balance and confidence." },
+                    { icon: "sparkle", title: "Canggu Lifestyle", desc: "Beach clubs, cafes, and sunsets after the water." },
+                    { icon: "camera", title: "Coastal Visuals", desc: "Wave action and sunset scenes across the stay." }
+                ],
+                options: [
+                    {
+                        id: "bali-surf-standard",
+                        title: "Surf Camp Week",
+                        time: "7 day experience",
+                        price: 189,
+                        popular: true,
+                        features: ["Daily Lessons", "Board Rental", "Instructor Support", "Flexible Practice Time"]
+                    }
+                ],
+                cancellation: [
+                    "Free cancellation up to 24 hours before camp check-in"
+                ],
+                bring: [
+                    "Swimwear",
+                    "Sunscreen",
+                    "Flip-flops",
+                    "Quick-dry clothing"
+                ],
+                requirements: [
+                    "Basic swimming ability recommended"
+                ]
+            },
+            {
+                id: "experience-dubai-cruise",
+                destination: "Dubai",
+                title: "Sunset Dinner Cruise with Entertainment",
+                image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&q=80&w=1200",
+                gallery: [
+                    "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?auto=format&fit=crop&q=80&w=1200"
+                ],
+                location: "Dubai Marina",
+                category: "Cruises",
+                badge: "Cruises",
+                time: "3 hours",
+                rating: "4.8",
+                reviews: 892,
+                price: "$ 79",
+                description: [
+                    "Set sail across Dubai Marina with skyline views, buffet dining, and live onboard entertainment.",
+                    "A relaxed evening experience designed for couples, families, and travelers who want a polished city night out."
+                ],
+                audience: [
+                    "Couples",
+                    "Friends groups",
+                    "Families"
+                ],
+                expectations: [
+                    { icon: "meal", title: "Buffet Dinner", desc: "International buffet with vegetarian options." },
+                    { icon: "sparkle", title: "Live Entertainment", desc: "Curated evening performances during the cruise." }
+                ],
+                highlights: [
+                    { icon: "sparkle", title: "Marina Skyline Views", desc: "Watch the city glow after sunset." },
+                    { icon: "meal", title: "Dinner Included", desc: "Enjoy a full onboard meal." },
+                    { icon: "check", title: "Instant Confirmation", desc: "Reserve quickly with a mobile-ready booking." }
+                ],
+                options: [
+                    {
+                        id: "cruise-standard",
+                        title: "Standard Deck",
+                        time: "7:00 PM - 10:00 PM",
+                        price: 79,
+                        popular: true,
+                        features: ["Buffet Dinner", "Live Music", "Complimentary Drinks"]
+                    },
+                    {
+                        id: "cruise-premium",
+                        title: "Premium Window Seating",
+                        time: "7:00 PM - 10:00 PM",
+                        price: 109,
+                        features: ["Priority Seating", "Buffet Dinner", "Welcome Drink", "Live Entertainment"]
+                    }
+                ],
+                cancellation: [
+                    "Free cancellation up to 24 hours before departure"
+                ],
+                bring: [
+                    "Smart casual attire",
+                    "Light outerwear for the deck"
+                ],
+                requirements: [
+                    "Arrive 20 minutes before boarding"
+                ]
             }
         ]
     },
@@ -1238,16 +2226,18 @@ export const travelerData = {
             location: "Barcelona, Spain",
             dateRange: "Apr 15, 2026 - Apr 22, 2026",
             bookingId: 1234,
+            planId: "itinerary-mediterranean",
             type: "Holiday Package",
             status: "Upcoming",
-            image: "https://images.unsplash.com/photo-1539037116277-4db20d5aade6?auto=format&fit=crop&q=80&w=800"
+            image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800"
         },
         {
             title: "South Island Explorer",
             location: "New Zealand",
             dateRange: "May 10, 2026 - May 20, 2026",
             bookingId: 1235,
-            type: "Guided Tour",
+            experienceId: "experience-south-island-explorer",
+            type: "Experience",
             status: "Upcoming",
             image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800"
         },
@@ -1265,6 +2255,7 @@ export const travelerData = {
             location: "Canggu, Bali",
             dateRange: "Feb 12, 2026 - Feb 19, 2026",
             bookingId: 988,
+            experienceId: "experience-bali-surf-camp",
             type: "Experience",
             status: "Completed",
             image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=800"
@@ -1274,6 +2265,7 @@ export const travelerData = {
             location: "Paris, France",
             dateRange: "Jan 05, 2026 - Jan 10, 2026",
             bookingId: 850,
+            planId: "itinerary-europe",
             type: "Holiday Package",
             status: "Completed",
             image: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=800"

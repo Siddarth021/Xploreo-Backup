@@ -9,6 +9,7 @@
     --primary-blue-hover: #1D4ED8;
     --teal-accert: #0DB3A4;
     --teal-dark: #098A7F;
+    --primary-gradient: linear-gradient(90deg, #1DB7A6, #1E5EEA);
     --text-dark: #111827;
     --text-muted: #6B7280;
     --bg-light: #F9FAFB;
@@ -353,7 +354,7 @@ html, body {
 .search-submit-btn {
     width: 100%;
     padding: 16px;
-    background: var(--primary-blue);
+    background: var(--primary-gradient);
     color: var(--white);
     border: none;
     border-radius: 8px;
@@ -364,11 +365,14 @@ html, body {
     justify-content: center;
     gap: 8px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    box-shadow: 0 14px 28px rgba(30, 94, 234, 0.18);
 }
 
 .search-submit-btn:hover {
-    background: var(--primary-blue-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 18px 34px rgba(30, 94, 234, 0.24);
+    filter: brightness(1.03);
 }
 
 .search-field-error {
@@ -855,7 +859,7 @@ html, body {
 }
 
 .view-plan-btn {
-    background: var(--primary-blue);
+    background: var(--primary-gradient);
     color: var(--white);
     border: none;
     padding: 12px 24px;
@@ -863,11 +867,14 @@ html, body {
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    box-shadow: 0 12px 24px rgba(30, 94, 234, 0.18);
 }
 
 .view-plan-btn:hover {
-    background: var(--primary-blue-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 16px 30px rgba(30, 94, 234, 0.22);
+    filter: brightness(1.03);
 }
 
 .category-icon {
@@ -1135,7 +1142,7 @@ html, body {
 }
 
 .btn-primary {
-    background: #0ea5e9;
+    background: var(--primary-gradient);
     color: white;
     border: none;
     padding: 14px 28px;
@@ -1143,13 +1150,14 @@ html, body {
     font-weight: 700;
     font-size: 14px;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
-    transition: background 0.2s, transform 0.2s;
+    box-shadow: 0 14px 28px rgba(30, 94, 234, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
 }
 
 .btn-primary:hover {
-    background: #0284c7;
     transform: translateY(-2px);
+    box-shadow: 0 18px 34px rgba(30, 94, 234, 0.26);
+    filter: brightness(1.03);
 }
 
 .saved-items-header {
@@ -1358,7 +1366,7 @@ html, body {
 }
 
 .btn-solid-blue {
-    background: #2563eb;
+    background: var(--primary-gradient);
     color: white;
     border: none;
     padding: 10px 24px;
@@ -1366,11 +1374,14 @@ html, body {
     font-weight: 600;
     font-size: 13px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    box-shadow: 0 12px 24px rgba(30, 94, 234, 0.18);
 }
 
 .btn-solid-blue:hover {
-    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 16px 30px rgba(30, 94, 234, 0.24);
+    filter: brightness(1.03);
 }
 
 .btn-outline-teal {
@@ -1389,6 +1400,241 @@ html, body {
     background: #f0fdfa;
 }
 
+.trip-review-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.48);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 3000;
+}
+
+.trip-review-modal {
+    width: min(100%, 860px);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    background: #ffffff;
+    border-radius: 28px;
+    box-shadow: 0 24px 80px rgba(15, 23, 42, 0.22);
+}
+
+.trip-review-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 32px;
+    border-bottom: 1px solid #e8edf5;
+}
+
+.trip-review-modal-header h2 {
+    margin: 0;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #172036;
+}
+
+.trip-review-close {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-size: 38px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.trip-review-close:hover {
+    background: #f8fafc;
+}
+
+.trip-review-modal-body {
+    padding: 30px 32px 10px;
+}
+
+.trip-review-section {
+    margin-bottom: 34px;
+}
+
+.trip-review-section h3 {
+    margin: 0 0 18px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.trip-review-stars {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.trip-review-star {
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.18s ease;
+}
+
+.trip-review-star:hover,
+.trip-review-star.active {
+    transform: translateY(-1px) scale(1.03);
+}
+
+.trip-review-textarea {
+    width: 100%;
+    min-height: 210px;
+    border: 1px solid #dde3ee;
+    border-radius: 22px;
+    padding: 24px;
+    font: inherit;
+    font-size: 17px;
+    line-height: 1.6;
+    color: #1f2937;
+    resize: vertical;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.trip-review-textarea::placeholder {
+    color: #98a2b3;
+}
+
+.trip-review-textarea:focus {
+    border-color: #1db7a6;
+    box-shadow: 0 0 0 4px rgba(29, 183, 166, 0.12);
+}
+
+.trip-review-tags {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.trip-review-tag {
+    border: none;
+    background: #f3f6fb;
+    color: #667085;
+    padding: 16px 32px;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.trip-review-tag:hover {
+    transform: translateY(-1px);
+}
+
+.trip-review-tag.active {
+    background: rgba(29, 183, 166, 0.14);
+    color: #0f766e;
+}
+
+.trip-review-upload {
+    display: block;
+    border: 2px dashed #dbe2ec;
+    border-radius: 24px;
+    padding: 30px 24px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.trip-review-upload:hover {
+    border-color: #1db7a6;
+    background: #fbfeff;
+}
+
+.trip-review-upload input {
+    display: none;
+}
+
+.trip-review-upload-copy {
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    color: #6b7280;
+}
+
+.trip-review-upload-copy strong {
+    font-size: 18px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.trip-review-upload-copy span {
+    font-size: 16px;
+}
+
+.trip-review-upload-copy small {
+    margin-top: 4px;
+    display: inline-flex;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #eefbf9;
+    color: #0f766e;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.trip-review-modal-footer {
+    padding: 18px 32px 28px;
+    border-top: 1px solid #e8edf5;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+}
+
+.trip-review-secondary {
+    border: none;
+    background: transparent;
+    color: #4b5563;
+    font-size: 18px;
+    font-weight: 500;
+    padding: 14px 20px;
+    cursor: pointer;
+}
+
+.trip-review-submit {
+    border: none;
+    min-width: 220px;
+    padding: 16px 24px;
+    border-radius: 16px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #6b7280;
+    background: #e8ecf2;
+    cursor: not-allowed;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.trip-review-submit.enabled {
+    background: var(--primary-gradient);
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 12px 24px rgba(30, 94, 234, 0.18);
+}
+
+.trip-review-submit.enabled:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 30px rgba(30, 94, 234, 0.24);
+    filter: brightness(1.03);
+}
+
 @media (max-width: 900px) {
     .search-result-row,
     .search-result-tile,
@@ -1398,5 +1644,53 @@ html, body {
 
     .result-price-block {
         align-items: flex-start;
+    }
+
+    .trip-review-modal {
+        border-radius: 22px;
+    }
+
+    .trip-review-modal-header,
+    .trip-review-modal-body,
+    .trip-review-modal-footer {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .trip-review-modal-header h2 {
+        font-size: 24px;
+    }
+
+    .trip-review-section h3 {
+        font-size: 20px;
+    }
+
+    .trip-review-textarea {
+        min-height: 180px;
+        padding: 18px;
+        font-size: 16px;
+    }
+
+    .trip-review-tag {
+        padding: 13px 20px;
+        font-size: 15px;
+    }
+
+    .trip-review-upload-copy {
+        min-height: 200px;
+    }
+
+    .trip-review-modal-footer {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .trip-review-submit {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .trip-review-secondary {
+        align-self: center;
     }
 }

@@ -6,6 +6,16 @@ const heartIconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const FLIGHT_RESULTS_PAGE = "./flight-search.html";
 const HOTEL_RESULTS_PAGE = "./hotel-search.html";
+const PACKAGE_RESULTS_PAGE = "./package-search.html";
+const EXPERIENCE_RESULTS_PAGE = "./experience-search.html";
+const PLAN_DETAIL_PAGE = "./plan-detail.html";
+const SELECTED_PLAN_KEY = "traveler_selected_plan";
+const SELECTED_FLIGHT_KEY = "traveler_selected_flight";
+const PLAN_SOURCE_KEY = "traveler_plan_source";
+const TOUR_IMAGE_FALLBACK = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800";
+const DESTINATION_IMAGE_FALLBACK = "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=800";
+const CATEGORY_IMAGE_FALLBACK = "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800";
+const CONTINUE_IMAGE_FALLBACK = "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?auto=format&fit=crop&q=80&w=800";
 
 const searchState = {
     activeTab: "flights",
@@ -44,6 +54,14 @@ const searchState = {
 };
 
 initializeSearchState();
+
+function buildBackgroundImageStyle(primaryImage, fallbackImage) {
+    return `background-image: url('${primaryImage}'), url('${fallbackImage}');`;
+}
+
+function buildFallbackImg(primaryImage, fallbackImage, altText, extraAttributes = "") {
+    return `<img src="${primaryImage}" alt="${altText}" onerror="this.onerror=null;this.src='${fallbackImage}';" ${extraAttributes}>`;
+}
 
 export function renderTravelerDashboard(containerId, user) {
     const container = document.getElementById(containerId);
@@ -267,11 +285,10 @@ export function renderTravelerDashboard(containerId, user) {
                         <h2 class="section-title">Trending Destinations</h2>
                         <p class="section-subtitle">Popular places worth exploring right now</p>
                     </div>
-                    <button class="view-all-link">View All<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
                 </div>
                 <div class="cards-grid destinations-grid">
                     ${travelerData.destinations.map(dest => `
-                        <div class="destination-card" style="background-image: url('${dest.image}');">
+                        <div class="destination-card" style="${buildBackgroundImageStyle(dest.image, DESTINATION_IMAGE_FALLBACK)}">
                             <div class="card-gradient"></div>
                             <button class="heart-btn">${heartIconSvg}</button>
                             <div class="card-info">
@@ -295,7 +312,7 @@ export function renderTravelerDashboard(containerId, user) {
                     ${travelerData.recommendedTours.map(tour => `
                         <div class="tour-card">
                             <div class="tour-image">
-                                <img src="${tour.image}" alt="Tour">
+                                ${buildFallbackImg(tour.image, TOUR_IMAGE_FALLBACK, tour.title)}
                                 <button class="heart-btn-circle">${heartSvg}</button>
                                 <div class="rating-badge">★ ${tour.rating} <span>(${tour.reviews})</span></div>
                             </div>
@@ -322,7 +339,7 @@ export function renderTravelerDashboard(containerId, user) {
                 </div>
                 <div class="cards-grid destinations-grid">
                     ${travelerData.categories.map(cat => `
-                        <div class="destination-card" style="background-image: url('${cat.image}');">
+                        <div class="destination-card" style="${buildBackgroundImageStyle(cat.image, CATEGORY_IMAGE_FALLBACK)}">
                             <div class="card-gradient"></div>
                             <div class="category-icon" style="background: ${cat.color};">
                                 ${cat.svg}
@@ -366,7 +383,7 @@ export function renderTravelerDashboard(containerId, user) {
                 <div class="cards-grid itineraries-grid">
                     ${travelerData.itineraries.map(itin => `
                         <div class="itinerary-card">
-                            <div class="itin-image" style="background-image: url('${itin.image}');">
+                            <div class="itin-image" style="${buildBackgroundImageStyle(itin.image, DESTINATION_IMAGE_FALLBACK)}">
                                 <button class="heart-btn-circle">${heartSvg}</button>
                                 <div class="days-badge">📅 ${itin.days} Days</div>
                                 <div class="itin-title-overlay">
@@ -389,7 +406,7 @@ export function renderTravelerDashboard(containerId, user) {
                                         <span class="price-label">From</span>
                                         <span class="price-value">${itin.price}</span>
                                     </div>
-                                    <button class="view-plan-btn">View Plan</button>
+                                    <button class="view-plan-btn" data-view-plan="${itin.id || itin.title}">View Plan</button>
                                 </div>
                             </div>
                         </div>
@@ -427,7 +444,7 @@ export function renderTravelerDashboard(containerId, user) {
                     ${travelerData.continueExploring.map(item => `
                         <div class="tour-card" style="opacity: 0.9;">
                             <div class="tour-image">
-                                <img src="${item.image}" ${item.grayscale ? 'style="filter: grayscale(100%);"' : ''} alt="Tour">
+                                ${buildFallbackImg(item.image, CONTINUE_IMAGE_FALLBACK, item.title, item.grayscale ? 'style="filter: grayscale(100%);"' : "")}
                                 <button class="heart-btn-circle">${heartSvg}</button>
                                 <div class="rating-badge" style="background:#10B981; color:white; top:12px; left:12px; right:auto;">${item.badge}</div>
                             </div>
@@ -564,6 +581,41 @@ function attachDashboardEvents() {
             localStorage.setItem("traveler_wishlist", JSON.stringify(wishlist));
         });
     });
+
+    bindPlanActions();
+}
+
+function bindPlanActions() {
+    const planButtons = document.querySelectorAll("[data-view-plan]");
+
+    planButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const planId = button.getAttribute("data-view-plan");
+            const itinerary = travelerData.itineraries.find((item) => item.id === planId || item.title === planId);
+
+            if (!itinerary) {
+                showToast("Unable to open this plan right now.");
+                return;
+            }
+
+            const itineraryType = String(itinerary.type || "").toLowerCase();
+
+            if (itineraryType === "flight" && itinerary.flightDetail) {
+                if (typeof localStorage !== "undefined") {
+                    localStorage.setItem(SELECTED_FLIGHT_KEY, JSON.stringify(itinerary.flightDetail));
+                }
+                window.location.href = `./flight-detail.html?flight=${encodeURIComponent(itinerary.flightDetail.id || itinerary.id)}`;
+                return;
+            }
+
+            if (typeof localStorage !== "undefined") {
+                localStorage.setItem(SELECTED_PLAN_KEY, JSON.stringify(itinerary));
+                localStorage.setItem(PLAN_SOURCE_KEY, "dashboard");
+            }
+
+            window.location.href = `${PLAN_DETAIL_PAGE}?plan=${encodeURIComponent(itinerary.id || itinerary.title)}`;
+        });
+    });
 }
 
 function bindSearchActions() {
@@ -632,11 +684,12 @@ function runSearch(tab) {
         return;
     }
 
-    if (results.length === 0) {
-        showToast("No matches found. Try another destination or date");
-    } else {
-        showToast(`${results.length} result${results.length > 1 ? "s" : ""} found`);
+    if (tab === "packages") {
+        window.location.href = PACKAGE_RESULTS_PAGE;
+        return;
     }
+
+    window.location.href = EXPERIENCE_RESULTS_PAGE;
 }
 
 function persistSearchValues() {

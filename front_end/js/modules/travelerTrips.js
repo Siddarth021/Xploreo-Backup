@@ -11,6 +11,7 @@ const SELECTED_EXPERIENCE_KEY = "traveler_selected_experience";
 const SELECTED_PACKAGE_KEY = "traveler_selected_package";
 const SELECTED_HOTEL_KEY = "traveler_selected_hotel";
 const EXPERIENCE_BOOKING_DRAFT_KEY = "traveler_experience_booking_draft";
+const TRAVELER_MY_TRIPS_KEY = "traveler_my_trips";
 
 // SVGs
 const calendarSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
@@ -30,6 +31,7 @@ export function renderTravelerTrips(containerId, user) {
     const focusStatus = getMyTripsFocusStatus();
     if (focusStatus) {
         activeStatus = focusStatus;
+        clearMyTripsFocusStatus();
     }
 
     const trips = getTravelerTripsData();
@@ -46,12 +48,6 @@ export function renderTravelerTrips(containerId, user) {
                 <div class="trips-header-left">
                     <h1>My Trips</h1>
                     <p>View and manage your bookings</p>
-                </div>
-                <div class="trips-search">
-                    <input type="text" placeholder="Search for a booking">
-                    <button class="search-icon-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    </button>
                 </div>
             </div>
 
@@ -213,7 +209,7 @@ export function renderTravelerTrips(containerId, user) {
 }
 
 function getTravelerTripsData() {
-    const trips = [...(travelerData.myTrips || [])];
+    const trips = getStoredTravelerTrips();
     const confirmedBooking = getConfirmedBooking();
 
     if (!confirmedBooking) {
@@ -229,6 +225,83 @@ function getTravelerTripsData() {
     }
 
     return [confirmedTrip, ...trips];
+}
+
+function getStoredTravelerTrips() {
+    const fallbackTrips = (travelerData.myTrips || []).map(normalizeTripRecord);
+
+    if (typeof localStorage === "undefined") {
+        return fallbackTrips;
+    }
+
+    try {
+        const stored = JSON.parse(localStorage.getItem(TRAVELER_MY_TRIPS_KEY) || "null");
+        if (Array.isArray(stored) && stored.length) {
+            const mergedTrips = mergeTripCollections(stored.map(normalizeTripRecord), fallbackTrips);
+            localStorage.setItem(TRAVELER_MY_TRIPS_KEY, JSON.stringify(mergedTrips));
+            return mergedTrips;
+        }
+
+        localStorage.setItem(TRAVELER_MY_TRIPS_KEY, JSON.stringify(fallbackTrips));
+        return fallbackTrips;
+    } catch (error) {
+        return fallbackTrips;
+    }
+}
+
+function mergeTripCollections(primaryTrips, fallbackTrips) {
+    const merged = new Map();
+
+    fallbackTrips.forEach((trip) => {
+        merged.set(getTripPersistenceKey(trip), trip);
+    });
+
+    primaryTrips.forEach((trip) => {
+        const key = getTripPersistenceKey(trip);
+        const fallbackTrip = merged.get(key) || {};
+        merged.set(key, normalizeTripRecord({ ...fallbackTrip, ...trip }));
+    });
+
+    return Array.from(merged.values());
+}
+
+function getTripPersistenceKey(trip) {
+    if (trip.bookingId) return `booking:${trip.bookingId}`;
+    if (trip.flightId) return `flight:${trip.flightId}`;
+    if (trip.experienceId) return `experience:${trip.experienceId}`;
+    if (trip.hotelId) return `hotel:${trip.hotelId}`;
+    if (trip.planId) return `plan:${trip.planId}`;
+    return `trip:${normalizeText(trip.title)}`;
+}
+
+function normalizeTripRecord(trip) {
+    const normalizedType = String(trip.type || "").trim();
+    const normalizedTitle = String(trip.title || "").trim();
+    const normalizedLocation = String(trip.location || "").trim();
+    const hotel = resolveHotelForTrip({ ...trip, title: normalizedTitle, location: normalizedLocation });
+
+    return {
+        ...trip,
+        title: normalizedTitle,
+        location: normalizedLocation,
+        type: normalizedType,
+        status: normalizeTripStatus(trip.status),
+        hotelId: trip.hotelId || (normalizedType.toLowerCase().includes("hotel") ? hotel?.id || "" : "")
+    };
+}
+
+function normalizeTripStatus(status) {
+    const value = String(status || "").trim().toLowerCase();
+
+    if (value === "cancelled" || value === "canceled") {
+        return "Cancelled";
+    }
+
+    if (value === "completed" || value === "complete") {
+        return "Completed";
+    }
+
+    return "Upcoming";
 }
 
 function getConfirmedBooking() {
@@ -261,6 +334,18 @@ function getMyTripsFocusStatus() {
         return sessionStorage.getItem(MY_TRIPS_FOCUS_KEY);
     } catch (error) {
         return null;
+    }
+}
+
+function clearMyTripsFocusStatus() {
+    if (typeof sessionStorage === "undefined") {
+        return;
+    }
+
+    try {
+        sessionStorage.removeItem(MY_TRIPS_FOCUS_KEY);
+    } catch (error) {
+        return;
     }
 }
 

@@ -2242,6 +2242,26 @@ export const travelerData = {
             image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800"
         },
         {
+            title: "Vietnam Discovery - Hanoi & Halong Bay",
+            location: "Hanoi & Halong Bay, Vietnam",
+            dateRange: "Jun 12, 2026 - Jun 17, 2026",
+            bookingId: 1148,
+            planId: "package-vietnam-halong",
+            type: "Holiday Package",
+            status: "Cancelled",
+            image: "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=800"
+        },
+        {
+            title: "Bugis Boutique Stay",
+            location: "Singapore",
+            dateRange: "Jul 04, 2026 - Jul 08, 2026",
+            bookingId: 1164,
+            hotelId: "singapore-bugis-boutique",
+            type: "Hotel Only",
+            status: "Cancelled",
+            image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800"
+        },
+        {
             title: "Tokyo City Break",
             location: "Tokyo, Japan",
             dateRange: "Mar 01, 2026 - Mar 08, 2026",

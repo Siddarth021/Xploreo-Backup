@@ -131,30 +131,14 @@ const navlinks = [
    
   {
     name: "Wish List",
-<<<<<<< HEAD
-    path: "../pages/traveller/wishlist.html",
-=======
     path: "../pages/traveller_wishlist.html",
->>>>>>> 65df0cd1df3340bb5b2ef70c7881d4dc92cba929
     icon: "../components/ui/wishlistIcon.jpg",
     roles: ["traveller"]
   },
 
   {
-<<<<<<< HEAD
-    name: "Explore",
-    path: "../pages/traveller/dashboard.html",
-    icon: "../components/ui/exploreIcon.jpg",
-    roles: ["traveller"]
-  },
-  
-  {
-    name: "My Trips",
-    path: "../pages/traveller/mytrips.html",
-=======
     name: "My Trips",
     path: "../pages/traveller_mytrips.html",
->>>>>>> 65df0cd1df3340bb5b2ef70c7881d4dc92cba929
     icon: "../components/ui/mytripsIcon.jpg",
     roles: ["traveller"]
   }

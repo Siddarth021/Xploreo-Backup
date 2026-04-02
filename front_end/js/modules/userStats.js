@@ -1,11 +1,28 @@
 import { opsData } from '../../data/usersData.js';
 
-export function getUserStatsHTML() {
+export function getUserStatsHTML(users = [], partners = []) {
+    // 1. Calculate Real-Time Metrics
+    const totalUsers = users.length;
+    const pendingVerifications = users.filter(u => u.status === 'Pending').length;
+    
+    // Calculate Average Partner Rating
+    const avgRating = partners.length > 0 
+        ? (partners.reduce((acc, p) => acc + parseFloat(p.rating), 0) / partners.length).toFixed(1)
+        : "0.0";
+
+    // 2. Map metrics to the UI structure
+    // We override the hardcoded 'value' from opsData with our live calculations
+    const dynamicStats = [
+        { ...opsData[0], value: totalUsers.toLocaleString() },         // Total Users
+        { ...opsData[1], value: pendingVerifications },                // Pending Users
+        { ...opsData[2], value: opsData[2].value },                    // Response Time (Keep static for now)
+        { ...opsData[3], value: `${(avgRating / 5 * 100).toFixed(0)}%` } // Partner Satisfaction %
+    ];
+
     return `
         <div id="ops-stats" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px;">
-            ${opsData.map(stat => `
+            ${dynamicStats.map(stat => `
                 <div class="stat-card ${stat.color}">
-                    
                     <div style="margin-bottom: 12px;">
                         <img src="${stat.icon}" style="width: 26px; opacity: 0.6; filter: grayscale(100%);">
                     </div>
@@ -22,7 +39,6 @@ export function getUserStatsHTML() {
                         ${stat.trend ? `<span style="color: #28a745;">↗ ${stat.trend}</span> ` : ""}
                         ${stat.subtext}
                     </p>
-                    
                 </div>
             `).join('')}
         </div>

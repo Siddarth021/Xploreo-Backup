@@ -171,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 currentUser = users.find(u => u.id === "201");
             }
 
+            currentUser = users.find(u => u.id === "00001");
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
             console.log("Logged in as:", currentUser.role);
         }

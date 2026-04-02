@@ -1,4 +1,40 @@
+import { getLedgerData } from '../../data/ledgerData.js';
+
 export function getLedgerHTML() {
+    // 1. Get the pre-processed data from the data folder
+    const ledgerItems = getLedgerData();
+
+    // 2. Map over the data to build the rows
+    const tableRows = ledgerItems.map(entry => `
+        <tr>
+            <td><a href="#" class="id-link">${entry.id || "N/A"}</a></td>
+            <td>
+                <div class="cell-flex">
+                    <div class="avatar ${entry.avatarColor || "avatar-light-blue"}">${entry.initials || "??"}</div>
+                    <div class="text-stack">
+                        <span class="main-text">${entry.traveler || "Unknown User"}</span>
+                        <span class="sub-text">${entry.tier || "Standard"}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="text-stack">
+                    <span class="main-text">${entry.service || "General Booking"}</span>
+                    <span class="sub-text">${entry.serviceTier || "-"}</span>
+                </div>
+            </td>
+            <td class="date-text">${entry.date || "N/A"}</td>
+            <td>
+                <div class="cell-flex">
+                    <div class="avatar avatar-light-gray">${entry.guideInitials || "??"}</div>
+                    <span class="main-text">${entry.guide || "Unassigned"}</span>
+                </div>
+            </td>
+            <td><span class="status-badge ${entry.statusClass || "status-pending"}">${entry.status || "PENDING"}</span></td>
+        </tr>
+    `).join("");
+
+    // 3. Return the clean HTML structure
     return `
         <div class="section-header" style="margin-top: 40px;">
             <h2>Comprehensive Ledger</h2>
@@ -17,58 +53,7 @@ export function getLedgerHTML() {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><a href="#" class="id-link">98421</a></td>
-                        <td>
-                            <div class="cell-flex">
-                                <div class="avatar avatar-light-blue">EM</div>
-                                <div class="text-stack">
-                                    <span class="main-text">Elena Moretti</span>
-                                    <span class="sub-text">Premium Member</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="text-stack">
-                                <span class="main-text">Venice Gondola Private Tour</span>
-                                <span class="sub-text">Luxe Tier</span>
-                            </div>
-                        </td>
-                        <td class="date-text">Oct 24, 2024</td>
-                        <td>
-                            <div class="cell-flex">
-                                <div class="avatar avatar-light-gray">MP</div>
-                                <span class="main-text">Marco Polo</span>
-                            </div>
-                        </td>
-                        <td><span class="status-badge status-confirmed">CONFIRMED</span></td>
-                    </tr>
-                    <tr>
-                        <td><a href="#" class="id-link">98420</a></td>
-                        <td>
-                            <div class="cell-flex">
-                                <div class="avatar avatar-light-blue">JS</div>
-                                <div class="text-stack">
-                                    <span class="main-text">James Smith</span>
-                                    <span class="sub-text">Corporate</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="text-stack">
-                                <span class="main-text">Kyoto Temple Hike</span>
-                                <span class="sub-text">Full Day</span>
-                            </div>
-                        </td>
-                        <td class="date-text">Oct 24, 2024</td>
-                        <td>
-                            <div class="cell-flex">
-                                <div class="avatar avatar-light-gray">YT</div>
-                                <span class="main-text">Yuki Tanaka</span>
-                            </div>
-                        </td>
-                        <td><span class="status-badge status-ongoing">ONGOING</span></td>
-                    </tr>
+                    ${tableRows}
                 </tbody>
             </table>
         </div>

@@ -331,7 +331,7 @@ body {
   cursor: pointer;
 }
 
-.stat-card.blue { border-top-color: #3b82f6; }
+.stat-card.blue { border-top-color: #3b82f6 ; }
 .stat-card.light-green { border-top-color: #10b981; }
 .stat-card.dark-green { border-top-color: #059669; }
 .stat-card.orange { border-top-color: #f59e0b; }
@@ -342,7 +342,7 @@ body {
 .stat-card.blue:hover {
   background-color: #f0f7ff;
   transform: translateY(-4px);
-  border-top: 4px solid #3b82f6;
+  border-top: 8px solid #3b82f6;
 }
 
 .stat-card.light-green:hover {

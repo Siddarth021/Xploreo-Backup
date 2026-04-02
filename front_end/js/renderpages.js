@@ -62,14 +62,9 @@ export function renderPageContent(user) {
         if (admin) admin.style.display = "block";
         if (main) main.style.display = "none";
         if (hotel) hotel.style.display = "none";
-        document.getElementById("tech-admin-dashboard").style.display ="none";
+        document.getElementById("tech-admin-dash").style.display ="none";
 
     } else if (user.role === "superadmin" && path === "users.html") {
-        const adminDash = document.getElementById("admin-dashboard");
-        if (adminDash) adminDash.style.display = "none";
-        const mainDiv = document.getElementById("main");
-        if (mainDiv) mainDiv.style.display = "block";
-        document.getElementById("tech-admin-dashboard").style.display ="none";
         initUsers();
         
     }else if (user.role === "superadmin" && path === "opsbook.html"){

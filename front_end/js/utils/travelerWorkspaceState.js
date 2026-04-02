@@ -14,6 +14,56 @@ function clone(value) {
     return JSON.parse(JSON.stringify(value));
 }
 
+function getTravelerProfilePreset(user) {
+    const presets = {
+        "20002": {
+            fullName: "Meera Iyer",
+            email: "meera@xploreo.com",
+            phone: "+91 88776 65544",
+            location: "Chennai, Tamil Nadu",
+            language: "English (US)",
+            gender: "Female",
+            dob: "2002-04-12",
+            bio: "Curious traveller and culture-first planner who loves coastal getaways, heritage neighborhoods, boutique stays, and thoughtfully paced itineraries.",
+            reputation: "Explorer Status",
+            level: 5,
+            totalTrips: 11,
+            countries: 9,
+            preferences: {
+                transport: "Premium Economy / Trains",
+                stay: "Boutique Hotels / Heritage Stays",
+                budget: "Premium (Rs30k - Rs80k / day)",
+                activityStyle: "Culture / Food / Nature"
+            },
+            hobbies: ["Photography", "Food trails", "Wellness retreats", "Temple visits", "Beach escapes", "Art museums"],
+            security: {
+                twoFactorAuth: true,
+                emailNotifications: true,
+                publicProfile: false
+            }
+        }
+    };
+
+    if (user?.id && presets[user.id]) {
+        return clone(presets[user.id]);
+    }
+
+    const fallback = clone(travelerWorkspaceSeed.profile);
+
+    if (!user) {
+        return fallback;
+    }
+
+    fallback.fullName = user.name || fallback.fullName;
+    fallback.email = user.email || fallback.email;
+    fallback.phone = user.phone || (user.phno ? `+91 ${user.phno}` : fallback.phone);
+    fallback.location = user.address || fallback.location;
+    fallback.gender = user.gender ? `${user.gender}`.charAt(0).toUpperCase() + `${user.gender}`.slice(1) : fallback.gender;
+    fallback.dob = user.dob ? new Date(user.dob).toISOString().split("T")[0] : fallback.dob;
+
+    return fallback;
+}
+
 export function ensureTravelerSession() {
     let currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
@@ -40,6 +90,8 @@ export function isTravellerRole(user) {
 }
 
 export function seedTravelerWorkspace() {
+    const currentUser = ensureTravelerSession();
+
     if (!localStorage.getItem(STORAGE_KEYS.plans)) {
         localStorage.setItem(STORAGE_KEYS.plans, JSON.stringify(clone(travelerWorkspaceSeed.plans)));
     }
@@ -48,8 +100,14 @@ export function seedTravelerWorkspace() {
         localStorage.setItem(STORAGE_KEYS.bookings, JSON.stringify(clone(travelerWorkspaceSeed.bookings)));
     }
 
-    if (!localStorage.getItem(STORAGE_KEYS.profile)) {
-        localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(clone(travelerWorkspaceSeed.profile)));
+    const storedProfile = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) || "null");
+    const nextProfile = getTravelerProfilePreset(currentUser);
+    const hasLegacyDefaultProfile = storedProfile
+        && storedProfile.fullName === travelerWorkspaceSeed.profile.fullName
+        && storedProfile.email === travelerWorkspaceSeed.profile.email;
+
+    if (!storedProfile || hasLegacyDefaultProfile) {
+        localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(nextProfile));
     }
 }
 

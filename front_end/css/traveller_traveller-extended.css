@@ -515,7 +515,10 @@
 
 .traveler-inline-stats,
 .chip-group {
+    display: flex;
     flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-start;
 }
 
 .traveler-inline-stats span,
@@ -526,6 +529,341 @@
     color: var(--traveler-ink);
     font-size: 13px;
     font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    max-width: 100%;
+    white-space: normal;
+    line-height: 1.35;
+    text-align: center;
+    word-break: break-word;
+}
+
+.traveler-support-page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 28px 56px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 28px;
+}
+
+.traveler-support-main {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.traveler-support-header h1 {
+    margin: 0 0 10px;
+    font-size: 2.15rem;
+    line-height: 1.05;
+    color: var(--traveler-ink);
+}
+
+.traveler-support-header p {
+    margin: 0;
+    color: var(--traveler-muted);
+    font-size: 1.05rem;
+}
+
+.traveler-support-card {
+    background: #fff;
+    border: 1px solid var(--traveler-border);
+    border-radius: 28px;
+    padding: 34px 34px 30px;
+    box-shadow: 0 18px 40px rgba(17, 24, 39, 0.04);
+}
+
+.traveler-support-card h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--traveler-ink);
+}
+
+.traveler-support-card > p {
+    margin: 10px 0 0;
+    color: var(--traveler-muted);
+}
+
+.traveler-support-form {
+    margin-top: 24px;
+    display: grid;
+    gap: 18px;
+}
+
+.traveler-support-field {
+    display: grid;
+    gap: 10px;
+}
+
+.traveler-support-field span {
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--traveler-ink);
+}
+
+.traveler-support-input,
+.traveler-support-select,
+.traveler-support-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #dfe6ec;
+    background: #f8fbfd;
+    border-radius: 16px;
+    padding: 15px 18px;
+    font: inherit;
+    color: var(--traveler-ink);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.traveler-support-input:focus,
+.traveler-support-select:focus,
+.traveler-support-textarea:focus {
+    border-color: rgba(51, 110, 235, 0.45);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(51, 110, 235, 0.08);
+}
+
+.traveler-support-textarea {
+    min-height: 160px;
+    resize: vertical;
+}
+
+.traveler-support-submit {
+    border: 0;
+    border-radius: 15px;
+    padding: 16px 22px;
+    background: linear-gradient(135deg, #2f66e2 0%, #3467df 100%);
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.traveler-support-submit:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 26px rgba(47, 102, 226, 0.22);
+}
+
+.traveler-support-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+}
+
+.traveler-support-contact {
+    margin-top: 18px;
+    padding: 18px 18px 16px;
+    border-radius: 18px;
+    background: #edf4ff;
+    color: #3557b4;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.traveler-support-contact-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+}
+
+.traveler-support-contact-label {
+    display: block;
+    font-size: 0.86rem;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.traveler-support-contact-value {
+    display: block;
+    margin-top: 2px;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.traveler-support-contact-meta {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.86rem;
+    opacity: 0.8;
+}
+
+.traveler-support-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 0;
+    border-bottom: 1px solid #edf2f6;
+    color: var(--traveler-ink);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.traveler-support-link:last-child {
+    border-bottom: 0;
+}
+
+.traveler-support-faq-list {
+    margin-top: 20px;
+}
+
+.traveler-support-faq-item {
+    border-bottom: 1px solid #edf2f6;
+}
+
+.traveler-support-faq-question {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+    color: var(--traveler-ink);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.traveler-support-faq-icon {
+    flex: 0 0 auto;
+    transition: transform 0.18s ease;
+}
+
+.traveler-support-faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    color: var(--traveler-muted);
+    line-height: 1.7;
+    transition: max-height 0.24s ease, padding-bottom 0.24s ease;
+}
+
+.traveler-support-faq-item.active .traveler-support-faq-answer {
+    max-height: 180px;
+    padding-bottom: 22px;
+}
+
+.traveler-support-faq-item.active .traveler-support-faq-icon {
+    transform: rotate(180deg);
+}
+
+.traveler-support-ticket-list {
+    margin-top: 22px;
+    display: grid;
+    gap: 18px;
+}
+
+.traveler-support-ticket {
+    border: 1px solid #eef2f5;
+    border-radius: 24px;
+    padding: 24px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    transition: border-color 0.18s ease, transform 0.18s ease;
+}
+
+.traveler-support-ticket:hover {
+    border-color: #d9e5ee;
+    transform: translateY(-1px);
+}
+
+.traveler-support-ticket-title {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--traveler-ink);
+}
+
+.traveler-support-ticket-meta {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--traveler-muted);
+}
+
+.traveler-support-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 88px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: lowercase;
+}
+
+.traveler-support-status.in-progress {
+    background: #f4f6fa;
+    color: #131821;
+}
+
+.traveler-support-status.open {
+    background: #fff6cb;
+    color: #8b6a00;
+}
+
+.traveler-support-status.resolved {
+    background: #dff7e6;
+    color: #1e7b43;
+}
+
+.traveler-support-ticket-trailing {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 0 0 auto;
+}
+
+@media (max-width: 1080px) {
+    .traveler-support-page {
+        grid-template-columns: 1fr;
+    }
+
+    .traveler-support-sidebar {
+        order: -1;
+    }
+}
+
+@media (max-width: 720px) {
+    .traveler-support-page {
+        padding: 20px 16px 40px;
+        gap: 18px;
+    }
+
+    .traveler-support-card {
+        padding: 24px 20px;
+        border-radius: 22px;
+    }
+
+    .traveler-support-ticket {
+        padding: 18px;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .traveler-support-ticket-trailing {
+        width: 100%;
+        justify-content: space-between;
+    }
 }
 
 .traveler-stat-grid {

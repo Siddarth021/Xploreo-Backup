@@ -32,6 +32,12 @@ export function initTravelerProfilePage(containerId) {
         const profile = getTravelerProfile();
         const plans = getTravelerPlans();
         const bookings = getTravelerBookings();
+        const initials = profile.fullName
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part) => part.charAt(0).toUpperCase())
+            .join("") || "TR";
         const destinations = bookings.slice(0, 3).map((booking) => ({
             title: booking.destination,
             image: booking.coverImage
@@ -42,15 +48,10 @@ export function initTravelerProfilePage(containerId) {
                 <section class="traveler-profile-hero traveler-card">
                     <div class="traveler-profile-banner"></div>
                     <div class="traveler-profile-top">
-                        <div class="traveler-profile-avatar">AR</div>
+                        <div class="traveler-profile-avatar">${initials}</div>
                         <div class="traveler-profile-meta">
                             <h1>${profile.fullName}</h1>
                             <p>${profile.email} • ${profile.location}</p>
-                            <div class="traveler-inline-stats">
-                                <span>${profile.reputation}</span>
-                                <span>Level ${profile.level}</span>
-                                <span>${profile.totalTrips} total trips</span>
-                            </div>
                         </div>
                         <div class="inline-actions">
                             <button type="button" class="ghost-btn" id="toggle-profile-edit">${state.editing ? "Close editor" : "Edit profile"}</button>

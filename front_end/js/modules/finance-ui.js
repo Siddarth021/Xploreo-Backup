@@ -1,6 +1,6 @@
 // front_end/js/modules/finance-ui.js
 
-export function buildFinanceHTML(financeData) {
+export function buildFinanceHTML(financeData, payoutData) {
     return `
         <div class="page-header" style="margin-bottom: 32px;">
             <h1 class="page-title" style="margin-top: 0; font-size: 28px; color: #1a202c; font-weight: 700;">
@@ -65,84 +65,47 @@ export function buildFinanceHTML(financeData) {
                                 <th style="padding: 16px 32px;">Date</th>
                             </tr>
                         </thead>
+                        
                         <tbody id="payout-table-body" style="font-size: 14px; background: #fcfcfc;">
-                            <tr class="payout-row" data-status="paid" style="border-bottom: 1px solid #edf2f7;">
-                                <td style="padding: 24px 32px;">
-                                    <div style="display: flex; align-items: center; gap: 16px;">
-                                        <div style="width: 44px; height: 44px; border-radius: 50%; background: #ebf8ff; color: #2b6cb0; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px;">SM</div>
-                                        <div>
-                                            <div style="font-weight: 700; color: #2d3748; font-size: 15px;">Skyline Meridians</div>
-                                            <div style="font-size: 12px; color: #a0aec0; margin-top: 4px; font-weight: 500;">ID: #PAY-8821</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td style="padding: 24px 32px; font-weight: 800; color: #1a202c; font-size: 15px;">₹12.4L</td>
-                                <td style="padding: 24px 32px;">
-                                    <span style="background: #e6fffa; color: #234e52; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
-                                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #319795;"></span> Paid
-                                    </span>
-                                </td>
-                                <td style="padding: 24px 32px; color: #718096; font-weight: 500;">Oct 24, 2023</td>
-                            </tr>
-                            
-                            <tr class="payout-row" data-status="pending" style="border-bottom: 1px solid #edf2f7;">
-                                <td style="padding: 24px 32px;">
-                                    <div style="display: flex; align-items: center; gap: 16px;">
-                                        <div style="width: 44px; height: 44px; border-radius: 50%; background: #ebf8ff; color: #2b6cb0; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px;">AV</div>
-                                        <div>
-                                            <div style="font-weight: 700; color: #2d3748; font-size: 15px;">Azure Voyages</div>
-                                            <div style="font-size: 12px; color: #a0aec0; margin-top: 4px; font-weight: 500;">ID: #PAY-8822</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td style="padding: 24px 32px; font-weight: 800; color: #1a202c; font-size: 15px;">₹8.12L</td>
-                                <td style="padding: 24px 32px;">
-                                    <span style="background: #edf2f7; color: #4a5568; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
-                                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #a0aec0;"></span> Pending
-                                    </span>
-                                </td>
-                                <td style="padding: 24px 32px; color: #718096; font-weight: 500;">Oct 26, 2023</td>
-                            </tr>
+                            ${payoutData.map(payout => {
+                                // 1. Determine colors based on status
+                                let statusBg, statusColor, dotColor, badgeText, avatarBg, avatarColor;
+                                
+                                if (payout.status === 'paid') {
+                                    statusBg = '#e6fffa'; statusColor = '#234e52'; dotColor = '#319795'; badgeText = 'Paid';
+                                    avatarBg = '#ebf8ff'; avatarColor = '#2b6cb0';
+                                } else if (payout.status === 'pending') {
+                                    statusBg = '#edf2f7'; statusColor = '#4a5568'; dotColor = '#a0aec0'; badgeText = 'Pending';
+                                    avatarBg = '#ebf8ff'; avatarColor = '#2b6cb0';
+                                } else {
+                                    statusBg = '#fff5f5'; statusColor = '#9b2c2c'; dotColor = '#e53e3e'; badgeText = 'Failed';
+                                    avatarBg = '#fff5f5'; avatarColor = '#c53030';
+                                }
 
-                            <tr class="payout-row" data-status="failed" style="border-bottom: 1px solid #edf2f7;">
-                                <td style="padding: 24px 32px;">
-                                    <div style="display: flex; align-items: center; gap: 16px;">
-                                        <div style="width: 44px; height: 44px; border-radius: 50%; background: #fff5f5; color: #c53030; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px;">TP</div>
-                                        <div>
-                                            <div style="font-weight: 700; color: #2d3748; font-size: 15px;">Tropical Pathways</div>
-                                            <div style="font-size: 12px; color: #a0aec0; margin-top: 4px; font-weight: 500;">ID: #PAY-8823</div>
+                                // 2. Return the dynamic row
+                                return `
+                                <tr class="payout-row" data-status="${payout.status}" style="border-bottom: 1px solid #edf2f7;">
+                                    <td style="padding: 24px 32px;">
+                                        <div style="display: flex; align-items: center; gap: 16px;">
+                                            <div style="width: 44px; height: 44px; border-radius: 50%; background: ${avatarBg}; color: ${avatarColor}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px;">${payout.initials}</div>
+                                            <div>
+                                                <div style="font-weight: 700; color: #2d3748; font-size: 15px;">${payout.name}</div>
+                                                <div style="font-size: 12px; color: #a0aec0; margin-top: 4px; font-weight: 500;">ID: #${payout.id}</div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td style="padding: 24px 32px; font-weight: 800; color: #1a202c; font-size: 15px;">₹3.9L</td>
-                                <td style="padding: 24px 32px;">
-                                    <span style="background: #fff5f5; color: #9b2c2c; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
-                                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #e53e3e;"></span> Failed
-                                    </span>
-                                </td>
-                                <td style="padding: 24px 32px; color: #718096; font-weight: 500;">Oct 22, 2023</td>
-                            </tr>
-
-                            <tr class="payout-row" data-status="paid" style="border-bottom: 1px solid #edf2f7;">
-                                <td style="padding: 24px 32px;">
-                                    <div style="display: flex; align-items: center; gap: 16px;">
-                                        <div style="width: 44px; height: 44px; border-radius: 50%; background: #ebf8ff; color: #2b6cb0; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px;">NB</div>
-                                        <div>
-                                            <div style="font-weight: 700; color: #2d3748; font-size: 15px;">Nordic Blue Travel</div>
-                                            <div style="font-size: 12px; color: #a0aec0; margin-top: 4px; font-weight: 500;">ID: #PAY-8824</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td style="padding: 24px 32px; font-weight: 800; color: #1a202c; font-size: 15px;">₹22.4L</td>
-                                <td style="padding: 24px 32px;">
-                                    <span style="background: #e6fffa; color: #234e52; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
-                                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #319795;"></span> Paid
-                                    </span>
-                                </td>
-                                <td style="padding: 24px 32px; color: #718096; font-weight: 500;">Oct 20, 2023</td>
-                            </tr>
+                                    </td>
+                                    <td style="padding: 24px 32px; font-weight: 800; color: #1a202c; font-size: 15px;">${payout.amount}</td>
+                                    <td style="padding: 24px 32px;">
+                                        <span style="background: ${statusBg}; color: ${statusColor}; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+                                            <span style="width: 6px; height: 6px; border-radius: 50%; background: ${dotColor};"></span> ${badgeText}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 24px 32px; color: #718096; font-weight: 500;">${payout.date}</td>
+                                </tr>
+                                `;
+                            }).join('')}
                         </tbody>
-                    </table>
+                        </table>
                 </div>
             </div>
 

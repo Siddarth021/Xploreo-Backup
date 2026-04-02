@@ -1,14 +1,12 @@
-// front_end/js/modules/finance.js
-
-import { chartData, financeStats } from '../../data/financeData.js';
+import { chartData, financeStats, payoutData } from '../../data/financeData.js';
 import { buildFinanceHTML } from './finance-ui.js';
 
 export function initFinance() {
     const mainContainer = document.getElementById("main");
     if (!mainContainer) return;
 
-    // 1. Inject the HTML skeleton populated with data
-    mainContainer.innerHTML = buildFinanceHTML(financeStats);
+    // 2. Passed payoutData into the builder function!
+    mainContainer.innerHTML = buildFinanceHTML(financeStats, payoutData);
 
     // =======================
     // 🔹 CHART RENDER LOGIC

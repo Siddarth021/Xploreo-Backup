@@ -1,7 +1,7 @@
 const TRAVELER_PAGES_PATH = "./";
 const LOGIN_PATH = "../login.html";
 const PROFILE_PATH = "./profile.html";
-const SETTINGS_PATH = "../settings.html";
+const SUPPORT_PATH = "./support.html";
 const LOGO_PATH = "../../components/ui/landing/navbar-logo.png";
 
 export function renderTravelerNavbar() {
@@ -55,7 +55,7 @@ export function renderTravelerNavbar() {
                     </div>
                     <hr>
                     <a href="${PROFILE_PATH}">Manage Profile</a>
-                    <a href="${SETTINGS_PATH}">Settings</a>
+                    <a href="${SUPPORT_PATH}">Support</a>
                     <hr>
                     <a href="#" id="logout-btn" class="logout-text">Log Out</a>
                 </div>

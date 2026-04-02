@@ -1,5 +1,7 @@
 import { travelerData } from "../../data/traveler.js";
 
+const SELECTED_PACKAGE_STORAGE_KEY = "traveler_selected_package";
+
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const WISHLIST_STORAGE_KEY = "traveler_wishlist";
 const ROOM_OPTIONS = ["1", "2", "3", "4", "5", "6", "7", "8"];
@@ -30,8 +32,6 @@ export function renderTravelerPackageSearchPage(containerId) {
 
     function render() {
         const searchResults = getFilteredPackages(state);
-        const firstRow = searchResults.slice(0, 2);
-        const secondRow = searchResults.slice(2);
 
         container.innerHTML = `
             <main class="traveler-package-page">
@@ -102,15 +102,7 @@ export function renderTravelerPackageSearchPage(containerId) {
                         <section class="traveler-package-results">
                             ${searchResults.length ? `
                                 <div class="traveler-package-grid">
-                                    ${firstRow.map(renderPackageCard).join("")}
-                                    <div class="traveler-package-banner">
-                                        <div>
-                                            <h3>Buy Now, Pay Later</h3>
-                                            <p>Book your dream vacation today and pay in easy installments</p>
-                                        </div>
-                                        <button type="button" id="traveler-package-show-all">SHOW PACKAGES</button>
-                                    </div>
-                                    ${secondRow.map(renderPackageCard).join("")}
+                                    ${searchResults.map(renderPackageCard).join("")}
                                 </div>
                             ` : `
                                 <div class="traveler-package-empty">
@@ -119,11 +111,6 @@ export function renderTravelerPackageSearchPage(containerId) {
                             `}
                         </section>
                     </section>
-
-                    <button class="traveler-package-quote-btn" type="button" id="traveler-package-quote-btn">
-                        ${quoteIcon()}
-                        <span>Get a quote</span>
-                    </button>
                 </div>
             </main>
         `;
@@ -231,16 +218,12 @@ export function renderTravelerPackageSearchPage(containerId) {
         container.querySelectorAll("[data-package-details]").forEach((button) => {
             button.addEventListener("click", () => {
                 const packageId = button.getAttribute("data-package-details");
+                const selectedPackage = PACKAGE_RESULTS.find((item) => item.id === packageId);
+                if (selectedPackage && typeof localStorage !== "undefined") {
+                    localStorage.setItem(SELECTED_PACKAGE_STORAGE_KEY, JSON.stringify(selectedPackage));
+                }
                 window.location.href = `./traveller_booking-details.html?plan=${encodeURIComponent(packageId)}`;
             });
-        });
-
-        container.querySelector("#traveler-package-quote-btn")?.addEventListener("click", () => {
-            showPackageToast("A travel expert will contact you for a quote.");
-        });
-
-        container.querySelector("#traveler-package-show-all")?.addEventListener("click", () => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
         });
     }
 
@@ -411,7 +394,7 @@ function renderPackageCard(item) {
             </div>
 
             <div class="traveler-package-card-body">
-                <h3>${escapeHtml(item.title)}</h3>
+                <h3 class="traveler-package-title">${escapeHtml(item.title)}</h3>
                 <ul class="traveler-package-meta">
                     <li>${hotelIcon()}<span>${escapeHtml(item.stayLine)}</span></li>
                     <li>${mealIcon()}<span>${escapeHtml(item.mealsLine)}</span></li>
@@ -429,9 +412,9 @@ function renderPackageCard(item) {
                         <small>Starting from (per person)</small>
                         <div class="traveler-package-price-row">
                             <strong>${formatCurrency(item.pricePerPerson)}</strong>
-                            <span>Total: ${formatCurrency(item.totalPriceDisplay)}</span>
+                            <span class="traveler-package-total-copy">Total: ${formatCurrency(item.totalPriceDisplay)}</span>
                         </div>
-                        <p>or EMI from ${formatCurrency(item.emi)}/month</p>
+                        <p class="traveler-package-emi-copy">or EMI from ${formatCurrency(item.emi)}/month</p>
                     </div>
 
                     <button class="traveler-package-view-btn" type="button" data-package-details="${item.id}">View Details</button>
@@ -560,8 +543,4 @@ function sparkleIcon() {
 
 function checkIcon() {
     return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 5 5L20 7"></path></svg>`;
-}
-
-function quoteIcon() {
-    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`;
 }

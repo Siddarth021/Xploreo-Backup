@@ -13,7 +13,6 @@
 .traveler-package-toolbar,
 .traveler-package-filters,
 .traveler-package-card,
-.traveler-package-banner,
 .traveler-package-empty {
     background: #ffffff;
     border: 1px solid #e8edf5;
@@ -279,21 +278,24 @@
 .traveler-package-card {
     border-radius: 24px;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
 }
 
 .traveler-package-card-media {
     position: relative;
-    height: 250px;
+    height: 300px;
     background-size: cover;
     background-position: center;
 }
 
 .traveler-package-fav {
     position: absolute;
-    top: 16px;
-    left: 16px;
-    width: 46px;
-    height: 46px;
+    top: 24px;
+    left: 24px;
+    width: 58px;
+    height: 58px;
     border: none;
     border-radius: 50%;
     background: #ffffff;
@@ -311,35 +313,38 @@
 
 .traveler-package-duration-badge {
     position: absolute;
-    top: 16px;
-    right: 16px;
-    padding: 7px 14px;
+    top: 24px;
+    right: 24px;
+    padding: 10px 18px;
     border-radius: 999px;
     background: #ffffff;
     color: #273248;
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 800;
 }
 
 .traveler-package-card-body {
-    padding: 22px 24px 24px;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    padding: 24px 28px 28px;
 }
 
-.traveler-package-card-body h3 {
+.traveler-package-title {
     margin: 0 0 16px;
     color: #273248;
     font-family: "Plus Jakarta Sans", sans-serif;
-    font-size: 21px;
-    line-height: 1.3;
+    font-size: 24px;
+    line-height: 1.25;
     font-weight: 700;
 }
 
 .traveler-package-meta {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 0 8px;
     display: grid;
-    gap: 10px;
+    gap: 12px;
 }
 
 .traveler-package-meta li {
@@ -347,14 +352,14 @@
     align-items: center;
     gap: 10px;
     color: #647082;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 500;
 }
 
 .traveler-package-meta svg {
-    width: 18px;
-    height: 18px;
-    flex: 0 0 18px;
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
     color: #6f7c90;
 }
 
@@ -362,107 +367,70 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 18px;
-    padding: 13px 16px;
-    border-radius: 14px;
+    margin-top: 12px;
+    padding: 16px 18px;
+    border-radius: 18px;
     background: #eafbec;
     color: #13904c;
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 700;
 }
 
 .traveler-package-perk svg {
-    width: 18px;
-    height: 18px;
-    flex: 0 0 18px;
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
 }
 
 .traveler-package-card-footer {
     display: flex;
-    align-items: end;
+    align-items: flex-end;
     justify-content: space-between;
-    gap: 18px;
-    margin-top: 20px;
-    padding-top: 20px;
+    gap: 24px;
+    margin-top: 22px;
+    padding-top: 24px;
     border-top: 1px solid #e8edf5;
 }
 
 .traveler-package-pricing small {
     display: block;
     color: #6f7c90;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .traveler-package-price-row {
     display: flex;
     align-items: baseline;
-    gap: 10px;
+    gap: 14px;
     flex-wrap: wrap;
 }
 
 .traveler-package-price-row strong {
     color: #273248;
-    font-size: 36px;
+    font-size: 54px;
     line-height: 1;
     font-weight: 800;
 }
 
-.traveler-package-price-row span,
-.traveler-package-pricing p {
+.traveler-package-total-copy,
+.traveler-package-emi-copy {
     color: #6f7c90;
-    font-size: 16px;
-    font-weight: 500;
-}
-
-.traveler-package-pricing p {
-    margin: 8px 0 0;
-}
-
-.traveler-package-view-btn {
-    min-width: 160px;
-    height: 52px;
-    border: none;
-    border-radius: 16px;
-    background: linear-gradient(90deg, #1fb8b1 0%, #2d62eb 100%);
-    color: #ffffff;
-    cursor: pointer;
-    font: inherit;
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.traveler-package-banner {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 30px 40px;
-    border-radius: 24px;
-    background: linear-gradient(90deg, #e9f3ff 0%, #bef3ea 100%);
-}
-
-.traveler-package-banner h3 {
-    margin: 0 0 8px;
-    color: #273248;
-    font-size: 26px;
-    font-weight: 800;
-}
-
-.traveler-package-banner p {
-    margin: 0;
-    color: #647082;
     font-size: 18px;
     font-weight: 500;
 }
 
-.traveler-package-banner button {
-    min-width: 216px;
-    height: 60px;
+.traveler-package-emi-copy {
+    margin: 10px 0 0;
+}
+
+.traveler-package-view-btn {
+    min-width: 196px;
+    height: 64px;
     border: none;
-    border-radius: 16px;
-    background: #2d62eb;
+    border-radius: 18px;
+    background: linear-gradient(90deg, #1fb8b1 0%, #2d62eb 100%);
     color: #ffffff;
     cursor: pointer;
     font: inherit;
@@ -477,27 +445,6 @@
     text-align: center;
     font-size: 20px;
     font-weight: 600;
-}
-
-.traveler-package-quote-btn {
-    position: fixed;
-    right: calc((100vw - 1440px) / 2 + 18px);
-    bottom: 26px;
-    height: 58px;
-    padding: 0 24px;
-    border: none;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #7f00ff 0%, #c400ff 100%);
-    box-shadow: 0 16px 28px rgba(132, 0, 255, 0.25);
-    color: #ffffff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font: inherit;
-    font-size: 16px;
-    font-weight: 700;
-    z-index: 30;
 }
 
 .traveler-package-toast {
@@ -520,4 +467,50 @@
 .traveler-package-toast.show {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 1240px) {
+    .traveler-package-frame {
+        width: min(100vw - 24px, 1440px);
+    }
+
+    .traveler-package-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .traveler-package-filters {
+        position: static;
+    }
+
+    .traveler-package-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .traveler-package-toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .traveler-package-search-btn {
+        height: 60px;
+    }
+
+    .traveler-package-card-media {
+        height: 240px;
+    }
+
+    .traveler-package-price-row strong {
+        font-size: 44px;
+    }
+
+    .traveler-package-card-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .traveler-package-view-btn {
+        width: 100%;
+        min-width: 0;
+    }
 }

@@ -456,7 +456,7 @@ function renderPackageCard(item) {
             </div>
 
             <div class="traveler-package-card-body">
-                <h3>${escapeHtml(item.title)}</h3>
+                <h3 class="traveler-package-title">${escapeHtml(item.title)}</h3>
                 <ul class="traveler-package-meta">
                     <li>${hotelIcon()}<span>${escapeHtml(item.stayLine)}</span></li>
                     <li>${mealIcon()}<span>${escapeHtml(item.mealsLine)}</span></li>
@@ -474,9 +474,9 @@ function renderPackageCard(item) {
                         <small>Starting from (per person)</small>
                         <div class="traveler-package-price-row">
                             <strong>${formatCurrency(item.pricePerPerson)}</strong>
-                            <span>Total: ${formatCurrency(item.totalPriceDisplay)}</span>
+                            <span class="traveler-package-total-copy">Total: ${formatCurrency(item.totalPriceDisplay)}</span>
                         </div>
-                        <p>or EMI from ${formatCurrency(item.emi)}/month</p>
+                        <p class="traveler-package-emi-copy">or EMI from ${formatCurrency(item.emi)}/month</p>
                     </div>
 
                     <button class="traveler-package-view-btn" type="button" data-package-details="${item.id}">View Details</button>

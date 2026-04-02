@@ -9,6 +9,7 @@ const PLAN_SOURCE_KEY = "traveler_plan_source";
 const SELECTED_FLIGHT_KEY = "traveler_selected_flight";
 const SELECTED_EXPERIENCE_KEY = "traveler_selected_experience";
 const SELECTED_PACKAGE_KEY = "traveler_selected_package";
+const SELECTED_HOTEL_KEY = "traveler_selected_hotel";
 const EXPERIENCE_BOOKING_DRAFT_KEY = "traveler_experience_booking_draft";
 
 // SVGs
@@ -87,9 +88,9 @@ export function renderTravelerTrips(containerId, user) {
                             
                             <div class="trip-actions">
                                 <button class="btn-solid-blue" data-trip-view="${escapeHtmlAttr(getTripViewKey(trip))}">View Details</button>
-                                ${trip.status === 'Upcoming'
-                                    ? `<button class="btn-outline-teal" data-trip-modify="${escapeHtmlAttr(getTripViewKey(trip))}">Modify Booking</button>`
-                                    : `<button class="btn-outline-teal" data-trip-review="${escapeHtmlAttr(getTripViewKey(trip))}">Review Trip</button>`}
+                                ${trip.status === 'Completed'
+                                    ? `<button class="btn-outline-teal" data-trip-review="${escapeHtmlAttr(getTripViewKey(trip))}">Review Trip</button>`
+                                    : ``}
                             </div>
                         </div>
                     </div>
@@ -125,42 +126,13 @@ export function renderTravelerTrips(containerId, user) {
                 return;
             }
 
-            if (trip.experienceId) {
+            if (isExperienceTrip(trip)) {
                 openExperienceTrip(trip);
                 return;
             }
 
-            const matchingPlan = travelerData.itineraries.find((item) => item.id === key || item.title === key);
-
-            if (!matchingPlan) {
-                return;
-            }
-
-            if (typeof localStorage !== "undefined") {
-                localStorage.setItem(SELECTED_PLAN_KEY, JSON.stringify(matchingPlan));
-                localStorage.setItem(PLAN_SOURCE_KEY, "mytrips");
-            }
-
-            window.location.href = `./traveller_plan-detail.html?plan=${encodeURIComponent(matchingPlan.id || matchingPlan.title)}`;
-        });
-    });
-
-    container.querySelectorAll("[data-trip-modify]").forEach((button) => {
-        button.addEventListener("click", () => {
-            const key = button.getAttribute("data-trip-modify");
-            const trip = displayedTrips.find((item) => getTripViewKey(item) === key);
-
-            if (!trip) {
-                return;
-            }
-
-            if (isFlightTrip(trip)) {
-                openFlightTrip(trip);
-                return;
-            }
-
-            if (trip.experienceId) {
-                openExperienceBookingTrip(trip);
+            if (isHotelTrip(trip)) {
+                openHotelTrip(trip);
                 return;
             }
 
@@ -309,12 +281,21 @@ function mapConfirmedBookingToTrip(booking) {
 function getTripViewKey(trip) {
     if (trip.flightId) return `flight:${trip.flightId}`;
     if (trip.experienceId) return `experience:${trip.experienceId}`;
+    if (trip.hotelId) return `hotel:${trip.hotelId}`;
     if (trip.planId) return `plan:${trip.planId}`;
     return `trip:${trip.title}`;
 }
 
 function isFlightTrip(trip) {
     return Boolean(trip.flightId) || String(trip.type || "").toLowerCase() === "flight";
+}
+
+function isExperienceTrip(trip) {
+    return Boolean(trip.experienceId) || String(trip.type || "").toLowerCase().includes("experience");
+}
+
+function isHotelTrip(trip) {
+    return Boolean(trip.hotelId) || String(trip.type || "").toLowerCase().includes("hotel");
 }
 
 function openFlightTrip(trip) {
@@ -331,6 +312,14 @@ function openExperienceTrip(trip) {
 
     localStorage.setItem(SELECTED_EXPERIENCE_KEY, JSON.stringify(experience));
     window.location.href = `./traveller_experience-detail.html?experience=${encodeURIComponent(experience.id)}`;
+}
+
+function openHotelTrip(trip) {
+    const hotel = resolveHotelForTrip(trip);
+    if (!hotel || typeof localStorage === "undefined") return;
+
+    localStorage.setItem(SELECTED_HOTEL_KEY, JSON.stringify(hotel));
+    window.location.href = `./traveller_hotel-detail.html?hotel=${encodeURIComponent(hotel.id)}`;
 }
 
 function openExperienceBookingTrip(trip) {
@@ -361,7 +350,35 @@ function openPackageBookingTrip(trip) {
 
     const packageSelection = buildPackageSelectionFromTrip(trip);
     localStorage.setItem(SELECTED_PACKAGE_KEY, JSON.stringify(packageSelection));
-    window.location.href = "./traveller_booking-details.html";
+    const packageId = packageSelection?.id || trip.planId || slugify(trip.title);
+    window.location.href = `./traveller_booking-details.html?plan=${encodeURIComponent(packageId)}`;
+}
+
+function resolveHotelForTrip(trip) {
+    const hotels = travelerData.searchCatalog.hotels || [];
+    if (trip.hotelId) {
+        const direct = hotels.find((hotel) => hotel.id === trip.hotelId);
+        if (direct) return direct;
+    }
+
+    const normalizedTitle = normalizeText(trip.title);
+    const normalizedLocation = normalizeText(trip.location);
+    const locationCity = normalizedLocation.split(",")[0].trim();
+
+    const exactNameMatch = hotels.find((hotel) => normalizeText(hotel.name) === normalizedTitle);
+    if (exactNameMatch) return exactNameMatch;
+
+    const fuzzyNameMatch = hotels.find((hotel) => normalizedTitle.includes(normalizeText(hotel.name)) || normalizeText(hotel.name).includes(normalizedTitle));
+    if (fuzzyNameMatch) return fuzzyNameMatch;
+
+    const cityAndAreaMatch = hotels.find((hotel) =>
+        normalizeText(hotel.city) === locationCity ||
+        normalizedLocation.includes(normalizeText(hotel.city)) ||
+        normalizedLocation.includes(normalizeText(hotel.area))
+    );
+    if (cityAndAreaMatch) return cityAndAreaMatch;
+
+    return hotels[0] || null;
 }
 
 function buildFlightPayloadFromTrip(trip) {
@@ -460,6 +477,12 @@ function slugify(value) {
         .replace(/^-+|-+$/g, "") || "package";
 }
 
+function normalizeText(value) {
+    return String(value || "")
+        .trim()
+        .toLowerCase();
+}
+
 function renderReviewModal(displayedTrips, reviewState) {
     if (!reviewState.tripKey) return "";
 
@@ -472,7 +495,9 @@ function renderReviewModal(displayedTrips, reviewState) {
         <div class="trip-review-modal-backdrop">
             <section class="trip-review-modal" role="dialog" aria-modal="true" aria-labelledby="trip-review-title">
                 <div class="trip-review-modal-header">
-                    <h2 id="trip-review-title">Review Your Trip</h2>
+                    <div class="trip-review-modal-heading">
+                        <h2 id="trip-review-title">Review Your Trip</h2>
+                    </div>
                     <button class="trip-review-close" type="button" data-review-close aria-label="Close review modal">×</button>
                 </div>
 
@@ -506,7 +531,7 @@ function renderReviewModal(displayedTrips, reviewState) {
                         <label class="trip-review-upload">
                             <input type="file" id="trip-review-photo" accept="image/*">
                             <div class="trip-review-upload-copy">
-                                <div>${uploadIconSvg()}</div>
+                                <div class="trip-review-upload-icon">${uploadIconSvg()}</div>
                                 <strong>Drag & drop photos here</strong>
                                 <span>or click to browse</span>
                                 ${reviewState.photoName ? `<small>${escapeHtml(reviewState.photoName)}</small>` : ""}
@@ -570,12 +595,21 @@ function showTripsToast(message) {
 
 function starOutlineSvg(active) {
     return active
-        ? `<svg width="34" height="34" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`
-        : `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#d7dce6" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+        ? `<svg width="56" height="56" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`
+        : `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#d7dce6" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
 }
 
 function uploadIconSvg() {
-    return `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#7c8597" stroke-width="1.8"><path d="M12 16V4"></path><path d="m7 9 5-5 5 5"></path><path d="M20 16.58A5 5 0 0 1 18 21H6a5 5 0 0 1-2-9.42"></path></svg>`;
+    return `<svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#7c8597" stroke-width="1.8"><path d="M12 16V4"></path><path d="m7 9 5-5 5 5"></path><path d="M20 16.58A5 5 0 0 1 18 21H6a5 5 0 0 1-2-9.42"></path></svg>`;
+}
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 }
 
 function escapeHtmlAttr(value) {

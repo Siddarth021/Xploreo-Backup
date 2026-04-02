@@ -1415,36 +1415,42 @@ html, body {
 .trip-review-modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.48);
-    backdrop-filter: blur(2px);
+    background: rgba(15, 23, 42, 0.52);
+    backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 28px;
     z-index: 3000;
 }
 
 .trip-review-modal {
-    width: min(100%, 860px);
-    max-height: calc(100vh - 48px);
+    width: min(100%, 1348px);
+    max-height: calc(100vh - 56px);
     overflow-y: auto;
     background: #ffffff;
-    border-radius: 28px;
-    box-shadow: 0 24px 80px rgba(15, 23, 42, 0.22);
+    border-radius: 32px;
+    box-shadow: 0 28px 90px rgba(15, 23, 42, 0.24);
 }
 
 .trip-review-modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 28px 32px;
+    padding: 34px 46px;
     border-bottom: 1px solid #e8edf5;
+}
+
+.trip-review-modal-heading {
+    display: grid;
+    gap: 6px;
 }
 
 .trip-review-modal-header h2 {
     margin: 0;
     font-family: "Plus Jakarta Sans", sans-serif;
-    font-size: 28px;
+    font-size: 52px;
+    line-height: 1.08;
     font-weight: 700;
     color: #172036;
 }
@@ -1466,23 +1472,23 @@ html, body {
 }
 
 .trip-review-modal-body {
-    padding: 30px 32px 10px;
+    padding: 38px 46px 16px;
 }
 
 .trip-review-section {
-    margin-bottom: 34px;
+    margin-bottom: 40px;
 }
 
 .trip-review-section h3 {
-    margin: 0 0 18px;
-    font-size: 22px;
+    margin: 0 0 20px;
+    font-size: 26px;
     font-weight: 700;
     color: #1f2937;
 }
 
 .trip-review-stars {
     display: flex;
-    gap: 12px;
+    gap: 18px;
     flex-wrap: wrap;
 }
 
@@ -1495,6 +1501,7 @@ html, body {
     align-items: center;
     justify-content: center;
     transition: transform 0.18s ease;
+    color: inherit;
 }
 
 .trip-review-star:hover,
@@ -1504,12 +1511,12 @@ html, body {
 
 .trip-review-textarea {
     width: 100%;
-    min-height: 210px;
+    min-height: 260px;
     border: 1px solid #dde3ee;
-    border-radius: 22px;
-    padding: 24px;
+    border-radius: 24px;
+    padding: 26px 28px;
     font: inherit;
-    font-size: 17px;
+    font-size: 18px;
     line-height: 1.6;
     color: #1f2937;
     resize: vertical;
@@ -1528,7 +1535,7 @@ html, body {
 
 .trip-review-tags {
     display: flex;
-    gap: 16px;
+    gap: 18px;
     flex-wrap: wrap;
 }
 
@@ -1536,9 +1543,9 @@ html, body {
     border: none;
     background: #f3f6fb;
     color: #667085;
-    padding: 16px 32px;
+    padding: 16px 30px;
     border-radius: 999px;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
@@ -1557,7 +1564,7 @@ html, body {
     display: block;
     border: 2px dashed #dbe2ec;
     border-radius: 24px;
-    padding: 30px 24px;
+    padding: 26px 24px;
     cursor: pointer;
     transition: border-color 0.2s ease, background 0.2s ease;
 }
@@ -1572,28 +1579,35 @@ html, body {
 }
 
 .trip-review-upload-copy {
-    min-height: 250px;
+    min-height: 260px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    gap: 10px;
+    gap: 12px;
     color: #6b7280;
 }
 
+.trip-review-upload-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+}
+
 .trip-review-upload-copy strong {
-    font-size: 18px;
+    font-size: 24px;
     font-weight: 500;
     color: #6b7280;
 }
 
 .trip-review-upload-copy span {
-    font-size: 16px;
+    font-size: 18px;
 }
 
 .trip-review-upload-copy small {
-    margin-top: 4px;
+    margin-top: 8px;
     display: inline-flex;
     padding: 8px 14px;
     border-radius: 999px;
@@ -1604,18 +1618,19 @@ html, body {
 }
 
 .trip-review-modal-footer {
-    padding: 18px 32px 28px;
+    padding: 24px 46px 34px;
     border-top: 1px solid #e8edf5;
     display: flex;
     justify-content: flex-end;
-    gap: 16px;
+    align-items: center;
+    gap: 18px;
 }
 
 .trip-review-secondary {
     border: none;
     background: transparent;
     color: #4b5563;
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 500;
     padding: 14px 20px;
     cursor: pointer;
@@ -1623,10 +1638,10 @@ html, body {
 
 .trip-review-submit {
     border: none;
-    min-width: 220px;
-    padding: 16px 24px;
-    border-radius: 16px;
-    font-size: 18px;
+    min-width: 316px;
+    padding: 20px 28px;
+    border-radius: 20px;
+    font-size: 22px;
     font-weight: 700;
     color: #6b7280;
     background: #e8ecf2;
@@ -1670,11 +1685,11 @@ html, body {
     }
 
     .trip-review-modal-header h2 {
-        font-size: 24px;
+        font-size: 34px;
     }
 
     .trip-review-section h3 {
-        font-size: 20px;
+        font-size: 22px;
     }
 
     .trip-review-textarea {
@@ -1690,6 +1705,14 @@ html, body {
 
     .trip-review-upload-copy {
         min-height: 200px;
+    }
+
+    .trip-review-upload-copy strong {
+        font-size: 20px;
+    }
+
+    .trip-review-upload-copy span {
+        font-size: 16px;
     }
 
     .trip-review-modal-footer {

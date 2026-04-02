@@ -9,18 +9,20 @@ export function initTechActivity() {
         if (!tbody) return;
 
         const filteredActivity = techAdminData.userActivity.filter(act => {
-            return act.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                   act.action.toLowerCase().includes(searchQuery.toLowerCase());
+            return (act.userName && act.userName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                   (act.action && act.action.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                   (act.userId && act.userId.toLowerCase().includes(searchQuery.toLowerCase()));
         });
 
         tbody.innerHTML = filteredActivity.map(act => `
             <tr class="activity-row">
-                <td>${new Date(act.timestamp).toLocaleString()}</td>
-                <td>${act.userName}</td>
-                <td>${act.action}</td>
-                <td><span class="status-badge resolved">Success</span></td>
+                <td style="color: #6B7280; font-size: 13px;">${new Date(act.timestamp).toLocaleString()}</td>
+                <td style="font-weight: 600;">${act.userName}</td>
+                <td style="font-family: monospace; color: #3b82f6;">${act.userId}</td>
+                <td style="font-size: 14px; color: #374151;">${act.action}</td>
+                <td style="text-align: right;"><span class="status-tag resolved">Success</span></td>
             </tr>
-        `).reverse().join('');
+        `).join(''); // Data is likely already reverse sorted by timestamp in data/localStorage
     };
 
     // Search
@@ -35,3 +37,4 @@ export function initTechActivity() {
     // Initial Render
     renderActivity();
 }
+

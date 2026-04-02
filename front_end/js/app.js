@@ -96,8 +96,26 @@ function initializeData() {
     }
     
     if (!localStorage.getItem("techAdminData")) {
-        localStorage.setItem("techAdminData", JSON.stringify(techAdminData));
+        // Merge tickets from supportData into techAdminData for unification
+        const allTickets = [
+            ...techAdminData.tickets,
+            ...initialSupportData.tickets.map(t => ({
+                id: t.id,
+                userId: "10001", // Default to Sreekar (Guide) for initial demo
+                userName: "Sreekar",
+                userRole: "guide",
+                subject: t.subject,
+                description: "Initial support request from guide.",
+                status: t.status.toLowerCase(),
+                priority: "medium",
+                category: t.category,
+                createdAt: new Date(t.date).toISOString()
+            }))
+        ];
+        const unifiedTechData = { ...techAdminData, tickets: allTickets };
+        localStorage.setItem("techAdminData", JSON.stringify(unifiedTechData));
     }
+
     
     let storedTours = JSON.parse(localStorage.getItem("tours"));
     if (storedTours && Array.isArray(storedTours)) {
@@ -141,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // FALLBACK: Only for demo/dev if not logged in
         if (!currentUser) {
-            currentUser = users.find(u => u.id === "20001");
+            currentUser = users.find(u => u.id === "00201");
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
         }
 

@@ -1,15 +1,17 @@
-let supportData = null;
-
 export function renderSupportPage(containerId, user) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    supportData = JSON.parse(localStorage.getItem("supportData"));
+    const supportData = JSON.parse(localStorage.getItem("supportData"));
+    const techAdminData = JSON.parse(localStorage.getItem("techAdminData"));
 
-    if (!supportData) {
-        console.error("Support data not found in localStorage.");
+    if (!supportData || !techAdminData) {
+        console.error("Data not found in localStorage.");
         return;
     }
+
+    // Filter tickets for THIS specific user from the master tech list
+    const userTickets = techAdminData.tickets.filter(t => t.userId === user.id);
 
     container.innerHTML = `
         <div class="support-page">
@@ -42,7 +44,7 @@ export function renderSupportPage(containerId, user) {
                             <span class="label">Message</span>
                             <textarea class="input-field" name="message" placeholder="Please provide as much detail as possible..." required></textarea>
                         </div>
-                        <button type="submit" class="submit-btn">
+                        <button type="submit" class="submit-btn" style="background: #2563EB; color: white;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
                             Submit Ticket
                         </button>
@@ -70,17 +72,17 @@ export function renderSupportPage(containerId, user) {
                 <div class="support-section">
                     <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                         <h3 class="section-title" style="margin-bottom: 0;">Your Support Tickets</h3>
-                        <button class="edit-btn" style="font-size: 11px;">View All</button>
                     </div>
                     <div class="history-list" id="ticketList">
-                        ${supportData.tickets.map(t => `
+                        ${userTickets.length === 0 ? '<p style="color: #6B7280; font-size: 14px;">No tickets found.</p>' : 
+                        userTickets.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).map(t => `
                             <div class="ticket-card">
                                 <div class="ticket-main">
                                     <span class="ticket-title">${t.subject}</span>
                                     <div class="ticket-meta">
                                         <span>${t.category}</span>
                                         <span>•</span>
-                                        <span>${t.date}</span>
+                                        <span>${new Date(t.createdAt).toLocaleDateString()}</span>
                                     </div>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 1rem;">
@@ -88,7 +90,7 @@ export function renderSupportPage(containerId, user) {
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
                                 </div>
                             </div>
-                        `).reverse().join('')}
+                        `).join('')}
                     </div>
                 </div>
             </div>
@@ -105,14 +107,6 @@ export function renderSupportPage(containerId, user) {
                             <span class="contact-meta">Response within 24 hours</span>
                         </div>
                     </div>
-                    <div class="contact-item phone">
-                        <div class="icon-box" style="background: white;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
-                        <div class="contact-info">
-                            <span class="contact-label">Phone Support</span>
-                            <span class="contact-value">${supportData.contactInfo.phone}</span>
-                            <span class="contact-meta">${supportData.contactInfo.availability}</span>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Quick Links -->
@@ -120,61 +114,65 @@ export function renderSupportPage(containerId, user) {
                     <h3 class="section-title" style="margin-bottom: 0.5rem; font-size: 1.1rem;">Quick Links</h3>
                     <div class="quick-links">
                         <a href="#" class="quick-link"><span>Help Center</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></a>
-                        <a href="#" class="quick-link"><span>Community Forum</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></a>
-                        <a href="#" class="quick-link"><span>Guide Guidelines</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></a>
                         <a href="#" class="quick-link"><span>Terms of Service</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></a>
-                    </div>
-                </div>
-
-                <!-- Response Time -->
-                <div class="sidebar-card response-time">
-                    <div class="time-circle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg></div>
-                    <div class="response-info">
-                        <span class="contact-label" style="opacity: 1; color: var(--primary-color);">Average Response Time</span>
-                        <span class="time-val">2 hours</span>
-                        <span class="time-desc">We typically respond within 2-4 hours during business hours</span>
                     </div>
                 </div>
             </div>
         </div>
     `;
 
-    setupSupportListeners();
+    setupSupportListeners(user, techAdminData);
 }
 
-function setupSupportListeners() {
+
+function setupSupportListeners(user, techAdminData) {
     // FAQ Accordion
     document.querySelectorAll(".faq-question").forEach(q => {
         q.onclick = (e) => {
             const item = e.target.closest(".faq-item");
             const wasActive = item.classList.contains("active");
-            
-            // Close all
             document.querySelectorAll(".faq-item").forEach(i => i.classList.remove("active"));
-            
-            // Toggle current
             if (!wasActive) item.classList.add("active");
         };
     });
 
     // Form Submit
-    document.getElementById("ticketForm").onsubmit = (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        
-        const newTicket = {
-            id: `T-${Math.floor(100 + Math.random() * 900)}`,
-            subject: formData.get("subject"),
-            category: formData.get("category"),
-            status: "Open",
-            date: new Date().toISOString().split("T")[0]
+    const form = document.getElementById("ticketForm");
+    if (form) {
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            const newTicket = {
+                id: `TICK-${Math.floor(1000 + Math.random() * 9000)}`,
+                userId: user.id,
+                userName: user.name,
+                userRole: user.role,
+                subject: formData.get("subject"),
+                description: formData.get("message"),
+                status: "pending",
+                priority: "medium",
+                category: formData.get("category"),
+                createdAt: new Date().toISOString()
+            };
+
+            // Sync to Master Tech List
+            techAdminData.tickets.push(newTicket);
+            
+            // Add to User Activity too
+            techAdminData.userActivity.unshift({
+                id: `ACT-${Date.now()}`,
+                userId: user.id,
+                userName: user.name,
+                action: `Created support ticket: "${newTicket.subject}"`,
+                timestamp: new Date().toISOString()
+            });
+
+            localStorage.setItem("techAdminData", JSON.stringify(techAdminData));
+
+            alert("Ticket submitted successfully! ID: " + newTicket.id);
+            renderSupportPage("main", user);
         };
-
-        // Sync to localStorage
-        supportData.tickets.push(newTicket);
-        localStorage.setItem("supportData", JSON.stringify(supportData));
-
-        alert("Ticket submitted successfully! ID: " + newTicket.id);
-        renderSupportPage("main"); // Re-render to show in list
-    };
+    }
 }
+

@@ -1,5 +1,6 @@
 export function renderTechAdminDashboard(containerId) {
-    const techAdminData = JSON.parse(localStorage.getItem("techAdminData"));
+    let techAdminData = JSON.parse(localStorage.getItem("techAdminData"));
+    let users = JSON.parse(localStorage.getItem("users"));
     if (!techAdminData) return;
 
     // Show Tech Admin Dashboard, hide others
@@ -13,20 +14,31 @@ export function renderTechAdminDashboard(containerId) {
     if (mainDash) mainDash.style.display = "none";
     if (hotelDash) hotelDash.style.display = "none";
 
+    // Dynamic Stats Calculation
+    const total = techAdminData.tickets.length;
+    const pending = techAdminData.tickets.filter(t => t.status === 'pending' || t.status === 'in-progress').length;
+    const resolved = techAdminData.tickets.filter(t => t.status === 'resolved').length;
+    
+    // Calculate Active Users (Guides + Travelers) from the shared users array
+    const activeUsersCount = users ? users.filter(u => (u.role === 'guide' || u.role === 'traveller') && u.status === 'active').length : 0;
+    
+    const criticalAlerts = techAdminData.systemLogs.filter(log => log.type === 'error').length;
+
     // 1. Render Stats
     const statsContainer = document.getElementById("tech-stats");
     if (statsContainer) {
         const stats = [
-            { label: "Total Tickets", value: techAdminData.stats.totalTickets, icon: "../components/ui/support.svg", color: "blue" },
-            { label: "Pending Tickets", value: techAdminData.stats.pendingTickets, icon: "../components/ui/support.svg", color: "orange" },
-            { label: "System Uptime", value: techAdminData.stats.systemUptime, icon: "../components/ui/operations.png", color: "dark-green" },
-            { label: "Active Users", value: techAdminData.stats.activeUsers, icon: "../components/ui/users.png", color: "violet" }
+            { label: "Total Tickets", value: total, icon: "../components/ui/support.svg", color: "blue", path: "tech_tickets.html" },
+            { label: "Pending Tickets", value: pending, icon: "../components/ui/support.svg", color: "orange", path: "tech_tickets.html?status=pending" },
+            { label: "Resolved Tickets", value: resolved, icon: "../components/ui/support.svg", color: "light-green", path: "tech_tickets.html?status=resolved" },
+            { label: "Active Users", value: activeUsersCount, icon: "../components/ui/users.png", color: "violet", path: "tech_activity.html" },
+            { label: "System Alerts", value: criticalAlerts, icon: "../components/ui/operations.png", color: "red", path: "tech_logs.html" }
         ];
 
         statsContainer.innerHTML = stats.map(stat => `
-            <div class="stat-card ${stat.color}">
-                <div class="card-icon">
-                    <img src="${stat.icon}" alt="icon">
+            <div class="stat-card ${stat.color}" onclick="window.location.href='${stat.path}'">
+                <div class="icon-container">
+                    <img src="${stat.icon}" alt="icon" class="icon-img">
                 </div>
                 <p class="stat-label">${stat.label}</p>
                 <h2 class="stat-value">${stat.value}</h2>
@@ -34,71 +46,109 @@ export function renderTechAdminDashboard(containerId) {
         `).join('');
     }
 
-    // 2. Render Recent Tickets
+    // 2. Render Live Ticket Overview (Table)
     const ticketsContainer = document.getElementById("recent-tickets");
     if (ticketsContainer) {
-        const recentTickets = techAdminData.tickets.slice(0, 3);
+        const latestTickets = [...techAdminData.tickets].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
         ticketsContainer.innerHTML = `
             <div class="card-header">
-                <h3>Recent Tickets</h3>
+                <div>
+                    <h2>Live Ticket Overview</h2>
+                    <p>Recent support requests across the platform</p>
+                </div>
                 <button class="view-all-btn" onclick="window.location.href='tech_tickets.html'">View All</button>
             </div>
-            <div class="ticket-list-mini">
-                ${recentTickets.map(ticket => `
-                    <div class="ticket-item-mini">
-                        <div class="ticket-info">
-                            <span class="ticket-id">${ticket.id}</span>
-                            <p class="ticket-subject">${ticket.subject}</p>
-                        </div>
-                        <span class="status-badge ${ticket.status}">${ticket.status}</span>
-                    </div>
-                `).join('')}
-            </div>
+            <table class="tour-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${latestTickets.map(ticket => `
+                        <tr>
+                            <td style="font-weight: 600; color: #2563EB;">${ticket.id}</td>
+                            <td>${ticket.userName}</td>
+                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${ticket.subject}</td>
+                            <td><span class="status-tag ${ticket.status}">${ticket.status}</span></td>
+                            <td><span class="status-tag ${ticket.priority}">${ticket.priority}</span></td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
         `;
     }
 
-    // 3. Render System Health
+    // 3. Render System Health (Side)
     const healthContainer = document.getElementById("system-health");
     if (healthContainer) {
+        const cpuUtil = 30 + Math.floor(Math.random() * 20);
+        const memUtil = 40 + Math.floor(Math.random() * 15);
         healthContainer.innerHTML = `
-            <h3>System Health</h3>
-            <div class="health-metrics">
-                <div class="metric">
-                    <span>API Response Time</span>
-                    <div class="progress-bar"><div class="progress" style="width: 85%"></div></div>
-                    <span class="metric-value">240ms</span>
+            <div class="card-header">
+                <h2>System Health</h2>
+            </div>
+            <div class="health-metrics" style="margin-top: 15px;">
+                <div class="metric" style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; font-weight: 600;">API Performance</span>
+                        <span style="color: #10B981; font-weight: 700;">98.4%</span>
+                    </div>
+                    <div class="progress-bar-container" style="background: #E5E7EB; height: 8px; border-radius: 4px;">
+                        <div class="progress-fill" style="width: 98.4%; background: #10B981; height: 100%; border-radius: 4px;"></div>
+                    </div>
                 </div>
-                <div class="metric">
-                    <span>Memory Usage</span>
-                    <div class="progress-bar"><div class="progress" style="width: 45%"></div></div>
-                    <span class="metric-value">4.2GB / 8GB</span>
+                <div class="metric" style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; font-weight: 600;">CPU Utilization</span>
+                        <span style="color: #2563EB; font-weight: 700;">${cpuUtil}%</span>
+                    </div>
+                    <div class="progress-bar-container" style="background: #E5E7EB; height: 8px; border-radius: 4px;">
+                        <div class="progress-fill" style="width: ${cpuUtil}%; background: #2563EB; height: 100%; border-radius: 4px;"></div>
+                    </div>
                 </div>
-                <div class="metric">
-                    <span>CPU Load</span>
-                    <div class="progress-bar"><div class="progress" style="width: 30%"></div></div>
-                    <span class="metric-value">30%</span>
+                 <div class="metric" style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; font-weight: 600;">Memory Usage</span>
+                        <span style="color: #8B5CF6; font-weight: 700;">${memUtil}%</span>
+                    </div>
+                    <div class="progress-bar-container" style="background: #E5E7EB; height: 8px; border-radius: 4px;">
+                        <div class="progress-fill" style="width: ${memUtil}%; background: #8B5CF6; height: 100%; border-radius: 4px;"></div>
+                    </div>
                 </div>
             </div>
         `;
     }
 
-    // 4. Render Tech Alerts
+    // 4. Render Recent Activity Feed
     const alertsContainer = document.getElementById("tech-alerts");
     if (alertsContainer) {
-        const errors = techAdminData.systemLogs.filter(log => log.type === 'error').slice(0, 2);
+        const activities = techAdminData.userActivity.slice(0, 5);
         alertsContainer.innerHTML = `
-            <h3>Critical Alerts</h3>
-            <div class="tech-alerts-list">
-                ${errors.map(error => `
-                    <div class="tech-alert error">
-                        <img src="../components/ui/operations.png" class="alert-icon">
-                        <div class="alert-content">
-                            <p class="alert-msg">${error.message}</p>
-                            <span class="alert-time">${new Date(error.timestamp).toLocaleTimeString()}</span>
+            <div class="card-header">
+                <h2>Recent Activity Feed</h2>
+            </div>
+            <div class="activity-list" style="margin-top: 15px;">
+                ${activities.map(act => `
+                    <div class="activity-item" style="padding: 12px 0; border-bottom: 1px solid #F3F4F6; display: flex; gap: 12px; align-items: center;">
+                        <div style="width: 36px; height: 36px; background: #EEF2FF; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <img src="../components/ui/user.svg" style="width: 18px; opacity: 0.8; filter: invert(30%) sepia(90%) some-color-adjust;">
                         </div>
+                        <div style="flex: 1;">
+                            <p style="margin: 0; font-size: 13px; font-weight: 600; color: #111827;">${act.userName}</p>
+                            <p style="margin: 0; font-size: 12px; color: #4B5563;">${act.action}</p>
+                        </div>
+                        <span style="font-size: 11px; color: #9CA3AF; white-space: nowrap;">${new Date(act.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                     </div>
                 `).join('')}
             </div>
+            <button class="secondary-btn" style="width: 100%; margin-top: 20px; font-size: 13px; height: 40px;" onclick="window.location.href='tech_activity.html'">View Full Activity Log</button>
         `;
     }
 }
+
+

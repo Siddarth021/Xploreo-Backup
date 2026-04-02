@@ -2,8 +2,21 @@ export function initTicketManagement() {
     let techAdminData = JSON.parse(localStorage.getItem("techAdminData"));
     if (!techAdminData) return;
 
-    let currentFilter = "all";
+    // Handle URL parameters for filtering (e.g., from Dashboard tiles)
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentFilter = urlParams.get('status') || "all";
     let searchQuery = "";
+
+    // Sync active tab state with currentFilter
+    const updateTabUI = () => {
+        document.querySelectorAll(".filter-btn").forEach(btn => {
+            if (btn.dataset.status === currentFilter) {
+                btn.classList.add("active");
+            } else {
+                btn.classList.remove("active");
+            }
+        });
+    };
 
     const renderTickets = () => {
         const tbody = document.getElementById("ticket-tbody");
@@ -19,18 +32,17 @@ export function initTicketManagement() {
 
         tbody.innerHTML = filteredTickets.map(ticket => `
             <tr class="ticket-row" data-id="${ticket.id}">
-                <td>${ticket.id}</td>
-                <td>${ticket.userName} (${ticket.userRole})</td>
-                <td>${ticket.subject}</td>
-                <td><span class="priority-badge ${ticket.priority}">${ticket.priority}</span></td>
-                <td><span class="status-badge ${ticket.status}">${ticket.status}</span></td>
-                <td>${ticket.category}</td>
+                <td style="font-weight: 600; color: #2563EB;">${ticket.id}</td>
                 <td>
-                    <button class="action-btn view" onclick="window.viewTicket('${ticket.id}')">View</button>
-                    ${ticket.status === 'pending' || ticket.status === 'in-progress' ? `
-                        <button class="action-btn approve" onclick="window.updateTicketStatus('${ticket.id}', 'resolved')">Resolve</button>
-                        <button class="action-btn reject" onclick="window.updateTicketStatus('${ticket.id}', 'escalated')">Escalate</button>
-                    ` : ''}
+                    <div style="font-weight: 600;">${ticket.userName}</div>
+                    <div style="font-size: 12px; color: #6B7280; text-transform: capitalize;">${ticket.userRole.replace('_', ' ')}</div>
+                </td>
+                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${ticket.subject}</td>
+                <td><span class="status-tag ${ticket.priority}">${ticket.priority}</span></td>
+                <td><span class="status-tag ${ticket.status}">${ticket.status}</span></td>
+                <td><span style="font-size: 13px; color: #4B5563;">${ticket.category}</span></td>
+                <td style="text-align: right;">
+                    <button class="secondary-btn" style="padding: 6px 12px; font-size: 13px;" onclick="window.viewTicket('${ticket.id}')">View Details</button>
                 </td>
             </tr>
         `).join('');
@@ -39,10 +51,12 @@ export function initTicketManagement() {
     // Filter Buttons
     document.querySelectorAll(".filter-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
-            document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-            e.target.classList.add("active");
             currentFilter = e.target.dataset.status;
+            updateTabUI();
             renderTickets();
+            // Update URL without reload
+            const newUrl = currentFilter === 'all' ? 'tech_tickets.html' : `tech_tickets.html?status=${currentFilter}`;
+            window.history.pushState({path: newUrl}, '', newUrl);
         });
     });
 
@@ -61,34 +75,65 @@ export function initTicketManagement() {
         if (!ticket) return;
 
         const modal = document.getElementById("ticket-modal");
-        const modalHeader = document.getElementById("modal-ticket-id");
         const modalBody = document.getElementById("modal-body");
         const modalFooter = document.getElementById("modal-footer");
 
-        modalHeader.innerText = `Ticket: ${ticket.id}`;
         modalBody.innerHTML = `
-            <div class="ticket-details">
-                <div class="detail-row"><span>User:</span> <p>${ticket.userName} (${ticket.userRole})</p></div>
-                <div class="detail-row"><span>Subject:</span> <p>${ticket.subject}</p></div>
-                <div class="detail-row"><span>Description:</span> <p>${ticket.description}</p></div>
-                <div class="detail-row"><span>Priority:</span> <span class="priority-badge ${ticket.priority}">${ticket.priority}</span></div>
-                <div class="detail-row"><span>Status:</span> <span class="status-badge ${ticket.status}">${ticket.status}</span></div>
-                <div class="detail-row"><span>Category:</span> <p>${ticket.category}</p></div>
-                <div class="detail-row"><span>Created:</span> <p>${new Date(ticket.createdAt).toLocaleString()}</p></div>
-                ${ticket.resolvedAt ? `<div class="detail-row"><span>Resolved:</span> <p>${new Date(ticket.resolvedAt).toLocaleString()}</p></div>` : ''}
+            <div class="ticket-details" style="display: flex; flex-direction: column; gap: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="info-group">
+                        <label style="display: block; font-size: 12px; color: #9CA3AF; font-weight: 700; text-transform: uppercase;">User Info</label>
+                        <span style="font-size: 15px; font-weight: 600;">${ticket.userName} (${ticket.userRole})</span>
+                    </div>
+                    <div class="info-group">
+                        <label style="display: block; font-size: 12px; color: #9CA3AF; font-weight: 700; text-transform: uppercase;">Ticket ID</label>
+                        <span style="font-size: 15px; font-weight: 600; color: #2563EB;">${ticket.id}</span>
+                    </div>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; color: #9CA3AF; font-weight: 700; text-transform: uppercase;">Subject</label>
+                    <p style="margin: 4px 0 0; font-size: 16px; font-weight: 600;">${ticket.subject}</p>
+                </div>
+                <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; border-left: 4px solid #D1D5DB;">
+                    <label style="display: block; font-size: 12px; color: #6B7280; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Description</label>
+                    <p style="margin: 0; font-size: 14px; color: #374151; line-height: 1.5;">${ticket.description}</p>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                    <div class="info-group">
+                        <label style="display: block; font-size: 12px; color: #9CA3AF; font-weight: 700; text-transform: uppercase;">Priority</label>
+                        <span class="status-tag ${ticket.priority}">${ticket.priority}</span>
+                    </div>
+                    <div class="info-group">
+                        <label style="display: block; font-size: 12px; color: #9CA3AF; font-weight: 700; text-transform: uppercase;">Status</label>
+                        <span class="status-tag ${ticket.status}">${ticket.status}</span>
+                    </div>
+                    <div class="info-group">
+                        <label style="display: block; font-size: 12px; color: #9CA3AF; font-weight: 700; text-transform: uppercase;">Category</label>
+                        <span style="font-size: 14px; font-weight: 600;">${ticket.category}</span>
+                    </div>
+                </div>
+                <div class="info-group">
+                    <label style="display: block; font-size: 12px; color: #9CA3AF; font-weight: 700; text-transform: uppercase;">Created At</label>
+                    <span style="font-size: 14px; color: #4B5563;">${new Date(ticket.createdAt).toLocaleString()}</span>
+                </div>
             </div>
         `;
 
         modalFooter.innerHTML = `
-            ${ticket.status !== 'resolved' ? `
-                <button class="primary-btn" onclick="window.updateTicketStatus('${ticket.id}', 'resolved')">Resolve Ticket</button>
-                <button class="secondary-btn" onclick="window.updateTicketStatus('${ticket.id}', 'escalated')">Escalate</button>
-            ` : ''}
-            <button class="close-btn" onclick="window.closeModal()">Close</button>
+            <div style="display: flex; gap: 12px; width: 100%; justify-content: flex-end;">
+                ${ticket.status === 'pending' ? `
+                    <button class="secondary-btn" style="border-color: #3b82f6; color: #3b82f6;" onclick="window.updateTicketStatus('${ticket.id}', 'in-progress')">Mark In-Progress</button>
+                    <button class="secondary-btn" style="border-color: #10b981; color: #10b981;" onclick="window.updateTicketStatus('${ticket.id}', 'resolved')">Resolve Ticket</button>
+                    <button class="secondary-btn" style="border-color: #ef4444; color: #ef4444;" onclick="window.updateTicketStatus('${ticket.id}', 'escalated')">Escalate</button>
+                ` : ticket.status === 'in-progress' ? `
+                    <button class="secondary-btn" style="border-color: #10b981; color: #10b981;" onclick="window.updateTicketStatus('${ticket.id}', 'resolved')">Resolve Ticket</button>
+                    <button class="secondary-btn" style="border-color: #ef4444; color: #ef4444;" onclick="window.updateTicketStatus('${ticket.id}', 'escalated')">Escalate</button>
+                ` : ''}
+                <button class="secondary-btn" onclick="window.closeModal()">Close</button>
+            </div>
         `;
 
-        modal.classList.remove("hidden");
-        modal.style.display = "flex";
+        modal.classList.add("active");
     };
 
     // Update Ticket Status Handler
@@ -99,24 +144,35 @@ export function initTicketManagement() {
             if (newStatus === 'resolved') {
                 techAdminData.tickets[ticketIndex].resolvedAt = new Date().toISOString();
             }
+            
+            // Log this action in user activity
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            const newActivity = {
+                id: `ACT-${Date.now()}`,
+                userId: currentUser.id,
+                userName: currentUser.name,
+                action: `Updated Ticket ${id} to ${newStatus}`,
+                timestamp: new Date().toISOString()
+            };
+            techAdminData.userActivity.unshift(newActivity);
+
             localStorage.setItem("techAdminData", JSON.stringify(techAdminData));
             renderTickets();
             window.closeModal();
-            alert(`Ticket ${id} status updated to ${newStatus}.`);
+            // Optional: Toast notification instead of alert
+            console.log(`Ticket ${id} status updated to ${newStatus}.`);
         }
     };
 
     window.closeModal = () => {
         const modal = document.getElementById("ticket-modal");
         if (modal) {
-            modal.classList.add("hidden");
-            modal.style.display = "none";
+            modal.classList.remove("active");
         }
     };
 
-    const closeBtn = document.querySelector(".close-modal");
-    if (closeBtn) closeBtn.onclick = window.closeModal;
-
-    // Initial Render
+    // Initial Setup
+    updateTabUI();
     renderTickets();
 }
+

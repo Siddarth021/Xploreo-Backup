@@ -1,7 +1,7 @@
 export const hotelBookings = [
   {
     id: "111",
-    customer: "Meera Iyler",
+    customer: "Meera Iyer",
     room: "Deluxe Room",
     guests: 2,
     status: "confirmed",

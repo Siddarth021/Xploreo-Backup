@@ -18,10 +18,28 @@ import { renderExperienceBookingsPage } from "./modules/experience_bookings.js";
 import { renderExperienceCatalogPage } from "./modules/experience_experience.js";
 import { renderExperienceProfilePage } from "./modules/experience_profile.js";
 import { initOperations } from "./modules/operations.js";
+import { renderTravelerDashboard } from "./modules/travelerDashboard.js";
+import { renderTravelerWishlist } from "./modules/travelerWishlist.js";
+import { renderTravelerTrips } from "./modules/travelerTrips.js";
 
 export function renderPageContent(user) {
     const path = window.location.pathname.split("/").pop() || "dashboard.html";
 
+    if (document.getElementById("traveler-app") || (user.role === "traveller" && path === "dashboard.html")) {
+        renderTravelerDashboard("traveler-app", user);
+        return;
+    } 
+
+    if (document.getElementById("wishlist-app") || (user.role === "traveller" && path === "wishlist.html")) {
+        renderTravelerWishlist("wishlist-app", user);
+        return;
+    } 
+
+    if (document.getElementById("mytrips-app") || (user.role === "traveller" && path === "mytrips.html")) {
+        renderTravelerTrips("mytrips-app", user);
+        return;
+    } 
+    
     if (user.role === "guide" && path === "dashboard.html") {
         renderdasboard("main", user);
         const main = document.getElementById("main");

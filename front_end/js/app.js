@@ -142,5 +142,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         renderNavbar(currentUser);
         renderPageContent(currentUser);
+ 
     }
 });
+
+window.addEventListener("unload", (event) => {
+    console.log("Refresh is starting...");
+    localStorage.clear();
+    location.reload();
+});
+
+if (window.location.pathname.includes('opsbook.html')) {
+    initOperations();
+}
+

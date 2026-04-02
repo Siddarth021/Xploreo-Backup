@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // FALLBACK: Only for demo/dev if not logged in
         if (!currentUser) {
-            currentUser = users.find(u => u.id === "10001");
+            currentUser = users.find(u => u.id === "00001");
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
         }
 

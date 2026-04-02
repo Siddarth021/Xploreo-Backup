@@ -135,7 +135,7 @@ export const users = [
     dob: new Date("1994-08-08"),
     username: "rohit_d",
     email: "rohit@xploreo.com",
-    role: "service_partner",
+    role: "experience",
     profilePic: "./profilepic/110.png",
     password: "rohit@123",
     status: "active"

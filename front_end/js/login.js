@@ -42,11 +42,16 @@ export function initLogin(users) {
                 const targetIndex = users.findIndex(u => u.username === identifier || u.email === identifier);
                 
                 if (targetIndex !== -1) {
-                    const newPassword = prompt(`Account found for ${identifier}. Enter your new password:`);
+                    let newPassword = prompt(`Account found for ${identifier}. Enter your new password:`);
                     if (newPassword && newPassword.trim() !== "") {
-                        users[targetIndex].password = newPassword.trim();
-                        localStorage.setItem("users", JSON.stringify(users));
-                        alert("Password successfully reset! You can now log in.");
+                        const passwordRegex = /^(?=.*[@$!%*?&.#\-_]).{8,}$/;
+                        if (!passwordRegex.test(newPassword.trim())) {
+                            alert("Failed: Password must be at least 8 characters long and contain at least 1 special character.");
+                        } else {
+                            users[targetIndex].password = newPassword.trim();
+                            localStorage.setItem("users", JSON.stringify(users));
+                            alert("Password successfully reset! You can now log in.");
+                        }
                     } else {
                         alert("Password reset cancelled. Cannot be blank.");
                     }
@@ -85,7 +90,11 @@ export function initLogin(users) {
                 return;
             }
             
-            const currentUser = users.find(u => 
+            let storedUsers = JSON.parse(localStorage.getItem("users"));
+            if (!storedUsers || storedUsers.length === 0) {
+                storedUsers = users;
+            }
+            const currentUser = storedUsers.find(u => 
                 (u.username === username || u.email === username) && 
                 u.password === password
             );
@@ -96,7 +105,12 @@ export function initLogin(users) {
             }
 
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
-            window.location.href = BASE_PATH + "/front_end/pages/dashboard.html";
+            
+            if (currentUser.role === "traveller") {
+                window.location.href = BASE_PATH + "/front_end/pages/traveller_dashboard.html";
+            } else {
+                window.location.href = BASE_PATH + "/front_end/pages/dashboard.html";
+            }
         });
     }
 

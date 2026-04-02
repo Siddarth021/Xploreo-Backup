@@ -50,16 +50,19 @@ export function renderPageContent(user) {
 
     if (user.role === "traveller" && (path === "dashboard.html" || path === "traveller_dashboard.html" || path === "travelerDashboard.html")) {
         renderTravelerDashboard("main", user);
+        document.getElementById("main").style.display = "block";
         return;
     } 
 
     if (user.role === "traveller" && (path === "wishlist.html" || path === "traveller_wishlist.html")) {
         renderTravelerWishlist("main", user);
+        document.getElementById("main").style.display = "block";
         return;
     } 
 
     if (user.role === "traveller" && (path === "mytrips.html" || path === "traveller_mytrips.html")) {
         renderTravelerTrips("main", user);
+        document.getElementById("main").style.display = "block";
         return;
     } 
 
@@ -85,6 +88,7 @@ export function renderPageContent(user) {
 
         if (travelerRoutes[path]) {
             travelerRoutes[path]("main");
+            document.getElementById("main").style.display = "block";
             return;
         }
     }

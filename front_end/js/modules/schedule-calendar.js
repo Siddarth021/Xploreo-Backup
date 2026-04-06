@@ -97,7 +97,8 @@ function createDayCell(num, isOtherMonth, isToday, isSelected, dateObj, state, s
     cell.innerHTML = `<span class="day-number">${num}</span>`;
 
     if (!isOtherMonth && dateObj) {
-        const dateStr = dateObj.toISOString().split('T')[0];
+        const padLocal = (num) => String(num).padStart(2, '0');
+        const dateStr = `${dateObj.getFullYear()}-${padLocal(dateObj.getMonth() + 1)}-${padLocal(dateObj.getDate())}`;
         // Fetch tours from localStorage for real-time accuracy
         const allTours = JSON.parse(localStorage.getItem("tours")) || [];
         const dayEvents = allTours.filter(t => 
@@ -140,7 +141,8 @@ export function renderDayDetails(date, allTours, currentUser) {
     if (!panel) return;
 
     const dateStr = date.toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' });
-    const isoDate = date.toISOString().split('T')[0];
+    const padLocal = (num) => String(num).padStart(2, '0');
+    const isoDate = `${date.getFullYear()}-${padLocal(date.getMonth() + 1)}-${padLocal(date.getDate())}`;
     
     const dayEvents = allTours.filter(t => 
         t.dateTime && 

@@ -20,7 +20,7 @@ export const bookingsData = [
     ]
   },
   {
-    title: "Mountain Hiking Adventure",
+    title: "Hot Air Balloon Ride Over Desert",
     date: "March 27, 2026",
     time: "6:00 AM",
     users: [

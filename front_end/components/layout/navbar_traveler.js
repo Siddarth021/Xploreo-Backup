@@ -1,7 +1,7 @@
 const TRAVELER_PAGES_PATH = "./";
 const LOGIN_PATH = "../login.html";
-const PROFILE_PATH = "./profile.html";
-const SUPPORT_PATH = "./support.html";
+const PROFILE_PATH = "./traveller_profile.html";
+const SUPPORT_PATH = "./traveller_support.html";
 const LOGO_PATH = "../../components/ui/landing/navbar-logo.png";
 
 export function renderTravelerNavbar() {

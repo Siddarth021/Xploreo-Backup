@@ -1,4 +1,5 @@
 import { travelerData } from "../../data/traveler.js";
+import { getTravelerBookings } from "../utils/travelerWorkspaceState.js";
 
 const CONFIRMED_BOOKING_KEY = "traveler_confirmed_booking";
 const CONFIRMED_BOOKING_SESSION_KEY = "traveler_confirmed_booking_session";
@@ -85,6 +86,12 @@ export function renderTravelerTrips(containerId, user) {
                             <div class="trip-booking-id">
                                 Booking ID: <strong>${trip.bookingId}</strong>
                             </div>
+                            
+                            ${trip.currentStop && trip.status !== 'Completed' ? `
+                            <div class="trip-current-stop" style="margin-top: 10px; font-size: 0.9rem; color: #1e40af; background: #eff6ff; padding: 6px 10px; border-radius: 6px; display: inline-block;">
+                                📍 Current: <strong>${trip.currentStop}</strong>
+                            </div>
+                            ` : ''}
                             
                             <div class="trip-actions">
                                 <button class="btn-solid-blue" data-trip-view="${escapeHtmlAttr(getTripViewKey(trip))}">View Details</button>
@@ -213,14 +220,31 @@ export function renderTravelerTrips(containerId, user) {
 }
 
 function getTravelerTripsData() {
-    const trips = [...(travelerData.myTrips || [])];
+    // Get unified bookings from localStorage
+    const unifiedBookings = getTravelerBookings();
+    
+    // Map unified object to traveler UI format
+    const trips = unifiedBookings.map(b => ({
+        title: b.title,
+        location: b.destination || b.location,
+        dateRange: b.dateTime ? b.dateTime.split(" | ")[0] : "Date TBD",
+        bookingId: b.id,
+        planId: b.planId || b.id,
+        experienceId: b.experienceId,
+        type: b.type || "Tour",
+        status: b.status.charAt(0).toUpperCase() + b.status.slice(1), // Map 'pending' back to 'Pending' etc
+        image: b.coverImage || b.image || DEFAULT_TRIP_IMAGE,
+        // Carry over sync-specific info
+        currentStop: b.currentloction
+    }));
+
     const confirmedBooking = getConfirmedBooking();
 
     if (!confirmedBooking) {
         return trips;
     }
 
-    const existingIndex = trips.findIndex(trip => Number(trip.bookingId) === Number(confirmedBooking.bookingId));
+    const existingIndex = trips.findIndex(trip => String(trip.bookingId) === String(confirmedBooking.bookingId));
     const confirmedTrip = mapConfirmedBookingToTrip(confirmedBooking);
 
     if (existingIndex >= 0) {

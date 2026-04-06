@@ -14,6 +14,24 @@ export function renderTravelerHotelConfirmationPage(containerId) {
     const locationLabel = getLocationLabel(hotel);
     const bookingId = `XPL-HTL-${new Date(searchValues.checkIn + "T00:00:00").getFullYear()}-${String(Math.abs(hashCode(hotel.id))).slice(0, 4)}`;
 
+    // Sync with global Hotel Provider data
+    const allHotelBookings = JSON.parse(localStorage.getItem("hotelBookings") || "[]");
+    if (!allHotelBookings.find(b => b.id === bookingId)) {
+        const hotelRecord = {
+            id: bookingId,
+            hotelId: hotel.id,
+            hotel: hotel.title,
+            customer: "Anjali Sharma", // Current user
+            checkIn: searchValues.checkIn,
+            checkOut: searchValues.checkOut,
+            room: selectedRoom.name,
+            amount: totalAmount,
+            status: "pending"
+        };
+        allHotelBookings.push(hotelRecord);
+        localStorage.setItem("hotelBookings", JSON.stringify(allHotelBookings));
+    }
+
     container.innerHTML = `
         <main class="traveler-hotel-confirmation-page">
             <div class="traveler-hotel-confirmation-frame">

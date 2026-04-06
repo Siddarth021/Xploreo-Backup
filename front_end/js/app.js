@@ -20,6 +20,8 @@ import { initialScheduleData } from "../data/schedule.js";
 import { initialProfileData } from "../data/profile-data.js";
 import { initialSupportData } from "../data/support-data.js";
 import { techAdminData } from "../data/tech_admin_data.js";
+import { travelerWorkspaceSeed } from "../data/travelerWorkspaceData.js";
+import { travelerData } from "../data/traveler.js";
 
 function initializeData() {
     if (!localStorage.getItem("users")) {
@@ -27,15 +29,25 @@ function initializeData() {
     }
 
     if (!localStorage.getItem("tours")) {
-        localStorage.setItem("tours", JSON.stringify(tour));
+        // Now that tour.js and travelerWorkspaceSeed are synchronized, we can simply seed from them
+        const allTours = tour.concat((travelerWorkspaceSeed.bookings || []).filter(b => !tour.find(t => String(t.id) === String(b.id))));
+        localStorage.setItem("tours", JSON.stringify(allTours));
     }
 
-    if (!localStorage.getItem("reviews")) {
-        localStorage.setItem("reviews", JSON.stringify(reviews));
+    if (!localStorage.getItem("experienceBookings")) {
+        localStorage.setItem("experienceBookings", JSON.stringify(bookingsData));
     }
 
     if (!localStorage.getItem("hotelBookings")) {
         localStorage.setItem("hotelBookings", JSON.stringify(hotelBookings));
+    }
+
+    if (!localStorage.getItem("techAdminData")) {
+        localStorage.setItem("techAdminData", JSON.stringify(techAdminData));
+    }
+
+    if (!localStorage.getItem("reviews")) {
+        localStorage.setItem("reviews", JSON.stringify(reviews));
     }
 
     if (!localStorage.getItem("hotelReviews")) {
@@ -53,16 +65,13 @@ function initializeData() {
     if (!localStorage.getItem("partners")) {
         localStorage.setItem("partners", JSON.stringify(partners));
     }
+    
     if (!localStorage.getItem("experienceHome")) {
         localStorage.setItem("experienceHome", JSON.stringify(homeData));
     }
 
     if (!localStorage.getItem("experienceEarnings")) {
         localStorage.setItem("experienceEarnings", JSON.stringify(earningsData));
-    }
-
-    if (!localStorage.getItem("experienceBookings")) {
-        localStorage.setItem("experienceBookings", JSON.stringify(bookingsData));
     }
 
     if (!localStorage.getItem("experienceCatalog")) {
@@ -77,16 +86,25 @@ function initializeData() {
         localStorage.setItem("scheduleData", JSON.stringify(initialScheduleData));
     }
 
-    // Multi-user Profile Integrity
-    let currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    if (currentUser && currentUser.id) {
-        const userProfileKey = `profileData_${currentUser.id}`;
-        if (!localStorage.getItem(userProfileKey)) {
-            localStorage.setItem(userProfileKey, JSON.stringify(initialProfileData));
+    // Profile Data Bridge: Ensures profile always shows the current user's data
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (currentUser) {
+        // Sync the main 'profileData' used by the profile page with the currentUser's current state
+        const allUsers = JSON.parse(localStorage.getItem("users") || "[]");
+        const userSync = allUsers.find(u => u.id === currentUser.id);
+        
+        if (userSync) {
+            const bridgedProfile = {
+                ...initialProfileData,
+                firstName: userSync.name.split(' ')[0],
+                lastName: userSync.name.split(' ').slice(1).join(' '),
+                email: userSync.email,
+                phone: userSync.phone || userSync.phno,
+                role: userSync.role
+            };
+            localStorage.setItem("profileData", JSON.stringify(bridgedProfile));
         }
-    }
-
-    if (!localStorage.getItem("profileData")) {
+    } else if (!localStorage.getItem("profileData")) {
         localStorage.setItem("profileData", JSON.stringify(initialProfileData));
     }
 

@@ -81,7 +81,8 @@ export function renderPageContent(user) {
             "traveller_experience-detail.html": renderTravelerExperienceDetailPage,
             "traveller_experience-booking.html": renderTravelerExperienceBookingPage,
             "traveller_experience-confirmation.html": renderTravelerExperienceConfirmationPage,
-            "traveller_trip-planning.html": initTripPlannerPage
+            "traveller_trip-planning.html": initTripPlannerPage,
+            "support.html": renderSupportPage
         };
 
         if (travelerRoutes[path]) {
@@ -145,7 +146,7 @@ export function renderPageContent(user) {
         renderSchedulePage("main", user);
     } else if ((user.role === "guide" || user.role === "experience" || user.role === "techadmin") && path === "profile.html") {
         renderProfilePage("main", user);
-    } else if (user.role === "guide" && path === "support.html") {
+    } else if ((user.role === "guide" || user.role === "hotel" || user.role === "experience") && path === "support.html") {
         renderSupportPage("main", user);
     } else if (user.role === "hotel" && (path === "dashboard.html" || path === "hotelDashboard.html")) {
         renderHotelDashboard(user);

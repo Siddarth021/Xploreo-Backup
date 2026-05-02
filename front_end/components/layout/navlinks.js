@@ -33,7 +33,19 @@ const navlinks = [
     name: "Dashboard",
     path: "../pages/dashboard.html",
     icon: "../components/ui/dashboard.svg",
-    roles: ["guide","superadmin","nontechadmin","opadmin","hotel"]
+    roles: ["guide","superadmin","opadmin","hotel"]
+  },
+  {
+    name: "Dashboard",
+    path: "../pages/nta_dashboard.html",
+    icon: "../components/ui/dashboard.svg",
+    roles: ["nontechadmin"]
+  },
+  {
+    name: "Travel Packages",
+    path: "../pages/nta_plans.html",
+    icon: "../components/ui/operations.png",
+    roles: ["nontechadmin"]
   },
   {
     name: "Operations & Bookings",

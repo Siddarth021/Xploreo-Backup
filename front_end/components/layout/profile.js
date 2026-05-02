@@ -11,13 +11,13 @@ export function getProfile(user) {
             profileLink = 'hotelprofile.html';
         } else if (user.role === 'superadmin') {
             profileLink = 'adminProfile.html'; // <-- Routes superadmin to the new page
-        } else if (user.role === 'experience' || user.role === 'guide' || user.role === 'techadmin') {
+        } else if (user.role === 'experience' || user.role === 'guide' || user.role === 'techadmin' || user.role === 'nontechadmin') {
             profileLink = 'profile.html';
         }
     }
 
-    // 2. Hide Support specifically for techadmin and superadmin
-    const supportItem = (user && user.role !== 'techadmin' && user.role !== 'superadmin') ? `
+    // 2. Hide Support specifically for techadmin, superadmin, and nontechadmin
+    const supportItem = (user && user.role !== 'techadmin' && user.role !== 'superadmin' && user.role !== 'nontechadmin') ? `
               <div class="dropdown-item" onclick="window.location.href='${supportLink}'">
                 <img src="../components/ui/support.svg" class="dropdown-icon">
                 <span>Support</span>

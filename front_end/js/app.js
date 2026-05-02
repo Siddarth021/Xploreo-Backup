@@ -22,6 +22,7 @@ import { initialSupportData } from "../data/support-data.js";
 import { techAdminData } from "../data/tech_admin_data.js";
 import { travelerWorkspaceSeed } from "../data/travelerWorkspaceData.js";
 import { travelerData } from "../data/traveler.js";
+import { nontechAdminData } from "../data/nontechadmin_data.js";
 
 function initializeData() {
     if (!localStorage.getItem("users")) {
@@ -110,6 +111,13 @@ function initializeData() {
 
     if (!localStorage.getItem("supportData")) {
         localStorage.setItem("supportData", JSON.stringify(initialSupportData));
+    }
+
+    if (!localStorage.getItem("ntaPlans")) {
+        localStorage.setItem("ntaPlans", JSON.stringify(nontechAdminData.plans));
+    }
+    if (!localStorage.getItem("ntaActivity")) {
+        localStorage.setItem("ntaActivity", JSON.stringify(nontechAdminData.recentActivity));
     }
     
     if (!localStorage.getItem("techAdminData")) {

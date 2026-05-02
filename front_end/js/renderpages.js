@@ -23,6 +23,8 @@ import { initTicketManagement } from "./modules/tech_tickets.js";
 import { initTechActivity } from "./modules/tech_activity.js";
 import { initTechLogs } from "./modules/tech_logs.js";
 import { renderTechTicketDetail } from "./modules/tech_ticket_detail.js";
+import { renderNtaDashboard } from "./modules/ntaDashboard.js";
+import { initNtaPlans } from "./modules/ntaPlans.js";
 
 // Traveler modules
 import { renderTravelerDashboard } from "./modules/travelerDashboard.js";
@@ -147,7 +149,7 @@ export function renderPageContent(user) {
         renderReviewsPage("main", user);
     } else if (user.role === "guide" && path === "schedule.html") {
         renderSchedulePage("main", user);
-    } else if ((user.role === "guide" || user.role === "experience" || user.role === "techadmin") && path === "profile.html") {
+    } else if ((user.role === "guide" || user.role === "experience" || user.role === "techadmin" || user.role === "nontechadmin") && path === "profile.html") {
         renderProfilePage("main", user);
     } else if ((user.role === "guide" || user.role === "hotel" || user.role === "experience") && path === "support.html") {
         renderSupportPage("main", user);
@@ -182,5 +184,9 @@ export function renderPageContent(user) {
         renderExperienceCatalogPage();
     } else if (user.role === "experience" && path === "experience_profile.html") {
         renderExperienceProfilePage();
+    } else if (user.role === "nontechadmin" && (path === "dashboard.html" || path === "nta_dashboard.html")) {
+        renderNtaDashboard("nta-dashboard");
+    } else if (user.role === "nontechadmin" && path === "nta_plans.html") {
+        initNtaPlans();
     }
 }

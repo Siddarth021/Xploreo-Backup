@@ -388,6 +388,49 @@ function bindEvents(container, state) {
     });
 
     container.querySelector("#plan-detail-confirm-btn")?.addEventListener("click", () => {
+        // Save booking to My Trips
+        try {
+            const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+            const customerId = currentUser?.id || "traveler-fallback";
+            const plan = state.plan;
+            const bookingId = String(plan.bookingId || plan.id);
+
+            const tripRecord = {
+                id: bookingId,
+                bookingId,
+                customerId,
+                customer: currentUser?.name || "Traveler",
+                title: plan.title,
+                destination: plan.location,
+                location: plan.location,
+                dateTime: `${plan.startDate} | 09:00 AM`,
+                dateRange: `${plan.startDate} - ${plan.endDate}`,
+                status: "Upcoming",
+                type: "Tour",
+                planId: plan.id,
+                guests: 2,
+                amount: plan.payments?.total || 0,
+                duration: `${plan.days} days`,
+                coverImage: plan.image || "",
+                image: plan.image || "",
+                plan_iternary: plan.tags || []
+            };
+
+            const allTours = JSON.parse(localStorage.getItem("tours") || "[]");
+            if (!allTours.find(t => String(t.id) === bookingId || String(t.bookingId) === bookingId)) {
+                allTours.push(tripRecord);
+                localStorage.setItem("tours", JSON.stringify(allTours));
+            }
+
+            const myTrips = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]");
+            if (!myTrips.find(t => String(t.id) === bookingId || String(t.bookingId) === bookingId)) {
+                myTrips.push(tripRecord);
+                localStorage.setItem("traveler_my_trips", JSON.stringify(myTrips));
+            }
+        } catch (error) {
+            console.warn("Could not save plan booking to traveler trips", error);
+        }
+
         window.location.href = `./traveller_booking-confirmation.html?plan=${encodeURIComponent(state.plan.id)}`;
     });
 

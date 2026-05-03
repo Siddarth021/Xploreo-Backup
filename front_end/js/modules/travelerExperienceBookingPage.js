@@ -268,10 +268,7 @@ function persistExperienceConfirmation(record) {
 
     // Sync with global Experience Provider data
     const allExpBookings = JSON.parse(localStorage.getItem("experienceBookings") || "[]");
-    
-    // Check if already exists to avoid duplicates
     if (!allExpBookings.find(b => b.id === record.bookingId || b.bookingId === record.bookingId)) {
-        // Map to the provider's expected format if necessary
         const providerRecord = {
             id: record.bookingId,
             experienceId: record.experience.id,
@@ -288,6 +285,48 @@ function persistExperienceConfirmation(record) {
         allExpBookings.push(providerRecord);
         localStorage.setItem("experienceBookings", JSON.stringify(allExpBookings));
     }
+
+    // Save to traveler trips (tours + traveler_my_trips) so it appears in My Trips
+    try {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+        const customerId = currentUser?.id || "traveler-fallback";
+        const customerName = currentUser?.name || "Traveler";
+
+        const tripRecord = {
+            id: String(record.bookingId),
+            bookingId: String(record.bookingId),
+            customerId,
+            customer: customerName,
+            title: record.experience.title,
+            destination: record.experience.location || record.experience.destination || record.experience.title,
+            location: record.experience.location || record.experience.destination || record.experience.title,
+            dateTime: `${record.selectedDate} | ${record.option.time || "09:00 AM"}`,
+            dateRange: record.selectedDate,
+            status: "Upcoming",
+            type: "Experience",
+            experienceId: record.experience.id,
+            guests: record.adults,
+            amount: record.totalPrice,
+            duration: record.experience.durationLabel || "",
+            coverImage: record.experience.image || "",
+            image: record.experience.image || "",
+            plan_iternary: [record.option.title || "Experience"]
+        };
+
+        const allTours = JSON.parse(localStorage.getItem("tours") || "[]");
+        if (!allTours.find(t => String(t.id) === String(record.bookingId))) {
+            allTours.push(tripRecord);
+            localStorage.setItem("tours", JSON.stringify(allTours));
+        }
+
+        const myTrips = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]");
+        if (!myTrips.find(t => String(t.id) === String(record.bookingId) || String(t.bookingId) === String(record.bookingId))) {
+            myTrips.push(tripRecord);
+            localStorage.setItem("traveler_my_trips", JSON.stringify(myTrips));
+        }
+    } catch (error) {
+        console.warn("Could not save experience booking to traveler trips", error);
+    }
 }
 
 function validateBooking(state) {
@@ -295,6 +334,8 @@ function validateBooking(state) {
     if (!state.leadTraveler.lastName.trim()) return ["Enter the last name"];
     if (!state.leadTraveler.email.trim()) return ["Enter the email address"];
     if (!state.leadTraveler.phone.trim()) return ["Enter the phone number"];
+    const phoneDigits = state.leadTraveler.phone.replace(/\D/g, "");
+    if (/^0+$/.test(phoneDigits)) return ["Enter a valid phone number"];
 
     for (let index = 0; index < state.travelers.length; index += 1) {
         const traveler = state.travelers[index];

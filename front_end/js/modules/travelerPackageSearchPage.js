@@ -1,4 +1,5 @@
 import { travelerData } from "../../data/traveler.js";
+import { attachLocationAutocomplete, getTodayDateString } from "../utils/locationAutocomplete.js";
 
 const SELECTED_PACKAGE_STORAGE_KEY = "traveler_selected_package";
 
@@ -116,6 +117,7 @@ export function renderTravelerPackageSearchPage(containerId) {
         `;
 
         bindEvents();
+        attachPackageSearchAutocomplete(container);
     }
 
     function bindEvents() {
@@ -228,6 +230,52 @@ export function renderTravelerPackageSearchPage(containerId) {
     }
 
     render();
+    attachPackageSearchAutocomplete(container);
+}
+
+function attachPackageSearchAutocomplete(container) {
+    const packageData = travelerData.searchCatalog.packages || [];
+
+    const fromInput = container?.querySelector('[data-package-field="fromCity"]');
+    const destInput = container?.querySelector('[data-package-field="destination"]');
+
+    if (!fromInput && !destInput) return;
+
+    if (fromInput && !fromInput.id) fromInput.id = "package-from-search";
+    if (destInput && !destInput.id) destInput.id = "package-dest-search";
+
+    // Dynamic supplier for From City:
+    // Only list origins that have at least one package going to the current destination value
+    function getFromSuggestions() {
+        const currentDest = normalizeText(destInput ? destInput.value : "");
+        const filtered = currentDest
+            ? packageData.filter(pkg => normalizeText(pkg.destination).includes(currentDest))
+            : packageData;
+        return [...new Set(filtered.map(pkg => pkg.origin).filter(Boolean))].sort();
+    }
+
+    // Dynamic supplier for Destination:
+    // Only list destinations that have at least one package coming from the current origin value
+    function getDestSuggestions() {
+        const currentFrom = normalizeText(fromInput ? fromInput.value : "");
+        const filtered = currentFrom
+            ? packageData.filter(pkg => normalizeText(pkg.origin).includes(currentFrom))
+            : packageData;
+        return [...new Set(filtered.map(pkg => pkg.destination).filter(Boolean))].sort();
+    }
+
+    if (fromInput) {
+        attachLocationAutocomplete(fromInput.id, getFromSuggestions, (val) => {
+            fromInput.value = val;
+            fromInput.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+    }
+    if (destInput) {
+        attachLocationAutocomplete(destInput.id, getDestSuggestions, (val) => {
+            destInput.value = val;
+            destInput.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+    }
 }
 
 function getSearchValues() {
@@ -330,7 +378,7 @@ function renderDateField(field, label, value) {
             <span class="traveler-package-toolbar-label">${label}</span>
             <span class="traveler-package-toolbar-row">
                 ${calendarIcon()}
-                <input type="date" class="traveler-package-toolbar-input traveler-package-toolbar-date" data-package-field="${field}" value="${escapeHtml(value)}">
+                <input type="date" class="traveler-package-toolbar-input traveler-package-toolbar-date" data-package-field="${field}" value="${escapeHtml(value)}" min="${getTodayDateString()}">
             </span>
         </label>
     `;

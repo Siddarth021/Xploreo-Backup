@@ -24,9 +24,11 @@ export function renderTravelerFlightDetailPage(containerId) {
         return;
     }
 
+    const status = new URLSearchParams(window.location.search).get("status")?.trim().toLowerCase() || "";
+    const isBooked = status === "completed" || status === "upcoming";
     const totalAmount = selectedFlight.price + selectedFlight.taxes;
     const isSaved = getFlightWishlist().includes(selectedFlight.id);
-    const travelerForm = getTravelerFormDefaults();
+    const travelerForm = selectedFlight.travelerDetails || getTravelerFormDefaults();
 
     container.innerHTML = `
         <main class="flight-detail-page">
@@ -117,6 +119,26 @@ export function renderTravelerFlightDetailPage(containerId) {
 
                             <div class="flight-traveler-form">
                                 <h3>Traveler Details</h3>
+                                ${isBooked ? `
+                                <div class="flight-traveler-grid">
+                                    <div class="flight-traveler-field">
+                                        <span>Full Name</span>
+                                        <div style="padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; color: #0f172a; font-weight: 500;">${escapeAttribute(travelerForm.fullName)}</div>
+                                    </div>
+                                    <div class="flight-traveler-field">
+                                        <span>Email</span>
+                                        <div style="padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; color: #0f172a; font-weight: 500;">${escapeAttribute(travelerForm.email)}</div>
+                                    </div>
+                                    <div class="flight-traveler-field">
+                                        <span>Phone Number</span>
+                                        <div style="padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; color: #0f172a; font-weight: 500;">${escapeAttribute(travelerForm.phone)}</div>
+                                    </div>
+                                    <div class="flight-traveler-field">
+                                        <span>Gender</span>
+                                        <div style="padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; color: #0f172a; font-weight: 500;">${escapeAttribute(travelerForm.gender)}</div>
+                                    </div>
+                                </div>
+                                ` : `
                                 <div class="flight-traveler-grid">
                                     <label class="flight-traveler-field">
                                         <span>Full Name</span>
@@ -140,9 +162,10 @@ export function renderTravelerFlightDetailPage(containerId) {
                                     </label>
                                 </div>
                                 <p class="flight-traveler-error" id="flight-traveler-error"></p>
+                                `}
                             </div>
 
-                            <button class="book-now-btn" id="book-flight-btn">Book Now →</button>
+                            ${isBooked ? "" : `<button class="book-now-btn" id="book-flight-btn">Book Now →</button>`}
                             <p class="flight-note">${selectedFlight.cancellation}</p>
                             <p class="flight-confirm">${selectedFlight.confirmation}</p>
                         </article>
@@ -461,7 +484,8 @@ function getTravelerFormValues() {
 function validateTravelerForm(details) {
     if (!details.fullName) return "Enter the traveler full name.";
     if (!details.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(details.email)) return "Enter a valid email address.";
-    if (!details.phone || details.phone.replace(/[^\d]/g, "").length < 8) return "Enter a valid phone number.";
+    const phoneDigits = details.phone.replace(/[^\d]/g, "");
+    if (!details.phone || phoneDigits.length < 8 || /^0+$/.test(phoneDigits)) return "Enter a valid phone number.";
     if (!details.gender) return "Select a gender.";
     return "";
 }

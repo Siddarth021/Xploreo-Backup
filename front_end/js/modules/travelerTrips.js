@@ -215,21 +215,36 @@ export function renderTravelerTrips(containerId, user) {
 }
 
 function getTravelerTripsData() {
-    // Get unified bookings from localStorage
+    // Get unified bookings from localStorage (filtered by customerId)
     const unifiedBookings = getTravelerBookings();
-    
-    // Map unified object to traveler UI format
-    const trips = unifiedBookings.map(b => ({
+
+    // Also read traveler_my_trips which stores locally confirmed bookings
+    let myTripsRaw = [];
+    try { myTripsRaw = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]"); } catch (e) { myTripsRaw = []; }
+
+    // Merge: unifiedBookings first, then any myTrips entries not already present
+    const bookingIdsSeen = new Set(unifiedBookings.map(b => String(b.id)));
+    const combined = [...unifiedBookings];
+    for (const b of myTripsRaw) {
+        if (!bookingIdsSeen.has(String(b.id)) && !bookingIdsSeen.has(String(b.bookingId))) {
+            combined.push(b);
+            bookingIdsSeen.add(String(b.id));
+        }
+    }
+
+    // Map combined list to traveler UI format
+    const trips = combined.map(b => ({
         title: b.title,
         location: b.destination || b.location,
-        dateRange: b.dateTime ? b.dateTime.split(" | ")[0] : "Date TBD",
-        bookingId: b.id,
+        dateRange: b.dateTime ? b.dateTime.split(" | ")[0] : (b.dateRange || "Date TBD"),
+        bookingId: b.bookingId || b.id,
         planId: b.planId || b.id,
         experienceId: b.experienceId,
+        hotelId: b.hotelId,
+        flightId: b.flightId,
         type: b.type || "Tour",
-        status: b.status.charAt(0).toUpperCase() + b.status.slice(1), // Map 'pending' back to 'Pending' etc
+        status: normalizeTripStatus(b.status),
         image: b.coverImage || b.image || DEFAULT_TRIP_IMAGE,
-        // Carry over sync-specific info
         currentStop: b.currentloction
     }));
     const confirmedBooking = getConfirmedBooking();
@@ -410,7 +425,7 @@ function openFlightTrip(trip) {
     if (!payload || typeof localStorage === "undefined") return;
 
     localStorage.setItem(SELECTED_FLIGHT_KEY, JSON.stringify(payload));
-    window.location.href = `./traveller_flight-detail.html?flight=${encodeURIComponent(payload.id || trip.flightId || trip.bookingId)}`;
+    window.location.href = `./traveller_flight-detail.html?flight=${encodeURIComponent(payload.id || trip.flightId || trip.bookingId)}${getTripStatusParam(trip)}`;
 }
 
 function openExperienceTrip(trip) {
@@ -418,7 +433,7 @@ function openExperienceTrip(trip) {
     if (!experience || typeof localStorage === "undefined") return;
 
     localStorage.setItem(SELECTED_EXPERIENCE_KEY, JSON.stringify(experience));
-    window.location.href = `./traveller_experience-detail.html?experience=${encodeURIComponent(experience.id)}`;
+    window.location.href = `./traveller_experience-detail.html?experience=${encodeURIComponent(experience.id)}${getTripStatusParam(trip)}`;
 }
 
 function openHotelTrip(trip) {
@@ -426,7 +441,7 @@ function openHotelTrip(trip) {
     if (!hotel || typeof localStorage === "undefined") return;
 
     localStorage.setItem(SELECTED_HOTEL_KEY, JSON.stringify(hotel));
-    window.location.href = `./traveller_hotel-detail.html?hotel=${encodeURIComponent(hotel.id)}`;
+    window.location.href = `./traveller_hotel-detail.html?hotel=${encodeURIComponent(hotel.id)}${getTripStatusParam(trip)}`;
 }
 
 function openExperienceBookingTrip(trip) {
@@ -458,7 +473,14 @@ function openPackageBookingTrip(trip) {
     const packageSelection = buildPackageSelectionFromTrip(trip);
     localStorage.setItem(SELECTED_PACKAGE_KEY, JSON.stringify(packageSelection));
     const packageId = packageSelection?.id || trip.planId || slugify(trip.title);
-    window.location.href = `./traveller_booking-details.html?plan=${encodeURIComponent(packageId)}`;
+    window.location.href = `./traveller_booking-details.html?plan=${encodeURIComponent(packageId)}${getTripStatusParam(trip)}`;
+}
+
+function getTripStatusParam(trip) {
+    if (!trip || !trip.status) return "";
+    const normalized = String(trip.status).trim().toLowerCase();
+    if (!normalized) return "";
+    return `&status=${encodeURIComponent(normalized)}`;
 }
 
 function resolveHotelForTrip(trip) {

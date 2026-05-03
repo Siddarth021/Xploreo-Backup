@@ -1,5 +1,6 @@
 import { travelerData } from "../../data/traveler.js";
 import { travelerWorkspaceSeed } from "../../data/travelerWorkspaceData.js";
+import { attachLocationAutocomplete, getTodayDateString, extractUniqueLocations } from "../utils/locationAutocomplete.js";
 
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const WISHLIST_STORAGE_KEY = "traveler_wishlist";
@@ -92,6 +93,7 @@ export function renderTravelerExperienceSearchPage(containerId) {
         `;
 
         bindEvents();
+        attachExperienceSearchAutocomplete(container);
     }
 
     function bindEvents() {
@@ -166,6 +168,24 @@ export function renderTravelerExperienceSearchPage(containerId) {
     }
 
     render();
+    attachExperienceSearchAutocomplete(container);
+}
+
+function attachExperienceSearchAutocomplete(container) {
+    // Only suggest destinations that actually exist in the experience catalog
+    const experienceDests = extractUniqueLocations(
+        (travelerData.searchCatalog.experiences || []),
+        ["destination"]
+    );
+    // No fallback to hotel cities — showing wrong-category cities would produce zero results
+
+    const destInput = container?.querySelector('[data-experience-field="destination"]');
+    if (!destInput) return;
+    if (!destInput.id) destInput.id = "experience-dest-search";
+    attachLocationAutocomplete(destInput.id, experienceDests, (val) => {
+        destInput.value = val;
+        destInput.dispatchEvent(new Event("change", { bubbles: true }));
+    });
 }
 
 function buildExperienceCatalog() {
@@ -399,7 +419,7 @@ function renderDateField(field, label, value) {
             <span class="traveler-experience-toolbar-label">${label}</span>
             <span class="traveler-experience-toolbar-row">
                 ${calendarIcon()}
-                <input type="date" class="traveler-experience-toolbar-input traveler-experience-toolbar-date" data-experience-field="${field}" value="${escapeHtml(value)}">
+                <input type="date" class="traveler-experience-toolbar-input traveler-experience-toolbar-date" data-experience-field="${field}" value="${escapeHtml(value)}" min="${getTodayDateString()}">
             </span>
         </label>
     `;

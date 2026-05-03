@@ -287,7 +287,7 @@ function validateStep2() {
         console.log("Phone value:", phoneVal);
         console.log("Length:", phoneVal.length);
 
-        if (!/^\d{10}$/.test(phoneVal)) {
+        if (!/^\d{10}$/.test(phoneVal) || /^0{10}$/.test(phoneVal)) {
             isValid = false;
             showError(phoneInput, "Please enter a valid 10-digit phone number");
             if (!firstInvalid) firstInvalid = phoneInput;

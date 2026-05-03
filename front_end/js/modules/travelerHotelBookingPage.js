@@ -217,9 +217,12 @@ function getSelectedRoom(hotel) {
 }
 
 function getSearchValues() {
+    const today = new Date();
+    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+    const fourDaysLater = new Date(today); fourDaysLater.setDate(today.getDate() + 4);
     const fallback = {
-        checkIn: "2026-03-21",
-        checkOut: "2026-03-24",
+        checkIn: tomorrow.toISOString().slice(0, 10),
+        checkOut: fourDaysLater.toISOString().slice(0, 10),
         rooms: "1",
         guestCount: "2"
     };

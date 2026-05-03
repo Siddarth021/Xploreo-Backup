@@ -673,6 +673,9 @@ export function renderTravelerHotelDetailPage(containerId) {
             });
         });
 
+        const status = new URLSearchParams(window.location.search).get("status")?.trim().toLowerCase() || "";
+        const isCompleted = status === "completed" || status === "upcoming";
+
         if (!isCompleted) {
             container.querySelectorAll("[data-room-id]").forEach((card) => {
                 const selectRoom = () => {

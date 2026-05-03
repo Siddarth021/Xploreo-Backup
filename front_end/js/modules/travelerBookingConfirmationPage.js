@@ -5,6 +5,45 @@ import {
     getTravelerBookingConfirmation,
     getTravelerBookingDraft
 } from "../traveler/dashboard.js";
+import { travelerData } from "../../data/traveler.js";
+
+function buildPlanConfirmationFromId(planId) {
+    try {
+        // Try to find in travelerData.itineraries
+        const basePlan = (travelerData.itineraries || []).find(p => p.id === planId || String(p.bookingId) === planId);
+
+        // Also check tours localStorage for a confirmed record
+        const allTours = JSON.parse(localStorage.getItem("tours") || "[]");
+        const tourRecord = allTours.find(t => String(t.planId) === planId || String(t.bookingId) === planId || String(t.id) === planId);
+
+        const plan = basePlan || tourRecord;
+        if (!plan) return null;
+
+        const startDate = plan.startDate || plan.dateTime?.split(" | ")[0] || new Date().toISOString().slice(0, 10);
+        const days = plan.days || 7;
+        const nights = plan.nights || (days - 1);
+
+        return {
+            bookingId: plan.bookingId || plan.id || planId,
+            confirmedAt: new Date().toISOString(),
+            travelerCount: 2,
+            totalPrice: plan.payments?.total || plan.amount || 0,
+            packageData: {
+                title: plan.title,
+                destination: plan.location || plan.destination || "",
+                departureDate: startDate,
+                days,
+                nights,
+                pricePerPerson: Math.round((plan.payments?.total || plan.amount || 0) / 2),
+                withFlight: true,
+                mealsLine: "Breakfast included",
+                perk: "Flexible itinerary customization"
+            }
+        };
+    } catch (e) {
+        return null;
+    }
+}
 
 const CONFIRMED_BOOKING_KEY = "traveler_confirmed_booking";
 const CONFIRMED_BOOKING_SESSION_KEY = "traveler_confirmed_booking_session";
@@ -15,6 +54,17 @@ const PACKAGE_SEARCH_PAGE = "./traveller_package-search.html";
 export function renderTravelerBookingConfirmationPage(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
+
+    // If coming from plan detail page via ?plan= param, show plan confirmation
+    const urlPlanId = new URLSearchParams(window.location.search).get("plan");
+    if (urlPlanId) {
+        const planConfirmation = buildPlanConfirmationFromId(urlPlanId);
+        if (planConfirmation) {
+            container.innerHTML = renderPackageConfirmation(planConfirmation);
+            bindPackageConfirmationEvents();
+            return;
+        }
+    }
 
     const packageBooking = getTravelerBookingConfirmation() || getTravelerBookingDraft();
     if (packageBooking) {

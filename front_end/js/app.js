@@ -138,7 +138,7 @@ function initializeData() {
     if (storedTours && Array.isArray(storedTours)) {
         const todayStr = new Date().toISOString().split("T")[0];
         storedTours.forEach((t) => {
-            if (t.status !== "completed" && t.dateTime) {
+            if (t.status !== "completed" && t.status !== "Completed" && t.status !== "Cancelled" && t.status !== "cancelled" && t.dateTime) {
                 const parts = t.dateTime.split(" | ");
                 const tourDateStr = parts[0];
                 if (tourDateStr === todayStr) {
@@ -148,7 +148,7 @@ function initializeData() {
                             t.currentloction = t.plan_iternary[0];
                         }
                     }
-                } else if (tourDateStr > todayStr && t.status !== "pending") {
+                } else if (tourDateStr > todayStr && t.status !== "pending" && t.status !== "Upcoming") {
                     t.status = "pending";
                 }
             }

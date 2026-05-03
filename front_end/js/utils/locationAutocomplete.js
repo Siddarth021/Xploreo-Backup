@@ -35,8 +35,10 @@ export function attachLocationAutocomplete(inputId, suggestions, onSelect) {
 
     function getMatches(query) {
         const q = normalizeStr(query);
-        if (!q) return suggestions.slice(0, 3);
-        return suggestions
+        // suggestions can be an array or a function returning an array (for dynamic cross-field filtering)
+        const list = typeof suggestions === "function" ? suggestions() : suggestions;
+        if (!q) return list.slice(0, 3);
+        return list
             .filter(s => normalizeStr(s).includes(q))
             .slice(0, 3);
     }

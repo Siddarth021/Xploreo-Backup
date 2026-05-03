@@ -643,25 +643,42 @@ function attachDashboardAutocomplete() {
 
     // Flights: From only gets origins, To only gets destinations — field-specific
     const flightOrigins = extractFlightOrigins(flights);
-    const flightDests  = extractFlightDestinations(flights);
+    const flightDests   = extractFlightDestinations(flights);
 
     // Hotels: only hotel city names
     const hotelCities = extractUniqueLocations(travelerData.searchCatalog.hotels, ["city"]);
 
-    // Packages: From = package origins, To = package destinations
-    const pkgOrigins = extractUniqueLocations(packages, ["origin"]);
-    const pkgDests   = extractUniqueLocations(packages, ["destination"]);
-
     // Experiences: destination field only
     const expDests = extractUniqueLocations(experiences, ["destination"]);
 
-    // Attach — each field gets only its own relevant list
+    // Flights & Hotels & Experiences — static lists (each field only has one relevant dimension)
     attachLocationAutocomplete("flight-from", flightOrigins.length ? flightOrigins : flightDests);
     attachLocationAutocomplete("flight-to",   flightDests.length   ? flightDests   : flightOrigins);
     attachLocationAutocomplete("hotel-city",  hotelCities);
-    attachLocationAutocomplete("package-from",        pkgOrigins.length ? pkgOrigins : hotelCities);
-    attachLocationAutocomplete("package-destination", pkgDests.length   ? pkgDests   : hotelCities);
-    attachLocationAutocomplete("experience-destination", expDests.length ? expDests   : hotelCities);
+    attachLocationAutocomplete("experience-destination", expDests);
+
+    // Packages — cross-field dynamic filtering so no dead-end suggestions
+    const fromEl = document.getElementById("package-from");
+    const destEl = document.getElementById("package-destination");
+
+    function getPkgFromSuggestions() {
+        const currentDest = (destEl ? destEl.value : "").trim().toLowerCase();
+        const filtered = currentDest
+            ? packages.filter(p => p.destination.toLowerCase().includes(currentDest))
+            : packages;
+        return [...new Set(filtered.map(p => p.origin).filter(Boolean))].sort();
+    }
+
+    function getPkgDestSuggestions() {
+        const currentFrom = (fromEl ? fromEl.value : "").trim().toLowerCase();
+        const filtered = currentFrom
+            ? packages.filter(p => p.origin.toLowerCase().includes(currentFrom))
+            : packages;
+        return [...new Set(filtered.map(p => p.destination).filter(Boolean))].sort();
+    }
+
+    attachLocationAutocomplete("package-from",        getPkgFromSuggestions);
+    attachLocationAutocomplete("package-destination", getPkgDestSuggestions);
 }
 
 function bindSearchActions() {

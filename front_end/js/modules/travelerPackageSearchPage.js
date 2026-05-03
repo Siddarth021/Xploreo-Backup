@@ -1,5 +1,5 @@
 import { travelerData } from "../../data/traveler.js";
-import { attachLocationAutocomplete, getTodayDateString, extractUniqueLocations, extractFlightOrigins, extractFlightDestinations } from "../utils/locationAutocomplete.js";
+import { attachLocationAutocomplete, getTodayDateString } from "../utils/locationAutocomplete.js";
 
 const SELECTED_PACKAGE_STORAGE_KEY = "traveler_selected_package";
 
@@ -234,28 +234,44 @@ export function renderTravelerPackageSearchPage(containerId) {
 }
 
 function attachPackageSearchAutocomplete(container) {
-    // Build location lists from catalog
     const packageData = travelerData.searchCatalog.packages || [];
-    const hotelCities = extractUniqueLocations(travelerData.searchCatalog.hotels, ["city"]);
-    const origins = extractUniqueLocations(packageData, ["origin"]);
-    const destinations = extractUniqueLocations(packageData, ["destination"]);
-    const fromList = origins.length ? origins : hotelCities;
-    const toList = destinations.length ? destinations : hotelCities;
 
-    // Find fields by data-package-field
     const fromInput = container?.querySelector('[data-package-field="fromCity"]');
     const destInput = container?.querySelector('[data-package-field="destination"]');
 
+    if (!fromInput && !destInput) return;
+
+    if (fromInput && !fromInput.id) fromInput.id = "package-from-search";
+    if (destInput && !destInput.id) destInput.id = "package-dest-search";
+
+    // Dynamic supplier for From City:
+    // Only list origins that have at least one package going to the current destination value
+    function getFromSuggestions() {
+        const currentDest = normalizeText(destInput ? destInput.value : "");
+        const filtered = currentDest
+            ? packageData.filter(pkg => normalizeText(pkg.destination).includes(currentDest))
+            : packageData;
+        return [...new Set(filtered.map(pkg => pkg.origin).filter(Boolean))].sort();
+    }
+
+    // Dynamic supplier for Destination:
+    // Only list destinations that have at least one package coming from the current origin value
+    function getDestSuggestions() {
+        const currentFrom = normalizeText(fromInput ? fromInput.value : "");
+        const filtered = currentFrom
+            ? packageData.filter(pkg => normalizeText(pkg.origin).includes(currentFrom))
+            : packageData;
+        return [...new Set(filtered.map(pkg => pkg.destination).filter(Boolean))].sort();
+    }
+
     if (fromInput) {
-        if (!fromInput.id) fromInput.id = "package-from-search";
-        attachLocationAutocomplete(fromInput.id, fromList, (val) => {
+        attachLocationAutocomplete(fromInput.id, getFromSuggestions, (val) => {
             fromInput.value = val;
             fromInput.dispatchEvent(new Event("change", { bubbles: true }));
         });
     }
     if (destInput) {
-        if (!destInput.id) destInput.id = "package-dest-search";
-        attachLocationAutocomplete(destInput.id, toList, (val) => {
+        attachLocationAutocomplete(destInput.id, getDestSuggestions, (val) => {
             destInput.value = val;
             destInput.dispatchEvent(new Event("change", { bubbles: true }));
         });

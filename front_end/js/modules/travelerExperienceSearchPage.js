@@ -172,18 +172,17 @@ export function renderTravelerExperienceSearchPage(containerId) {
 }
 
 function attachExperienceSearchAutocomplete(container) {
-    // Build destination list from catalog + hotel cities as fallback
+    // Only suggest destinations that actually exist in the experience catalog
     const experienceDests = extractUniqueLocations(
         (travelerData.searchCatalog.experiences || []),
         ["destination"]
     );
-    const hotelCities = extractUniqueLocations(travelerData.searchCatalog.hotels, ["city"]);
-    const destList = experienceDests.length ? experienceDests : hotelCities;
+    // No fallback to hotel cities — showing wrong-category cities would produce zero results
 
     const destInput = container?.querySelector('[data-experience-field="destination"]');
     if (!destInput) return;
     if (!destInput.id) destInput.id = "experience-dest-search";
-    attachLocationAutocomplete(destInput.id, destList, (val) => {
+    attachLocationAutocomplete(destInput.id, experienceDests, (val) => {
         destInput.value = val;
         destInput.dispatchEvent(new Event("change", { bubbles: true }));
     });

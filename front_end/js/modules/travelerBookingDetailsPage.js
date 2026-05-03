@@ -160,27 +160,27 @@ export function renderTravelerBookingDetailsPage(containerId) {
                             </article>
                         </section>
 
+                        ${isCompleted ? "" : `
                         <section class="traveler-panel traveler-traveler-form-panel" id="traveler-details-section">
                             <div class="traveler-section-heading">
                                 <div>
                                     <h2>Traveler Details</h2>
-                                    <p>${isCompleted ? "This completed trip is read-only." : "Fill traveler information before continuing to confirmation."}</p>
+                                    <p>Fill traveler information before continuing to confirmation.</p>
                                 </div>
-                                ${isCompleted ? "" : `<button type="button" class="traveler-secondary-button" id="add-traveler-btn">Add traveler</button>`}
+                                <button type="button" class="traveler-secondary-button" id="add-traveler-btn">Add traveler</button>
                             </div>
 
                             <div class="traveler-form-grid">
-                                ${state.travelers.map((traveler, index) => renderTravelerCard(traveler, index, isCompleted)).join("")}
+                                ${state.travelers.map((traveler, index) => renderTravelerCard(traveler, index, false)).join("")}
                             </div>
 
-                            ${isCompleted ? "" : `
                             <div class="traveler-action-row">
                                 <button type="button" class="traveler-secondary-button" id="save-draft-btn">Save details</button>
                                 <button type="button" class="traveler-primary-button" id="continue-booking-btn">Continue to confirmation</button>
                             </div>
                             <p class="traveler-feedback" id="traveler-booking-feedback"></p>
-                            `}
                         </section>
+                        `}
                     </div>
 
                     <aside class="traveler-detail-sidebar">

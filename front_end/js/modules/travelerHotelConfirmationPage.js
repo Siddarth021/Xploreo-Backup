@@ -37,7 +37,7 @@ export function renderTravelerHotelConfirmationPage(containerId) {
             guests: guestCount,
             rooms: roomCount,
             amount: totalAmount,
-            status: "pending"
+            status: "Upcoming"
         };
         allHotelBookings.push(hotelRecord);
         localStorage.setItem("hotelBookings", JSON.stringify(allHotelBookings));
@@ -54,7 +54,7 @@ export function renderTravelerHotelConfirmationPage(containerId) {
         destination: hotel.title,
         location: hotel.area || hotel.city || hotel.title,
         dateTime: `${searchValues.checkIn} | 03:00 PM`,
-        status: "pending",
+        status: "Upcoming",
         guests: guestCount,
         amount: totalAmount,
         duration: `${stayNights} nights`,
@@ -203,29 +203,40 @@ function addHotelBookingToTravelerTrips(hotelBooking) {
     if (typeof localStorage === "undefined") return;
 
     try {
+        const tourRecord = {
+            id: hotelBooking.id,
+            bookingId: hotelBooking.id,
+            customerId: hotelBooking.customerId,
+            customer: hotelBooking.customer,
+            email: hotelBooking.email,
+            phone: hotelBooking.phone,
+            destination: hotelBooking.destination,
+            location: hotelBooking.location,
+            currentloction: null,
+            dateTime: hotelBooking.dateTime,
+            dateRange: hotelBooking.dateTime,
+            status: hotelBooking.status,
+            guests: hotelBooking.guests,
+            amount: hotelBooking.amount,
+            duration: hotelBooking.duration,
+            hotelId: hotelBooking.hotelId,
+            title: hotelBooking.title,
+            coverImage: hotelBooking.coverImage,
+            image: hotelBooking.coverImage,
+            plan_iternary: [hotelBooking.room || "Hotel stay"],
+            type: "Hotel"
+        };
+
         const allTours = JSON.parse(localStorage.getItem("tours") || "[]");
         if (!allTours.find((item) => String(item.id) === String(hotelBooking.id))) {
-            const tourRecord = {
-                id: hotelBooking.id,
-                customerId: hotelBooking.customerId,
-                customer: hotelBooking.customer,
-                email: hotelBooking.email,
-                phone: hotelBooking.phone,
-                destination: hotelBooking.destination,
-                location: hotelBooking.location,
-                currentloction: null,
-                dateTime: hotelBooking.dateTime,
-                status: hotelBooking.status,
-                guests: hotelBooking.guests,
-                amount: hotelBooking.amount,
-                duration: hotelBooking.duration,
-                hotelId: hotelBooking.hotelId,
-                title: hotelBooking.title,
-                coverImage: hotelBooking.coverImage,
-                plan_iternary: [hotelBooking.room || "Hotel stay"]
-            };
             allTours.push(tourRecord);
             localStorage.setItem("tours", JSON.stringify(allTours));
+        }
+
+        const myTrips = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]");
+        if (!myTrips.find((item) => String(item.id) === String(hotelBooking.id) || String(item.bookingId) === String(hotelBooking.id))) {
+            myTrips.push(tourRecord);
+            localStorage.setItem("traveler_my_trips", JSON.stringify(myTrips));
         }
     } catch (error) {
         console.warn("Could not save hotel booking to traveler tours", error);

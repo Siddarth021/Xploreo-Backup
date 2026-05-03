@@ -215,21 +215,36 @@ export function renderTravelerTrips(containerId, user) {
 }
 
 function getTravelerTripsData() {
-    // Get unified bookings from localStorage
+    // Get unified bookings from localStorage (filtered by customerId)
     const unifiedBookings = getTravelerBookings();
-    
-    // Map unified object to traveler UI format
-    const trips = unifiedBookings.map(b => ({
+
+    // Also read traveler_my_trips which stores locally confirmed bookings
+    let myTripsRaw = [];
+    try { myTripsRaw = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]"); } catch (e) { myTripsRaw = []; }
+
+    // Merge: unifiedBookings first, then any myTrips entries not already present
+    const bookingIdsSeen = new Set(unifiedBookings.map(b => String(b.id)));
+    const combined = [...unifiedBookings];
+    for (const b of myTripsRaw) {
+        if (!bookingIdsSeen.has(String(b.id)) && !bookingIdsSeen.has(String(b.bookingId))) {
+            combined.push(b);
+            bookingIdsSeen.add(String(b.id));
+        }
+    }
+
+    // Map combined list to traveler UI format
+    const trips = combined.map(b => ({
         title: b.title,
         location: b.destination || b.location,
-        dateRange: b.dateTime ? b.dateTime.split(" | ")[0] : "Date TBD",
-        bookingId: b.id,
+        dateRange: b.dateTime ? b.dateTime.split(" | ")[0] : (b.dateRange || "Date TBD"),
+        bookingId: b.bookingId || b.id,
         planId: b.planId || b.id,
         experienceId: b.experienceId,
+        hotelId: b.hotelId,
+        flightId: b.flightId,
         type: b.type || "Tour",
-        status: b.status.charAt(0).toUpperCase() + b.status.slice(1), // Map 'pending' back to 'Pending' etc
+        status: normalizeTripStatus(b.status),
         image: b.coverImage || b.image || DEFAULT_TRIP_IMAGE,
-        // Carry over sync-specific info
         currentStop: b.currentloction
     }));
     const confirmedBooking = getConfirmedBooking();

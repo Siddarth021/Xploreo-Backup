@@ -1729,3 +1729,71 @@ html, body {
         align-self: center;
     }
 }
+
+/* ================== LOCATION AUTOCOMPLETE DROPDOWN ================== */
+.location-autocomplete-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+    z-index: 9999;
+    overflow: hidden;
+    animation: autocomplete-fade-in 0.12s ease;
+}
+
+@keyframes autocomplete-fade-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.location-autocomplete-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    font-size: 14px;
+    color: #111827;
+    cursor: pointer;
+    transition: background 0.12s;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.location-autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.location-autocomplete-item svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #0DB3A4;
+}
+
+.location-autocomplete-item span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.location-autocomplete-item mark {
+    background: none;
+    color: #0DB3A4;
+    font-weight: 700;
+}
+
+.location-autocomplete-item:hover,
+.location-autocomplete-item.highlighted {
+    background: #f0fdfb;
+}
+
+/* Toolbar autocomplete support for search result pages */
+.traveler-hotel-toolbar-field,
+.traveler-package-toolbar-field,
+.traveler-experience-toolbar-field {
+    position: relative;
+}

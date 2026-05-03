@@ -1,4 +1,5 @@
 import { travelerData } from "../../data/traveler.js";
+import { attachLocationAutocomplete, getTodayDateString, extractUniqueLocations, extractFlightOrigins, extractFlightDestinations } from "../utils/locationAutocomplete.js";
 
 const SELECTED_PACKAGE_STORAGE_KEY = "traveler_selected_package";
 
@@ -116,6 +117,7 @@ export function renderTravelerPackageSearchPage(containerId) {
         `;
 
         bindEvents();
+        attachPackageSearchAutocomplete(container);
     }
 
     function bindEvents() {
@@ -228,6 +230,36 @@ export function renderTravelerPackageSearchPage(containerId) {
     }
 
     render();
+    attachPackageSearchAutocomplete(container);
+}
+
+function attachPackageSearchAutocomplete(container) {
+    // Build location lists from catalog
+    const packageData = travelerData.searchCatalog.packages || [];
+    const hotelCities = extractUniqueLocations(travelerData.searchCatalog.hotels, ["city"]);
+    const origins = extractUniqueLocations(packageData, ["origin"]);
+    const destinations = extractUniqueLocations(packageData, ["destination"]);
+    const fromList = origins.length ? origins : hotelCities;
+    const toList = destinations.length ? destinations : hotelCities;
+
+    // Find fields by data-package-field
+    const fromInput = container?.querySelector('[data-package-field="fromCity"]');
+    const destInput = container?.querySelector('[data-package-field="destination"]');
+
+    if (fromInput) {
+        if (!fromInput.id) fromInput.id = "package-from-search";
+        attachLocationAutocomplete(fromInput.id, fromList, (val) => {
+            fromInput.value = val;
+            fromInput.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+    }
+    if (destInput) {
+        if (!destInput.id) destInput.id = "package-dest-search";
+        attachLocationAutocomplete(destInput.id, toList, (val) => {
+            destInput.value = val;
+            destInput.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+    }
 }
 
 function getSearchValues() {
@@ -330,7 +362,7 @@ function renderDateField(field, label, value) {
             <span class="traveler-package-toolbar-label">${label}</span>
             <span class="traveler-package-toolbar-row">
                 ${calendarIcon()}
-                <input type="date" class="traveler-package-toolbar-input traveler-package-toolbar-date" data-package-field="${field}" value="${escapeHtml(value)}">
+                <input type="date" class="traveler-package-toolbar-input traveler-package-toolbar-date" data-package-field="${field}" value="${escapeHtml(value)}" min="${getTodayDateString()}">
             </span>
         </label>
     `;

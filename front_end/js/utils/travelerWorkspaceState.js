@@ -3,7 +3,7 @@ import { travelerWorkspaceSeed } from "../../data/travelerWorkspaceData.js";
 
 const STORAGE_KEYS = {
     plans: "traveler_workspace_plans",
-    bookings: "traveler_workspace_bookings",
+    bookings: "tours", // Points to the unified tours data
     profile: "traveler_workspace_profile",
     selectedBookingId: "traveler_selected_booking_id",
     lastTransport: "traveler_last_transport",
@@ -96,9 +96,7 @@ export function seedTravelerWorkspace() {
         localStorage.setItem(STORAGE_KEYS.plans, JSON.stringify(clone(travelerWorkspaceSeed.plans)));
     }
 
-    if (!localStorage.getItem(STORAGE_KEYS.bookings)) {
-        localStorage.setItem(STORAGE_KEYS.bookings, JSON.stringify(clone(travelerWorkspaceSeed.bookings)));
-    }
+    // Bookings are now seeded via app.js initializeData into "tours"
 
     const storedProfile = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) || "null");
     const nextProfile = getTravelerProfilePreset(currentUser);
@@ -120,11 +118,26 @@ export function saveTravelerPlans(plans) {
 }
 
 export function getTravelerBookings() {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.bookings) || "[]");
+    const allTours = JSON.parse(localStorage.getItem("tours") || "[]");
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    
+    if (!currentUser) return [];
+    
+    // Filter tours where this user is the customer
+    return allTours.filter(t => String(t.customerId) === String(currentUser.id));
 }
 
-export function saveTravelerBookings(bookings) {
-    localStorage.setItem(STORAGE_KEYS.bookings, JSON.stringify(bookings));
+export function saveTravelerBookings(updatedTravelerBookings) {
+    const allTours = JSON.parse(localStorage.getItem("tours") || "[]");
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    
+    if (!currentUser) return;
+
+    // Merge updated bookings back into global list
+    const otherUserTours = allTours.filter(t => String(t.customerId) !== String(currentUser.id));
+    const mergedTours = [...otherUserTours, ...updatedTravelerBookings];
+    
+    localStorage.setItem("tours", JSON.stringify(mergedTours));
 }
 
 export function getTravelerProfile() {

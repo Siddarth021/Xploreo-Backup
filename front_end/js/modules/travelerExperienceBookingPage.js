@@ -265,6 +265,29 @@ function persistExperienceBookingDraft(draft) {
 function persistExperienceConfirmation(record) {
     if (typeof localStorage === "undefined") return;
     localStorage.setItem(EXPERIENCE_CONFIRMATION_KEY, JSON.stringify(record));
+
+    // Sync with global Experience Provider data
+    const allExpBookings = JSON.parse(localStorage.getItem("experienceBookings") || "[]");
+    
+    // Check if already exists to avoid duplicates
+    if (!allExpBookings.find(b => b.id === record.bookingId || b.bookingId === record.bookingId)) {
+        // Map to the provider's expected format if necessary
+        const providerRecord = {
+            id: record.bookingId,
+            experienceId: record.experience.id,
+            title: record.experience.title,
+            date: record.selectedDate,
+            time: record.option.time,
+            users: [
+                {
+                    name: record.leadTraveler.firstName + " " + record.leadTraveler.lastName,
+                    seats: record.adults
+                }
+            ]
+        };
+        allExpBookings.push(providerRecord);
+        localStorage.setItem("experienceBookings", JSON.stringify(allExpBookings));
+    }
 }
 
 function validateBooking(state) {

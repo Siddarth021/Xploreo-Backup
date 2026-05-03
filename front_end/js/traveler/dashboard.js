@@ -84,7 +84,42 @@ export function getTravelerBookingConfirmation() {
 }
 
 export function saveTravelerBookingConfirmation(record) {
-    writeJson(localStorage, TRAVELER_BOOKING_KEYS.bookingConfirmation, normalizeBookingRecord(record));
+    const normalized = normalizeBookingRecord(record);
+    writeJson(localStorage, TRAVELER_BOOKING_KEYS.bookingConfirmation, normalized);
+
+    // Sync with unified 'tours' data for guide visibility
+    if (normalized) {
+        const allTours = JSON.parse(localStorage.getItem("tours") || "[]");
+        
+        // Map to unified tour format
+        const newTour = {
+            id: String(normalized.bookingId),
+            guideId: "10001", // Default to Sreekar (demo)
+            customerId: "20001",
+            customer: normalized.travelers[0]?.name || "Anjali Sharma",
+            title: normalized.packageData.title,
+            destination: normalized.packageData.destination,
+            location: normalized.packageData.destination,
+            plan_iternary: [],
+            itinerary: [],
+            currentloction: null,
+            dateTime: `${normalized.packageData.departureDate || "Date TBD"} | 10:00 AM`,
+            status: "pending",
+            guests: normalized.travelerCount,
+            amount: normalized.totalPrice,
+            duration: `${normalized.packageData.days} days`,
+            coverImage: normalized.packageData.image,
+            accommodation: normalized.packageData.stayLine,
+            paymentBreakdown: { total: normalized.totalPrice, paid: normalized.totalPrice, status: "Paid" },
+            documents: []
+        };
+
+        // Add if not already present
+        if (!allTours.find(t => t.id === newTour.id)) {
+            allTours.push(newTour);
+            localStorage.setItem("tours", JSON.stringify(allTours));
+        }
+    }
 }
 
 export function createTravelerDraft(packageData, travelers) {

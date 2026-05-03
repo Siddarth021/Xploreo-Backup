@@ -11,7 +11,7 @@ export const tour = [
     location: "Versailles, France",
     plan_iternary: ["Main Gates", "Hall of Mirrors", "King's Grand Apartments", "The Gardens"],
     currentloction: null,
-    dateTime: "2026-03-30 | 09:00 AM", // Today! Expected to hit 'ongoing' if not manually set
+    dateTime: "2026-03-30 | 09:00 AM",
     status: "pending", 
     guests: 3,
     amount: 360,
@@ -41,8 +41,8 @@ export const tour = [
     title: "Pondicherry Cycle Tour",
     customerId: "20001",
     customer: "Anjali Sharma",
-    email: "anjali@email.com",
-    phone: "+91 98765 43210",
+    email: "anjali@xploreo.com",
+    phone: "+91 91234 56780",
     destination: "French Quarter Cycle Tour",
     location: "Pondicherry, India",
     plan_iternary: ["Rock Beach", "French Colony", "Auroville"],
@@ -101,9 +101,7 @@ export const tour = [
     phone: "+33 6 88 99 00 11",
     destination: "Ile de la Cite, Paris",
     location: "Paris, France",
-    plan_iternary: [
-      "Pont Neuf", "Sainte-Chapelle", "Notre-Dame Cathedral", "Trip Completion"
-    ],
+    plan_iternary: ["Pont Neuf", "Sainte-Chapelle", "Notre-Dame Cathedral", "Trip Completion"],
     currentloction: "Trip Completion",
     dateTime: "2026-03-23 | 10:00 AM",
     status: "completed",
@@ -112,5 +110,52 @@ export const tour = [
     duration: "2 hours",
     rating: 5,
     review: "Beautiful tour with great historical insights!"
+  },
+  {
+    id: "48291",
+    guideId: "10001",
+    title: "Kyoto Cultural Escape",
+    customerId: "20001",
+    customer: "Anjali Sharma",
+    email: "anjali@xploreo.com",
+    phone: "+91 91234 56780",
+    destination: "Kyoto, Japan",
+    location: "Kyoto, Japan",
+    plan_iternary: ["Fushimi Inari shrine walk", "Tea ceremony in Gion", "Historic district food trail", "Trip Completion"],
+    currentloction: "Tea ceremony in Gion",
+    dateTime: "2026-10-12 | 09:00 AM",
+    status: "ongoing",
+    guests: 2,
+    amount: 502000,
+    duration: "5 days",
+    itinerary: [
+      { day: "Day 1", title: "Arrival", detail: "Check-in at Ritz-Carlton Kyoto." },
+      { day: "Day 2", title: "Fushimi Inari", detail: "Morning shrine visit." }
+    ],
+    paymentBreakdown: { flights: 142000, stay: 210000, activities: 98000, guide: 52000 },
+    documents: [{ id: "doc-flight", title: "Flight Ticket", status: "Ready" }]
+  },
+  {
+    id: "39210",
+    guideId: "10001",
+    title: "Santorini Sunset Retreat",
+    customerId: "20001",
+    customer: "Anjali Sharma",
+    email: "anjali@xploreo.com",
+    phone: "+91 91234 56780",
+    destination: "Santorini, Greece",
+    location: "Santorini, Greece",
+    plan_iternary: ["Oia sunset cruise", "Winery tasting", "Island photography walk", "Trip Completion"],
+    currentloction: null,
+    dateTime: "2026-07-04 | 11:00 AM",
+    status: "pending",
+    guests: 2,
+    amount: 345000,
+    duration: "7 days",
+    itinerary: [
+      { day: "Day 1", title: "Arrival", detail: "Check-in at Caldera Horizon Suites." }
+    ],
+    paymentBreakdown: { flights: 110000, stay: 145000, activities: 56000, guide: 34000 },
+    documents: [{ id: "doc-hotel-2", title: "Hotel Voucher", status: "Ready" }]
   }
 ];

@@ -272,6 +272,8 @@ function validateBooking(state) {
     if (!state.leadTraveler.lastName.trim()) return ["Enter the last name"];
     if (!state.leadTraveler.email.trim()) return ["Enter the email address"];
     if (!state.leadTraveler.phone.trim()) return ["Enter the phone number"];
+    const phoneDigits = state.leadTraveler.phone.replace(/\D/g, "");
+    if (/^0+$/.test(phoneDigits)) return ["Enter a valid phone number"];
 
     for (let index = 0; index < state.travelers.length; index += 1) {
         const traveler = state.travelers[index];

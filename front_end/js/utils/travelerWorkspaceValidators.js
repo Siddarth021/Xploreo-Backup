@@ -79,8 +79,11 @@ export function validateProfile(payload) {
 
     if (isBlank(payload.phone)) {
         errors.phone = "Phone number is required.";
-    } else if (!/^[+\d][\d\s-]{7,}$/.test(payload.phone)) {
-        errors.phone = "Enter a valid phone number.";
+    } else {
+        const normalizedPhone = String(payload.phone).replace(/\D/g, "");
+        if (!/^[+\d][\d\s-]{7,}$/.test(payload.phone) || /^0+$/.test(normalizedPhone)) {
+            errors.phone = "Enter a valid phone number.";
+        }
     }
 
     if (isBlank(payload.location)) {

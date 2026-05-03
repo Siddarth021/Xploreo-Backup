@@ -30,12 +30,16 @@ export function renderTravelerBookingDetailsPage(containerId) {
         modal: null
     };
 
+    function getTripStatusFromUrl() {
+        return new URLSearchParams(window.location.search).get("status")?.trim().toLowerCase() || "";
+    }
+
     function render() {
         const travelerCount = state.travelers.length;
         const totalPrice = calculateTravelerBookingTotal(state.packageData, travelerCount);
         const activeImage = packageView.gallery[state.activeGalleryIndex] || packageView.gallery[0];
-        const isCompleted = new URLSearchParams(window.location.search).get("status")?.toLowerCase() === "completed";
-        const displayTripDate = state.selectedDate ? new Date(state.selectedDate).toLocaleDateString("en-GB") : "Flexible dates";
+        const status = getTripStatusFromUrl();
+        const isCompleted = status === "completed" || status === "upcoming";
 
         container.innerHTML = `
             <main class="traveler-package-detail-page">
@@ -114,13 +118,14 @@ export function renderTravelerBookingDetailsPage(containerId) {
                                                             ${item.selected ? `<small>Selected: ${escapeHtml(item.selected)}</small>` : ""}
                                                         </div>
                                                     </div>
-                                                    ${isCompleted ? "" : `
                                                     <div class="traveler-itinerary-actions">
+                                                        ${isCompleted ? "" : `
                                                         <button type="button" data-remove-item="${dayIndex}:${itemIndex}">REMOVE</button>
                                                         <button type="button" data-modify-item="${dayIndex}:${itemIndex}">MODIFY</button>
+                                                        `}
                                                     </div>
                                                 </div>
-                                            `}
+                                            `).join("")}
                                             ${isCompleted ? "" : `
                                             <div class="traveler-add-day-card">
                                                 <div class="traveler-itinerary-copy">
@@ -132,9 +137,10 @@ export function renderTravelerBookingDetailsPage(containerId) {
                                                 </div>
                                                 <button type="button" data-add-to-day="${dayIndex}">ADD TO DAY</button>
                                             </div>
+                                            `}
                                         </div>
                                     </article>
-                                `)`}
+                                `).join("")}
                             </div>
                         </section>
 
@@ -154,6 +160,27 @@ export function renderTravelerBookingDetailsPage(containerId) {
                             </article>
                         </section>
 
+                        <section class="traveler-panel traveler-traveler-form-panel" id="traveler-details-section">
+                            <div class="traveler-section-heading">
+                                <div>
+                                    <h2>Traveler Details</h2>
+                                    <p>${isCompleted ? "This completed trip is read-only." : "Fill traveler information before continuing to confirmation."}</p>
+                                </div>
+                                ${isCompleted ? "" : `<button type="button" class="traveler-secondary-button" id="add-traveler-btn">Add traveler</button>`}
+                            </div>
+
+                            <div class="traveler-form-grid">
+                                ${state.travelers.map((traveler, index) => renderTravelerCard(traveler, index, isCompleted)).join("")}
+                            </div>
+
+                            ${isCompleted ? "" : `
+                            <div class="traveler-action-row">
+                                <button type="button" class="traveler-secondary-button" id="save-draft-btn">Save details</button>
+                                <button type="button" class="traveler-primary-button" id="continue-booking-btn">Continue to confirmation</button>
+                            </div>
+                            <p class="traveler-feedback" id="traveler-booking-feedback"></p>
+                            `}
+                        </section>
                     </div>
 
                     <aside class="traveler-detail-sidebar">
@@ -162,33 +189,23 @@ export function renderTravelerBookingDetailsPage(containerId) {
                             <div class="traveler-sidebar-price">${formatBookingCurrency(state.packageData.pricePerPerson)}</div>
                             <p class="traveler-sidebar-total">Total for ${travelerCount} traveler${travelerCount > 1 ? "s" : ""}: ${formatBookingCurrency(totalPrice)}</p>
 
-                            ${isCompleted ? `
-                            <label class="traveler-sidebar-field">
-                                <span>Trip Date</span>
-                                <div class="traveler-sidebar-static">
-                                    ${calendarIcon()}
-                                    ${escapeHtml(displayTripDate)}
-                                </div>
-                            </label>
-
-                            <div class="traveler-sidebar-field">
-                                <span>Number of Travelers</span>
-                                <div class="traveler-sidebar-static">
-                                    <strong>${travelerCount}</strong>
-                                    <span>Travelers</span>
-                                </div>
-                            </div>
-                            ` : `
                             <label class="traveler-sidebar-field">
                                 <span>Select Date</span>
+                                ${isCompleted ? `
+                                <div class="traveler-sidebar-static">${escapeHtml(state.selectedDate || "N/A")}</div>
+                                ` : `
                                 <div class="traveler-sidebar-input">
                                     ${calendarIcon()}
                                     <input type="date" id="traveler-package-date" value="${escapeHtml(state.selectedDate)}">
                                 </div>
+                                `}
                             </label>
 
                             <div class="traveler-sidebar-field">
                                 <span>Number of Travelers</span>
+                                ${isCompleted ? `
+                                <div class="traveler-sidebar-static"><strong>${travelerCount}</strong> Travelers</div>
+                                ` : `
                                 <div class="traveler-traveler-stepper">
                                     <button type="button" data-traveler-step="-1">-</button>
                                     <div>
@@ -197,8 +214,8 @@ export function renderTravelerBookingDetailsPage(containerId) {
                                     </div>
                                     <button type="button" data-traveler-step="1">+</button>
                                 </div>
+                                `}
                             </div>
-                            `}
 
                             <div class="traveler-sidebar-summary">
                                 <div><span>Duration</span><strong>${state.packageData.nights}N/${state.packageData.days}D</strong></div>
@@ -226,7 +243,6 @@ export function renderTravelerBookingDetailsPage(containerId) {
     }
 
     function bindEvents() {
-        const isCompleted = new URLSearchParams(window.location.search).get("status")?.toLowerCase() === "completed";
         container.querySelectorAll("[data-gallery-index]").forEach((button) => {
             button.addEventListener("click", () => {
                 state.activeGalleryIndex = Number(button.dataset.galleryIndex);
@@ -252,28 +268,26 @@ export function renderTravelerBookingDetailsPage(containerId) {
             document.getElementById("traveler-details-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
         });
 
-        if (!isCompleted) {
-            container.querySelectorAll("[data-remove-item]").forEach((button) => {
-                button.addEventListener("click", () => {
-                    const [dayIndex, itemIndex] = button.dataset.removeItem.split(":").map(Number);
-                    state.itinerary[dayIndex].items.splice(itemIndex, 1);
-                    render();
-                });
+        container.querySelectorAll("[data-remove-item]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const [dayIndex, itemIndex] = button.dataset.removeItem.split(":").map(Number);
+                state.itinerary[dayIndex].items.splice(itemIndex, 1);
+                render();
             });
+        });
 
-            container.querySelectorAll("[data-modify-item]").forEach((button) => {
-                button.addEventListener("click", () => {
-                    const [dayIndex, itemIndex] = button.dataset.modifyItem.split(":").map(Number);
-                    openModifyModal(dayIndex, itemIndex);
-                });
+        container.querySelectorAll("[data-modify-item]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const [dayIndex, itemIndex] = button.dataset.modifyItem.split(":").map(Number);
+                openModifyModal(dayIndex, itemIndex);
             });
+        });
 
-            container.querySelectorAll("[data-add-to-day]").forEach((button) => {
-                button.addEventListener("click", () => {
-                    openAddModal(Number(button.dataset.addToDay));
-                });
+        container.querySelectorAll("[data-add-to-day]").forEach((button) => {
+            button.addEventListener("click", () => {
+                openAddModal(Number(button.dataset.addToDay));
             });
-        }
+        });
 
         container.querySelectorAll("[data-close-modal]").forEach((button) => {
             button.addEventListener("click", closeModal);
@@ -788,24 +802,24 @@ function itineraryItem(icon, name, detail, selected = "", kind = "activity") {
     return { icon, name, detail, selected, kind };
 }
 
-function renderTravelerCard(traveler, index) {
+function renderTravelerCard(traveler, index, isCompleted) {
     return `
-        <article class="traveler-entry-card">
+        <article class="traveler-entry-card ${isCompleted ? "traveler-entry-card-readonly" : ""}">
             <div class="traveler-entry-head">
                 <h4>Traveler ${index + 1}</h4>
-                <button type="button" class="traveler-remove-button" data-remove-traveler="${escapeHtml(traveler.id)}">Remove</button>
+                <button type="button" class="traveler-remove-button" data-remove-traveler="${escapeHtml(traveler.id)}" style="${isCompleted ? "display:none;" : ""}">Remove</button>
             </div>
             <label class="traveler-field">
                 <span>Full name</span>
-                <input type="text" value="${escapeHtml(traveler.name)}" data-traveler-id="${escapeHtml(traveler.id)}" data-traveler-field="name" placeholder="Enter traveler name">
+                <input type="text" value="${escapeHtml(traveler.name)}" data-traveler-id="${escapeHtml(traveler.id)}" data-traveler-field="name" placeholder="Enter traveler name" ${isCompleted ? "disabled" : ""}>
             </label>
             <label class="traveler-field">
                 <span>Age</span>
-                <input type="number" min="1" value="${escapeHtml(String(traveler.age))}" data-traveler-id="${escapeHtml(traveler.id)}" data-traveler-field="age" placeholder="Enter age">
+                <input type="number" min="1" value="${escapeHtml(String(traveler.age))}" data-traveler-id="${escapeHtml(traveler.id)}" data-traveler-field="age" placeholder="Enter age" ${isCompleted ? "disabled" : ""}>
             </label>
             <label class="traveler-field">
                 <span>Gender</span>
-                <select data-traveler-id="${escapeHtml(traveler.id)}" data-traveler-field="gender">
+                <select data-traveler-id="${escapeHtml(traveler.id)}" data-traveler-field="gender" ${isCompleted ? "disabled" : ""}>
                     <option value="">Select gender</option>
                     <option value="Male" ${traveler.gender === "Male" ? "selected" : ""}>Male</option>
                     <option value="Female" ${traveler.gender === "Female" ? "selected" : ""}>Female</option>

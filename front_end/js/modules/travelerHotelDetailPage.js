@@ -394,15 +394,19 @@ export function renderTravelerHotelDetailPage(containerId) {
 
     const hotel = getSelectedHotel();
     const initialSearchValues = normalizeSearchValues(getSearchValues(hotel));
+    const params = new URLSearchParams(window.location.search);
     const defaultRoom = hotel.rooms.find((room) => room.selected) || hotel.rooms[0];
+    const selectedRoomFromUrl = params.get("room");
     const state = {
         selectedImageIndex: 0,
-        selectedRoomId: defaultRoom?.id || "",
+        selectedRoomId: hotel.rooms.some((room) => room.id === selectedRoomFromUrl) ? selectedRoomFromUrl : defaultRoom?.id || "",
         searchValues: initialSearchValues
     };
 
     function render() {
         const selectedRoom = hotel.rooms.find((room) => room.id === state.selectedRoomId) || defaultRoom;
+        const status = new URLSearchParams(window.location.search).get("status")?.trim().toLowerCase() || "";
+        const isCompleted = status === "completed" || status === "upcoming";
         const mainImage = hotel.gallery[state.selectedImageIndex] || hotel.gallery[0];
         const stayNights = getStayNights(state.searchValues.checkIn, state.searchValues.checkOut);
         const roomCount = Math.max(1, Number.parseInt(state.searchValues.rooms, 10) || 1);
@@ -425,6 +429,7 @@ export function renderTravelerHotelDetailPage(containerId) {
                                 value="${escapeHtml(state.searchValues.city)}"
                                 data-detail-search-field="city"
                                 placeholder="Where are you staying?"
+                                ${isCompleted ? "disabled" : ""}
                             >
                         </label>
 
@@ -435,6 +440,7 @@ export function renderTravelerHotelDetailPage(containerId) {
                                 type="date"
                                 value="${escapeHtml(state.searchValues.checkIn)}"
                                 data-detail-search-field="checkIn"
+                                ${isCompleted ? "disabled" : ""}
                             >
                         </label>
 
@@ -446,27 +452,28 @@ export function renderTravelerHotelDetailPage(containerId) {
                                 value="${escapeHtml(state.searchValues.checkOut)}"
                                 data-detail-search-field="checkOut"
                                 min="${escapeHtml(getNextDateValue(state.searchValues.checkIn))}"
+                                ${isCompleted ? "disabled" : ""}
                             >
                         </label>
 
                         <label class="traveler-hotel-detail-toolbar-field">
                             ${icon("guests")}
-                            <select class="traveler-hotel-detail-toolbar-select" data-detail-search-field="rooms">
+                            <select class="traveler-hotel-detail-toolbar-select" data-detail-search-field="rooms" ${isCompleted ? "disabled" : ""}>
                                 ${ROOM_OPTIONS.map((option) => `<option value="${option}" ${option === String(state.searchValues.rooms) ? "selected" : ""}>${option} Room${option === "1" ? "" : "s"}</option>`).join("")}
                             </select>
                         </label>
 
                         <label class="traveler-hotel-detail-toolbar-field">
                             ${icon("guests")}
-                            <select class="traveler-hotel-detail-toolbar-select" data-detail-search-field="guestCount">
+                            <select class="traveler-hotel-detail-toolbar-select" data-detail-search-field="guestCount" ${isCompleted ? "disabled" : ""}>
                                 ${GUEST_OPTIONS.map((option) => `<option value="${option}" ${option === String(state.searchValues.guestCount) ? "selected" : ""}>${option} Guest${option === "1" ? "" : "s"}</option>`).join("")}
                             </select>
                         </label>
 
-                        <button class="traveler-hotel-detail-toolbar-search-btn" type="button" data-detail-search-submit>
+                        ${isCompleted ? "" : `<button class="traveler-hotel-detail-toolbar-search-btn" type="button" data-detail-search-submit>
                             ${icon("search")}
                             <span>Search</span>
-                        </button>
+                        </button>`}
                     </section>
 
                     <section class="traveler-hotel-detail-grid">
@@ -551,28 +558,50 @@ export function renderTravelerHotelDetailPage(containerId) {
                         </section>
 
                         <section class="traveler-hotel-info-card">
-                            <h2 class="traveler-hotel-rooms-title">Choose Your Room</h2>
-                            <div class="traveler-hotel-room-list" id="traveler-hotel-room-list">
-                                ${hotel.rooms.map((room) => `
-                                    <article class="traveler-hotel-room-card ${state.selectedRoomId === room.id ? "selected" : ""}" data-room-id="${room.id}" tabindex="0" role="button" aria-pressed="${state.selectedRoomId === room.id ? "true" : "false"}">
+                            <h2 class="traveler-hotel-rooms-title">${isCompleted ? "Your Booked Room" : "Choose Your Room"}</h2>
+                            ${isCompleted ? `
+                                <div class="traveler-hotel-room-list booked-room-summary">
+                                    <article class="traveler-hotel-room-card selected">
                                         <div class="traveler-hotel-room-card-inner">
-                                            <div class="traveler-hotel-room-image" style="background-image:url('${room.image}')"></div>
+                                            <div class="traveler-hotel-room-image" style="background-image:url('${selectedRoom.image}')"></div>
                                             <div class="traveler-hotel-room-main">
-                                                <h3>${escapeHtml(room.name)}</h3>
-                                                <div class="traveler-hotel-room-meta">${escapeHtml(room.size)} • ${escapeHtml(room.bedding)} • ${escapeHtml(room.guests)}</div>
+                                                <h3>${escapeHtml(selectedRoom.name)}</h3>
+                                                <div class="traveler-hotel-room-meta">${escapeHtml(selectedRoom.size)} • ${escapeHtml(selectedRoom.bedding)} • ${escapeHtml(selectedRoom.guests)}</div>
                                                 <div class="traveler-hotel-room-tags">
-                                                    ${room.tags.map((tag) => `<span class="traveler-hotel-room-tag">${icon("check")}${escapeHtml(tag)}</span>`).join("")}
+                                                    ${selectedRoom.tags.map((tag) => `<span class="traveler-hotel-room-tag">${icon("check")}${escapeHtml(tag)}</span>`).join("")}
                                                 </div>
                                             </div>
                                             <div class="traveler-hotel-room-price">
-                                                ${room.oldPrice ? `<del>$${room.oldPrice}</del>` : ""}
-                                                <strong>$${room.price}</strong>
+                                                ${selectedRoom.oldPrice ? `<del>$${selectedRoom.oldPrice}</del>` : ""}
+                                                <strong>$${selectedRoom.price}</strong>
                                                 <span>per night</span>
                                             </div>
                                         </div>
                                     </article>
-                                `).join("")}
-                            </div>
+                                </div>
+                            ` : `
+                                <div class="traveler-hotel-room-list" id="traveler-hotel-room-list">
+                                    ${hotel.rooms.map((room) => `
+                                        <article class="traveler-hotel-room-card ${state.selectedRoomId === room.id ? "selected" : ""}" data-room-id="${room.id}" tabindex="0" role="button" aria-pressed="${state.selectedRoomId === room.id ? "true" : "false"}">
+                                            <div class="traveler-hotel-room-card-inner">
+                                                <div class="traveler-hotel-room-image" style="background-image:url('${room.image}')"></div>
+                                                <div class="traveler-hotel-room-main">
+                                                    <h3>${escapeHtml(room.name)}</h3>
+                                                    <div class="traveler-hotel-room-meta">${escapeHtml(room.size)} • ${escapeHtml(room.bedding)} • ${escapeHtml(room.guests)}</div>
+                                                    <div class="traveler-hotel-room-tags">
+                                                        ${room.tags.map((tag) => `<span class="traveler-hotel-room-tag">${icon("check")}${escapeHtml(tag)}</span>`).join("")}
+                                                    </div>
+                                                </div>
+                                                <div class="traveler-hotel-room-price">
+                                                    ${room.oldPrice ? `<del>$${room.oldPrice}</del>` : ""}
+                                                    <strong>$${room.price}</strong>
+                                                    <span>per night</span>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    `).join("")}
+                                </div>
+                            `}
                         </section>
 
                         <section class="traveler-hotel-policies-card">
@@ -644,20 +673,22 @@ export function renderTravelerHotelDetailPage(containerId) {
             });
         });
 
-        container.querySelectorAll("[data-room-id]").forEach((card) => {
-            const selectRoom = () => {
-                state.selectedRoomId = card.dataset.roomId || defaultRoom.id;
-                render();
-            };
+        if (!isCompleted) {
+            container.querySelectorAll("[data-room-id]").forEach((card) => {
+                const selectRoom = () => {
+                    state.selectedRoomId = card.dataset.roomId || defaultRoom.id;
+                    render();
+                };
 
-            card.addEventListener("click", selectRoom);
-            card.addEventListener("keydown", (event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    selectRoom();
-                }
+                card.addEventListener("click", selectRoom);
+                card.addEventListener("keydown", (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        selectRoom();
+                    }
+                });
             });
-        });
+        }
 
         container.querySelector(".traveler-hotel-primary-btn")?.addEventListener("click", () => {
             const selectedRoomId = state.selectedRoomId || defaultRoom.id;

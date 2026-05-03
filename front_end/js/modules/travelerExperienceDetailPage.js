@@ -32,7 +32,13 @@ export function renderTravelerExperienceDetailPage(containerId) {
         wishlisted: isWishlisted(experience)
     };
 
+    function isExperienceCompleted() {
+        const status = new URLSearchParams(window.location.search).get("status")?.trim().toLowerCase();
+        return status === "completed" || status === "upcoming";
+    }
+
     function render() {
+        const isCompleted = isExperienceCompleted();
         const selectedOption = getSelectedOption(state);
         const total = selectedOption.price * state.adults;
 
@@ -98,15 +104,15 @@ export function renderTravelerExperienceDetailPage(containerId) {
 
                         <label class="traveler-experience-side-field">
                             <span class="traveler-experience-side-label">${calendarIcon()} Select Date</span>
-                            <input class="traveler-experience-side-input" type="date" id="traveler-experience-date" value="${escapeHtml(state.selectedDate)}">
+                            <input class="traveler-experience-side-input" type="date" id="traveler-experience-date" value="${escapeHtml(state.selectedDate)}" ${isCompleted ? "disabled" : ""}>
                         </label>
 
                         <div class="traveler-experience-side-field">
                             <span class="traveler-experience-side-label">${usersIcon()} Number of Adults</span>
                             <div class="traveler-experience-side-stepper">
-                                <button type="button" id="traveler-adults-decrease">-</button>
+                                <button type="button" id="traveler-adults-decrease" ${isCompleted ? "disabled" : ""}>-</button>
                                 <div>${state.adults} ${state.adults === 1 ? "Adult" : "Adults"}</div>
-                                <button type="button" id="traveler-adults-increase">+</button>
+                                <button type="button" id="traveler-adults-increase" ${isCompleted ? "disabled" : ""}>+</button>
                             </div>
                         </div>
 
@@ -125,7 +131,7 @@ export function renderTravelerExperienceDetailPage(containerId) {
                             <strong>${formatCurrency(total)}</strong>
                         </div>
 
-                        <button class="traveler-experience-continue-btn" type="button" id="traveler-experience-continue-btn">Continue</button>
+                        ${isCompleted ? `<div class="traveler-experience-completed-note">This experience has already been completed. The details are shown for your reference.</div>` : `<button class="traveler-experience-continue-btn" type="button" id="traveler-experience-continue-btn">Continue</button>`}
 
                         <ul class="traveler-experience-side-list">
                             <li>${checkCircleIcon()} Free cancellation available</li>
@@ -167,12 +173,16 @@ export function renderTravelerExperienceDetailPage(containerId) {
             });
         });
 
-        container.querySelectorAll("[data-experience-option]").forEach((button) => {
-            button.addEventListener("click", () => {
-                state.selectedOptionId = button.dataset.experienceOption;
-                render();
+        const isCompleted = isExperienceCompleted();
+
+        if (!isCompleted) {
+            container.querySelectorAll("[data-experience-option]").forEach((button) => {
+                button.addEventListener("click", () => {
+                    state.selectedOptionId = button.dataset.experienceOption;
+                    render();
+                });
             });
-        });
+        }
 
         container.querySelector("#traveler-adults-decrease")?.addEventListener("click", () => {
             state.adults = Math.max(1, state.adults - 1);
@@ -232,20 +242,22 @@ export function renderTravelerExperienceDetailPage(containerId) {
             showToast("Share not supported on this device");
         });
 
-        container.querySelector("#traveler-experience-continue-btn")?.addEventListener("click", () => {
-            const currentOption = getSelectedOption(state);
+        if (!isExperienceCompleted()) {
+            container.querySelector("#traveler-experience-continue-btn")?.addEventListener("click", () => {
+                const currentOption = getSelectedOption(state);
 
-            persistBookingDraft({
-                experienceId: state.experience.id,
-                experience: state.experience,
-                option: { ...currentOption },
-                selectedDate: state.selectedDate,
-                adults: state.adults,
-                totalPrice: currentOption.price * state.adults
+                persistBookingDraft({
+                    experienceId: state.experience.id,
+                    experience: state.experience,
+                    option: { ...currentOption },
+                    selectedDate: state.selectedDate,
+                    adults: state.adults,
+                    totalPrice: currentOption.price * state.adults
+                });
+
+                window.location.assign("./traveller_experience-booking.html");
             });
-
-            window.location.assign("./traveller_experience-booking.html");
-        });
+        }
     }
 
     render();

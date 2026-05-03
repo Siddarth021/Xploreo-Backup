@@ -1,4 +1,5 @@
 import { travelerData } from "../../data/traveler.js";
+import { attachLocationAutocomplete, getTodayDateString, extractUniqueLocations } from "../utils/locationAutocomplete.js";
 
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const HOTEL_DETAIL_PAGE = "./traveller_hotel-detail.html";
@@ -163,6 +164,7 @@ export function renderTravelerHotelSearchPage(containerId) {
         `;
 
         bindEvents();
+        attachHotelSearchAutocomplete(container);
     }
 
     function bindEvents() {
@@ -291,6 +293,25 @@ export function renderTravelerHotelSearchPage(containerId) {
     }
 
     render();
+    attachHotelSearchAutocomplete(container);
+}
+
+function attachHotelSearchAutocomplete(container) {
+    const hotelCities = extractUniqueLocations(
+        travelerData.searchCatalog.hotels,
+        ["city"]
+    );
+    // The city input is inside the toolbar — find it by data-search-field
+    const cityInput = container?.querySelector('[data-search-field="city"]');
+    if (!cityInput) return;
+    attachLocationAutocomplete(
+        cityInput.id || (() => { cityInput.id = "hotel-city-search"; return "hotel-city-search"; })(),
+        hotelCities,
+        (val) => {
+            cityInput.value = val;
+            cityInput.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+    );
 }
 
 function getSearchValues() {
@@ -420,7 +441,7 @@ function renderToolbarField(type, value, minValue = "") {
     return `
         <label class="traveler-hotel-toolbar-field">
             ${icon}
-            <input class="traveler-hotel-toolbar-input traveler-hotel-toolbar-date" type="date" value="${escapeHtml(value)}" data-search-field="${type}" ${minValue ? `min="${minValue}"` : ""}>
+            <input class="traveler-hotel-toolbar-input traveler-hotel-toolbar-date" type="date" value="${escapeHtml(value)}" data-search-field="${type}" ${minValue ? `min="${minValue}"` : `min="${getTodayDateString()}"`}>
         </label>
     `;
 }

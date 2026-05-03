@@ -7,7 +7,9 @@
 
     <!-- CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Plus+Jakarta+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Plus+Jakarta+Sans:wght@400;700&display=swap"
+        rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/landing.css">
@@ -16,42 +18,40 @@
 <body>
 
     <div class="desktop-container">
-        <div id = "navbar"></div>
+        <div id="navbar"></div>
         <section class="hero">
 
             <video autoplay muted loop class="hero-bg">
                 <source src="./components/ui/landing/beach.mp4" type="video/mp4">
             </video>
-            
+
             <div class="hero-content">
-                
+
                 <h1>
                     Plan, customize, and travel
                 </h1>
-                
+
                 <p>
                     A platform to plan trips, connect with guides and travel services,
                     and manage your entire travel experience.
                 </p>
-                
+
                 <div class="search-box">
-                    
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7B79" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7B79" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" class="search-icon">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
 
-                    <input
-                    type="text"
-                    placeholder="Search destinations, services, or guides"
-                    >
-                    
+                    <input type="text" placeholder="Search destinations, services, or guides">
+
                 </div>
-                
+
             </div>
-            
+
         </section>
-        
+
         <!-------------------------------------- ----------Role ui video Section --------------------------------------------->
 
         <section class="role-section">
@@ -60,31 +60,15 @@
 
             <div class="role-video-container">
 
-                <video
-                    id="travelerVideo"
-                    class="role-video active"
-                    autoplay
-                    muted
-                    loop
-                >
+                <video id="travelerVideo" class="role-video active" autoplay muted loop>
                     <source src="./components/ui/landing/traveller.mp4" type="video/mp4">
                 </video>
 
-                <video
-                    id="guideVideo"
-                    class="role-video"
-                    muted
-                    loop
-                >
+                <video id="guideVideo" class="role-video" muted loop>
                     <source src="./components/ui/landing/guide.mp4" type="video/mp4">
                 </video>
 
-                <video
-                    id="serviceVideo"
-                    class="role-video"
-                    muted
-                    loop
-                >
+                <video id="serviceVideo" class="role-video" muted loop>
                     <source src="./components/ui/landing/service.mp4" type="video/mp4">
                 </video>
 
@@ -94,24 +78,15 @@
 
             <div class="role-tabs">
 
-                <span
-                    class="tab active"
-                    onclick="switchRole('traveler')"
-                >
+                <span class="tab active" onclick="switchRole('traveler')">
                     Traveler
                 </span>
 
-                <span
-                    class="tab"
-                    onclick="switchRole('guide')"
-                >
+                <span class="tab" onclick="switchRole('guide')">
                     Guide
                 </span>
 
-                <span
-                    class="tab"
-                    onclick="switchRole('service')"
-                >
+                <span class="tab" onclick="switchRole('service')">
                     Service partner
                 </span>
 
@@ -136,7 +111,7 @@
 
             </div>
 
-        </section>  
+        </section>
 
         <!-----------------Journey Section---------------------------------------------- -->
 
@@ -175,67 +150,51 @@
                         Platform Administrators
                     </h3>
 
-                    <h6
-                        class="card-description"
-                    >
+                    <h6 class="card-description">
                         Control users, services, and bookings<br> from one central dashboard.
                     </h6>
 
-                    <img src="./components/ui/landing/admin-logo.svg"
-                         class="card-logo"
-                            alt="Administrator logo">
-                            
+                    <img src="./components/ui/landing/admin-logo.svg" class="card-logo" alt="Administrator logo">
+
                 </div>
-                        
-                        
+
+
                 <div class="card partner">
-                            
+
                     <h3 class="card-title">
                         Service Partners
                     </h3>
-                    
-                    <h6
-                    class="card-description"
-                    >
+
+                    <h6 class="card-description">
                         Manage services, bookings, and<br> performance in one place.
                     </h6>
 
-                    <img src="./components/ui/landing/service-logo.svg"
-                        class="card-logo"
-                        alt="Service Partner logo">
+                    <img src="./components/ui/landing/service-logo.svg" class="card-logo" alt="Service Partner logo">
                 </div>
-                            
+
                 <div class="card traveler">
                     <h3 class="card-title">
                         Travelers
                     </h3>
-                    
-                    <h6
-                    class="card-description"
-                    >
+
+                    <h6 class="card-description">
                         Discover destinations, book trusted <br>services, and manage your trips with <br>ease.
                     </h6>
 
-                    <img src="./components/ui/landing/traveler-logo.svg"
-                            class="card-logo"
-                            alt="Traveler logo">
+                    <img src="./components/ui/landing/traveler-logo.svg" class="card-logo" alt="Traveler logo">
                 </div>
-                                
+
                 <div class="card guide">
-                    
+
                     <h3 class="card-title">
                         Guides
                     </h3>
 
-                    <h6
-                    class="card-description"
-                    >
+                    <h6 class="card-description">
                         Create tours, connect with travelers,<br> and share your local expertise.
                     </h6>
 
-                    <img src="./components/ui/landing/guide-logo.svg"
-                            class="card-logo"
-                            alt="Guide logo">
+                    <img src="./components/ui/landing/guide-logo.svg" class="card-logo" alt="Guide logo">
                 </div>
 
             </div>
@@ -258,60 +217,60 @@
 
                 <div class="features-grid">
 
-                <div class="feature-card">
+                    <div class="feature-card">
 
-                    <div class="feature-icon">
-                        <img src="./components/ui/landing/trip.png">
+                        <div class="feature-icon">
+                            <img src="./components/ui/landing/trip.png">
+                        </div>
+                        <h4>Trip Planning</h4>
+                        <p>Create custom multi-day itineraries.</p>
                     </div>
-                    <h4>Trip Planning</h4>
-                    <p>Create custom multi-day itineraries.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <img src="./components/ui/landing/ServiceandGuide.png">
-                    </div>
-                    <h4>Services & Guides</h4>
-                    <p>Choose local services and professionals.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <img src="./components/ui/landing/journeytrack.png">
-                    </div>
-                    <h4>Journey Tracking</h4>
-                    <p>Track your travel progress.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <img src="./components/ui/landing/bookingManagement.png">
-                    </div>
-                    <h4>Bookings Management</h4>
-                    <p>Manage bookings and payments easily.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <img src="./components/ui/landing/travelDocuments.png">
-                    </div>
-                    <h4>Travel Documents</h4>
-                    <p>Access tickets, invoices, and vouchers.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <img src="./components/ui/landing/reviews.png">
-                    </div>
-                    <h4>Reviews & Ratings</h4>
-                    <p>Share feedback after completing a trip.</p>
-                </div>
 
-            </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="./components/ui/landing/ServiceandGuide.png">
+                        </div>
+                        <h4>Services & Guides</h4>
+                        <p>Choose local services and professionals.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="./components/ui/landing/journeytrack.png">
+                        </div>
+                        <h4>Journey Tracking</h4>
+                        <p>Track your travel progress.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="./components/ui/landing/bookingManagement.png">
+                        </div>
+                        <h4>Bookings Management</h4>
+                        <p>Manage bookings and payments easily.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="./components/ui/landing/travelDocuments.png">
+                        </div>
+                        <h4>Travel Documents</h4>
+                        <p>Access tickets, invoices, and vouchers.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="./components/ui/landing/reviews.png">
+                        </div>
+                        <h4>Reviews & Ratings</h4>
+                        <p>Share feedback after completing a trip.</p>
+                    </div>
+
+                </div>
 
         </section>
 
-<!---------------- Footer ---------------------------------------------------------->
+        <!---------------- Footer ---------------------------------------------------------->
 
         <footer class="footer">
 
@@ -321,10 +280,7 @@
                 <div class="footer-brand">
 
                     <div class="footer-logo-row">
-                        <img
-                            src="./components/ui/landing/footer-logo.png"
-                            alt="Xploreo footerLogo"
-                        >
+                        <img src="./components/ui/landing/footer-logo.png" alt="Xploreo footerLogo">
 
                         <h3 class="footer-logo">
                             Xploreo
@@ -394,31 +350,35 @@
         <div class="login-prompt-box">
             <!-- Animated SVG indicating 'logging in' -->
             <svg class="login-anim-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                <rect x="25" y="30" width="50" height="40" rx="4" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="2"/>
-                <line x1="35" y1="45" x2="65" y2="45" stroke="#D1D5DB" stroke-width="4" stroke-linecap="round"/>
-                <line x1="35" y1="55" x2="55" y2="55" stroke="#D1D5DB" stroke-width="4" stroke-linecap="round"/>
+                <rect x="25" y="30" width="50" height="40" rx="4" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="2" />
+                <line x1="35" y1="45" x2="65" y2="45" stroke="#D1D5DB" stroke-width="4" stroke-linecap="round" />
+                <line x1="35" y1="55" x2="55" y2="55" stroke="#D1D5DB" stroke-width="4" stroke-linecap="round" />
                 <!-- Cursor -->
-                <path class="cursor-anim" d="M40,65 L55,75 L50,80 L60,95 L55,100 L45,85 L35,95 Z" fill="#111827"/>
+                <path class="cursor-anim" d="M40,65 L55,75 L50,80 L60,95 L55,100 L45,85 L35,95 Z" fill="#111827" />
                 <!-- Click burst -->
-                <circle class="click-burst" cx="45" cy="65" r="2" fill="none" stroke="#10B981" stroke-width="2"/>
+                <circle class="click-burst" cx="45" cy="65" r="2" fill="none" stroke="#10B981" stroke-width="2" />
             </svg>
 
             <h3>Please Login</h3>
-            <p style="margin: 15px 0 25px 0; color: #4B5563;">You need to log in to start planning your perfect journey.</p>
-            
+            <p style="margin: 15px 0 25px 0; color: #4B5563;">You need to log in to start planning your perfect journey.
+            </p>
+
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button onclick="document.getElementById('loginPromptModal').style.display='none'" class="secondary-btn" style="padding: 10px 20px; font-size: 14px;">
+                <button onclick="document.getElementById('loginPromptModal').style.display='none'" class="secondary-btn"
+                    style="padding: 10px 20px; font-size: 14px;">
                     Cancel
                 </button>
-                <button onclick="window.location.href='./pages/login.html'" class="primary-btn" style="padding: 10px 20px; font-size: 14px;">
+                <button onclick="window.location.href='./pages/login.html'" class="primary-btn"
+                    style="padding: 10px 20px; font-size: 14px;">
                     Login To Continue
                 </button>
             </div>
         </div>
     </div>
 
-    <script type = "module" src = "./js/app.js"></script>
-    <script type = "module" src="./js/landing.js"></script>
+    <script type="module" src="./js/app.js"></script>
+    <script type="module" src="./js/landing.js"></script>
 
 </body>
+
 </html>

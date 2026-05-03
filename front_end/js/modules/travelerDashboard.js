@@ -1,4 +1,5 @@
 import { travelerData } from "../../data/traveler.js";
+import { attachLocationAutocomplete, getTodayDateString, extractUniqueLocations, extractFlightOrigins, extractFlightDestinations } from "../utils/locationAutocomplete.js";
 
 // Heart SVG helper
 const heartSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
@@ -124,7 +125,7 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>Departure</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="date" id="flight-departure" value="${searchState.values.flights.departure}">
+                                    <input type="date" id="flight-departure" value="${searchState.values.flights.departure}" min="${getTodayDateString()}">
                                 </div>
                                 <span class="search-field-error" id="flight-departure-error"></span>
                             </div>
@@ -132,7 +133,7 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>Return</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="date" id="flight-return" value="${searchState.values.flights.returnDate}" min="${getNextDateValue(searchState.values.flights.departure)}">
+                                    <input type="date" id="flight-return" value="${searchState.values.flights.returnDate}" min="${getNextDateValue(searchState.values.flights.departure) || getTodayDateString()}">
                                 </div>
                                 <span class="search-field-error" id="flight-return-error"></span>
                             </div>
@@ -165,7 +166,7 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>Check-in</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="date" id="hotel-checkin" value="${searchState.values.hotels.checkIn}">
+                                    <input type="date" id="hotel-checkin" value="${searchState.values.hotels.checkIn}" min="${getTodayDateString()}">
                                 </div>
                                 <span class="search-field-error" id="hotel-checkin-error"></span>
                             </div>
@@ -173,7 +174,7 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>Check-out</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="date" id="hotel-checkout" value="${searchState.values.hotels.checkOut}" min="${getNextDateValue(searchState.values.hotels.checkIn)}">
+                                    <input type="date" id="hotel-checkout" value="${searchState.values.hotels.checkOut}" min="${getNextDateValue(searchState.values.hotels.checkIn) || getTodayDateString()}">
                                 </div>
                                 <span class="search-field-error" id="hotel-checkout-error"></span>
                             </div>
@@ -222,7 +223,7 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>Departure Date</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="date" id="package-departure" value="${searchState.values.packages.departureDate}">
+                                    <input type="date" id="package-departure" value="${searchState.values.packages.departureDate}" min="${getTodayDateString()}">
                                 </div>
                                 <span class="search-field-error" id="package-departure-error"></span>
                             </div>
@@ -263,7 +264,7 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>Activity Date</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="date" id="experience-date" value="${searchState.values.experiences.activityDate}">
+                                    <input type="date" id="experience-date" value="${searchState.values.experiences.activityDate}" min="${getTodayDateString()}">
                                 </div>
                                 <span class="search-field-error" id="experience-date-error"></span>
                             </div>
@@ -465,6 +466,7 @@ export function renderTravelerDashboard(containerId, user) {
 
     container.innerHTML = dashboardHTML;
     attachDashboardEvents();
+    attachDashboardAutocomplete();
 }
 
 // Extract event listeners that were previously in js/traveler/dashboard.js
@@ -511,6 +513,7 @@ function attachDashboardEvents() {
 
     hydrateFlightLayout();
     bindSearchActions();
+    bindDateMinConstraints();
 
     // Initialize Wishlist State
     let wishlist = JSON.parse(localStorage.getItem("traveler_wishlist") || "[]");
@@ -616,6 +619,49 @@ function bindPlanActions() {
             window.location.href = `${PLAN_DETAIL_PAGE}?plan=${encodeURIComponent(itinerary.id || itinerary.title)}`;
         });
     });
+}
+
+function bindDateMinConstraints() {
+    // Ensure all date fields always have today as minimum
+    const today = getTodayDateString();
+    const dateFields = [
+        "flight-departure", "hotel-checkin", "package-departure", "experience-date"
+    ];
+    dateFields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (!el.min || el.min < today) el.min = today;
+            if (el.value && el.value < today) el.value = "";
+        }
+    });
+}
+
+function attachDashboardAutocomplete() {
+    const flights = travelerData.searchCatalog.flights;
+    const packages = travelerData.searchCatalog.packages || [];
+    const experiences = travelerData.searchCatalog.experiences || [];
+
+    // Flights: From only gets origins, To only gets destinations — field-specific
+    const flightOrigins = extractFlightOrigins(flights);
+    const flightDests  = extractFlightDestinations(flights);
+
+    // Hotels: only hotel city names
+    const hotelCities = extractUniqueLocations(travelerData.searchCatalog.hotels, ["city"]);
+
+    // Packages: From = package origins, To = package destinations
+    const pkgOrigins = extractUniqueLocations(packages, ["origin"]);
+    const pkgDests   = extractUniqueLocations(packages, ["destination"]);
+
+    // Experiences: destination field only
+    const expDests = extractUniqueLocations(experiences, ["destination"]);
+
+    // Attach — each field gets only its own relevant list
+    attachLocationAutocomplete("flight-from", flightOrigins.length ? flightOrigins : flightDests);
+    attachLocationAutocomplete("flight-to",   flightDests.length   ? flightDests   : flightOrigins);
+    attachLocationAutocomplete("hotel-city",  hotelCities);
+    attachLocationAutocomplete("package-from",        pkgOrigins.length ? pkgOrigins : hotelCities);
+    attachLocationAutocomplete("package-destination", pkgDests.length   ? pkgDests   : hotelCities);
+    attachLocationAutocomplete("experience-destination", expDests.length ? expDests   : hotelCities);
 }
 
 function bindSearchActions() {

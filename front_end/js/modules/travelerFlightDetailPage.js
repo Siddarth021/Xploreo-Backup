@@ -27,6 +27,7 @@ export function renderTravelerFlightDetailPage(containerId) {
     const totalAmount = selectedFlight.price + selectedFlight.taxes;
     const isSaved = getFlightWishlist().includes(selectedFlight.id);
     const travelerForm = getTravelerFormDefaults();
+    const isCompleted = new URLSearchParams(window.location.search).get("status")?.toLowerCase() === "completed";
 
     container.innerHTML = `
         <main class="flight-detail-page">
@@ -142,7 +143,7 @@ export function renderTravelerFlightDetailPage(containerId) {
                                 <p class="flight-traveler-error" id="flight-traveler-error"></p>
                             </div>
 
-                            <button class="book-now-btn" id="book-flight-btn">Book Now →</button>
+                            ${isCompleted ? "" : `<button class="book-now-btn" id="book-flight-btn">Book Now →</button>`}
                             <p class="flight-note">${selectedFlight.cancellation}</p>
                             <p class="flight-confirm">${selectedFlight.confirmation}</p>
                         </article>

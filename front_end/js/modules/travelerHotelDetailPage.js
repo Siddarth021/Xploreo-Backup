@@ -526,7 +526,7 @@ export function renderTravelerHotelDetailPage(containerId) {
                             </div>
 
                             <div class="traveler-hotel-booking-actions">
-                                <button class="traveler-hotel-primary-btn" type="button">Book This Now</button>
+                                ${isCompleted ? "" : `<button class="traveler-hotel-primary-btn" type="button">Book This Now</button>`}
                                 <button class="traveler-hotel-secondary-btn" type="button">View All Rooms</button>
                             </div>
                         </aside>

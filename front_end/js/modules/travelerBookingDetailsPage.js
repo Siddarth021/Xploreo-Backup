@@ -34,6 +34,8 @@ export function renderTravelerBookingDetailsPage(containerId) {
         const travelerCount = state.travelers.length;
         const totalPrice = calculateTravelerBookingTotal(state.packageData, travelerCount);
         const activeImage = packageView.gallery[state.activeGalleryIndex] || packageView.gallery[0];
+        const isCompleted = new URLSearchParams(window.location.search).get("status")?.toLowerCase() === "completed";
+        const displayTripDate = state.selectedDate ? new Date(state.selectedDate).toLocaleDateString("en-GB") : "Flexible dates";
 
         container.innerHTML = `
             <main class="traveler-package-detail-page">
@@ -112,12 +114,14 @@ export function renderTravelerBookingDetailsPage(containerId) {
                                                             ${item.selected ? `<small>Selected: ${escapeHtml(item.selected)}</small>` : ""}
                                                         </div>
                                                     </div>
+                                                    ${isCompleted ? "" : `
                                                     <div class="traveler-itinerary-actions">
                                                         <button type="button" data-remove-item="${dayIndex}:${itemIndex}">REMOVE</button>
                                                         <button type="button" data-modify-item="${dayIndex}:${itemIndex}">MODIFY</button>
                                                     </div>
                                                 </div>
-                                            `).join("")}
+                                            `}
+                                            ${isCompleted ? "" : `
                                             <div class="traveler-add-day-card">
                                                 <div class="traveler-itinerary-copy">
                                                     <div class="traveler-itinerary-icon traveler-itinerary-icon-soft">${sparkleIcon()}</div>
@@ -130,7 +134,7 @@ export function renderTravelerBookingDetailsPage(containerId) {
                                             </div>
                                         </div>
                                     </article>
-                                `).join("")}
+                                `)`}
                             </div>
                         </section>
 
@@ -150,25 +154,6 @@ export function renderTravelerBookingDetailsPage(containerId) {
                             </article>
                         </section>
 
-                        <section class="traveler-panel traveler-traveler-form-panel" id="traveler-details-section">
-                            <div class="traveler-section-heading">
-                                <div>
-                                    <h2>Traveler Details</h2>
-                                    <p>Fill traveler information before continuing to confirmation.</p>
-                                </div>
-                                <button type="button" class="traveler-secondary-button" id="add-traveler-btn">Add traveler</button>
-                            </div>
-
-                            <div class="traveler-form-grid">
-                                ${state.travelers.map((traveler, index) => renderTravelerCard(traveler, index)).join("")}
-                            </div>
-
-                            <div class="traveler-action-row">
-                                <button type="button" class="traveler-secondary-button" id="save-draft-btn">Save details</button>
-                                <button type="button" class="traveler-primary-button" id="continue-booking-btn">Continue to confirmation</button>
-                            </div>
-                            <p class="traveler-feedback" id="traveler-booking-feedback"></p>
-                        </section>
                     </div>
 
                     <aside class="traveler-detail-sidebar">
@@ -177,6 +162,23 @@ export function renderTravelerBookingDetailsPage(containerId) {
                             <div class="traveler-sidebar-price">${formatBookingCurrency(state.packageData.pricePerPerson)}</div>
                             <p class="traveler-sidebar-total">Total for ${travelerCount} traveler${travelerCount > 1 ? "s" : ""}: ${formatBookingCurrency(totalPrice)}</p>
 
+                            ${isCompleted ? `
+                            <label class="traveler-sidebar-field">
+                                <span>Trip Date</span>
+                                <div class="traveler-sidebar-static">
+                                    ${calendarIcon()}
+                                    ${escapeHtml(displayTripDate)}
+                                </div>
+                            </label>
+
+                            <div class="traveler-sidebar-field">
+                                <span>Number of Travelers</span>
+                                <div class="traveler-sidebar-static">
+                                    <strong>${travelerCount}</strong>
+                                    <span>Travelers</span>
+                                </div>
+                            </div>
+                            ` : `
                             <label class="traveler-sidebar-field">
                                 <span>Select Date</span>
                                 <div class="traveler-sidebar-input">
@@ -196,6 +198,7 @@ export function renderTravelerBookingDetailsPage(containerId) {
                                     <button type="button" data-traveler-step="1">+</button>
                                 </div>
                             </div>
+                            `}
 
                             <div class="traveler-sidebar-summary">
                                 <div><span>Duration</span><strong>${state.packageData.nights}N/${state.packageData.days}D</strong></div>
@@ -203,7 +206,7 @@ export function renderTravelerBookingDetailsPage(containerId) {
                                 <div><span>Hotel</span><strong>${escapeHtml(state.packageData.hotelCategory)}★ Resort</strong></div>
                             </div>
 
-                            <button type="button" class="traveler-primary-button traveler-sidebar-book" id="book-now-btn">Book Now</button>
+                            ${isCompleted ? "" : `<button type="button" class="traveler-primary-button traveler-sidebar-book" id="book-now-btn">Book Now</button>`}
 
                             <ul class="traveler-assurance-list">
                                 <li>${checkCircleIcon()} Free cancellation up to 48 hours</li>
@@ -223,6 +226,7 @@ export function renderTravelerBookingDetailsPage(containerId) {
     }
 
     function bindEvents() {
+        const isCompleted = new URLSearchParams(window.location.search).get("status")?.toLowerCase() === "completed";
         container.querySelectorAll("[data-gallery-index]").forEach((button) => {
             button.addEventListener("click", () => {
                 state.activeGalleryIndex = Number(button.dataset.galleryIndex);
@@ -248,26 +252,28 @@ export function renderTravelerBookingDetailsPage(containerId) {
             document.getElementById("traveler-details-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
         });
 
-        container.querySelectorAll("[data-remove-item]").forEach((button) => {
-            button.addEventListener("click", () => {
-                const [dayIndex, itemIndex] = button.dataset.removeItem.split(":").map(Number);
-                state.itinerary[dayIndex].items.splice(itemIndex, 1);
-                render();
+        if (!isCompleted) {
+            container.querySelectorAll("[data-remove-item]").forEach((button) => {
+                button.addEventListener("click", () => {
+                    const [dayIndex, itemIndex] = button.dataset.removeItem.split(":").map(Number);
+                    state.itinerary[dayIndex].items.splice(itemIndex, 1);
+                    render();
+                });
             });
-        });
 
-        container.querySelectorAll("[data-modify-item]").forEach((button) => {
-            button.addEventListener("click", () => {
-                const [dayIndex, itemIndex] = button.dataset.modifyItem.split(":").map(Number);
-                openModifyModal(dayIndex, itemIndex);
+            container.querySelectorAll("[data-modify-item]").forEach((button) => {
+                button.addEventListener("click", () => {
+                    const [dayIndex, itemIndex] = button.dataset.modifyItem.split(":").map(Number);
+                    openModifyModal(dayIndex, itemIndex);
+                });
             });
-        });
 
-        container.querySelectorAll("[data-add-to-day]").forEach((button) => {
-            button.addEventListener("click", () => {
-                openAddModal(Number(button.dataset.addToDay));
+            container.querySelectorAll("[data-add-to-day]").forEach((button) => {
+                button.addEventListener("click", () => {
+                    openAddModal(Number(button.dataset.addToDay));
+                });
             });
-        });
+        }
 
         container.querySelectorAll("[data-close-modal]").forEach((button) => {
             button.addEventListener("click", closeModal);

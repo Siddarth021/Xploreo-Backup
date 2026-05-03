@@ -8,11 +8,58 @@ export function renderTravelerHotelConfirmationPage(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const hotel = getSelectedHotel();
+        const hotel = getSelectedHotel();
     const searchValues = getSearchValues();
     const selectedRoom = getSelectedRoom(hotel);
     const locationLabel = getLocationLabel(hotel);
+    const stayNights = getDurationNights(searchValues.checkIn, searchValues.checkOut);
+    const roomCount = Number.parseInt(searchValues.rooms, 10) || 1;
+    const guestCount = Number.parseInt(searchValues.guestCount, 10) || Number.parseInt(hotel.adults, 10) || 1;
+    const roomSubtotal = selectedRoom.price * stayNights * roomCount;
+    const taxTotal = Number(hotel.taxes || 0) * roomCount;
+    const totalAmount = roomSubtotal + taxTotal;
     const bookingId = `XPL-HTL-${new Date(searchValues.checkIn + "T00:00:00").getFullYear()}-${String(Math.abs(hashCode(hotel.id))).slice(0, 4)}`;
+
+    const currentTraveler = getCurrentTraveler();
+
+    // Sync with global Hotel Provider data
+    const allHotelBookings = JSON.parse(localStorage.getItem("hotelBookings") || "[]");
+    if (!allHotelBookings.find(b => b.id === bookingId)) {
+        const hotelRecord = {
+            id: bookingId,
+            hotelId: hotel.id,
+            hotel: hotel.title,
+            customer: currentTraveler.name,
+            customerId: currentTraveler.id,
+            checkIn: searchValues.checkIn,
+            checkOut: searchValues.checkOut,
+            room: selectedRoom.name,
+            guests: guestCount,
+            rooms: roomCount,
+            amount: totalAmount,
+            status: "pending"
+        };
+        allHotelBookings.push(hotelRecord);
+        localStorage.setItem("hotelBookings", JSON.stringify(allHotelBookings));
+    }
+
+    addHotelBookingToTravelerTrips({
+        id: bookingId,
+        hotelId: hotel.id,
+        title: hotel.title,
+        customerId: currentTraveler.id,
+        customer: currentTraveler.name,
+        email: currentTraveler.email || "",
+        phone: currentTraveler.phone || currentTraveler.phno || "",
+        destination: hotel.title,
+        location: hotel.area || hotel.city || hotel.title,
+        dateTime: `${searchValues.checkIn} | 03:00 PM`,
+        status: "pending",
+        guests: guestCount,
+        amount: totalAmount,
+        duration: `${stayNights} nights`,
+        coverImage: hotel.image || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800"
+    });
 
     container.innerHTML = `
         <main class="traveler-hotel-confirmation-page">
@@ -134,6 +181,55 @@ function getSelectedRoom(hotel) {
     const params = new URLSearchParams(window.location.search);
     const roomId = params.get("room");
     return hotel.rooms.find((room) => room.id === roomId) || hotel.rooms.find((room) => room.selected) || hotel.rooms[0];
+}
+
+function getCurrentTraveler() {
+    if (typeof localStorage === "undefined") {
+        return { id: "traveler-fallback", name: "Traveler", email: "", phone: "" };
+    }
+
+    try {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+        if (!currentUser || !currentUser.role) {
+            return { id: "traveler-fallback", name: "Traveler", email: "", phone: "" };
+        }
+        return currentUser;
+    } catch (error) {
+        return { id: "traveler-fallback", name: "Traveler", email: "", phone: "" };
+    }
+}
+
+function addHotelBookingToTravelerTrips(hotelBooking) {
+    if (typeof localStorage === "undefined") return;
+
+    try {
+        const allTours = JSON.parse(localStorage.getItem("tours") || "[]");
+        if (!allTours.find((item) => String(item.id) === String(hotelBooking.id))) {
+            const tourRecord = {
+                id: hotelBooking.id,
+                customerId: hotelBooking.customerId,
+                customer: hotelBooking.customer,
+                email: hotelBooking.email,
+                phone: hotelBooking.phone,
+                destination: hotelBooking.destination,
+                location: hotelBooking.location,
+                currentloction: null,
+                dateTime: hotelBooking.dateTime,
+                status: hotelBooking.status,
+                guests: hotelBooking.guests,
+                amount: hotelBooking.amount,
+                duration: hotelBooking.duration,
+                hotelId: hotelBooking.hotelId,
+                title: hotelBooking.title,
+                coverImage: hotelBooking.coverImage,
+                plan_iternary: [hotelBooking.room || "Hotel stay"]
+            };
+            allTours.push(tourRecord);
+            localStorage.setItem("tours", JSON.stringify(allTours));
+        }
+    } catch (error) {
+        console.warn("Could not save hotel booking to traveler tours", error);
+    }
 }
 
 function getLocationLabel(hotel) {

@@ -1,4 +1,5 @@
 import { travelerData } from "../../data/traveler.js";
+import { getTravelerBookings } from "../utils/travelerWorkspaceState.js";
 
 const CONFIRMED_BOOKING_KEY = "traveler_confirmed_booking";
 const CONFIRMED_BOOKING_SESSION_KEY = "traveler_confirmed_booking_session";
@@ -81,6 +82,12 @@ export function renderTravelerTrips(containerId, user) {
                             <div class="trip-booking-id">
                                 Booking ID: <strong>${trip.bookingId}</strong>
                             </div>
+                            
+                            ${trip.currentStop && trip.status !== 'Completed' ? `
+                            <div class="trip-current-stop" style="margin-top: 10px; font-size: 0.9rem; color: #1e40af; background: #eff6ff; padding: 6px 10px; border-radius: 6px; display: inline-block;">
+                                📍 Current: <strong>${trip.currentStop}</strong>
+                            </div>
+                            ` : ``}
                             
                             <div class="trip-actions">
                                 <button class="btn-solid-blue" data-trip-view="${escapeHtmlAttr(getTripViewKey(trip))}">View Details</button>

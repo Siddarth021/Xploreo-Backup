@@ -1,3 +1,11 @@
+export enum Interest {
+  ADVENTURE = "Adventure",
+  CULTURE = "Culture",
+  FOOD = "Food",
+  NATURE = "Nature",
+  HISTORY = "History",
+}
+
 export class Traveller {
     userId! : String;
     fname! : String;
@@ -6,4 +14,5 @@ export class Traveller {
     phno! : Number;
     plang! : String[];
     bio! : Text;
+    intrests! : Interest[];
 }

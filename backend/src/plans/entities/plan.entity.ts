@@ -30,7 +30,8 @@ export class Plan {
     desc! : Text;
     price! : Number;
     duration! : Duration;
-    location! : Number;
+    destination! : String;
+    location! : String[];
     category! : TripCategory;
     availability! : Availability;
 }

@@ -12,9 +12,10 @@ import { AuthModule } from './auth/auth.module';
 import { TravellerModule } from './traveller/traveller.module';
 import { GuideModule } from './guide/guide.module';
 import { LocationModule } from './location/location.module';
+import { CitiesModule } from './cities/cities.module';
 
 @Module({
-  imports: [AuthModule, TravellerModule, GuideModule, HotelsModule, ExperiencesModule, SuperadminModule, TechadminModule, NontechadminModule, PlansModule, TravellerModule, LocationModule,TripsModule],
+  imports: [AuthModule, TravellerModule, GuideModule, HotelsModule, ExperiencesModule, SuperadminModule, TechadminModule, NontechadminModule, PlansModule, TravellerModule, LocationModule,TripsModule, CitiesModule],
   controllers: [AppController],
   providers: [AppService],
 })

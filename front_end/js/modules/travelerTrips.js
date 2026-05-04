@@ -93,6 +93,9 @@ export function renderTravelerTrips(containerId, user) {
                                 ${trip.status === 'Completed'
                                     ? `<button class="btn-outline-teal" data-trip-review="${escapeHtmlAttr(getTripViewKey(trip))}">Review Trip</button>`
                                     : ``}
+                                ${trip.status !== 'Completed' && (trip.type.toLowerCase() === 'tour' || trip.type.toLowerCase() === 'experience' || trip.currentStop) 
+                                    ? `<button class="btn-outline-blue" data-trip-route="${escapeHtmlAttr(getTripViewKey(trip))}">View Live Route</button>`
+                                    : ``}
                             </div>
                         </div>
                     </div>
@@ -139,6 +142,16 @@ export function renderTravelerTrips(containerId, user) {
             }
 
             openPackageBookingTrip(trip);
+        });
+    });
+
+    container.querySelectorAll("[data-trip-route]").forEach((button) => {
+        button.addEventListener("click", () => {
+            const key = button.getAttribute("data-trip-route");
+            const trip = displayedTrips.find((item) => getTripViewKey(item) === key);
+            if (trip && window.openTourModal) {
+                window.openTourModal(trip);
+            }
         });
     });
 
@@ -234,10 +247,11 @@ function getTravelerTripsData() {
 
     // Map combined list to traveler UI format
     const trips = combined.map(b => ({
-        title: b.title,
+        ...b,
+        title: b.title || b.name,
         location: b.destination || b.location,
-        dateRange: b.dateTime ? b.dateTime.split(" | ")[0] : (b.dateRange || "Date TBD"),
-        bookingId: b.bookingId || b.id,
+        dateRange: b.dateTime ? b.dateTime.split(" | ")[0] : (b.date || "Date TBD"),
+        bookingId: b.id || b.bookingId,
         planId: b.planId || b.id,
         experienceId: b.experienceId,
         hotelId: b.hotelId,
@@ -245,7 +259,9 @@ function getTravelerTripsData() {
         type: b.type || "Tour",
         status: normalizeTripStatus(b.status),
         image: b.coverImage || b.image || DEFAULT_TRIP_IMAGE,
-        currentStop: b.currentloction
+        currentStop: b.currentloction,
+        plan_iternary: b.plan_iternary,
+        customer: b.customer
     }));
     const confirmedBooking = getConfirmedBooking();
 
@@ -767,3 +783,82 @@ function formatArrivalValue(dateString, duration) {
     date.setMinutes(date.getMinutes() + minutesToAdd);
     return date.toISOString();
 }
+
+// Global Modal Handlers for Traveler View Route
+window.openTourModal = (trip) => {
+    const modal = document.getElementById("tourModal");
+    const body = document.getElementById("modalBody");
+    if (!modal || !body) return;
+
+    // Use fallback variables to prevent undefined
+    const title = trip.name || trip.title || trip.destination || trip.location || 'Guided Tour';
+    const subtitle = trip.title && trip.title !== title ? trip.title : '';
+    const bookingId = trip.id || trip.bookingId || 'N/A';
+    const dateStr = trip.date || trip.dateTime || trip.dateRange || 'TBD';
+    const customer = trip.customer || 'Traveller';
+
+    body.innerHTML = `
+        <div class="tracking-modal-header" style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb;">
+            <h2 style="margin: 0; font-size: 20px; font-weight: 600; color: #111827;">${title} <span style="font-weight: 400; color: #6b7280; font-size: 16px;">${subtitle ? '- ' + subtitle : ''}</span></h2>
+            <div style="margin-top: 8px; display: flex; gap: 16px; font-size: 13px; color: #4b5563;">
+                <span><strong style="color: #111827;">ID:</strong> ${bookingId}</span>
+                <span><strong style="color: #111827;">Date:</strong> ${dateStr}</span>
+                <span><strong style="color: #111827;">Customer:</strong> ${customer}</span>
+            </div>
+        </div>
+
+        <div class="tracking-container" style="height: 500px; padding: 24px;">
+          <!-- LEFT -->
+          <div class="tracking-left">
+            <h3 style="margin: 0 0 16px 0; font-size: 16px; color: #111827;">Itinerary</h3>
+            <ul id="trackingStops"></ul>
+
+            <!-- GUIDE CONTROLS -->
+            <div id="guideControls" style="display:none; margin-top: auto; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+              <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                  <button onclick="tracking.start()" class="btn-solid-blue">Start</button>
+                  <button onclick="tracking.pause()" class="btn-outline-blue">Pause</button>
+                  <button onclick="tracking.resume()" class="btn-outline-blue">Resume</button>
+                  <button onclick="tracking.skip()" class="btn-outline-blue">Skip</button>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                  <input id="trackingMsgInput" placeholder="Send message to traveller..." />
+                  <button onclick="tracking.sendMessage()" class="btn-solid-blue">Send</button>
+              </div>
+            </div>
+
+            <!-- TRAVELLER CONTROLS -->
+            <div id="travellerControls" style="margin-top: auto; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  <button onclick="tracking.sendRequest('🚻 Washroom')" class="btn-outline-blue">🚻 Washroom</button>
+                  <button onclick="tracking.sendRequest('☕ Break')" class="btn-outline-blue">☕ Break</button>
+                  <button onclick="tracking.sendRequest('🆘 Emergency')" style="background: #ea580c; color: white; border: none;">🆘 Emergency</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT -->
+          <div class="tracking-right">
+            <div id="trackingMap"></div>
+            <div id="trackingMessages"></div>
+          </div>
+        </div>
+    `;
+
+    modal.classList.add('active');
+    modal.style.setProperty('display', 'flex', 'important');
+
+    if (window.tracking) {
+        window.tracking.init(trip);
+    }
+};
+
+window.closeModal = () => {
+    const modal = document.getElementById("tourModal");
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+        document.getElementById("modalBody").innerHTML = "";
+    }
+};
+

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,27 +9,11 @@
     <link rel="stylesheet" href="../css/shared.css">
     <link rel="stylesheet" href="../css/hotelstyle.css">
 </head>
+
 <body class="hotel-bg-light">
 
-    <!-- NAVBAR (Replicated from layout standard) -->
-    <header id="hotel-profile-navbar" class="hotel-navbar-profile">
-        <div class="nav-left">
-            <div class="logo">
-                <div class="logo-icon-wrap"><span class="logo-icon-text"></span></div>
-                <span class="logo-text">Xploreo</span>
-            </div>
-        </div>
-        <nav class="nav-links">
-            <a href="dashboard.html">Home</a>
-            <a href="hotelBookings.html">Bookings</a>
-            <a href="hotelRooms.html">Services</a>
-            <a href="hotelEarning.html">Earnings</a>
-        </nav>
-        <div class="nav-right">
-            <span class="greeting">Hello, User <span class="wave">👋</span></span>
-            <div class="user-avatar">U</div>
-        </div>
-    </header>
+    <!-- Shared Navbar Component -->
+    <div id="navbar"></div>
 
     <main id="main" class="dashboard-wrapper">
         <div class="hotel-page-header">
@@ -49,91 +34,143 @@
                         <p class="location-text"><span class="loc-pin"></span> Downtown, New York City</p>
                     </div>
                 </div>
-                <button type="button" class="btn-blue edit-profile-btn">
-                    <span class="edit-icon"></span>Edit Profile
-                </button>
             </div>
 
-            <!-- Hotel Details -->
-            <div class="hotel-content-card section-card slide-up">
-                <h3 class="section-title-large">Hotel Details</h3>
-                <div class="profile-grid">
-                    <div class="input-group">
+            <!-- Basic Information -->
+            <div class="hotel-content-card section-card slide-up block-view-mode" id="block-basicInfo">
+                <div class="section-header-flex">
+                    <h3>Basic Information</h3>
+                    <button type="button" class="edit-block-btn">✎ Edit</button>
+                </div>
+                <div class="hotel-form-grid">
+                    <div class="hotel-form-group">
                         <label>Hotel Name</label>
-                        <input type="text" name="hotelName" class="profile-input" value="Grand Plaza Hotel">
+                        <input type="text" name="hotelName" value="Grand Plaza Hotel">
                     </div>
-                    <div class="input-group">
-                        <label>Location</label>
-                        <input type="text" name="location" class="profile-input" value="Downtown, New York City">
+                    <div class="hotel-form-group" style="grid-column: span 2;">
+                        <label>Description</label>
+                        <textarea name="description">Premium hotel in downtown</textarea>
                     </div>
                 </div>
-                <div class="input-group" style="margin-top: 15px;">
-                    <label>Description</label>
-                    <textarea name="description" class="profile-input textarea-tall"></textarea>
+                <div class="block-actions hidden">
+                    <button type="button" class="cancel-block-btn">Cancel</button>
+                    <button type="button" class="save-block-btn">Save</button>
                 </div>
-                <div class="profile-grid" style="margin-top: 15px;">
-                    <div class="input-group">
+            </div>
+
+            <!-- Contact Details -->
+            <div class="hotel-content-card section-card slide-up delay-1 block-view-mode" id="block-contact">
+                <div class="section-header-flex">
+                    <h3>Contact Details</h3>
+                    <button type="button" class="edit-block-btn">✎ Edit</button>
+                </div>
+                <div class="hotel-form-grid">
+                    <div class="hotel-form-group">
                         <label>Contact Number</label>
-                        <div class="input-with-icon">
-                            <span class="input-icon call-icon"></span>
-                            <input type="tel" name="contactNumber" class="profile-input padded-left" value="+1 (212) 555-0123">
-                        </div>
+                        <input type="tel" name="contactNumber" value="+1 (212) 555-0123">
                     </div>
-                    <div class="input-group">
+                    <div class="hotel-form-group">
                         <label>Email</label>
-                        <div class="input-with-icon">
-                            <span class="input-icon mail-icon"></span>
-                            <input type="email" name="email" class="profile-input padded-left" value="info@grandplazahotel.com">
-                        </div>
+                        <input type="email" name="email" value="info@grandplazahotel.com">
                     </div>
+                </div>
+                <div class="block-actions hidden">
+                    <button type="button" class="cancel-block-btn">Cancel</button>
+                    <button type="button" class="save-block-btn">Save</button>
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div class="hotel-content-card section-card slide-up delay-2 block-view-mode" id="block-location">
+                <div class="section-header-flex">
+                    <h3>Location</h3>
+                    <button type="button" class="edit-block-btn">✎ Edit</button>
+                </div>
+                <div class="hotel-form-grid">
+                    <div class="hotel-form-group" style="grid-column: span 2;">
+                        <label>Location</label>
+                        <input type="text" name="location" value="Downtown, New York City">
+                    </div>
+                </div>
+                <div class="block-actions hidden">
+                    <button type="button" class="cancel-block-btn">Cancel</button>
+                    <button type="button" class="save-block-btn">Save</button>
                 </div>
             </div>
 
             <!-- Business Information -->
-            <div class="hotel-content-card section-card slide-up delay-1">
-                <h3 class="section-title-large">Business Information</h3>
-                <div class="profile-grid">
-                    <div class="input-group">
+            <div class="hotel-content-card section-card slide-up delay-3 block-view-mode" id="block-business">
+                <div class="section-header-flex">
+                    <h3>Business Information</h3>
+                    <button type="button" class="edit-block-btn">✎ Edit</button>
+                </div>
+                <div class="hotel-form-grid">
+                    <div class="hotel-form-group">
                         <label>GST / Tax ID</label>
-                        <input type="text" name="gst" class="profile-input" value="GST123456789">
+                        <input type="text" name="gst" value="GST123456789">
                     </div>
-                    <div class="input-group">
+                    <div class="hotel-form-group">
                         <label>Bank Account</label>
-                        <div class="fake-input-wrapper">
-                            <input type="text" name="bankAccount" class="profile-input disabled-like" value="*** *** *** 4582" readonly>
-                            <a href="#" class="update-link">Update</a>
-                        </div>
+                        <input type="text" name="bankAccount" value="*** *** *** 4582" readonly>
+                    </div>
+                    <div class="hotel-form-group">
+                        <label>Payout Method</label>
+                        <input type="text" name="payoutMethod" value="Wire Transfer">
                     </div>
                 </div>
-                <div class="input-group" style="margin-top: 15px;">
-                    <label>Payout Method</label>
-                    <input type="text" name="payoutMethod" class="profile-input" value="Wire Transfer">
+                <div class="block-actions hidden">
+                    <button type="button" class="cancel-block-btn">Cancel</button>
+                    <button type="button" class="save-block-btn">Save</button>
                 </div>
             </div>
 
-            <!-- Policies Section -->
-            <div class="hotel-content-card section-card slide-up delay-2">
-                <h3 class="section-title-large">Policies</h3>
-                <div class="profile-grid">
-                    <div class="input-group">
+            <!-- Policies -->
+            <div class="hotel-content-card section-card slide-up delay-4 block-view-mode" id="block-policies">
+                <div class="section-header-flex">
+                    <h3>Policies</h3>
+                    <button type="button" class="edit-block-btn">✎ Edit</button>
+                </div>
+                <div class="hotel-form-grid">
+                    <div class="hotel-form-group">
                         <label>Check-in Time</label>
-                        <input type="text" name="checkInTime" class="profile-input" value="14:00">
+                        <input type="time" name="checkInTime" value="14:00">
                     </div>
-                    <div class="input-group">
+                    <div class="hotel-form-group">
                         <label>Check-out Time</label>
-                        <input type="text" name="checkOutTime" class="profile-input" value="11:00">
+                        <input type="time" name="checkOutTime" value="11:00">
+                    </div>
+                    <div class="hotel-form-group" style="grid-column: span 2;">
+                        <label>Cancellation Policy</label>
+                        <input type="text" name="cancellationPolicy" value="Free cancellation up to 48 hours before check-in">
                     </div>
                 </div>
-                <div class="input-group" style="margin-top: 15px;">
-                    <label>Cancellation Policy</label>
-                    <input type="text" name="cancellationPolicy" class="profile-input" value="Free cancellation up to 48 hours before check-in">
+                <div class="block-actions hidden">
+                    <button type="button" class="cancel-block-btn">Cancel</button>
+                    <button type="button" class="save-block-btn">Save</button>
                 </div>
             </div>
 
-            <!-- Save Action -->
-            <div class="profile-actions slide-up delay-3">
-                <button type="submit" id="saveProfileBtn" class="btn-blue btn-large"><span class="save-icon"></span> Save Changes</button>
+            <!-- Media Uploads -->
+            <div class="hotel-content-card section-card slide-up delay-5 block-view-mode" id="block-media">
+                <div class="section-header-flex">
+                    <h3>Media Uploads</h3>
+                    <button type="button" class="edit-block-btn">✎ Edit</button>
+                </div>
+                <div class="hotel-upload-container">
+                    <div class="hotel-dashed-upload">
+                        <span class="upload-icon">📁</span>
+                        <p>Upload Profile Logo</p>
+                        <small>Upload at least 1 high-quality photo</small>
+                        <input type="file" accept="image/*">
+                    </div>
+                </div>
+                <div class="block-actions hidden">
+                    <button type="button" class="cancel-block-btn">Cancel</button>
+                    <button type="button" class="save-block-btn">Save</button>
+                </div>
             </div>
+
+            <button type="submit" id="saveProfileBtn" style="display: none;"></button>
             
         </form>
     </main>
@@ -198,7 +235,9 @@
         </div>
     </div>
 
-    <!-- Import JS as module -->
+    <!-- Import JS modules -->
+    <script type="module" src="../js/app.js"></script>
     <script type="module" src="../js/modules/hotelprofile.js"></script>
 </body>
+
 </html>

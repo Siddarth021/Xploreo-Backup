@@ -10,9 +10,12 @@ import { SuperadminModule } from './superadmin/superadmin.module';
 import { TechadminModule } from './techadmin/techadmin.module';
 import { NontechadminModule } from './nontechadmin/nontechadmin.module';
 import { PlansModule } from './plans/plans.module';
+import { AuthModule } from './auth/auth.module';
+import { TravellerModule } from './traveller/traveller.module';
+import { GuideModule } from './guide/guide.module';
 
 @Module({
-  imports: [AuthModule, TravelerModule, GuideModule, HotelsModule, ExperiencesModule, SuperadminModule, TechadminModule, NontechadminModule, PlansModule],
+  imports: [AuthModule, TravelerModule, GuideModule, HotelsModule, ExperiencesModule, SuperadminModule, TechadminModule, NontechadminModule, PlansModule, TravellerModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { GuideController } from './guide.controller';
 import { GuideService } from './guide.service';
+import { GuideController } from './guide.controller';
 
 @Module({
   controllers: [GuideController],
-  providers: [GuideService]
+  providers: [GuideService],
 })
 export class GuideModule {}

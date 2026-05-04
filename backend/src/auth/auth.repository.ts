@@ -11,7 +11,7 @@ export class AuthRepository {
     return data;
   }
 
-  findByUsername(username: string) {
+  findByUsername(username: String) {
     return this.credentials.find(c => c.username === username);
   }
 }

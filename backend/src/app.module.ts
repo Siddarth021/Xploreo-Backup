@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TravelerModule } from './traveler/traveler.module';
 import { GuideModule } from './guide/guide.module';
+import { TripsModule } from './trips/trips.module';
 import { HotelsModule } from './hotels/hotels.module';
 import { ExperiencesModule } from './experiences/experiences.module';
 import { SuperadminModule } from './superadmin/superadmin.module';
@@ -15,7 +16,7 @@ import { TravellerModule } from './traveller/traveller.module';
 import { GuideModule } from './guide/guide.module';
 
 @Module({
-  imports: [AuthModule, TravelerModule, GuideModule, HotelsModule, ExperiencesModule, SuperadminModule, TechadminModule, NontechadminModule, PlansModule, TravellerModule],
+  imports: [AuthModule, TravelerModule, GuideModule, HotelsModule, ExperiencesModule, SuperadminModule, TechadminModule, NontechadminModule, PlansModule, TravellerModule, TripsModule],
   controllers: [AppController],
   providers: [AppService],
 })

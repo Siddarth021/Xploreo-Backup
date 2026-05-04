@@ -57,61 +57,45 @@ export function initLogin(users) {
     const loginForm = document.getElementById("login-form");
 
     if (loginForm) {
-        loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault(); // ✅ VERY IMPORTANT
+        loginForm.addEventListener("submit", (event) => {
+            event.preventDefault();
 
-    const usernameElement = document.getElementById("login-username");
-    const passwordElement = document.getElementById("login-password");
+            const usernameElement = document.getElementById("login-username");
+            const passwordElement = document.getElementById("login-password");
 
-    const username = usernameElement.value.trim();
-    const password = passwordElement.value;
+            const username = usernameElement.value.trim();
+            const password = passwordElement.value;
 
-    // Clear errors
-    clearError(usernameElement);
-    clearError(passwordElement);
+            // Clear existing UI errors
+            clearError(usernameElement);
+            clearError(passwordElement);
 
-    if (!username) {
-        showError(usernameElement, "Username is required");
-        return;
-    }
+            if (!username) {
+                showError(usernameElement, "Username or Email is required.");
+                return;
+            }
+            if (!password) {
+                showError(passwordElement, "Password is required.");
+                return;
+            }
+            
+            const currentUser = users.find(u => 
+                (u.username === username || u.email === username) && 
+                u.password === password
+            );
 
-    if (!password) {
-        showError(passwordElement, "Password is required");
-        return;
-    }
+            if (!currentUser) {
+                showError(passwordElement, "Invalid username or password.");
+                return;
+            }
 
-    try {
-        const response = await fetch('http://localhost:3000/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password
-            }),
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            if (currentUser.role === "traveller") {
+                window.location.href = BASE_PATH + "/front_end/pages/traveller_dashboard.html";
+            } else {
+                window.location.href = BASE_PATH + "/front_end/pages/dashboard.html";
+            }
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            showError(passwordElement, data.message || "Login failed");
-            return;
-        }
-
-        console.log("Login Successful:", data);
-
-        // store user
-        localStorage.setItem("currentUser", JSON.stringify(data.user));
-
-        // redirect
-        window.location.href = BASE_PATH + "/front_end/pages/dashboard.html";
-
-    } catch (error) {
-        showError(passwordElement, "Server error");
-        console.error(error);
-    }
-});
     }
 
     /* ===============================

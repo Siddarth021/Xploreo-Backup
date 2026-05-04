@@ -1,6 +1,4 @@
-/* =======================================================
-   LOGIN MODULE
-======================================================= */
+
 export function initLogin(users) {
     const BASE_PATH = window.location.pathname.includes("23_Xploreo") ? "/23_Xploreo" : "";
 
@@ -19,9 +17,7 @@ export function initLogin(users) {
         });
     }
 
-    /* ===============================
-       DYNAMIC ERROR CLEAR LOGIC
-    =============================== */
+
     const usernameInput = document.getElementById("login-username");
     if (usernameInput) {
         usernameInput.addEventListener("input", () => clearError(usernameInput));
@@ -57,51 +53,65 @@ export function initLogin(users) {
         });
     }
 
-    /* ===============================
-       LOGIN HANDLER
-    =============================== */
+   
     const loginForm = document.getElementById("login-form");
 
     if (loginForm) {
-        loginForm.addEventListener("submit", (event) => {
-            event.preventDefault();
+        loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault(); // ✅ VERY IMPORTANT
 
-            const usernameElement = document.getElementById("login-username");
-            const passwordElement = document.getElementById("login-password");
+    const usernameElement = document.getElementById("login-username");
+    const passwordElement = document.getElementById("login-password");
 
-            const username = usernameElement.value.trim();
-            const password = passwordElement.value;
+    const username = usernameElement.value.trim();
+    const password = passwordElement.value;
 
-            // Clear existing UI errors
-            clearError(usernameElement);
-            clearError(passwordElement);
+    // Clear errors
+    clearError(usernameElement);
+    clearError(passwordElement);
 
-            if (!username) {
-                showError(usernameElement, "Username or Email is required.");
-                return;
-            }
-            if (!password) {
-                showError(passwordElement, "Password is required.");
-                return;
-            }
-            
-            const currentUser = users.find(u => 
-                (u.username === username || u.email === username) && 
-                u.password === password
-            );
+    if (!username) {
+        showError(usernameElement, "Username is required");
+        return;
+    }
 
-            if (!currentUser) {
-                showError(passwordElement, "Invalid username or password.");
-                return;
-            }
+    if (!password) {
+        showError(passwordElement, "Password is required");
+        return;
+    }
 
-            localStorage.setItem("currentUser", JSON.stringify(currentUser));
-            if (currentUser.role === "traveller") {
-                window.location.href = BASE_PATH + "/front_end/pages/traveller_dashboard.html";
-            } else {
-                window.location.href = BASE_PATH + "/front_end/pages/dashboard.html";
-            }
+    try {
+        const response = await fetch('http://localhost:3000/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            }),
         });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            showError(passwordElement, data.message || "Login failed");
+            return;
+        }
+
+        console.log("Login Successful:", data);
+
+        // store user
+        localStorage.setItem("currentUser", JSON.stringify(data.user));
+
+        // redirect
+        window.location.href = BASE_PATH + "/front_end/pages/dashboard.html";
+
+    } catch (error) {
+        showError(passwordElement, "Server error");
+        console.error(error);
+    }
+});
     }
 
     /* ===============================

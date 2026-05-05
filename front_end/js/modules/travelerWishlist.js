@@ -25,7 +25,7 @@ export function renderTravelerWishlist(containerId, user) {
                         <div class="wishlist-card" style="background-image: url('${item.image || "https://images.unsplash.com/photo-1499856871958-5b9627545d1a"}');" data-title="${item.title}">
                             <div class="wishlist-actions">
                                 <button class="wishlist-action-btn remove-wish-btn" title="Remove from wishlist">${heartActiveSvg}</button>
-                                <button class="wishlist-action-btn" title="Share">${shareSvg}</button>
+
                             </div>
                             <button class="wishlist-action-btn likes-btn">
                                 ${thumbsUpSvg} ${item.likes || 12}

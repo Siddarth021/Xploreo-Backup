@@ -302,7 +302,7 @@ function validateStep2() {
     let isValid = true;
     let firstInvalid = null;
 
-    const ids = ["fullName", "username", "email", "phone", "password", "confirmPassword"];
+    const ids = ["fullName", "username", "email", "phone", "dob", "gender", "password", "confirmPassword"];
     ids.forEach(id => {
         const input = document.getElementById(id);
         if (input) {
@@ -355,6 +355,22 @@ function validateStep2() {
         }
     }
 
+    const dobInput = document.getElementById("dob");
+    if (dobInput && dobInput.value.trim()) {
+        const dobDate = new Date(dobInput.value);
+        const today = new Date();
+        let age = today.getFullYear() - dobDate.getFullYear();
+        const monthDiff = today.getMonth() - dobDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
+            age--;
+        }
+        if (age < 18) {
+            isValid = false;
+            showError(dobInput, "You must be at least 18 years old to sign up.");
+            if (!firstInvalid) firstInvalid = dobInput;
+        }
+    }
+
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirmPassword");
     if (passwordInput && confirmPasswordInput && passwordInput.value && confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
@@ -385,7 +401,7 @@ function validateStep3() {
 
     if (!container) return false;
 
-    const inputs = container.querySelectorAll("input:not([type='file']):not([type='time']):not([type='checkbox']):not([type='radio']), select");
+    const inputs = container.querySelectorAll("input:not([type='file']):not([type='time']):not([type='checkbox']):not([type='radio']), select, textarea");
 
     inputs.forEach(input => {
         clearError(input);
@@ -554,7 +570,50 @@ function saveTravelerPreferences() {
     document.querySelectorAll(".step3-traveler-interest-card input:checked").forEach(checkbox => {
         interests.push(checkbox.parentElement.innerText.trim());
     });
-    console.log("Traveler Preferences:", interests);
+    
+    const homeLocation = document.getElementById("homeLocation") ? document.getElementById("homeLocation").value.trim() : "";
+    const language = document.getElementById("prefLanguage") ? document.getElementById("prefLanguage").value.trim() : "";
+    const activityStyle = document.getElementById("activityStyle") ? document.getElementById("activityStyle").value : "";
+    const budgetRange = document.getElementById("budgetRange") ? document.getElementById("budgetRange").value : "";
+    const transportPref = document.getElementById("transportPref") ? document.getElementById("transportPref").value : "";
+    const accommodationPref = document.getElementById("accommodationPref") ? document.getElementById("accommodationPref").value : "";
+    const bio = document.getElementById("bio") ? document.getElementById("bio").value.trim() : "";
+
+    const name = document.getElementById("fullName").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const dob = document.getElementById("dob") ? document.getElementById("dob").value : "";
+    const gender = document.getElementById("gender") ? document.getElementById("gender").value : "";
+
+    const travelerProfile = {
+        fullName: name,
+        email: email,
+        phone: phone,
+        location: homeLocation,
+        language: language || "English (US)",
+        gender: gender,
+        dob: dob,
+        bio: bio,
+        reputation: "New Explorer",
+        level: 1,
+        totalTrips: 0,
+        countries: 0,
+        preferences: {
+            transport: transportPref,
+            stay: accommodationPref,
+            budget: budgetRange,
+            activityStyle: activityStyle
+        },
+        hobbies: interests,
+        security: {
+            twoFactorAuth: false,
+            emailNotifications: true,
+            publicProfile: true
+        }
+    };
+
+    localStorage.setItem("traveler_workspace_profile", JSON.stringify(travelerProfile));
+    console.log("Traveler Preferences & Profile Saved:", travelerProfile);
 }
 
 function redirectToDashboard() {

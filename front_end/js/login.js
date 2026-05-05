@@ -19,9 +19,7 @@ export function initLogin() {
         });
     }
 
-    /* ===============================
-       DYNAMIC ERROR CLEAR LOGIC
-    =============================== */
+
     const usernameInput = document.getElementById("login-username");
     if (usernameInput) {
         usernameInput.addEventListener("input", () => clearError(usernameInput));
@@ -31,16 +29,33 @@ export function initLogin() {
     }
 
     const forgotLink = document.querySelector(".forgot-link");
-    if (forgotLink) {
+    const modal = document.getElementById("forgot-password-modal");
+    const closeModal = document.getElementById("close-forgot-modal");
+    
+    const step1 = document.getElementById("forgot-step-1");
+    const step2 = document.getElementById("forgot-step-2");
+    const step3 = document.getElementById("forgot-step-3");
+    
+    const identifierInput = document.getElementById("forgot-identifier");
+    const verifyBtn = document.getElementById("forgot-verify-btn");
+    const error1 = document.getElementById("forgot-error-1");
+    
+    const newPasswordInput = document.getElementById("forgot-new-password");
+    const resetBtn = document.getElementById("forgot-reset-btn");
+    const error2 = document.getElementById("forgot-error-2");
+    
+    const closeBtn = document.getElementById("forgot-close-btn");
+
+    let targetUserIndex = -1;
+
+    if (forgotLink && modal) {
         forgotLink.addEventListener("click", (e) => {
             e.preventDefault();
             alert("Password reset is managed on the backend. Please contact support.");
         });
     }
 
-    /* ===============================
-       LOGIN HANDLER
-    =============================== */
+   
     const loginForm = document.getElementById("login-form");
 
     if (loginForm) {
@@ -66,6 +81,7 @@ export function initLogin() {
                 showError(passwordElement, "Password is required.");
                 return;
             }
+
 
             if (submitBtn) submitBtn.disabled = true;
 

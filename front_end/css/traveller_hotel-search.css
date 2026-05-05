@@ -27,22 +27,22 @@
         minmax(190px, 0.42fr)
         minmax(190px, 0.42fr)
         minmax(170px, 0.34fr);
-    gap: 18px;
-    padding: 24px 28px;
-    border-radius: 0 0 28px 28px;
-    margin-bottom: 22px;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: 0 0 20px 20px;
+    margin-bottom: 16px;
 }
 
 .traveler-hotel-toolbar-field,
 .traveler-hotel-sort {
-    height: 48px;
+    height: 40px;
     border: 1px solid #d9e0ea;
-    border-radius: 18px;
+    border-radius: 12px;
     background: #ffffff;
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 0 18px;
+    gap: 10px;
+    padding: 0 14px;
     box-sizing: border-box;
 }
 
@@ -122,13 +122,13 @@
 }
 
 .traveler-hotel-search-btn {
-    height: 48px;
-    border-radius: 18px;
+    height: 40px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    font-size: 16px;
+    gap: 8px;
+    font-size: 14px;
     font-weight: 700;
 }
 
@@ -138,23 +138,23 @@
 
 .traveler-hotel-layout {
     display: grid;
-    grid-template-columns: 336px minmax(0, 1fr);
-    gap: 28px;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 20px;
 }
 
 .traveler-hotel-filters {
-    border-radius: 24px;
-    padding: 28px;
+    border-radius: 20px;
+    padding: 20px;
     align-self: start;
     position: sticky;
     top: 112px;
 }
 
 .traveler-hotel-filters h2 {
-    margin: 0 0 28px;
+    margin: 0 0 20px;
     color: #273248;
     font-family: "Plus Jakarta Sans", sans-serif;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
 }
 
@@ -302,14 +302,14 @@
     margin: 0;
     color: #273248;
     font-family: "Plus Jakarta Sans", sans-serif;
-    font-size: 36px;
+    font-size: 28px;
     font-weight: 700;
 }
 
 .traveler-hotel-results-heading p {
-    margin: 16px 0 0;
+    margin: 8px 0 0;
     color: #576274;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 500;
 }
 
@@ -378,8 +378,8 @@
 }
 
 .traveler-hotel-category {
-    height: 160px;
-    border-radius: 22px;
+    height: 120px;
+    border-radius: 16px;
     overflow: hidden;
     position: relative;
     background-size: cover;
@@ -404,14 +404,14 @@
 
 .traveler-hotel-category-copy strong {
     display: block;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
 }
 
 .traveler-hotel-category-copy span {
     display: block;
-    margin-top: 5px;
-    font-size: 16px;
+    margin-top: 4px;
+    font-size: 14px;
     font-weight: 500;
 }
 
@@ -421,15 +421,15 @@
 }
 
 .traveler-hotel-card {
-    border-radius: 26px;
+    border-radius: 20px;
     overflow: hidden;
     display: grid;
-    grid-template-columns: 396px minmax(0, 1fr);
+    grid-template-columns: 280px minmax(0, 1fr);
 }
 
 .traveler-hotel-media {
     position: relative;
-    min-height: 278px;
+    min-height: 220px;
     background-size: cover;
     background-position: center;
 }
@@ -451,10 +451,10 @@
 
 .traveler-hotel-fav {
     position: absolute;
-    right: 16px;
-    top: 16px;
-    width: 54px;
-    height: 54px;
+    right: 12px;
+    top: 12px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     border: none;
     background: #ffffff;
@@ -477,7 +477,7 @@
 }
 
 .traveler-hotel-body {
-    padding: 28px 30px 28px 30px;
+    padding: 20px 24px;
     display: flex;
     flex-direction: column;
 }
@@ -486,7 +486,7 @@
     margin: 0;
     color: #273248;
     font-family: "Plus Jakarta Sans", sans-serif;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
 }
 
@@ -607,7 +607,7 @@
 
 .traveler-hotel-price-line strong {
     color: #273248;
-    font-size: 52px;
+    font-size: 36px;
     line-height: 0.95;
     font-weight: 700;
     letter-spacing: -0.04em;
@@ -628,10 +628,10 @@
 }
 
 .traveler-hotel-cta {
-    min-width: 184px;
-    height: 58px;
-    border-radius: 20px;
-    font-size: 16px;
+    min-width: 140px;
+    height: 44px;
+    border-radius: 14px;
+    font-size: 14px;
     font-weight: 700;
 }
 

@@ -315,10 +315,13 @@ function attachHotelSearchAutocomplete(container) {
 }
 
 function getSearchValues() {
+    const todayStr = getTodayDateString();
+    const checkInDefault = getNextDateValue(getNextDateValue(getNextDateValue(todayStr))) || todayStr;
+    const checkOutDefault = getNextDateValue(getNextDateValue(getNextDateValue(checkInDefault))) || checkInDefault;
     const fallback = {
         city: "Dubai, UAE",
-        checkIn: "2026-03-21",
-        checkOut: "2026-03-24",
+        checkIn: checkInDefault,
+        checkOut: checkOutDefault,
         rooms: "1",
         guestCount: "2",
         guests: "1 Room, 2 Guests"
@@ -570,11 +573,14 @@ function applySearchModifiers(item, stayNights, guestCount, roomCount, daySeed) 
 function normalizeSearchValues(values) {
     const rooms = String(values.rooms || parseRoomsGuestsSummary(values.guests).rooms || "1");
     const guestCount = String(values.guestCount || parseRoomsGuestsSummary(values.guests).guestCount || "2");
+    const todayStr = getTodayDateString();
+    const defaultCheckIn = getNextDateValue(getNextDateValue(getNextDateValue(todayStr))) || todayStr;
+    const defaultCheckOut = getNextDateValue(getNextDateValue(getNextDateValue(defaultCheckIn))) || defaultCheckIn;
 
     return {
         city: values.city || "Dubai, UAE",
-        checkIn: values.checkIn || "2026-03-21",
-        checkOut: values.checkOut || "2026-03-24",
+        checkIn: values.checkIn || defaultCheckIn,
+        checkOut: values.checkOut || defaultCheckOut,
         rooms,
         guestCount,
         guests: formatRoomsGuests(rooms, guestCount)

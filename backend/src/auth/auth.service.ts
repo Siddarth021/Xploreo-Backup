@@ -9,7 +9,8 @@ import { AuthRepository } from './auth.repository';
 import { RegisterDto } from './dto/create-auth.dto';
 import { LoginDto } from './dto/login.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-import { QueryFailedError } from 'typeorm';
+
+const JWT_SECRET = 'XPLOREO_SECRET_KEY';
 
 @Injectable()
 export class AuthService {
@@ -22,29 +23,16 @@ export class AuthService {
     const existingEmail = await this.authRepository.findByEmail(dto.email);
     if (existingEmail) throw new ConflictException('Email already exists');
 
-    let user;
-    try {
-      user = await this.authRepository.create({
-        userId: dto.username,
-        username: dto.username,
-        password: dto.password,
-        role: dto.role,
-        name: dto.name,
-        email: dto.email,
-        phone: dto.phone,
-        status: 'active',
-      });
-    } catch (error) {
-      if (
-        error instanceof QueryFailedError &&
-        String((error as { message?: string }).message || '').includes(
-          'UNIQUE constraint failed: users.email',
-        )
-      ) {
-        throw new ConflictException('Email already exists');
-      }
-      throw error;
-    }
+    const user = await this.authRepository.create({
+      userId: dto.username,
+      username: dto.username,
+      password: dto.password,
+      role: dto.role,
+      name: dto.name,
+      email: dto.email,
+      phone: dto.phone,
+      status: 'active',
+    });
 
     const { password: _pw, ...safe } = user;
     return { message: 'Registered successfully', user: safe };
@@ -56,13 +44,21 @@ export class AuthService {
       throw new UnauthorizedException('Invalid username or password');
     }
 
-    // Simulated token — in production replace with JWT
-    const token = Buffer.from(`${user.userId}:${user.role}`).toString('base64');
+    // Sign a proper JWT that the AuthGuard can verify
+    const token = jwt.sign(
+      { userId: user.userId, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '24h' },
+    );
+
     const { password: _pw, ...safe } = user;
     return {
       token,
       user: safe,
-      hint: `Add headers: x-user-id: ${user.userId}  x-user-role: ${user.role}`,
+      headers: {
+        'x-user-id': user.userId,
+        'x-user-role': user.role,
+      },
     };
   }
 

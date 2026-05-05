@@ -36,44 +36,69 @@ window.openTourModal = (tourId) => {
     if (tour) {
         const modal = document.getElementById("tourModal");
         const body = document.getElementById("modalBody");
-        console.log(tour);
-        // Split itinerary string into an array
-        const itinerarySteps = tour.plan_iternary
-        const currentStop = tour.currentloction;
+        
+        // Use fallback variables to prevent undefined
+        const title = tour.name || tour.title || tour.destination || tour.location || 'Guided Tour';
+        const subtitle = tour.title && tour.title !== title ? tour.title : '';
+        const bookingId = tour.id || tour.bookingId || 'N/A';
+        const dateStr = tour.date || tour.dateTime || tour.dateRange || 'TBD';
+        const customer = tour.customer || 'Traveller';
         
         body.innerHTML = `
-            <div class="modal-tour-title">
-                <h1 style="font-size: 24px; color: #111827; margin-bottom: 8px;">${tour.destination}</h1>
-                <p style="color: #6B7280; font-size: 14px;">${tour.title}</p>
-            </div>
-
-            <div class="tour-info-grid">
-                <div class="info-group"><label>Customer</label><span>${tour.customer}</span></div>
-                <div class="info-group"><label>Group Size</label><span>${tour.guests} People</span></div>
-                <div class="info-group"><label>Date & Time</label><span>${tour.dateTime}</span></div>
-                <div class="info-group"><label>Total Price</label><span>$${tour.amount}</span></div>
-            </div>
-
-            <div class="itinerary-card" style="background: #111827; border-radius: 16px; padding: 24px; color: white;">
-                <h3 style="font-size: 16px; margin-bottom: 20px; color: #f8fafc;">Itinerary Schedule</h3>
-                <div class="itinerary-list" style="list-style: none; padding-left: 20px; border-left: 1px solid #333333; margin-left: 10px;">
-                    ${itinerarySteps.map(step => {
-                        const isDone = itinerarySteps.indexOf(step) < itinerarySteps.indexOf(currentStop);
-                        const isCurrent = step === currentStop;
-                        const dotColor = isCurrent ? "#3B82F6" : (isDone ? "#10B981" : "#4B5563");
-                        return `
-                            <div class="itinerary-item" style="position: relative; padding-bottom: 20px; font-size: 14px; color: ${isCurrent ? 'white' : '#94A3B8'}">
-                                <div style="position: absolute; left: -25px; top: 5px; width: 10px; height: 10px; background: ${dotColor}; border-radius: 50%; box-shadow: 0 0 0 4px ${isCurrent ? 'rgba(59, 130, 246, 0.2)' : 'transparent'}"></div>
-                                <span style="${isCurrent ? 'font-weight: 700; color: #60A5FA;' : ''}">${step.trim()}</span>
-                                ${isCurrent ? '<span style="display: block; font-size: 11px; color: #60A5FA; font-weight: 500;">Current Stop</span>' : ''}
-                            </div>
-                        `;
-                    }).join('')}
+            <div class="tracking-modal-header" style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb;">
+                <h2 style="margin: 0; font-size: 20px; font-weight: 600; color: #111827;">${title} <span style="font-weight: 400; color: #6b7280; font-size: 16px;">${subtitle ? '- ' + subtitle : ''}</span></h2>
+                <div style="margin-top: 8px; display: flex; gap: 16px; font-size: 13px; color: #4b5563;">
+                    <span><strong style="color: #111827;">ID:</strong> ${bookingId}</span>
+                    <span><strong style="color: #111827;">Date:</strong> ${dateStr}</span>
+                    <span><strong style="color: #111827;">Customer:</strong> ${customer}</span>
                 </div>
             </div>
+
+            <div class="tracking-container" style="height: 500px; padding: 24px;">
+              <!-- LEFT -->
+              <div class="tracking-left">
+                <h3 style="margin: 0 0 16px 0; font-size: 16px; color: #111827;">Itinerary</h3>
+                <ul id="trackingStops"></ul>
+
+                <!-- GUIDE CONTROLS -->
+                <div id="guideControls" style="margin-top: auto; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+                  <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                      <button onclick="tracking.start()" class="btn-solid-blue">Start</button>
+                      <button onclick="tracking.pause()" class="btn-outline-blue">Pause</button>
+                      <button onclick="tracking.resume()" class="btn-outline-blue">Resume</button>
+                      <button onclick="tracking.skip()" class="btn-outline-blue">Skip</button>
+                  </div>
+                  <div style="display: flex; gap: 8px;">
+                      <input id="trackingMsgInput" placeholder="Send message to traveller..." />
+                      <button onclick="tracking.sendMessage()" class="btn-solid-blue">Send</button>
+                  </div>
+                </div>
+
+                <!-- TRAVELLER CONTROLS -->
+                <div id="travellerControls" style="margin-top: auto; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                      <button onclick="tracking.sendRequest('🚻 Washroom')" class="btn-outline-blue">🚻 Washroom</button>
+                      <button onclick="tracking.sendRequest('☕ Break')" class="btn-outline-blue">☕ Break</button>
+                      <button onclick="tracking.sendRequest('🆘 Emergency')" style="background: #ea580c; color: white; border: none;">🆘 Emergency</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RIGHT -->
+              <div class="tracking-right">
+                <div id="trackingMap"></div>
+                <div id="trackingMessages"></div>
+              </div>
+            </div>
         `;
+        
         modal.classList.add('active');
         modal.style.setProperty('display', 'flex', 'important');
+        
+        // Initialize tracking map
+        if (window.tracking) {
+            window.tracking.init(tour);
+        }
     }
 };
 

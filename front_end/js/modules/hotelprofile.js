@@ -41,13 +41,13 @@ export function initHotelProfile() {
     }
 
     function validateGST(val) {
-        if (!val.trim()) return ""; 
+        if (!val.trim()) return "";
         if (!/^[A-Za-z0-9]{8,15}$/.test(val)) return "Must be alphanumeric, 8-15 characters";
         return "";
     }
 
     function validateBank(val) {
-        if (!val.trim() || val.includes('*')) return ""; 
+        if (!val.trim() || val.includes('*')) return "";
         if (!/^[0-9]{8,}$/.test(val)) return "Must be at least 8 digits";
         return "";
     }
@@ -73,23 +73,23 @@ export function initHotelProfile() {
     // -- UI ERROR INJECTION HELPERS --
     function updateError(inputNode, errorMessage) {
         if (!inputNode) return;
-        
+
         let parent = inputNode.closest('.input-group') || inputNode.parentElement;
         let errNode = parent.querySelector('.error-text');
-        
+
         if (!errNode) {
             errNode = document.createElement('span');
             errNode.className = 'error-text';
-            
+
             // Append properly for nested icon forms
-            if (inputNode.parentElement.classList.contains('input-with-icon') || 
+            if (inputNode.parentElement.classList.contains('input-with-icon') ||
                 inputNode.parentElement.classList.contains('fake-input-wrapper')) {
                 inputNode.parentElement.after(errNode);
             } else {
                 inputNode.after(errNode);
             }
         }
-        
+
         if (errorMessage) {
             errNode.textContent = errorMessage;
             inputNode.classList.add('is-invalid');
@@ -104,7 +104,7 @@ export function initHotelProfile() {
         let err = "";
         const val = inputNode.value;
 
-        switch(type) {
+        switch (type) {
             case 'hotelName': err = validateHotelName(val); break;
             case 'location': err = validateLocation(val); break;
             case 'description': err = validateDescription(val); break;
@@ -113,10 +113,10 @@ export function initHotelProfile() {
             case 'gst': err = validateGST(val); break;
             case 'bankAccount': err = validateBank(val); break;
             case 'checkIn': err = validateCheckInTime(val); break;
-            case 'checkOut': 
+            case 'checkOut':
                 const cinNode = contextContext ? contextContext.querySelector('input[name="checkInTime"]') : null;
                 const cinVal = cinNode ? cinNode.value : "";
-                err = validateCheckOutTime(cinVal, val); 
+                err = validateCheckOutTime(cinVal, val);
                 break;
         }
 
@@ -150,7 +150,7 @@ export function initHotelProfile() {
         if (locInput) locInput.value = activeHotel.address || "";
         if (phoneInput) phoneInput.value = activeHotel.phno || "";
         if (emailInput) emailInput.value = activeHotel.email || "";
-        
+
         // Load into top card display profile header
         const displayHotelName = document.querySelector('.profile-hotel-info h2');
         const displayLocation = document.querySelector('.profile-hotel-info .location-text');
@@ -186,7 +186,7 @@ export function initHotelProfile() {
     });
 
     profileForm.addEventListener('submit', (event) => {
-        event.preventDefault(); 
+        event.preventDefault();
         if (!checkMainFormValid()) return; // Abort if validation fails
 
         const formData = new FormData(profileForm);
@@ -201,14 +201,80 @@ export function initHotelProfile() {
         console.log(hotelData);
         console.log("===============================");
 
-        if (saveMainBtn) {
-            const originalText = saveMainBtn.innerHTML;
-            saveMainBtn.innerHTML = "✅ Saved Successfully!";
-            saveMainBtn.classList.replace("btn-blue", "btn-green"); 
-            setTimeout(() => {
-                saveMainBtn.innerHTML = originalText;
-                saveMainBtn.classList.replace("btn-green", "btn-blue"); 
-            }, 2000);
+        // update title globally on save
+        const displayHotelName = document.querySelector('.profile-hotel-info h2');
+        const displayLocation = document.querySelector('.profile-hotel-info .location-text');
+        if (displayHotelName && hotelData.hotelName) displayHotelName.textContent = hotelData.hotelName;
+        if (displayLocation && hotelData.location) displayLocation.innerHTML = `<span class="loc-pin"></span> ${hotelData.location}`;
+
+    });
+
+    // --- BLOCK-BASED VIEW / EDIT MODE TOGGLE ---
+    const blocks = document.querySelectorAll('.hotel-content-card.section-card');
+    
+    blocks.forEach(block => {
+        const editBtn = block.querySelector('.edit-block-btn');
+        const cancelBtn = block.querySelector('.cancel-block-btn');
+        const saveBtn = block.querySelector('.save-block-btn');
+        const actionsDiv = block.querySelector('.block-actions');
+        let blockInitialState = {};
+
+        function saveBlockState() {
+            blockInitialState = {};
+            const inputs = block.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                if (input.name) blockInitialState[input.name] = input.value;
+            });
+        }
+
+        function revertBlockState() {
+            const inputs = block.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                if (input.name && blockInitialState[input.name] !== undefined) {
+                    input.value = blockInitialState[input.name];
+                }
+                updateError(input, ""); // clear error
+            });
+        }
+
+        if (editBtn) {
+            editBtn.addEventListener('click', () => {
+                saveBlockState();
+                block.classList.remove('block-view-mode');
+                if (actionsDiv) actionsDiv.classList.remove('hidden');
+            });
+        }
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                revertBlockState();
+                block.classList.add('block-view-mode');
+                if (actionsDiv) actionsDiv.classList.add('hidden');
+            });
+        }
+
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                // validate main form
+                if (!checkMainFormValid()) {
+                    // It will show validation errors using existing logic
+                    return;
+                }
+                
+                // if valid, mimic form save
+                if (saveMainBtn) {
+                    saveMainBtn.click(); // trigger form submit to run existing save code
+                }
+                
+                // visually update button then revert to view mode
+                const originalText = saveBtn.innerHTML;
+                saveBtn.innerHTML = "✅ Saved!";
+                setTimeout(() => {
+                    saveBtn.innerHTML = originalText;
+                    block.classList.add('block-view-mode');
+                    if (actionsDiv) actionsDiv.classList.add('hidden');
+                }, 1000);
+            });
         }
     });
 
@@ -262,7 +328,7 @@ export function initHotelProfile() {
 
     function openModal() {
         if (!editProfileModal) return;
-        
+
         // Sync Data to Modal smoothly
         if (mainRules[0].node && modalNodes.hotelName) modalNodes.hotelName.value = mainRules[0].node.value;
         if (mainRules[1].node && modalNodes.location) modalNodes.location.value = mainRules[1].node.value;
@@ -319,7 +385,7 @@ export function initHotelProfile() {
             console.log("✅ Edit Profile Modal: Data Validated & Saved Successfully!");
             console.log(newData);
             console.log("===============================");
-            
+
             closeModal();
         });
     }

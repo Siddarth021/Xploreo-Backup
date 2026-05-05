@@ -64,8 +64,10 @@ export function initTravelerProfilePage(containerId) {
                             <div>${profile.phone}</div>
                         </div>
                     </div>
-                    <div class="badges" style="display:flex;gap:0.75rem;align-items:flex-start;">
-                        <span class="badge verified">${profile.reputation || 'Explorer status'}</span>
+                    <div class="traveler-stat-grid">
+                        <article><span>Reputation</span><strong>${profile.reputation}</strong><small>Level ${profile.level || 1}</small></article>
+                        <article><span>Traveller rating</span><strong>${profile.totalTrips > 0 ? "4.7 / 5" : "New"}</strong><small>${profile.totalTrips > 0 ? "Based on guides and partners" : "No ratings yet"}</small></article>
+                        <article><span>Experience</span><strong>${profile.totalTrips || 0} trips</strong><small>${profile.countries || 0} countries explored</small></article>
                     </div>
                 </div>
 

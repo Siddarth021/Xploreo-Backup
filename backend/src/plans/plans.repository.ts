@@ -1,52 +1,107 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
 import { Plan } from './entities/plan.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class PlansRepository {
-  constructor(
-    @InjectRepository(Plan)
-    private readonly repository: Repository<Plan>,
-  ) {}
+  private plans: Plan[] = [
+    {
+      id: 'plan-1',
+      title: 'Kerala Backwaters Escape',
+      description: 'Relax in the serene backwaters of Alleppey with houseboat stays.',
+      originCity: 'Bangalore',
+      destination: 'Alleppey',
+      durationNights: 5,
+      pricePerPerson: 22000,
+      hotelStars: 4,
+      includesFlight: true,
+      image: '',
+      tags: ['Backwaters', 'Relaxation', 'Kerala'],
+      itinerary: [
+        { day: 'Day 1', title: 'Arrival in Kochi', detail: 'Transfer to Alleppey and check in to houseboat.' },
+        { day: 'Day 2', title: 'Backwater Cruise', detail: 'Full day cruise through the canals.' },
+      ],
+    },
+    {
+      id: 'plan-2',
+      title: 'Rajasthan Heritage Tour',
+      description: 'Explore the forts, palaces and culture of the royal state.',
+      originCity: 'Delhi',
+      destination: 'Jaipur',
+      durationNights: 7,
+      pricePerPerson: 35000,
+      hotelStars: 5,
+      includesFlight: false,
+      image: '',
+      tags: ['Heritage', 'Culture', 'Rajasthan'],
+      itinerary: [
+        { day: 'Day 1', title: 'Jaipur Arrival', detail: 'Check in and visit City Palace.' },
+        { day: 'Day 2', title: 'Amber Fort', detail: 'Explore the grand Amber Fort.' },
+      ],
+    },
+  ];
 
-  create(data: Partial<Plan>): Promise<Plan> {
-    return this.repository.save(this.repository.create(data));
+  create(data: Partial<Plan>): Plan {
+    const plan: Plan = {
+      id: data.id || uuidv4(),
+      title: data.title!,
+      description: data.description!,
+      originCity: data.originCity!,
+      destination: data.destination!,
+      durationNights: data.durationNights!,
+      pricePerPerson: data.pricePerPerson!,
+      hotelStars: data.hotelStars!,
+      includesFlight: data.includesFlight ?? true,
+      image: data.image ?? '',
+      tags: data.tags ?? [],
+      itinerary: data.itinerary ?? [],
+    };
+    this.plans.push(plan);
+    return plan;
   }
 
-  async findAll(options?: {
+  findAll(options?: {
     page?: number;
     limit?: number;
     destination?: string;
-  }): Promise<{ data: Plan[]; total: number; page: number; limit: number }> {
+  }): { data: Plan[]; total: number; page: number; limit: number } {
     const page = options?.page ?? 1;
-    const limit = options?.limit ?? 10;
+    const limit = options?.limit ?? 50;
+    let filtered = [...this.plans];
 
-    const where = options?.destination
-      ? [{ destination: ILike(`%${options.destination}%`) }, { title: ILike(`%${options.destination}%`) }]
-      : undefined;
+    if (options?.destination) {
+      const q = options.destination.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          p.destination.toLowerCase().includes(q) ||
+          p.title.toLowerCase().includes(q),
+      );
+    }
 
-    const [data, total] = await this.repository.findAndCount({
-      where,
-      order: { destination: 'ASC', title: 'ASC' },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    filtered.sort((a, b) =>
+      a.destination.localeCompare(b.destination) || a.title.localeCompare(b.title),
+    );
 
+    const total = filtered.length;
+    const data = filtered.slice((page - 1) * limit, page * limit);
     return { data, total, page, limit };
   }
 
-  findById(id: string): Promise<Plan | null> {
-    return this.repository.findOne({ where: { id } });
+  findById(id: string): Plan | undefined {
+    return this.plans.find((p) => p.id === id);
   }
 
-  async update(id: string, data: Partial<Plan>): Promise<Plan | null> {
-    await this.repository.update({ id }, data);
-    return this.findById(id);
+  update(id: string, data: Partial<Plan>): Plan | undefined {
+    const idx = this.plans.findIndex((p) => p.id === id);
+    if (idx === -1) return undefined;
+    this.plans[idx] = { ...this.plans[idx], ...data };
+    return this.plans[idx];
   }
 
-  async delete(id: string): Promise<boolean> {
-    const result = await this.repository.delete({ id });
-    return Boolean(result.affected);
+  delete(id: string): boolean {
+    const idx = this.plans.findIndex((p) => p.id === id);
+    if (idx === -1) return false;
+    this.plans.splice(idx, 1);
+    return true;
   }
 }

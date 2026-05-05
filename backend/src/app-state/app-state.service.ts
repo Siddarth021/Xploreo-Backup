@@ -1,32 +1,32 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { AppState } from './entities/app-state.entity';
+import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { loadDefaultAppState } from './default-app-state.seed';
 
 @Injectable()
-export class AppStateService {
-  constructor(
-    @InjectRepository(AppState)
-    private readonly appStateRepository: Repository<AppState>,
-  ) {}
+export class AppStateService implements OnModuleInit {
+  private state: Map<string, unknown> = new Map();
 
-  async getBootstrapState() {
-    const rows = await this.appStateRepository.find();
-    return Object.fromEntries(rows.map((row) => [row.key, row.value]));
+  async onModuleInit() {
+    if (this.state.size > 0) return;
+
+    const defaults = await loadDefaultAppState();
+    for (const [key, value] of Object.entries(defaults)) {
+      this.state.set(key, value);
+    }
   }
 
-  async getState(key: string) {
-    const row = await this.appStateRepository.findOne({ where: { key } });
-    if (!row) {
+  getBootstrapState(): Record<string, unknown> {
+    return Object.fromEntries(this.state.entries());
+  }
+
+  getState(key: string): unknown {
+    if (!this.state.has(key)) {
       throw new NotFoundException(`App state "${key}" not found`);
     }
-
-    return row.value;
+    return this.state.get(key);
   }
 
-  async setState(key: string, value: unknown) {
-    const row = this.appStateRepository.create({ key, value });
-    await this.appStateRepository.save(row);
-    return row.value;
+  setState(key: string, value: unknown): unknown {
+    this.state.set(key, value);
+    return value;
   }
 }

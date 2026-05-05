@@ -7,6 +7,12 @@ async function request(path, options = {}) {
         ...(options.headers || {})
     };
 
+    // Send the JWT Bearer token for all authenticated requests
+    if (session?.token) {
+        headers["Authorization"] = `Bearer ${session.token}`;
+    }
+
+    // Also send x-user-id and x-user-role for RBAC guards
     if (session?.headers?.["x-user-id"]) {
         headers["x-user-id"] = session.headers["x-user-id"];
     }
@@ -44,5 +50,18 @@ export function apiPatch(path, body) {
     return request(path, {
         method: "PATCH",
         body: JSON.stringify(body)
+    });
+}
+
+export function apiPut(path, body) {
+    return request(path, {
+        method: "PUT",
+        body: JSON.stringify(body)
+    });
+}
+
+export function apiDelete(path) {
+    return request(path, {
+        method: "DELETE"
     });
 }

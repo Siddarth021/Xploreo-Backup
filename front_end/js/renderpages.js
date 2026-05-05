@@ -10,6 +10,7 @@ import { renderReviewsPage } from "./reviews.js";
 import { renderSchedulePage } from "./schedule.js";
 import { renderProfilePage } from "./profile.js";
 import { renderSupportPage } from "./support.js";
+import { renderGuideCrudPage, renderPlansCrudPage, renderTripsCrudPage } from "./moduleCrudPages.js";
 import { initUsers } from "./modules/users.js";
 import { initFinance } from "./modules/finance.js";
 import { renderExperienceHomePage } from "./modules/experience_home.js";
@@ -117,6 +118,12 @@ export function renderPageContent(user) {
     } else if (user.role === "superadmin" && path === "users.html") {
         initUsers();
 
+    } else if ((user.role === "superadmin" || user.role === "nontechadmin") && path === "guide.html") {
+        renderGuideCrudPage("main", user);
+    } else if ((user.role === "superadmin" || user.role === "nontechadmin") && path === "plans.html") {
+        renderPlansCrudPage("main", user);
+    } else if ((user.role === "superadmin" || user.role === "nontechadmin") && path === "trips.html") {
+        renderTripsCrudPage("main", user);
     } else if (user.role === "superadmin" && path === "opsbook.html") {
         const mainDiv = document.getElementById("main");
         if (mainDiv) mainDiv.style.display = "block";

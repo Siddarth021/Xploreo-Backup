@@ -28,7 +28,7 @@ export function initSignup() {
         card.addEventListener("click", function () {
             cards.forEach(c => c.classList.remove("selected"));
             card.classList.add("selected");
-            selectedRole = card.querySelector("h4").innerText;
+            selectedRole = card.querySelector("h4").innerText.trim();
             console.log("Selected Role:", selectedRole);
         });
     });

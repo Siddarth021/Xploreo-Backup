@@ -182,24 +182,10 @@ document.addEventListener("DOMContentLoaded", () => {
         // PRIORITIZE: Actual logged-in user from localStorage
         let currentUser = JSON.parse(localStorage.getItem("currentUser"));
         
-        // FALLBACK: If not logged in, prompt for credentials instead of hardcoding 201
         if (!currentUser) {
-            let userParam = prompt("Please enter username for dashboard (or cancel for demo user):");
-            if (userParam) {
-                let passParam = prompt("Please enter password:");
-                currentUser = users.find(u => (u.username === userParam || u.email === userParam) && u.password === passParam);
-                if (!currentUser) {
-                    alert("Invalid credentials. Defaulting to Admin (201).");
-                }
-            }
-
-            if (!currentUser) {
-                currentUser = users.find(u => u.id === "201");
-            }
-
-            currentUser = users.find(u => u.id === "00001");
-            localStorage.setItem("currentUser", JSON.stringify(currentUser));
-            console.log("Logged in as:", currentUser.role);
+            console.warn("No authenticated user found. Redirecting to login...");
+            window.location.href = window.location.pathname.includes("23_Xploreo") ? "/23_Xploreo/front_end/pages/login.html" : "../pages/login.html";
+            return;
         }
 
         renderNavbar(currentUser);

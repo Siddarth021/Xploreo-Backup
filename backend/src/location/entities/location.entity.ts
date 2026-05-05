@@ -1,5 +1,5 @@
 export class Location {
-    locationId! : String;
-    locationName! : String;
-    cityId! : String;
+  locationId!: string;
+  locationName!: string;
+  cityId!: string;
 }

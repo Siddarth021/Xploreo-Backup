@@ -1,14 +1,57 @@
-import { Injectable } from "@nestjs/common";
-import { Guide } from "./entities/guide.entity";
+import { Injectable } from '@nestjs/common';
+import { Guide } from './entities/guide.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
-export class GuideRepository{
-    private guide : Guide[] = [];
+export class GuideRepository {
+  private guides: Guide[] = [
+    {
+      userId: 'seed-guide-1',
+      fname: 'Ali',
+      lname: 'Khan',
+      email: 'ali@xploreo.com',
+      phone: 9876543210,
+      location: 'loc-mumbai-1',
+      prof_title: 'Senior Trek Guide',
+      years_exp: 7,
+      bio: 'Expert mountain guide with 7+ years experience in Western Ghats',
+      lang_spoken: ['English', 'Hindi', 'Marathi'],
+      certifications: ['First Aid', 'Mountain Rescue'],
+      bank_name: 'HDFC Bank',
+      bank_acc_num_end: 1234,
+      iban: 'IN123456789012345678',
+    },
+  ];
 
-    createGuide(data : Guide){
-        this.guide.push(data);
-        return data;
-    }
+  create(data: Omit<Guide, 'userId'>): Guide {
+    const guide: Guide = { userId: uuidv4(), ...data };
+    this.guides.push(guide);
+    return guide;
+  }
 
-    updateGuide()
+  findAll(): Guide[] {
+    return this.guides;
+  }
+
+  findById(userId: string): Guide | undefined {
+    return this.guides.find((g) => g.userId === userId);
+  }
+
+  findByLocation(locationId: string): Guide[] {
+    return this.guides.filter((g) => g.location === locationId);
+  }
+
+  update(userId: string, data: Partial<Guide>): Guide | undefined {
+    const idx = this.guides.findIndex((g) => g.userId === userId);
+    if (idx === -1) return undefined;
+    this.guides[idx] = { ...this.guides[idx], ...data };
+    return this.guides[idx];
+  }
+
+  delete(userId: string): boolean {
+    const idx = this.guides.findIndex((g) => g.userId === userId);
+    if (idx === -1) return false;
+    this.guides.splice(idx, 1);
+    return true;
+  }
 }

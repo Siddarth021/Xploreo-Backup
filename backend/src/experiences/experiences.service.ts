@@ -1,26 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { ExperiencesRepository } from './experiences.repository';
 import { CreateExperienceDto } from './dto/create-experience.dto';
 import { UpdateExperienceDto } from './dto/update-experience.dto';
 
 @Injectable()
 export class ExperiencesService {
-  create(createExperienceDto: CreateExperienceDto) {
-    return 'This action adds a new experience';
+  constructor(private readonly expRepository: ExperiencesRepository) {}
+
+  create(dto: CreateExperienceDto) {
+    return this.expRepository.create(dto);
   }
 
   findAll() {
-    return `This action returns all experiences`;
+    return this.expRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} experience`;
+  findOne(id: string) {
+    const exp = this.expRepository.findById(id);
+    if (!exp) throw new NotFoundException(`Experience ${id} not found`);
+    return exp;
   }
 
-  update(id: number, updateExperienceDto: UpdateExperienceDto) {
-    return `This action updates a #${id} experience`;
+  findByLocation(locationId: string) {
+    return this.expRepository.findByLocation(locationId);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} experience`;
+  update(id: string, dto: UpdateExperienceDto) {
+    const updated = this.expRepository.update(id, dto);
+    if (!updated) throw new NotFoundException(`Experience ${id} not found`);
+    return updated;
+  }
+
+  remove(id: string) {
+    const deleted = this.expRepository.delete(id);
+    if (!deleted) throw new NotFoundException(`Experience ${id} not found`);
+    return { message: `Experience ${id} deleted` };
   }
 }

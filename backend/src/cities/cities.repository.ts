@@ -1,20 +1,44 @@
-import { Injectable } from "@nestjs/common";
-import { City } from "./entities/city.entity";
+import { Injectable } from '@nestjs/common';
+import { City } from './entities/city.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
-export class CitiesRepository{
-    private cities : City[] = [];
+export class CitiesRepository {
+  private cities: City[] = [
+    { id: 'city-mumbai-1', name: 'Mumbai' },
+    { id: 'city-delhi-1', name: 'Delhi' },
+    { id: 'city-jaipur-1', name: 'Jaipur' },
+    { id: 'city-goa-1', name: 'Goa' },
+    { id: 'city-kerala-1', name: 'Kerala' },
+  ];
 
-    createCity(data:City){
-        this.cities.push(data);
-        return this.cities;
-    }
+  create(data: Omit<City, 'id'>): City {
+    const city: City = { id: uuidv4(), ...data };
+    this.cities.push(city);
+    return city;
+  }
 
-    findCityByName(Name : String){
-        return this.cities.find(c=>c.name===Name);
-    }
+  findAll(): City[] { return this.cities; }
 
-    findCityById(Id : String){
-        return this.cities.find(c=>c.id === Id);
-    }
+  findByName(name: string): City | undefined {
+    return this.cities.find((c) => c.name.toLowerCase() === name.toLowerCase());
+  }
+
+  findById(id: string): City | undefined {
+    return this.cities.find((c) => c.id === id);
+  }
+
+  update(id: string, data: Partial<City>): City | undefined {
+    const idx = this.cities.findIndex((c) => c.id === id);
+    if (idx === -1) return undefined;
+    this.cities[idx] = { ...this.cities[idx], ...data };
+    return this.cities[idx];
+  }
+
+  delete(id: string): boolean {
+    const idx = this.cities.findIndex((c) => c.id === id);
+    if (idx === -1) return false;
+    this.cities.splice(idx, 1);
+    return true;
+  }
 }

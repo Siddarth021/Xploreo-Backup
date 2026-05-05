@@ -1,26 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CitiesRepository } from './cities.repository';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
 
 @Injectable()
 export class CitiesService {
-  create(createCityDto: CreateCityDto) {
-    return 'This action adds a new city';
-  }
+  constructor(private readonly citiesRepository: CitiesRepository) {}
 
-  findAll() {
-    return `This action returns all cities`;
+  create(dto: CreateCityDto) { return this.citiesRepository.create(dto); }
+  findAll() { return this.citiesRepository.findAll(); }
+  findOne(id: string) {
+    const c = this.citiesRepository.findById(id);
+    if (!c) throw new NotFoundException(`City ${id} not found`);
+    return c;
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} city`;
+  update(id: string, dto: UpdateCityDto) {
+    const updated = this.citiesRepository.update(id, dto);
+    if (!updated) throw new NotFoundException(`City ${id} not found`);
+    return updated;
   }
-
-  update(id: number, updateCityDto: UpdateCityDto) {
-    return `This action updates a #${id} city`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} city`;
+  remove(id: string) {
+    if (!this.citiesRepository.delete(id)) throw new NotFoundException(`City ${id} not found`);
+    return { message: `City ${id} deleted` };
   }
 }

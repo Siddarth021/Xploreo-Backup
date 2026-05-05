@@ -1,26 +1,53 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { GuideRepository } from './guide.repository';
 import { CreateGuideDto } from './dto/create-guide.dto';
 import { UpdateGuideDto } from './dto/update-guide.dto';
 
 @Injectable()
 export class GuideService {
-  create(createGuideDto: CreateGuideDto) {
-    return 'This action adds a new guide';
+  constructor(private readonly guideRepository: GuideRepository) {}
+
+  create(dto: CreateGuideDto) {
+    return this.guideRepository.create({
+      fname: dto.fname,
+      lname: dto.lname,
+      email: dto.email,
+      phone: dto.phone,
+      location: dto.location,
+      prof_title: dto.prof_title,
+      years_exp: dto.years_exp,
+      bio: dto.bio,
+      lang_spoken: dto.lang_spoken,
+      certifications: dto.certifications ?? [],
+      bank_name: dto.bank_name ?? '',
+      bank_acc_num_end: dto.bank_acc_num_end ?? 0,
+      iban: dto.iban ?? '',
+    });
   }
 
   findAll() {
-    return `This action returns all guide`;
+    return this.guideRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} guide`;
+  findOne(id: string) {
+    const guide = this.guideRepository.findById(id);
+    if (!guide) throw new NotFoundException(`Guide ${id} not found`);
+    return guide;
   }
 
-  update(id: number, updateGuideDto: UpdateGuideDto) {
-    return `This action updates a #${id} guide`;
+  findByLocation(locationId: string) {
+    return this.guideRepository.findByLocation(locationId);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} guide`;
+  update(id: string, dto: UpdateGuideDto) {
+    const updated = this.guideRepository.update(id, dto);
+    if (!updated) throw new NotFoundException(`Guide ${id} not found`);
+    return updated;
+  }
+
+  remove(id: string) {
+    const deleted = this.guideRepository.delete(id);
+    if (!deleted) throw new NotFoundException(`Guide ${id} not found`);
+    return { message: `Guide ${id} deleted` };
   }
 }

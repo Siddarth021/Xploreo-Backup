@@ -1,26 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { TechadminRepository } from './techadmin.repository';
 import { CreateTechadminDto } from './dto/create-techadmin.dto';
 import { UpdateTechadminDto } from './dto/update-techadmin.dto';
 
 @Injectable()
 export class TechadminService {
-  create(createTechadminDto: CreateTechadminDto) {
-    return 'This action adds a new techadmin';
-  }
+  constructor(private readonly repo: TechadminRepository) {}
 
-  findAll() {
-    return `This action returns all techadmin`;
+  create(dto: CreateTechadminDto) { return this.repo.create(dto); }
+  findAll() { return this.repo.findAll(); }
+  findOne(id: string) {
+    const a = this.repo.findById(id);
+    if (!a) throw new NotFoundException(`Techadmin ${id} not found`);
+    return a;
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} techadmin`;
+  update(id: string, dto: UpdateTechadminDto) {
+    const updated = this.repo.update(id, dto);
+    if (!updated) throw new NotFoundException(`Techadmin ${id} not found`);
+    return updated;
   }
-
-  update(id: number, updateTechadminDto: UpdateTechadminDto) {
-    return `This action updates a #${id} techadmin`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} techadmin`;
+  remove(id: string) {
+    if (!this.repo.delete(id)) throw new NotFoundException(`Techadmin ${id} not found`);
+    return { message: `Techadmin ${id} deleted` };
   }
 }

@@ -1,26 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { SuperadminRepository } from './superadmin.repository';
 import { CreateSuperadminDto } from './dto/create-superadmin.dto';
 import { UpdateSuperadminDto } from './dto/update-superadmin.dto';
 
 @Injectable()
 export class SuperadminService {
-  create(createSuperadminDto: CreateSuperadminDto) {
-    return 'This action adds a new superadmin';
-  }
+  constructor(private readonly repo: SuperadminRepository) {}
 
-  findAll() {
-    return `This action returns all superadmin`;
+  create(dto: CreateSuperadminDto) { return this.repo.create(dto); }
+  findAll() { return this.repo.findAll(); }
+  findOne(id: string) {
+    const a = this.repo.findById(id);
+    if (!a) throw new NotFoundException(`Superadmin ${id} not found`);
+    return a;
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} superadmin`;
+  update(id: string, dto: UpdateSuperadminDto) {
+    const updated = this.repo.update(id, dto);
+    if (!updated) throw new NotFoundException(`Superadmin ${id} not found`);
+    return updated;
   }
-
-  update(id: number, updateSuperadminDto: UpdateSuperadminDto) {
-    return `This action updates a #${id} superadmin`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} superadmin`;
+  remove(id: string) {
+    if (!this.repo.delete(id)) throw new NotFoundException(`Superadmin ${id} not found`);
+    return { message: `Superadmin ${id} deleted` };
   }
 }

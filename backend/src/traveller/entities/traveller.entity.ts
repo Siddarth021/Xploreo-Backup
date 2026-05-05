@@ -1,18 +1,18 @@
 export enum Interest {
-  ADVENTURE = "Adventure",
-  CULTURE = "Culture",
-  FOOD = "Food",
-  NATURE = "Nature",
-  HISTORY = "History",
+  ADVENTURE = 'Adventure',
+  CULTURE = 'Culture',
+  FOOD = 'Food',
+  NATURE = 'Nature',
+  HISTORY = 'History',
 }
 
 export class Traveller {
-    userId! : String;
-    fname! : String;
-    lname! : String;
-    email! : String;
-    phno! : Number;
-    plang! : String[];
-    bio! : Text;
-    intrests! : Interest[];
+  userId!: string;
+  fname!: string;
+  lname!: string;
+  email!: string;
+  phno!: number;
+  plang!: string[];
+  bio!: string;
+  interests!: Interest[];
 }

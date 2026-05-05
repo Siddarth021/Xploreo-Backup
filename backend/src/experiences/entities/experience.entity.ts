@@ -1,26 +1,64 @@
+import { Column, Entity, PrimaryColumn } from 'typeorm';
+
 export enum ExperienceCategory {
-  ADVENTURE = 'Adventure',
-  CULTURAL = 'Cultural',
-  CULINARY = 'Culinary',
-  WELLNESS = 'Wellness',
-  WILDLIFE = 'Wildlife',
-  PHOTOGRAPHY = 'Photography',
+  ADVENTURE = 'adventure',
+  CULTURAL = 'culture',
+  CULINARY = 'culinary',
+  WELLNESS = 'wellness',
+  WILDLIFE = 'wildlife',
+  PHOTOGRAPHY = 'photography',
 }
 
 export enum ExperienceAvailability {
-  AVAILABLE = 'Available',
-  NOT_AVAILABLE = 'Not Available',
+  AVAILABLE = 'available',
+  NOT_AVAILABLE = 'unavailable',
 }
 
+@Entity({ name: 'experiences' })
 export class Experience {
-  experienceId!: string;
+  @PrimaryColumn({ type: 'varchar' })
+  id!: string;
+
+  @Column()
   title!: string;
+
+  @Column('text')
   description!: string;
-  price!: number;
-  durationHours!: number;
-  providerId!: string;
-  locationId!: string;
+
+  @Column()
+  destination!: string;
+
+  @Column()
   category!: ExperienceCategory;
+
+  @Column()
   availability!: ExperienceAvailability;
-  maxParticipants!: number;
+
+  @Column('float')
+  price!: number;
+
+  @Column('int')
+  durationHours!: number;
+
+  @Column('int')
+  capacity!: number;
+
+  @Column('int')
+  booked!: number;
+
+  @Column()
+  image!: string;
+
+  @Column()
+  nextSlot!: string;
+
+  @Column('simple-json')
+  slots!: Array<{
+    id: string;
+    date: string;
+    time: string;
+    booked: number;
+    capacity: number;
+    available: boolean;
+  }>;
 }

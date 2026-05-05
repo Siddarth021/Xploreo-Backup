@@ -1,43 +1,63 @@
 import {
+  IsArray,
   IsEnum,
   IsNumber,
   IsString,
   Min,
+  ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
-  ExperienceCategory,
   ExperienceAvailability,
+  ExperienceCategory,
 } from '../entities/experience.entity';
 
+class ExperienceSlotDto {
+  @ApiProperty()
+  @IsString()
+  id!: string;
+
+  @ApiProperty()
+  @IsString()
+  date!: string;
+
+  @ApiProperty()
+  @IsString()
+  time!: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @Min(0)
+  booked!: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @Min(1)
+  capacity!: number;
+
+  @ApiProperty()
+  available!: boolean;
+}
+
 export class CreateExperienceDto {
-  @ApiProperty({ example: 'Sunrise Trek to Tiger Hill' })
+  @ApiProperty({ example: 'exp-sunset-walk' })
+  @IsString()
+  id!: string;
+
+  @ApiProperty({ example: 'Sunset Beach Photography Walk' })
   @IsString()
   title!: string;
 
-  @ApiProperty({ example: 'A breathtaking 4-hour guided trek to Tiger Hill' })
+  @ApiProperty({ example: 'Golden-hour guided walk for photographers and first-time visitors.' })
   @IsString()
   description!: string;
 
-  @ApiProperty({ example: 1500 })
-  @IsNumber()
-  @Min(0)
-  price!: number;
-
-  @ApiProperty({ example: 4 })
-  @IsNumber()
-  @Min(1)
-  durationHours!: number;
-
-  @ApiProperty({ example: 'provider-uuid-1' })
+  @ApiProperty({ example: 'Goa' })
   @IsString()
-  providerId!: string;
+  destination!: string;
 
-  @ApiProperty({ example: 'loc-darjeeling-1' })
-  @IsString()
-  locationId!: string;
-
-  @ApiProperty({ enum: ExperienceCategory, example: ExperienceCategory.ADVENTURE })
+  @ApiProperty({ enum: ExperienceCategory, example: ExperienceCategory.PHOTOGRAPHY })
   @IsEnum(ExperienceCategory)
   category!: ExperienceCategory;
 
@@ -45,8 +65,37 @@ export class CreateExperienceDto {
   @IsEnum(ExperienceAvailability)
   availability!: ExperienceAvailability;
 
-  @ApiProperty({ example: 15 })
+  @ApiProperty({ example: 75 })
+  @IsNumber()
+  @Min(0)
+  price!: number;
+
+  @ApiProperty({ example: 2 })
   @IsNumber()
   @Min(1)
-  maxParticipants!: number;
+  durationHours!: number;
+
+  @ApiProperty({ example: 12 })
+  @IsNumber()
+  @Min(1)
+  capacity!: number;
+
+  @ApiProperty({ example: 8 })
+  @IsNumber()
+  @Min(0)
+  booked!: number;
+
+  @ApiProperty({ example: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e' })
+  @IsString()
+  image!: string;
+
+  @ApiProperty({ example: '10:00 AM' })
+  @IsString()
+  nextSlot!: string;
+
+  @ApiProperty({ type: [ExperienceSlotDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ExperienceSlotDto)
+  slots!: ExperienceSlotDto[];
 }

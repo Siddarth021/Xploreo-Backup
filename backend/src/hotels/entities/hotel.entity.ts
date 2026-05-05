@@ -1,13 +1,43 @@
+import { Column, Entity, PrimaryColumn } from 'typeorm';
+
+@Entity({ name: 'hotels' })
 export class Hotel {
-  hotelId!: string;
-  hotel_name!: string;
+  @PrimaryColumn({ type: 'varchar' })
+  id!: string;
+
+  @Column()
+  name!: string;
+
+  @Column()
+  city!: string;
+
+  @Column()
   location!: string;
+
+  @Column('text')
   description!: string;
-  contact_number!: number;
-  email!: string;
-  tax_id!: string;
-  bank_account_number!: string;
-  check_in_time!: string;
-  check_out_time!: string;
-  cancellation_policy!: string;
+
+  @Column('int')
+  stars!: number;
+
+  @Column('float')
+  rating!: number;
+
+  @Column('int')
+  reviewCount!: number;
+
+  @Column('float')
+  pricePerNight!: number;
+
+  @Column('float', { default: 0 })
+  taxesAndFees!: number;
+
+  @Column()
+  image!: string;
+
+  @Column('simple-json')
+  amenities!: string[];
+
+  @Column({ default: 'active' })
+  status!: 'active' | 'inactive';
 }

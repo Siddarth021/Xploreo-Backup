@@ -1,59 +1,48 @@
 import { Injectable } from '@nestjs/common';
-import { Trip, TripStatus } from './entities/trip.entity';
-import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Trip } from './entities/trip.entity';
 
 @Injectable()
 export class TripsRepository {
-  private trips: Trip[] = [
-    {
-      tripId: 'seed-trip-1',
-      travellerId: 'seed-traveller-1',
-      planId: 'seed-plan-1',
-      guideId: 'seed-guide-1',
-      sourceCity: 'Delhi',
-      destCity: 'Jaipur',
-      servicePartners: ['seed-hotel-1'],
-      locations: ['loc-delhi-1', 'loc-jaipur-1'],
-      startDate: '2025-12-01',
-      endDate: '2025-12-08',
-      status: TripStatus.PLANNED,
-      totalCost: 25000,
-    },
-  ];
+  constructor(
+    @InjectRepository(Trip)
+    private readonly repository: Repository<Trip>,
+  ) {}
 
-  create(data: Omit<Trip, 'tripId'>): Trip {
-    const trip: Trip = { tripId: uuidv4(), ...data };
-    this.trips.push(trip);
-    return trip;
+  create(data: Partial<Trip>): Promise<Trip> {
+    return this.repository.save(this.repository.create(data));
   }
 
-  findAll(): Trip[] {
-    return this.trips;
+  findAll(): Promise<Trip[]> {
+    return this.repository.find({ order: { startDate: 'DESC' } });
   }
 
-  findById(tripId: string): Trip | undefined {
-    return this.trips.find((t) => t.tripId === tripId);
+  findById(id: string): Promise<Trip | null> {
+    return this.repository.findOne({ where: { id } });
   }
 
-  findByTraveller(travellerId: string): Trip[] {
-    return this.trips.filter((t) => t.travellerId === travellerId);
+  findByTraveller(travellerId: string): Promise<Trip[]> {
+    return this.repository.find({
+      where: { travellerId },
+      order: { startDate: 'DESC' },
+    });
   }
 
-  findByGuide(guideId: string): Trip[] {
-    return this.trips.filter((t) => t.guideId === guideId);
+  findByGuide(guideId: string): Promise<Trip[]> {
+    return this.repository.find({
+      where: { guideId },
+      order: { startDate: 'DESC' },
+    });
   }
 
-  update(tripId: string, data: Partial<Trip>): Trip | undefined {
-    const idx = this.trips.findIndex((t) => t.tripId === tripId);
-    if (idx === -1) return undefined;
-    this.trips[idx] = { ...this.trips[idx], ...data };
-    return this.trips[idx];
+  async update(id: string, data: Partial<Trip>): Promise<Trip | null> {
+    await this.repository.update({ id }, data);
+    return this.findById(id);
   }
 
-  delete(tripId: string): boolean {
-    const idx = this.trips.findIndex((t) => t.tripId === tripId);
-    if (idx === -1) return false;
-    this.trips.splice(idx, 1);
-    return true;
+  async delete(id: string): Promise<boolean> {
+    const result = await this.repository.delete({ id });
+    return Boolean(result.affected);
   }
 }

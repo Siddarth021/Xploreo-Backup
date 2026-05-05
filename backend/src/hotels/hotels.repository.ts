@@ -1,54 +1,41 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Hotel } from './entities/hotel.entity';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class HotelsRepository {
-  private hotels: Hotel[] = [
-    {
-      hotelId: 'seed-hotel-1',
-      hotel_name: 'The Grand Xploreo',
-      location: 'loc-goa-beach-1',
-      description: 'Luxury beachfront hotel with full amenities',
-      contact_number: 8321456789,
-      email: 'hotel@grandxploreo.com',
-      tax_id: 'TAX-GJ-12345',
-      bank_account_number: '****1234',
-      check_in_time: '14:00',
-      check_out_time: '11:00',
-      cancellation_policy: 'Free cancellation within 24 hours',
-    },
-  ];
+  constructor(
+    @InjectRepository(Hotel)
+    private readonly repository: Repository<Hotel>,
+  ) {}
 
-  create(data: Omit<Hotel, 'hotelId'>): Hotel {
-    const hotel: Hotel = { hotelId: uuidv4(), ...data };
-    this.hotels.push(hotel);
-    return hotel;
+  create(data: Partial<Hotel>): Promise<Hotel> {
+    return this.repository.save(this.repository.create(data));
   }
 
-  findAll(): Hotel[] {
-    return this.hotels;
+  findAll(): Promise<Hotel[]> {
+    return this.repository.find({ order: { city: 'ASC', name: 'ASC' } });
   }
 
-  findById(hotelId: string): Hotel | undefined {
-    return this.hotels.find((h) => h.hotelId === hotelId);
+  findById(id: string): Promise<Hotel | null> {
+    return this.repository.findOne({ where: { id } });
   }
 
-  findByLocation(locationId: string): Hotel[] {
-    return this.hotels.filter((h) => h.location === locationId);
+  findByLocation(locationId: string): Promise<Hotel[]> {
+    return this.repository.find({
+      where: [{ city: ILike(`%${locationId}%`) }, { location: ILike(`%${locationId}%`) }],
+      order: { name: 'ASC' },
+    });
   }
 
-  update(hotelId: string, data: Partial<Hotel>): Hotel | undefined {
-    const idx = this.hotels.findIndex((h) => h.hotelId === hotelId);
-    if (idx === -1) return undefined;
-    this.hotels[idx] = { ...this.hotels[idx], ...data };
-    return this.hotels[idx];
+  async update(id: string, data: Partial<Hotel>): Promise<Hotel | null> {
+    await this.repository.update({ id }, data);
+    return this.findById(id);
   }
 
-  delete(hotelId: string): boolean {
-    const idx = this.hotels.findIndex((h) => h.hotelId === hotelId);
-    if (idx === -1) return false;
-    this.hotels.splice(idx, 1);
-    return true;
+  async delete(id: string): Promise<boolean> {
+    const result = await this.repository.delete({ id });
+    return Boolean(result.affected);
   }
 }

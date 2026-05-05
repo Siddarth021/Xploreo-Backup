@@ -1,45 +1,80 @@
 import {
   IsArray,
-  IsEnum,
+  IsBoolean,
   IsNumber,
   IsString,
   Min,
+  ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Duration, Availability, TripCategory } from '../entities/plan.entity';
+import { Type } from 'class-transformer';
 
-export class CreatePlanDto {
-  @ApiProperty({ example: 'Golden Triangle Tour' })
+class PlanItineraryItemDto {
+  @ApiProperty()
+  @IsString()
+  day!: string;
+
+  @ApiProperty()
   @IsString()
   title!: string;
 
-  @ApiProperty({ example: 'Explore Delhi, Agra and Jaipur in 7 days' })
+  @ApiProperty()
   @IsString()
-  desc!: string;
+  detail!: string;
+}
 
-  @ApiProperty({ example: 25000 })
-  @IsNumber()
-  @Min(0)
-  price!: number;
+export class CreatePlanDto {
+  @ApiProperty({ example: 'plan-kyoto-cultural-escape' })
+  @IsString()
+  id!: string;
 
-  @ApiProperty({ enum: Duration, example: Duration.SEVEN_DAYS_SIX_NIGHTS })
-  @IsEnum(Duration)
-  duration!: Duration;
+  @ApiProperty({ example: 'Kyoto Cultural Escape' })
+  @IsString()
+  title!: string;
 
-  @ApiProperty({ example: 'Rajasthan' })
+  @ApiProperty({ example: 'Temple trails, tea ceremony, and a relaxed final evening in Gion.' })
+  @IsString()
+  description!: string;
+
+  @ApiProperty({ example: 'Hyderabad' })
+  @IsString()
+  originCity!: string;
+
+  @ApiProperty({ example: 'Kyoto, Japan' })
   @IsString()
   destination!: string;
 
-  @ApiProperty({ example: ['loc-delhi-1', 'loc-agra-1', 'loc-jaipur-1'] })
+  @ApiProperty({ example: 5 })
+  @IsNumber()
+  @Min(1)
+  durationNights!: number;
+
+  @ApiProperty({ example: 251000 })
+  @IsNumber()
+  @Min(0)
+  pricePerPerson!: number;
+
+  @ApiProperty({ example: 5 })
+  @IsNumber()
+  @Min(1)
+  hotelStars!: number;
+
+  @ApiProperty({ example: true })
+  @IsBoolean()
+  includesFlight!: boolean;
+
+  @ApiProperty({ example: 'https://images.unsplash.com/photo-1528164344705-47542687000d' })
+  @IsString()
+  image!: string;
+
+  @ApiProperty({ example: ['Culture', 'Luxury', 'Guided'] })
   @IsArray()
   @IsString({ each: true })
-  location!: string[];
+  tags!: string[];
 
-  @ApiProperty({ enum: TripCategory, example: TripCategory.ADVENTURE })
-  @IsEnum(TripCategory)
-  category!: TripCategory;
-
-  @ApiProperty({ enum: Availability, example: Availability.A })
-  @IsEnum(Availability)
-  availability!: Availability;
+  @ApiProperty({ type: [PlanItineraryItemDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PlanItineraryItemDto)
+  itinerary!: PlanItineraryItemDto[];
 }

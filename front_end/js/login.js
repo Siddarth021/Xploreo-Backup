@@ -1,3 +1,5 @@
+import { loginWithApi } from "./api/services.js";
+
 /* =======================================================
    LOGIN MODULE
 ======================================================= */
@@ -63,7 +65,7 @@ export function initLogin(users) {
     const loginForm = document.getElementById("login-form");
 
     if (loginForm) {
-        loginForm.addEventListener("submit", (event) => {
+        loginForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
             const usernameElement = document.getElementById("login-username");
@@ -85,21 +87,20 @@ export function initLogin(users) {
                 return;
             }
             
-            const currentUser = users.find(u => 
-                (u.username === username || u.email === username) && 
-                u.password === password
-            );
+            try {
+                const currentUser = await loginWithApi({
+                    username,
+                    password
+                });
 
-            if (!currentUser) {
-                showError(passwordElement, "Invalid username or password.");
+                if (currentUser.role === "traveller") {
+                    window.location.href = BASE_PATH + "/front_end/pages/traveller_dashboard.html";
+                } else {
+                    window.location.href = BASE_PATH + "/front_end/pages/dashboard.html";
+                }
+            } catch (error) {
+                showError(passwordElement, error.message || "Invalid username or password.");
                 return;
-            }
-
-            localStorage.setItem("currentUser", JSON.stringify(currentUser));
-            if (currentUser.role === "traveller") {
-                window.location.href = BASE_PATH + "/front_end/pages/traveller_dashboard.html";
-            } else {
-                window.location.href = BASE_PATH + "/front_end/pages/dashboard.html";
             }
         });
     }
@@ -133,12 +134,3 @@ export function initLogin(users) {
         }
     }
 }
-
-    document.addEventListener("click", function (event) {
-        if (event.target.closest("#login-btn")) {
-            window.location.href = BASE_PATH + "/front_end/pages/login.html";
-        }
-        if (event.target.closest("#signup-btn")) {
-            window.location.href = BASE_PATH + "/front_end/pages/signup.html";
-        }
-    });

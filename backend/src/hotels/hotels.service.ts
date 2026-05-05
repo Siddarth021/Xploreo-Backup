@@ -9,16 +9,9 @@ export class HotelsService {
 
   create(dto: CreateHotelDto) {
     return this.hotelsRepository.create({
-      hotel_name: dto.hotel_name,
-      location: dto.location,
-      description: dto.description,
-      contact_number: dto.contact_number,
-      email: dto.email,
-      tax_id: dto.tax_id ?? '',
-      bank_account_number: dto.bank_account_number ?? '',
-      check_in_time: dto.check_in_time,
-      check_out_time: dto.check_out_time,
-      cancellation_policy: dto.cancellation_policy ?? '',
+      ...dto,
+      taxesAndFees: dto.taxesAndFees ?? 0,
+      status: dto.status ?? 'active',
     });
   }
 
@@ -26,8 +19,8 @@ export class HotelsService {
     return this.hotelsRepository.findAll();
   }
 
-  findOne(id: string) {
-    const hotel = this.hotelsRepository.findById(id);
+  async findOne(id: string) {
+    const hotel = await this.hotelsRepository.findById(id);
     if (!hotel) throw new NotFoundException(`Hotel ${id} not found`);
     return hotel;
   }
@@ -36,14 +29,14 @@ export class HotelsService {
     return this.hotelsRepository.findByLocation(locationId);
   }
 
-  update(id: string, dto: UpdateHotelDto) {
-    const updated = this.hotelsRepository.update(id, dto);
+  async update(id: string, dto: UpdateHotelDto) {
+    const updated = await this.hotelsRepository.update(id, dto);
     if (!updated) throw new NotFoundException(`Hotel ${id} not found`);
     return updated;
   }
 
-  remove(id: string) {
-    const deleted = this.hotelsRepository.delete(id);
+  async remove(id: string) {
+    const deleted = await this.hotelsRepository.delete(id);
     if (!deleted) throw new NotFoundException(`Hotel ${id} not found`);
     return { message: `Hotel ${id} deleted` };
   }

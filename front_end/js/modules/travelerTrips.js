@@ -1,5 +1,7 @@
 import { travelerData } from "../../data/traveler.js";
 import { getTravelerBookings } from "../utils/travelerWorkspaceState.js";
+import { fetchTripsForGuide, fetchTripsForTraveller } from "../api/services.js";
+import { mapTripToLegacyTour } from "../api/adapters.js";
 
 const CONFIRMED_BOOKING_KEY = "traveler_confirmed_booking";
 const CONFIRMED_BOOKING_SESSION_KEY = "traveler_confirmed_booking_session";
@@ -24,9 +26,11 @@ let activeStatus = "Upcoming";
 const REVIEW_TAGS = ["Great Guide", "Smooth Booking", "Value for Money", "Amazing Experience", "Well Organized", "Highly Recommend"];
 let tripReviewState = createEmptyReviewState();
 
-export function renderTravelerTrips(containerId, user) {
+export async function renderTravelerTrips(containerId, user) {
     const container = document.getElementById(containerId);
     if (!container) return;
+
+    await syncTripsFromApi(user);
 
     const focusStatus = getMyTripsFocusStatus();
     if (focusStatus) {
@@ -211,6 +215,22 @@ export function renderTravelerTrips(containerId, user) {
 
     function rerender() {
         renderTravelerTrips(containerId, user);
+    }
+}
+
+async function syncTripsFromApi(user) {
+    const currentUser = user || JSON.parse(localStorage.getItem("currentUser") || "null");
+    if (!currentUser?.id) return;
+
+    try {
+        const trips = currentUser.role === "guide"
+            ? await fetchTripsForGuide(currentUser.id)
+            : await fetchTripsForTraveller(currentUser.id);
+
+        const legacyTrips = trips.map((trip) => mapTripToLegacyTour(trip, currentUser.role));
+        localStorage.setItem("tours", JSON.stringify(legacyTrips));
+    } catch (error) {
+        console.error("Failed to sync trips from backend", error);
     }
 }
 

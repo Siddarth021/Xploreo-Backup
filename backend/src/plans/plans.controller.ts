@@ -39,11 +39,9 @@ export class PlansController {
   findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
-    @Query('category') category?: string,
     @Query('destination') destination?: string,
-    @Query('availability') availability?: string,
   ) {
-    return this.plansService.findAll({ page, limit, category, destination, availability });
+    return this.plansService.findAll({ page, limit, destination });
   }
 
   @Get(':id')

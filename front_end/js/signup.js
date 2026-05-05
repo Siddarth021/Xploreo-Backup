@@ -1,6 +1,7 @@
 import { users } from "../data/user.js";
 import { generateUniqueUserId } from "./utils/generateUserId.js";
 import { saveUser } from "./modules/userStorage.js";
+import { registerWithApi } from "./api/services.js";
 
 /* GLOBAL STATE */
 let selectedRole = null;
@@ -84,9 +85,9 @@ export function initSignup() {
 
     /* STEP 2 SUBMIT */
     if (step2NextBtn) {
-        step2NextBtn.addEventListener("click", function () {
+        step2NextBtn.addEventListener("click", async function () {
             if (validateStep2()) {
-                createUser(selectedRole);
+                await createUser(selectedRole);
                 showRoleStep3(selectedRole);
             }
         });
@@ -351,7 +352,7 @@ function validateStep3() {
 }
 
 /* SAVE USER */
-function createUser(role) {
+async function createUser(role) {
     const name = document.getElementById("fullName").value.trim();
     const username = document.getElementById("username").value.trim();
     const email = document.getElementById("email").value.trim();
@@ -381,6 +382,15 @@ function createUser(role) {
         profilePic: "",
         status: "active"
     };
+
+    await registerWithApi({
+        username,
+        password,
+        name,
+        email,
+        phone,
+        role: roleMap[role] || "traveller"
+    });
 
     saveUser(newUser);
     console.log("User Saved:", newUser);

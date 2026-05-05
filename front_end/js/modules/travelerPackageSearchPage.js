@@ -1,5 +1,6 @@
-import { travelerData } from "../../data/traveler.js";
 import { attachLocationAutocomplete, getTodayDateString } from "../utils/locationAutocomplete.js";
+import { fetchPlans } from "../api/services.js";
+import { mapPlanToPackage } from "../api/adapters.js";
 
 const SELECTED_PACKAGE_STORAGE_KEY = "traveler_selected_package";
 
@@ -8,16 +9,9 @@ const WISHLIST_STORAGE_KEY = "traveler_wishlist";
 const ROOM_OPTIONS = ["1", "2", "3", "4", "5", "6", "7", "8"];
 const GUEST_OPTIONS = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
-const PACKAGE_RESULTS = travelerData.searchCatalog.packages.map((item) => ({
-    ...item,
-    budgetBucket:
-        item.pricePerPerson < 500 ? "under-500" :
-        item.pricePerPerson <= 1000 ? "500-1000" :
-        item.pricePerPerson <= 2000 ? "1000-2000" :
-        "above-2000"
-}));
+let PACKAGE_RESULTS = [];
 
-export function renderTravelerPackageSearchPage(containerId) {
+export async function renderTravelerPackageSearchPage(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -30,6 +24,17 @@ export function renderTravelerPackageSearchPage(containerId) {
         selectedCategories: new Set(),
         occupancyOpen: false
     };
+
+    if (!PACKAGE_RESULTS.length) {
+        container.innerHTML = `<div class="traveler-package-empty">Loading packages...</div>`;
+        try {
+            const plans = await fetchPlans();
+            PACKAGE_RESULTS = plans.map((plan) => mapPlanToPackage(plan, getSearchValues()));
+        } catch (error) {
+            container.innerHTML = `<div class="traveler-package-empty">Unable to load packages right now.</div>`;
+            return;
+        }
+    }
 
     function render() {
         const searchResults = getFilteredPackages(state);
@@ -234,7 +239,7 @@ export function renderTravelerPackageSearchPage(containerId) {
 }
 
 function attachPackageSearchAutocomplete(container) {
-    const packageData = travelerData.searchCatalog.packages || [];
+    const packageData = PACKAGE_RESULTS || [];
 
     const fromInput = container?.querySelector('[data-package-field="fromCity"]');
     const destInput = container?.querySelector('[data-package-field="destination"]');

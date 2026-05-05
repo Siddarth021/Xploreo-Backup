@@ -1,47 +1,74 @@
-import { IsEmail, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateHotelDto {
-  @ApiProperty({ example: 'The Grand Xploreo' })
+  @ApiProperty({ example: 'hotel-grand-goa' })
   @IsString()
-  hotel_name!: string;
+  id!: string;
 
-  @ApiProperty({ example: 'loc-goa-beach-1' })
+  @ApiProperty({ example: 'The Grand Xploreo Goa' })
+  @IsString()
+  name!: string;
+
+  @ApiProperty({ example: 'Goa' })
+  @IsString()
+  city!: string;
+
+  @ApiProperty({ example: 'Calangute Beach, Goa' })
   @IsString()
   location!: string;
 
-  @ApiProperty({ example: 'Luxury beachfront hotel with all amenities' })
+  @ApiProperty({ example: 'Luxury beachfront hotel with sunrise views and curated stays.' })
   @IsString()
   description!: string;
 
-  @ApiProperty({ example: 8321456789 })
+  @ApiProperty({ example: 5 })
   @IsNumber()
-  contact_number!: number;
+  @Min(1)
+  @Max(5)
+  stars!: number;
 
-  @ApiProperty({ example: 'hotel@grandxploreo.com' })
-  @IsEmail()
-  email!: string;
+  @ApiProperty({ example: 4.8 })
+  @IsNumber()
+  @Min(0)
+  @Max(5)
+  rating!: number;
 
-  @ApiPropertyOptional({ example: 'TAX-GJ-12345' })
+  @ApiProperty({ example: 312 })
+  @IsNumber()
+  @Min(0)
+  reviewCount!: number;
+
+  @ApiProperty({ example: 285 })
+  @IsNumber()
+  @Min(0)
+  pricePerNight!: number;
+
+  @ApiPropertyOptional({ example: 42 })
   @IsOptional()
-  @IsString()
-  tax_id?: string;
+  @IsNumber()
+  @Min(0)
+  taxesAndFees?: number;
 
-  @ApiPropertyOptional({ example: '****1234' })
+  @ApiProperty({ example: 'https://images.unsplash.com/photo-1566073771259-6a8506099945' })
+  @IsString()
+  image!: string;
+
+  @ApiProperty({ example: ['Pool', 'Breakfast Included', 'Airport Transfer'] })
+  @IsArray()
+  @IsString({ each: true })
+  amenities!: string[];
+
+  @ApiPropertyOptional({ example: 'active' })
   @IsOptional()
-  @IsString()
-  bank_account_number?: string;
-
-  @ApiProperty({ example: '14:00' })
-  @IsString()
-  check_in_time!: string;
-
-  @ApiProperty({ example: '11:00' })
-  @IsString()
-  check_out_time!: string;
-
-  @ApiPropertyOptional({ example: 'Free cancellation within 24 hours' })
-  @IsOptional()
-  @IsString()
-  cancellation_policy?: string;
+  @IsIn(['active', 'inactive'])
+  status?: 'active' | 'inactive';
 }

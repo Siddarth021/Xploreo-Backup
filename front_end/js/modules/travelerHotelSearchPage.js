@@ -1,5 +1,6 @@
-import { travelerData } from "../../data/traveler.js";
 import { attachLocationAutocomplete, getTodayDateString, extractUniqueLocations } from "../utils/locationAutocomplete.js";
+import { fetchHotels } from "../api/services.js";
+import { mapHotelToSearchCard } from "../api/adapters.js";
 
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const HOTEL_DETAIL_PAGE = "./traveller_hotel-detail.html";
@@ -14,28 +15,7 @@ const SORT_OPTIONS = [
     "Reviews"
 ];
 
-const HOTEL_RESULTS_PAGE_DATA = travelerData.searchCatalog.hotels.map((item) => ({
-    id: item.id,
-    city: item.city,
-    title: item.name,
-    area: item.area,
-    distance: item.distance,
-    category: item.category,
-    categoryCount: item.categoryCount,
-    image: item.image,
-    categoryImage: item.image,
-    rating: Number(item.rating),
-    reviews: item.reviews,
-    description: item.description,
-    tags: item.tags,
-    oldPrice: item.oldPriceValue,
-    offer: item.offer,
-    price: item.priceValue,
-    taxes: item.taxes,
-    stars: item.stars,
-    maxGuests: item.maxGuests,
-    promoted: Boolean(item.promoted)
-}));
+let HOTEL_RESULTS_PAGE_DATA = [];
 
 const CATEGORY_IMAGE_MAP = {
     "Beach Stays": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=900",
@@ -46,9 +26,20 @@ const CATEGORY_IMAGE_MAP = {
     "City Stays": "https://images.unsplash.com/photo-1568084680786-a84f91d1153c?auto=format&fit=crop&q=80&w=900"
 };
 
-export function renderTravelerHotelSearchPage(containerId) {
+export async function renderTravelerHotelSearchPage(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
+
+    if (!HOTEL_RESULTS_PAGE_DATA.length) {
+        container.innerHTML = `<div class="traveler-hotel-empty">Loading hotels...</div>`;
+        try {
+            const hotels = await fetchHotels();
+            HOTEL_RESULTS_PAGE_DATA = hotels.map(mapHotelToSearchCard);
+        } catch (error) {
+            container.innerHTML = `<div class="traveler-hotel-empty">Unable to load hotels right now.</div>`;
+            return;
+        }
+    }
 
     const state = {
         searchValues: getSearchValues(),
@@ -298,7 +289,7 @@ export function renderTravelerHotelSearchPage(containerId) {
 
 function attachHotelSearchAutocomplete(container) {
     const hotelCities = extractUniqueLocations(
-        travelerData.searchCatalog.hotels,
+        HOTEL_RESULTS_PAGE_DATA,
         ["city"]
     );
     // The city input is inside the toolbar — find it by data-search-field

@@ -1,6 +1,6 @@
-import { travelerData } from "../../data/traveler.js";
-import { travelerWorkspaceSeed } from "../../data/travelerWorkspaceData.js";
 import { attachLocationAutocomplete, getTodayDateString, extractUniqueLocations } from "../utils/locationAutocomplete.js";
+import { fetchExperiences } from "../api/services.js";
+import { mapExperienceToSearchCard } from "../api/adapters.js";
 
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const WISHLIST_STORAGE_KEY = "traveler_wishlist";
@@ -8,9 +8,21 @@ const SELECTED_EXPERIENCE_KEY = "traveler_selected_experience";
 
 let EXPERIENCE_RESULTS = null;
 
-export function renderTravelerExperienceSearchPage(containerId) {
+export async function renderTravelerExperienceSearchPage(containerId) {
     if (!EXPERIENCE_RESULTS) {
-        EXPERIENCE_RESULTS = buildExperienceCatalog();
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = `<div class="traveler-experience-empty">Loading experiences...</div>`;
+        }
+        try {
+            const experiences = await fetchExperiences();
+            EXPERIENCE_RESULTS = experiences.map(mapExperienceToSearchCard);
+        } catch (error) {
+            if (container) {
+                container.innerHTML = `<div class="traveler-experience-empty">Unable to load experiences right now.</div>`;
+            }
+            return;
+        }
     }
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -172,12 +184,7 @@ export function renderTravelerExperienceSearchPage(containerId) {
 }
 
 function attachExperienceSearchAutocomplete(container) {
-    // Only suggest destinations that actually exist in the experience catalog
-    const experienceDests = extractUniqueLocations(
-        (travelerData.searchCatalog.experiences || []),
-        ["destination"]
-    );
-    // No fallback to hotel cities — showing wrong-category cities would produce zero results
+    const experienceDests = extractUniqueLocations(EXPERIENCE_RESULTS || [], ["destination"]);
 
     const destInput = container?.querySelector('[data-experience-field="destination"]');
     if (!destInput) return;
@@ -186,31 +193,6 @@ function attachExperienceSearchAutocomplete(container) {
         destInput.value = val;
         destInput.dispatchEvent(new Event("change", { bubbles: true }));
     });
-}
-
-function buildExperienceCatalog() {
-    const baseExperiences = (travelerData?.searchCatalog?.experiences || []).map((item, index) =>
-        normalizeExperience(item, index)
-    );
-
-    const workspaceExperiences = (travelerWorkspaceSeed?.bookings || []).flatMap((booking, bookingIndex) =>
-        (booking.activities || []).map((activity, activityIndex) =>
-            normalizeWorkspaceExperience(booking, activity, bookingIndex, activityIndex)
-        )
-    );
-
-    const merged = [...baseExperiences, ...workspaceExperiences];
-    const unique = [];
-    const seen = new Set();
-
-    merged.forEach((item) => {
-        const key = `${normalizeText(item.destination)}::${normalizeText(item.title)}`;
-        if (seen.has(key)) return;
-        seen.add(key);
-        unique.push(item);
-    });
-
-    return unique;
 }
 
 function normalizeExperience(item, index) {

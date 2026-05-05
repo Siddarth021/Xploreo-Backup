@@ -21,7 +21,7 @@ import { Role } from '../auth/entities/auth.entity';
 export class ExperiencesController {
   constructor(private readonly experiencesService: ExperiencesService) {}
 
-  @Roles(Role.SUPERADMIN, Role.NONTECHADMIN, Role.EXPERIENCES)
+  @Roles(Role.SUPERADMIN, Role.NONTECHADMIN, Role.EXPERIENCE)
   @Post()
   @ApiOperation({ summary: 'Create an experience' })
   create(@Body() dto: CreateExperienceDto) {
@@ -46,7 +46,7 @@ export class ExperiencesController {
     return this.experiencesService.findOne(id);
   }
 
-  @Roles(Role.SUPERADMIN, Role.NONTECHADMIN, Role.EXPERIENCES)
+  @Roles(Role.SUPERADMIN, Role.NONTECHADMIN, Role.EXPERIENCE)
   @Patch(':id')
   @ApiOperation({ summary: 'Update an experience' })
   update(@Param('id') id: string, @Body() dto: UpdateExperienceDto) {

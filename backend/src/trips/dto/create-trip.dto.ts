@@ -2,57 +2,143 @@ import {
   IsArray,
   IsEnum,
   IsNumber,
+  IsOptional,
   IsString,
   Min,
+  ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { TripStatus } from '../entities/trip.entity';
+import { Type } from 'class-transformer';
+import { TripStatus, TripType } from '../entities/trip.entity';
+
+class TripItineraryItemDto {
+  @ApiProperty()
+  @IsString()
+  day!: string;
+
+  @ApiProperty()
+  @IsString()
+  title!: string;
+
+  @ApiProperty()
+  @IsString()
+  detail!: string;
+}
+
+class TripDocumentDto {
+  @ApiProperty()
+  @IsString()
+  id!: string;
+
+  @ApiProperty()
+  @IsString()
+  title!: string;
+
+  @ApiProperty()
+  @IsString()
+  status!: string;
+}
+
+class PaymentBreakdownDto {
+  @ApiProperty()
+  @IsNumber()
+  @Min(0)
+  flights!: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @Min(0)
+  stay!: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @Min(0)
+  activities!: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @Min(0)
+  guide!: number;
+}
 
 export class CreateTripDto {
-  @ApiProperty({ example: 'seed-traveller-1' })
+  @ApiProperty({ example: 'trip-kyoto-2026' })
+  @IsString()
+  id!: string;
+
+  @ApiProperty({ example: '20001' })
   @IsString()
   travellerId!: string;
 
-  @ApiProperty({ example: 'seed-plan-1' })
-  @IsString()
-  planId!: string;
-
-  @ApiProperty({ example: 'seed-guide-1' })
+  @ApiProperty({ example: '10001' })
   @IsString()
   guideId!: string;
 
-  @ApiProperty({ example: 'Delhi' })
+  @ApiProperty({ example: 'plan-kyoto-cultural-escape' })
   @IsString()
-  sourceCity!: string;
+  planId!: string;
 
-  @ApiProperty({ example: 'Jaipur' })
+  @ApiProperty({ example: 'Kyoto Cultural Escape' })
   @IsString()
-  destCity!: string;
+  title!: string;
 
-  @ApiProperty({ example: ['seed-hotel-1', 'seed-exp-1'] })
-  @IsArray()
-  @IsString({ each: true })
-  servicePartners!: string[];
+  @ApiProperty({ example: 'Kyoto, Japan' })
+  @IsString()
+  destination!: string;
 
-  @ApiProperty({ example: ['loc-delhi-1', 'loc-jaipur-1'] })
-  @IsArray()
-  @IsString({ each: true })
-  locations!: string[];
+  @ApiProperty({ example: 'Kyoto, Japan' })
+  @IsString()
+  location!: string;
 
-  @ApiProperty({ example: '2025-12-01' })
+  @ApiProperty({ example: '2026-10-12' })
   @IsString()
   startDate!: string;
 
-  @ApiProperty({ example: '2025-12-08' })
+  @ApiProperty({ example: '2026-10-17' })
   @IsString()
   endDate!: string;
 
-  @ApiProperty({ enum: TripStatus, example: TripStatus.PLANNED })
+  @ApiProperty({ enum: TripStatus, example: TripStatus.ONGOING })
   @IsEnum(TripStatus)
   status!: TripStatus;
 
-  @ApiProperty({ example: 25000 })
+  @ApiProperty({ example: 502000 })
   @IsNumber()
   @Min(0)
-  totalCost!: number;
+  amount!: number;
+
+  @ApiProperty({ example: 2 })
+  @IsNumber()
+  @Min(1)
+  guests!: number;
+
+  @ApiProperty({ example: '5 days' })
+  @IsString()
+  durationLabel!: string;
+
+  @ApiProperty({ enum: TripType, example: TripType.PACKAGE })
+  @IsEnum(TripType)
+  type!: TripType;
+
+  @ApiProperty({ type: [TripItineraryItemDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TripItineraryItemDto)
+  itinerary!: TripItineraryItemDto[];
+
+  @ApiProperty({ example: 'Tea ceremony in Gion', required: false })
+  @IsOptional()
+  @IsString()
+  currentLocation?: string;
+
+  @ApiProperty({ type: PaymentBreakdownDto })
+  @ValidateNested()
+  @Type(() => PaymentBreakdownDto)
+  paymentBreakdown!: PaymentBreakdownDto;
+
+  @ApiProperty({ type: [TripDocumentDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TripDocumentDto)
+  documents!: TripDocumentDto[];
 }

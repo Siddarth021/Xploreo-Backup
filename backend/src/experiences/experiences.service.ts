@@ -15,8 +15,8 @@ export class ExperiencesService {
     return this.expRepository.findAll();
   }
 
-  findOne(id: string) {
-    const exp = this.expRepository.findById(id);
+  async findOne(id: string) {
+    const exp = await this.expRepository.findById(id);
     if (!exp) throw new NotFoundException(`Experience ${id} not found`);
     return exp;
   }
@@ -25,14 +25,14 @@ export class ExperiencesService {
     return this.expRepository.findByLocation(locationId);
   }
 
-  update(id: string, dto: UpdateExperienceDto) {
-    const updated = this.expRepository.update(id, dto);
+  async update(id: string, dto: UpdateExperienceDto) {
+    const updated = await this.expRepository.update(id, dto);
     if (!updated) throw new NotFoundException(`Experience ${id} not found`);
     return updated;
   }
 
-  remove(id: string) {
-    const deleted = this.expRepository.delete(id);
+  async remove(id: string) {
+    const deleted = await this.expRepository.delete(id);
     if (!deleted) throw new NotFoundException(`Experience ${id} not found`);
     return { message: `Experience ${id} deleted` };
   }

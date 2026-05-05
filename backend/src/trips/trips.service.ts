@@ -15,8 +15,8 @@ export class TripsService {
     return this.tripsRepository.findAll();
   }
 
-  findOne(id: string) {
-    const trip = this.tripsRepository.findById(id);
+  async findOne(id: string) {
+    const trip = await this.tripsRepository.findById(id);
     if (!trip) throw new NotFoundException(`Trip ${id} not found`);
     return trip;
   }
@@ -29,14 +29,14 @@ export class TripsService {
     return this.tripsRepository.findByGuide(guideId);
   }
 
-  update(id: string, dto: UpdateTripDto) {
-    const updated = this.tripsRepository.update(id, dto);
+  async update(id: string, dto: UpdateTripDto) {
+    const updated = await this.tripsRepository.update(id, dto);
     if (!updated) throw new NotFoundException(`Trip ${id} not found`);
     return updated;
   }
 
-  remove(id: string) {
-    const deleted = this.tripsRepository.delete(id);
+  async remove(id: string) {
+    const deleted = await this.tripsRepository.delete(id);
     if (!deleted) throw new NotFoundException(`Trip ${id} not found`);
     return { message: `Trip ${id} deleted` };
   }

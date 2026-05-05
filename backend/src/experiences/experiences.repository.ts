@@ -1,61 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import {
-  Experience,
-  ExperienceAvailability,
-  ExperienceCategory,
-} from './entities/experience.entity';
-import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ILike, Repository } from 'typeorm';
+import { Experience, ExperienceCategory } from './entities/experience.entity';
 
 @Injectable()
 export class ExperiencesRepository {
-  private experiences: Experience[] = [
-    {
-      experienceId: 'seed-exp-1',
-      title: 'Sunrise Trek to Tiger Hill',
-      description: 'A 4-hour guided trek to Tiger Hill with panoramic views',
-      price: 1500,
-      durationHours: 4,
-      providerId: 'seed-provider-1',
-      locationId: 'loc-darjeeling-1',
-      category: ExperienceCategory.ADVENTURE,
-      availability: ExperienceAvailability.AVAILABLE,
-      maxParticipants: 15,
-    },
-  ];
+  constructor(
+    @InjectRepository(Experience)
+    private readonly repository: Repository<Experience>,
+  ) {}
 
-  create(data: Omit<Experience, 'experienceId'>): Experience {
-    const exp: Experience = { experienceId: uuidv4(), ...data };
-    this.experiences.push(exp);
-    return exp;
+  create(data: Partial<Experience>): Promise<Experience> {
+    return this.repository.save(this.repository.create(data));
   }
 
-  findAll(): Experience[] {
-    return this.experiences;
+  findAll(): Promise<Experience[]> {
+    return this.repository.find({ order: { title: 'ASC' } });
   }
 
-  findById(id: string): Experience | undefined {
-    return this.experiences.find((e) => e.experienceId === id);
+  findById(id: string): Promise<Experience | null> {
+    return this.repository.findOne({ where: { id } });
   }
 
-  findByLocation(locationId: string): Experience[] {
-    return this.experiences.filter((e) => e.locationId === locationId);
+  findByLocation(locationId: string): Promise<Experience[]> {
+    return this.repository.find({
+      where: { destination: ILike(`%${locationId}%`) },
+      order: { title: 'ASC' },
+    });
   }
 
-  findByCategory(category: ExperienceCategory): Experience[] {
-    return this.experiences.filter((e) => e.category === category);
+  findByCategory(category: ExperienceCategory): Promise<Experience[]> {
+    return this.repository.find({ where: { category } });
   }
 
-  update(id: string, data: Partial<Experience>): Experience | undefined {
-    const idx = this.experiences.findIndex((e) => e.experienceId === id);
-    if (idx === -1) return undefined;
-    this.experiences[idx] = { ...this.experiences[idx], ...data };
-    return this.experiences[idx];
+  async update(id: string, data: Partial<Experience>): Promise<Experience | null> {
+    await this.repository.update({ id }, data);
+    return this.findById(id);
   }
 
-  delete(id: string): boolean {
-    const idx = this.experiences.findIndex((e) => e.experienceId === id);
-    if (idx === -1) return false;
-    this.experiences.splice(idx, 1);
-    return true;
+  async delete(id: string): Promise<boolean> {
+    const result = await this.repository.delete({ id });
+    return Boolean(result.affected);
   }
 }

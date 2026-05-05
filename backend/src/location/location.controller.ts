@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiOperation,ApiBearerAuth } from '@nestjs/swagger';
 import { LocationService } from './location.service';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
@@ -7,8 +7,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../auth/entities/auth.entity';
 
 @ApiTags('Location')
-@ApiHeader({ name: 'x-user-id', required: true })
-@ApiHeader({ name: 'x-user-role', required: true })
+@ApiBearerAuth()
 @Controller('location')
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}

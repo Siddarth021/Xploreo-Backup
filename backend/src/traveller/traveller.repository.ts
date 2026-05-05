@@ -17,8 +17,7 @@ export class TravellerRepository {
     },
   ];
 
-  create(data: Omit<Traveller, 'userId'>): Traveller {
-    const traveller: Traveller = { userId: uuidv4(), ...data };
+  create(traveller: Traveller): Traveller {
     this.travellers.push(traveller);
     return traveller;
   }

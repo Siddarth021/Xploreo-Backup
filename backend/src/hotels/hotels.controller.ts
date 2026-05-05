@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiOperation,ApiBearerAuth } from '@nestjs/swagger';
 import { HotelsService } from './hotels.service';
 import { CreateHotelDto } from './dto/create-hotel.dto';
 import { UpdateHotelDto } from './dto/update-hotel.dto';
@@ -15,8 +15,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../auth/entities/auth.entity';
 
 @ApiTags('Hotels')
-@ApiHeader({ name: 'x-user-id', required: true })
-@ApiHeader({ name: 'x-user-role', required: true })
+@ApiBearerAuth()
 @Controller('hotels')
 export class HotelsController {
   constructor(private readonly hotelsService: HotelsService) {}

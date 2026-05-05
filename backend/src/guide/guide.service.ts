@@ -7,8 +7,9 @@ import { UpdateGuideDto } from './dto/update-guide.dto';
 export class GuideService {
   constructor(private readonly guideRepository: GuideRepository) {}
 
-  create(dto: CreateGuideDto) {
+  create(userId: string, dto: CreateGuideDto) {
     return this.guideRepository.create({
+      userId,
       fname: dto.fname,
       lname: dto.lname,
       email: dto.email,

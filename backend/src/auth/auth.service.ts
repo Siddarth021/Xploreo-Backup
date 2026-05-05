@@ -4,6 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import * as jwt from 'jsonwebtoken';
 import { AuthRepository } from './auth.repository';
 import { RegisterDto } from './dto/create-auth.dto';
 import { LoginDto } from './dto/login.dto';
@@ -55,15 +56,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid username or password');
     }
 
+    // Simulated token — in production replace with JWT
     const token = Buffer.from(`${user.userId}:${user.role}`).toString('base64');
     const { password: _pw, ...safe } = user;
     return {
       token,
       user: safe,
-      headers: {
-        'x-user-id': user.userId,
-        'x-user-role': user.role,
-      },
+      hint: `Add headers: x-user-id: ${user.userId}  x-user-role: ${user.role}`,
     };
   }
 

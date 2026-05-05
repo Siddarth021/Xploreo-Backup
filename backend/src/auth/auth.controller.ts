@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/create-auth.dto';
 import { LoginDto } from './dto/login.dto';
@@ -36,6 +36,7 @@ export class AuthController {
   }
 
   @Roles(Role.SUPERADMIN)
+  @ApiBearerAuth()
   @Get('users')
   @ApiOperation({ summary: 'List all users (SuperAdmin only)' })
   findAll() {
@@ -43,6 +44,7 @@ export class AuthController {
   }
 
   @Roles(Role.SUPERADMIN)
+  @ApiBearerAuth()
   @Get('users/:id')
   @ApiOperation({ summary: 'Get a user by ID' })
   findOne(@Param('id') id: string) {
@@ -50,6 +52,7 @@ export class AuthController {
   }
 
   @Roles(Role.SUPERADMIN)
+  @ApiBearerAuth()
   @Patch('users/:id')
   @ApiOperation({ summary: 'Update a user' })
   update(@Param('id') id: string, @Body() dto: UpdateAuthDto) {
@@ -57,6 +60,7 @@ export class AuthController {
   }
 
   @Roles(Role.SUPERADMIN)
+  @ApiBearerAuth()
   @Delete('users/:id')
   @ApiOperation({ summary: 'Delete a user' })
   remove(@Param('id') id: string) {

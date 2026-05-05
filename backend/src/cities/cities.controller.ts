@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiOperation,ApiBearerAuth } from '@nestjs/swagger';
 import { CitiesService } from './cities.service';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
@@ -7,8 +7,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../auth/entities/auth.entity';
 
 @ApiTags('Cities')
-@ApiHeader({ name: 'x-user-id', required: true })
-@ApiHeader({ name: 'x-user-role', required: true })
+@ApiBearerAuth()
 @Controller('cities')
 export class CitiesController {
   constructor(private readonly citiesService: CitiesService) {}

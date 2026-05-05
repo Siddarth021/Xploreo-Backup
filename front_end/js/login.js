@@ -63,7 +63,7 @@ export function initLogin(users) {
     const loginForm = document.getElementById("login-form");
 
     if (loginForm) {
-        loginForm.addEventListener("submit", (event) => {
+        loginForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
             const usernameElement = document.getElementById("login-username");
@@ -85,21 +85,45 @@ export function initLogin(users) {
                 return;
             }
             
-            const currentUser = users.find(u => 
-                (u.username === username || u.email === username) && 
-                u.password === password
-            );
+            try {
+                const response = await fetch("http://localhost:3000/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ username, password })
+                });
 
-            if (!currentUser) {
-                showError(passwordElement, "Invalid username or password.");
-                return;
-            }
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    showError(passwordElement, errorData.message || "Invalid username or password.");
+                    return;
+                }
 
-            localStorage.setItem("currentUser", JSON.stringify(currentUser));
-            if (currentUser.role === "traveller") {
-                window.location.href = BASE_PATH + "/front_end/pages/traveller_dashboard.html";
-            } else {
-                window.location.href = BASE_PATH + "/front_end/pages/dashboard.html";
+                const data = await response.json();
+                
+                // Store the JWT token
+                localStorage.setItem("token", data.token);
+
+                // Preserve UI mock dependencies by merging API user with mock user data
+                const mockUser = users.find(u => u.username === username || u.email === username) || {};
+                const currentUser = {
+                    ...mockUser,
+                    id: data.user.userId,
+                    username: data.user.username,
+                    role: data.user.role.toLowerCase()
+                };
+
+                localStorage.setItem("currentUser", JSON.stringify(currentUser));
+                
+                if (currentUser.role === "traveller") {
+                    window.location.href = BASE_PATH + "/front_end/pages/traveller_dashboard.html";
+                } else {
+                    window.location.href = BASE_PATH + "/front_end/pages/dashboard.html";
+                }
+            } catch (err) {
+                console.error("Login API error:", err);
+                showError(passwordElement, "Network error. Make sure the backend server is running.");
             }
         });
     }

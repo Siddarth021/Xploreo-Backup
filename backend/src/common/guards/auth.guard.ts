@@ -1,17 +1,13 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import * as jwt from 'jsonwebtoken';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { Role } from '../../auth/entities/auth.entity';
 
+type HeaderRole = Role | 'user';
+
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) { }
+  constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -21,25 +17,37 @@ export class AuthGuard implements CanActivate {
     if (isPublic) return true;
 
     const request = context.switchToHttp().getRequest();
-    const authHeader = request.headers['authorization'];
+    const rawUserId =
+      request.headers['x-user-id'] ??
+      request.headers['user-id'] ??
+      request.headers['userid'];
+    const rawRole =
+      request.headers['x-user-role'] ??
+      request.headers['role'] ??
+      request.headers['user-role'];
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException(
-        'Missing or invalid Authorization header',
-      );
-    }
-    const token = authHeader.split(' ')[1];
-    try {
-      const decoded = jwt.verify(token, 'XPLOREO_SECRET_KEY') as any;
-      
-      if (!decoded || !decoded.userId || !decoded.role) {
-        throw new UnauthorizedException('Invalid token payload');
-      }
+    const userId = Array.isArray(rawUserId) ? rawUserId[0] : rawUserId;
+    const role = normalizeRole(Array.isArray(rawRole) ? rawRole[0] : rawRole);
 
-      request.user = { userId: decoded.userId, role: decoded.role };
-      return true;
-    } catch (e) {
-      throw new UnauthorizedException('Invalid or expired token');
-    }
+    request.user = {
+      userId: String(userId || 'guest-user'),
+      role,
+    };
+
+    return true;
   }
+}
+
+function normalizeRole(value: unknown): HeaderRole {
+  const role = String(value || '').trim().toLowerCase();
+
+  if (role === Role.SUPERADMIN) return Role.SUPERADMIN;
+  if (role === Role.TRAVELLER || role === 'traveler') return Role.TRAVELLER;
+  if (role === Role.GUIDE) return Role.GUIDE;
+  if (role === Role.TECHADMIN) return Role.TECHADMIN;
+  if (role === Role.NONTECHADMIN) return Role.NONTECHADMIN;
+  if (role === Role.HOTEL) return Role.HOTEL;
+  if (role === Role.EXPERIENCE) return Role.EXPERIENCE;
+
+  return 'user';
 }

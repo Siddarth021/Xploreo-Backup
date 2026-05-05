@@ -9,22 +9,30 @@ function createLiveProxy(key, fallback) {
 
     return new Proxy(baseTarget, {
         get(_target, prop) {
-            const source = getAppStateValue(key, fallback);
+            const source = getAppStateValue(key, fallback) ?? fallback;
             const value = Reflect.get(source, prop, source);
-            return typeof value === "function" ? value.bind(source) : value;
+            const fallbackValue = fallback && typeof fallback === "object"
+                ? Reflect.get(fallback, prop, fallback)
+                : undefined;
+            const resolvedValue = value === undefined ? fallbackValue : value;
+            return typeof resolvedValue === "function" ? resolvedValue.bind(source) : resolvedValue;
         },
         set(_target, prop, value) {
-            const source = cloneValue(getAppStateValue(key, fallback));
+            const source = cloneValue(getAppStateValue(key, fallback) ?? fallback);
             source[prop] = value;
             localStorage.setItem(key, JSON.stringify(source));
             return true;
         },
         ownKeys() {
-            return Reflect.ownKeys(getAppStateValue(key, fallback));
+            return Reflect.ownKeys(getAppStateValue(key, fallback) ?? fallback);
         },
         getOwnPropertyDescriptor(_target, prop) {
-            const source = getAppStateValue(key, fallback);
-            const descriptor = Object.getOwnPropertyDescriptor(source, prop);
+            const source = getAppStateValue(key, fallback) ?? fallback;
+            const descriptor =
+                Object.getOwnPropertyDescriptor(source, prop) ||
+                (fallback && typeof fallback === "object"
+                    ? Object.getOwnPropertyDescriptor(fallback, prop)
+                    : undefined);
             return descriptor || {
                 configurable: true,
                 enumerable: true,
@@ -35,9 +43,54 @@ function createLiveProxy(key, fallback) {
     });
 }
 
+const defaultTravelerData = {
+    destinations: [
+        {
+            title: "Dubai",
+            subtitle: "City escapes and desert adventures",
+            image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=800",
+            tours: "24 tours"
+        },
+        {
+            title: "Paris",
+            subtitle: "Food, art, and classic city walks",
+            image: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=800",
+            tours: "18 tours"
+        },
+        {
+            title: "Bali",
+            subtitle: "Beaches, temples, and wellness stays",
+            image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=800",
+            tours: "21 tours"
+        },
+        {
+            title: "Tokyo",
+            subtitle: "Culture, food, and neon neighborhoods",
+            image: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&q=80&w=800",
+            tours: "16 tours"
+        }
+    ],
+    recommendedTours: [],
+    categories: [],
+    steps: [
+        { number: 1, icon: "../components/ui/exploreIcon.jpg", title: "Search", desc: "Find flights, hotels, packages, and experiences." },
+        { number: 2, icon: "../components/ui/tours.svg", title: "Book", desc: "Choose a plan and confirm your trip." },
+        { number: 3, icon: "../components/ui/mytripsIcon.jpg", title: "Travel", desc: "Track your bookings from My Trips." }
+    ],
+    itineraries: [],
+    reviews: [],
+    continueExploring: [],
+    searchCatalog: {
+        flights: [],
+        hotels: [],
+        packages: [],
+        experiences: []
+    }
+};
+
 export const users = createLiveProxy("users", []);
 export const travelerWorkspaceSeed = createLiveProxy("travelerWorkspaceSeed", {});
-export const travelerData = createLiveProxy("travelerData", {});
+export const travelerData = createLiveProxy("travelerData", defaultTravelerData);
 export const earningsData = createLiveProxy("experienceEarnings", []);
 export const bookingsData = createLiveProxy("experienceBookings", []);
 export const experiences = createLiveProxy("experienceCatalog", []);

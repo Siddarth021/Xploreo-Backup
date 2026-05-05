@@ -48,6 +48,24 @@ const navlinks = [
     roles: ["nontechadmin"]
   },
   {
+    name: "Guides",
+    path: "../pages/guide.html",
+    icon: "../components/ui/users.png",
+    roles: ["superadmin", "nontechadmin"]
+  },
+  {
+    name: "Plans",
+    path: "../pages/plans.html",
+    icon: "../components/ui/operations.png",
+    roles: ["superadmin", "nontechadmin"]
+  },
+  {
+    name: "Trips",
+    path: "../pages/trips.html",
+    icon: "../components/ui/tours.svg",
+    roles: ["superadmin", "nontechadmin"]
+  },
+  {
     name: "Operations & Bookings",
     path: "../pages/opsbook.html",
     icon: "../components/ui/operations.png",

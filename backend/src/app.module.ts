@@ -15,6 +15,8 @@ import { PlansModule } from './plans/plans.module';
 import { TripsModule } from './trips/trips.module';
 import { LocationModule } from './location/location.module';
 import { CitiesModule } from './cities/cities.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { CitiesModule } from './cities/cities.module';
     NontechadminModule,
     PlansModule,
     TripsModule,
+    ReviewsModule,
+    ScheduleModule,
     LocationModule,
     CitiesModule,
   ],

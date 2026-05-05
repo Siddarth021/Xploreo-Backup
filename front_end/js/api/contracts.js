@@ -36,6 +36,9 @@ export const API_ENDPOINTS = Object.freeze({
     // Trips
     trips: "/trips",
 
+    // Schedule
+    schedule: "/schedule",
+
     // Location
     location: "/location",
 

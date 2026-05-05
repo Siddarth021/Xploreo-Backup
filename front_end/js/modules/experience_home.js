@@ -1,6 +1,4 @@
-import { homeTestimonials } from "../../data/experience_home.js";
-import { experiences as experienceCatalog } from "../../data/experience_experience_data.js";
-import { bookingsData } from "../../data/experience_bookings.js";
+import { homeTestimonials, experiences as experienceCatalog, bookingsData } from "../api/legacyData.js";
 import { calculateDashboardStats, readStorage } from "./experience_shared.js";
 
 export function renderExperienceHomePage() {

@@ -5,7 +5,7 @@ import {
     getTravelerBookingConfirmation,
     getTravelerBookingDraft
 } from "../traveler/dashboard.js";
-import { travelerData } from "../../data/traveler.js";
+import { travelerData } from "../api/legacyData.js";
 
 function buildPlanConfirmationFromId(planId) {
     try {

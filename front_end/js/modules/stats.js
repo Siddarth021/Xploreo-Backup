@@ -1,4 +1,4 @@
-import { getOpsData } from '../../data/operationsData.js';
+import { getOpsData } from '../api/legacyData.js';
 
 export function getStatsHTML() {
     // We call getOpsData() here so it recalculates fresh numbers every time the page loads!

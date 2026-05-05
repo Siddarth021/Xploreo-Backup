@@ -1,5 +1,4 @@
-import { users } from "../../data/user.js";
-import { travelerWorkspaceSeed } from "../../data/travelerWorkspaceData.js";
+import { users, travelerWorkspaceSeed } from "../api/legacyData.js";
 
 const STORAGE_KEYS = {
     plans: "traveler_workspace_plans",
@@ -35,6 +34,7 @@ function getTravelerProfilePreset(user) {
                 budget: "Premium (Rs30k - Rs80k / day)",
                 activityStyle: "Culture / Food / Nature"
             },
+            interestPreferences: ["Culture", "Food"],
             hobbies: ["Photography", "Food trails", "Wellness retreats", "Temple visits", "Beach escapes", "Art museums"],
             security: {
                 twoFactorAuth: true,

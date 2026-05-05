@@ -15,7 +15,7 @@ import {
     renderFieldError,
     showWorkspaceToast
 } from "./travelerWorkspaceUI.js";
-import { travelerData } from "../../data/traveler.js";
+import { travelerData } from "../api/legacyData.js";
 
 const TRANSPORTS = ["Flight", "Train", "Bus", "Private Car"];
 

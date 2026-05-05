@@ -11,7 +11,6 @@ export function renderTravelerHotelBookingPage(containerId) {
     const searchValues = getSearchValues();
     const selectedRoom = getSelectedRoom(hotel);
     const guestProfile = buildGuestProfile(hotel, selectedRoom);
-    const addons = buildAddons(hotel.id);
     const stayNights = getStayNights(searchValues.checkIn, searchValues.checkOut);
     const roomCount = Math.max(1, Number.parseInt(searchValues.rooms, 10) || 1);
     const guestCount = Math.max(1, Number.parseInt(searchValues.guestCount, 10) || 2);
@@ -96,27 +95,6 @@ export function renderTravelerHotelBookingPage(containerId) {
                                         <small>${stayNights} ${stayNights === 1 ? "night" : "nights"}</small>
                                     </div>
                                 </div>
-                            </div>
-                        </section>
-
-                        <section class="traveler-booking-section-card">
-                            <h2>Enhance Your Stay (Optional)</h2>
-                            <div class="traveler-booking-addons">
-                                ${addons.map((addon) => `
-                                    <div class="traveler-booking-addon">
-                                        <div class="traveler-booking-addon-main">
-                                            <span class="traveler-booking-addon-icon">${icon(addon.icon)}</span>
-                                            <div class="traveler-booking-addon-copy">
-                                                <strong>${escapeHtml(addon.title)}</strong>
-                                                <span>${escapeHtml(addon.subtitle)}</span>
-                                            </div>
-                                        </div>
-                                        <div class="traveler-booking-addon-price">
-                                            +$${addon.price}
-                                            <span>${escapeHtml(addon.frequency)}</span>
-                                        </div>
-                                    </div>
-                                `).join("")}
                             </div>
                         </section>
 
@@ -245,37 +223,6 @@ function getSearchValues() {
     }
 }
 
-function buildAddons(hotelId) {
-    const addonMap = {
-        "grand-luxury": [
-            { title: "Daily Breakfast", subtitle: "Buffet breakfast for all guests", price: 25, frequency: "per night", icon: "utensils" },
-            { title: "Late Checkout", subtitle: "Check out by 6:00 PM", price: 50, frequency: "one-time", icon: "clock" },
-            { title: "Airport Transfer", subtitle: "Round-trip private car", price: 75, frequency: "one-time", icon: "car" }
-        ],
-        "beachfront-villa": [
-            { title: "Sunset Dinner", subtitle: "Private beachfront dinner", price: 95, frequency: "one-time", icon: "utensils" },
-            { title: "Spa Ritual", subtitle: "60-minute couples massage", price: 120, frequency: "one-time", icon: "shield" },
-            { title: "Airport Transfer", subtitle: "Private luxury transfer", price: 85, frequency: "one-time", icon: "car" }
-        ],
-        "modern-boutique": [
-            { title: "Breakfast Upgrade", subtitle: "A la carte breakfast daily", price: 18, frequency: "per night", icon: "utensils" },
-            { title: "Rooftop Access", subtitle: "Evening lounge entry", price: 35, frequency: "one-time", icon: "coffee" },
-            { title: "Late Checkout", subtitle: "Check out by 4:00 PM", price: 40, frequency: "one-time", icon: "clock" }
-        ],
-        "family-resort": [
-            { title: "Kids Club Plus", subtitle: "Extended supervised activities", price: 30, frequency: "per night", icon: "shield" },
-            { title: "Dinner Bundle", subtitle: "Family buffet dinner", price: 55, frequency: "per night", icon: "utensils" },
-            { title: "Theme Park Shuttle", subtitle: "Round-trip transfer", price: 45, frequency: "one-time", icon: "car" }
-        ],
-        "party-lofts": [
-            { title: "VIP Lounge Access", subtitle: "Priority rooftop entry", price: 60, frequency: "one-time", icon: "coffee" },
-            { title: "Late Checkout", subtitle: "Check out by 5:00 PM", price: 55, frequency: "one-time", icon: "clock" },
-            { title: "Private Transfer", subtitle: "Nightlife district transport", price: 50, frequency: "one-time", icon: "car" }
-        ]
-    };
-
-    return addonMap[hotelId] || addonMap["grand-luxury"];
-}
 
 function formatLongDate(value) {
     const date = new Date(`${value}T00:00:00`);

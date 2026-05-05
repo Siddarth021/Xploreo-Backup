@@ -3,9 +3,7 @@ import { loginWithApi } from "./api/services.js";
 /* =======================================================
    LOGIN MODULE
 ======================================================= */
-export function initLogin(users) {
-    const BASE_PATH = window.location.pathname.includes("23_Xploreo") ? "/23_Xploreo" : "";
-
+export function initLogin() {
     const togglePassword = document.getElementById("toggle-password");
     const passwordInput = document.getElementById("login-password");
 
@@ -37,25 +35,7 @@ export function initLogin(users) {
     if (forgotLink) {
         forgotLink.addEventListener("click", (e) => {
             e.preventDefault();
-            const identifier = prompt("Enter your username or email to reset your password:");
-            
-            if (identifier) {
-                const users = JSON.parse(localStorage.getItem("users")) || [];
-                const targetIndex = users.findIndex(u => u.username === identifier || u.email === identifier);
-                
-                if (targetIndex !== -1) {
-                    const newPassword = prompt(`Account found for ${identifier}. Enter your new password:`);
-                    if (newPassword && newPassword.trim() !== "") {
-                        users[targetIndex].password = newPassword.trim();
-                        localStorage.setItem("users", JSON.stringify(users));
-                        alert("Password successfully reset! You can now log in.");
-                    } else {
-                        alert("Password reset cancelled. Cannot be blank.");
-                    }
-                } else {
-                    alert("No account found with that username or email.");
-                }
-            }
+            alert("Password reset is now managed on the backend. Please contact support until the reset API is added.");
         });
     }
 
@@ -94,9 +74,9 @@ export function initLogin(users) {
                 });
 
                 if (currentUser.role === "traveller") {
-                    window.location.href = BASE_PATH + "/front_end/pages/traveller_dashboard.html";
+                    window.location.href = new URL("./traveller_dashboard.html", window.location.href).href;
                 } else {
-                    window.location.href = BASE_PATH + "/front_end/pages/dashboard.html";
+                    window.location.href = new URL("./dashboard.html", window.location.href).href;
                 }
             } catch (error) {
                 showError(passwordElement, error.message || "Invalid username or password.");

@@ -1,5 +1,5 @@
 // Non-Technical Admin - Manage Travel Packages (Full CRUD)
-import { nontechAdminData } from "../../data/nontechadmin_data.js";
+import { nontechAdminData } from "../api/legacyData.js";
 
 let currentEditId = null;
 let currentDeleteId = null;

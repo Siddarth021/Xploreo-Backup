@@ -1,4 +1,4 @@
-import { userStatusStyles } from '../../data/usersData.js';
+import { userStatusStyles } from '../api/legacyData.js';
 
 export function getUserTableShellHTML() {
     return `

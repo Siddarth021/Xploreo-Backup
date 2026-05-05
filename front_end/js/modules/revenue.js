@@ -1,4 +1,4 @@
-import { getRevenueData } from '../../data/revenueData.js';
+import { getRevenueData } from '../api/legacyData.js';
 
 export function getRevenueHTML() {
     // 1. Fetch the dynamic data

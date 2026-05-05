@@ -1,10 +1,34 @@
-import { users } from "../data/user.js";
-import { generateUniqueUserId } from "./utils/generateUserId.js";
-import { saveUser } from "./modules/userStorage.js";
 import { registerWithApi } from "./api/services.js";
 
 /* GLOBAL STATE */
 let selectedRole = null;
+
+function navigateTo(relativePath) {
+    window.location.href = new URL(relativePath, window.location.href).href;
+}
+
+function setStep2RequestMessage(message = "", variant = "error") {
+    const step2 = document.querySelector(".step-2");
+    if (!step2) return;
+
+    let messageEl = step2.querySelector(".signup-request-message");
+    if (!messageEl) {
+        messageEl = document.createElement("div");
+        messageEl.className = "signup-request-message";
+        messageEl.style.marginTop = "12px";
+        messageEl.style.fontSize = "13px";
+        messageEl.style.fontWeight = "500";
+        messageEl.style.gridColumn = "1 / -1";
+        const actions = step2.querySelector(".form-actions");
+        if (actions) {
+            actions.parentNode.insertBefore(messageEl, actions);
+        }
+    }
+
+    messageEl.textContent = message;
+    messageEl.style.color = variant === "success" ? "#15803d" : "#dc2626";
+    messageEl.style.display = message ? "block" : "none";
+}
 
 window.togglePasswordVisibility = function (inputId, btn) {
     const input = document.getElementById(inputId);
@@ -86,9 +110,29 @@ export function initSignup() {
     /* STEP 2 SUBMIT */
     if (step2NextBtn) {
         step2NextBtn.addEventListener("click", async function () {
+            setStep2RequestMessage("");
             if (validateStep2()) {
-                await createUser(selectedRole);
-                showRoleStep3(selectedRole);
+                step2NextBtn.disabled = true;
+                try {
+                    await createUser(selectedRole);
+                    showRoleStep3(selectedRole);
+                } catch (error) {
+                    const message = error?.message || "We couldn't create your account. Please try again.";
+
+                    if (/email already exists/i.test(message)) {
+                        const emailInput = document.getElementById("email");
+                        clearError(emailInput);
+                        showError(emailInput, message);
+                    } else if (/username already exists/i.test(message)) {
+                        const usernameInput = document.getElementById("username");
+                        clearError(usernameInput);
+                        showError(usernameInput, message);
+                    } else {
+                        setStep2RequestMessage(message);
+                    }
+                } finally {
+                    step2NextBtn.disabled = false;
+                }
             }
         });
     }
@@ -157,13 +201,13 @@ export function initSignup() {
 
     if (step4LoginBtn) {
         step4LoginBtn.addEventListener("click", () => {
-            window.location.href = "/23_Xploreo/front_end/pages/login.html";
+            navigateTo("./login.html");
         });
     }
 
     if (step4HomeBtn) {
         step4HomeBtn.addEventListener("click", () => {
-            window.location.href = "/23_Xploreo/front_end/index.html";
+            navigateTo("../index.html");
         });
     }
 }
@@ -359,10 +403,6 @@ async function createUser(role) {
     const phone = document.getElementById("phone").value.trim();
     const password = document.getElementById("password").value;
 
-    const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
-    const allUsers = [...users, ...storedUsers];
-    const newId = generateUniqueUserId(allUsers);
-
     const roleMap = {
         "Traveler": "traveller",
         "Local Guide": "guide",
@@ -371,19 +411,7 @@ async function createUser(role) {
         "Experiences": "experience"
     };
 
-    const newUser = {
-        id: newId,
-        name: name,
-        username: username,
-        email: email,
-        phone: phone,
-        password: password, // Save real password natively instead of dropping it
-        role: roleMap[role] || "traveller",
-        profilePic: "",
-        status: "active"
-    };
-
-    await registerWithApi({
+    const response = await registerWithApi({
         username,
         password,
         name,
@@ -392,8 +420,7 @@ async function createUser(role) {
         role: roleMap[role] || "traveller"
     });
 
-    saveUser(newUser);
-    console.log("User Saved:", newUser);
+    console.log("User Saved:", response?.user || username);
 }
 
 /* ROLE STEP 3 ROUTING */
@@ -423,6 +450,5 @@ function saveTravelerPreferences() {
 
 function redirectToDashboard() {
     // Left empty: User gets sent to login explicitly at step 4 interface
-    const BASE_PATH = window.location.pathname.includes("23_Xploreo") ? "/23_Xploreo" : "";
-    window.location.href = BASE_PATH + "/pages/login.html";
+    navigateTo("./login.html");
 }

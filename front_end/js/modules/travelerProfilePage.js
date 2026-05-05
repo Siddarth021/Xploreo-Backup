@@ -28,211 +28,148 @@ export function initTravelerProfilePage(containerId) {
         errors: {}
     };
 
+    function getNameParts(fullName) {
+        const parts = fullName.trim().split(/\s+/).filter(Boolean);
+        return {
+            firstName: parts[0] || "",
+            lastName: parts.slice(1).join(" ") || ""
+        };
+    }
+
     function render() {
         const profile = getTravelerProfile();
-        const plans = getTravelerPlans();
-        const bookings = getTravelerBookings();
         const initials = profile.fullName
             .split(/\s+/)
             .filter(Boolean)
             .slice(0, 2)
             .map((part) => part.charAt(0).toUpperCase())
             .join("") || "TR";
-        const destinations = bookings.slice(0, 3).map((booking) => ({
-            title: booking.destination,
-            image: booking.coverImage
-        }));
+        const { firstName, lastName } = getNameParts(profile.fullName);
 
         container.innerHTML = `
-            <main class="traveler-workspace traveler-profile-page">
-                <section class="traveler-profile-hero traveler-card">
-                    <div class="traveler-profile-banner"></div>
-                    <div class="traveler-profile-top">
-                        <div class="traveler-profile-avatar">${initials}</div>
-                        <div class="traveler-profile-meta">
-                            <h1>${profile.fullName}</h1>
-                            <p>${profile.email} • ${profile.location}</p>
-                        </div>
-                        <div class="inline-actions">
-                            <button type="button" class="ghost-btn" id="toggle-profile-edit">${state.editing ? "Close editor" : "Edit profile"}</button>
-                            <a class="traveler-link-chip" href="./traveller_bookings.html">My bookings</a>
+            <div class="profile-page">
+                <div class="profile-header">
+                    <h1 class="profile-title">Traveller profile</h1>
+                    <p class="profile-subtitle">Your traveller details in a simple, clean layout.</p>
+                </div>
+
+                <div class="profile-hero-card">
+                    <div class="profile-avatar-wrapper" style="width:120px;height:120px;">
+                        <div class="profile-avatar" style="display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:#0F172A;background:#E2E8F0;border-radius:50%;border:4px solid white;box-shadow:0 4px 10px rgba(0,0,0,0.08);">${initials}</div>
+                    </div>
+                    <div class="hero-info">
+                        <h2 class="hero-name">${profile.fullName}</h2>
+                        <div class="hero-meta" style="display:flex;flex-direction:column;gap:0.5rem;margin-top:1rem;color:var(--text-muted);font-size:0.95rem;">
+                            <div>${profile.email}</div>
+                            <div>${profile.phone}</div>
                         </div>
                     </div>
-                    <div class="traveler-stat-grid">
-                        <article><span>Reputation</span><strong>${profile.reputation}</strong><small>12 trips completed</small></article>
-                        <article><span>Traveller rating</span><strong>4.7 / 5</strong><small>Based on guides and partners</small></article>
-                        <article><span>Total trips</span><strong>${profile.countries} countries</strong><small>${profile.totalTrips} continents explored</small></article>
+                    <div class="badges" style="display:flex;gap:0.75rem;align-items:flex-start;">
+                        <span class="badge verified">${profile.reputation || 'Explorer status'}</span>
                     </div>
-                </section>
+                </div>
 
-                <section class="traveler-grid traveler-grid-profile">
-                    <div class="traveler-stack">
-                        <div class="traveler-card">
-                            <div class="traveler-card-header">
-                                <div>
-                                    <h2>Personal information</h2>
-                                    <p>Traveller-only details kept in local storage.</p>
-                                </div>
-                            </div>
-                            ${state.editing ? renderEditForm(profile) : renderProfileReadOnly(profile)}
-                        </div>
-
-                        <div class="traveler-card">
-                            <div class="traveler-card-header">
-                                <div>
-                                    <h2>About me</h2>
-                                    <p>Short traveller bio</p>
-                                </div>
-                            </div>
-                            <p class="traveler-long-copy">${profile.bio}</p>
-                        </div>
-
-                        <div class="traveler-card">
-                            <div class="traveler-card-header">
-                                <div>
-                                    <h2>Saved destinations</h2>
-                                    <p>Built from your current traveller bookings.</p>
-                                </div>
-                                <a class="traveler-link-chip" href="./traveller_trip-planning.html">View all plans</a>
-                            </div>
-                            <div class="saved-destination-grid">
-                                ${destinations.length ? destinations.map((destination) => `
-                                    <article class="saved-destination-card" style="background-image:url('${destination.image}')">
-                                        <div class="saved-destination-overlay">
-                                            <strong>${destination.title}</strong>
-                                        </div>
-                                    </article>
-                                `).join("") : createEmptyState("No destinations yet", "As bookings are added, saved destinations will appear here.", "Saved destinations")}
-                            </div>
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Profile details</h3>
+                        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                            <button type="button" class="edit-btn" id="toggle-profile-edit">${state.editing ? "Close editor" : "Edit profile"}</button>
                         </div>
                     </div>
+                    ${state.editing ? renderEditForm(profile) : renderProfileReadOnly(profile)}
+                </div>
 
-                    <aside class="traveler-side-stack">
-                        <div class="traveler-card">
-                            <div class="traveler-card-header">
-                                <div>
-                                    <h2>Hobbies & interests</h2>
-                                    <p>Traveller preference tags</p>
-                                </div>
-                            </div>
-                            <div class="chip-group">
-                                ${profile.hobbies.map((hobby) => `<span class="tag-chip">${hobby}</span>`).join("")}
-                            </div>
-                        </div>
-
-                        <div class="traveler-card">
-                            <div class="traveler-card-header">
-                                <div>
-                                    <h2>Travel preferences</h2>
-                                    <p>Quick reference for future bookings</p>
-                                </div>
-                            </div>
-                            <div class="preference-list">
-                                <div><span>Transport</span><strong>${profile.preferences.transport}</strong></div>
-                                <div><span>Accommodation</span><strong>${profile.preferences.stay}</strong></div>
-                                <div><span>Budget range</span><strong>${profile.preferences.budget}</strong></div>
-                                <div><span>Activity style</span><strong>${profile.preferences.activityStyle}</strong></div>
-                            </div>
-                        </div>
-
-                        <div class="traveler-card">
-                            <div class="traveler-card-header">
-                                <div>
-                                    <h2>Security & settings</h2>
-                                    <p>Role-aware toggles for traveller UI only</p>
-                                </div>
-                            </div>
-                            <div class="security-toggle-list">
-                                <label class="toggle-row">
-                                    <span>Two-factor authentication</span>
-                                    <input type="checkbox" data-security-toggle="twoFactorAuth" ${profile.security.twoFactorAuth ? "checked" : ""}>
-                                </label>
-                                <label class="toggle-row">
-                                    <span>Email notifications</span>
-                                    <input type="checkbox" data-security-toggle="emailNotifications" ${profile.security.emailNotifications ? "checked" : ""}>
-                                </label>
-                                <label class="toggle-row">
-                                    <span>Public profile</span>
-                                    <input type="checkbox" data-security-toggle="publicProfile" ${profile.security.publicProfile ? "checked" : ""}>
-                                </label>
-                            </div>
-                            <button type="button" class="danger-btn" id="deactivate-profile-btn">Deactivate account</button>
-                        </div>
-
-                        <div class="traveler-card">
-                            <div class="traveler-card-header">
-                                <div>
-                                    <h2>Traveller activity</h2>
-                                    <p>Saved plans and bookings at a glance</p>
-                                </div>
-                            </div>
-                            <div class="preference-list">
-                                <div><span>Saved plans</span><strong>${plans.length}</strong></div>
-                                <div><span>Active bookings</span><strong>${bookings.filter((booking) => booking.status === "Confirmed").length}</strong></div>
-                                <div><span>Completed trips</span><strong>${bookings.filter((booking) => booking.status === "Completed").length}</strong></div>
-                            </div>
-                        </div>
-                    </aside>
-                </section>
-            </main>
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Preferences</h3>
+                    </div>
+                    <div class="lang-list" style="display:flex;flex-wrap:wrap;gap:0.75rem;">
+                        ${profile.hobbies.map((hobby) => `<span class="lang-tag">${hobby}</span>`).join("")}
+                    </div>
+                    <div style="margin-top:1.5rem;">
+                        <span class="label">Bio</span>
+                        <p style="margin:0.75rem 0 0 0; line-height:1.75; color:#4B5563;">${profile.bio}</p>
+                    </div>
+                </div>
+            </div>
         `;
 
         bindEvents();
     }
 
     function renderProfileReadOnly(profile) {
+        const { firstName, lastName } = getNameParts(profile.fullName);
         return `
-            <div class="profile-details-grid">
-                <div><span>Full name</span><strong>${profile.fullName}</strong></div>
-                <div><span>Email address</span><strong>${profile.email}</strong></div>
-                <div><span>Phone number</span><strong>${profile.phone}</strong></div>
-                <div><span>Home location</span><strong>${profile.location}</strong></div>
-                <div><span>Preferred language</span><strong>${profile.language}</strong></div>
-                <div><span>Gender</span><strong>${profile.gender}</strong></div>
-                <div><span>Date of birth</span><strong>${profile.dob}</strong></div>
+            <div class="form-grid" style="grid-template-columns:1fr 1fr; gap:1.5rem;">
+                <div class="input-group">
+                    <span class="label">First Name</span>
+                    <input class="input-field" value="${firstName}" disabled>
+                </div>
+                <div class="input-group">
+                    <span class="label">Last Name</span>
+                    <input class="input-field" value="${lastName}" disabled>
+                </div>
+                <div class="input-group full">
+                    <span class="label">Email Address</span>
+                    <input class="input-field" value="${profile.email}" disabled>
+                </div>
+                <div class="input-group full">
+                    <span class="label">Phone Number</span>
+                    <input class="input-field" value="${profile.phone}" disabled>
+                </div>
+                <div class="input-group full">
+                    <span class="label">Preferred language</span>
+                    <input class="input-field" value="${profile.language}" disabled>
+                </div>
             </div>
         `;
     }
 
     function renderEditForm(profile) {
+        const { firstName, lastName } = getNameParts(profile.fullName);
         return `
-            <form id="profile-edit-form" class="traveler-form-grid" novalidate>
-                <label>
-                    <span>Full name</span>
-                    <input type="text" name="fullName" value="${profile.fullName}">
-                    ${renderFieldError(state.errors, "fullName")}
-                </label>
-                <label>
-                    <span>Email address</span>
-                    <input type="email" name="email" value="${profile.email}">
-                    ${renderFieldError(state.errors, "email")}
-                </label>
-                <label>
-                    <span>Phone number</span>
-                    <input type="text" name="phone" value="${profile.phone}">
-                    ${renderFieldError(state.errors, "phone")}
-                </label>
-                <label>
-                    <span>Home location</span>
-                    <input type="text" name="location" value="${profile.location}">
-                    ${renderFieldError(state.errors, "location")}
-                </label>
-                <label>
-                    <span>Preferred language</span>
-                    <input type="text" name="language" value="${profile.language}">
-                </label>
-                <label>
-                    <span>Gender</span>
-                    <input type="text" name="gender" value="${profile.gender}">
-                </label>
-                <label class="traveler-form-span-full">
-                    <span>About me</span>
-                    <textarea name="bio" rows="5">${profile.bio}</textarea>
-                    ${renderFieldError(state.errors, "bio")}
-                </label>
-                <div class="traveler-form-actions traveler-form-span-full">
-                    <button type="submit" class="solid-btn">Save profile</button>
-                    <button type="button" class="ghost-btn" id="cancel-profile-edit">Cancel</button>
+            <form id="profile-edit-form" class="profile-section" novalidate style="padding:0; border:none; box-shadow:none;">
+                <div class="form-grid" style="grid-template-columns:1fr 1fr; gap:1.5rem;">
+                    <div class="input-group">
+                        <span class="label">First Name</span>
+                        <input type="text" name="firstName" class="input-field" value="${firstName}">
+                    </div>
+                    <div class="input-group">
+                        <span class="label">Last Name</span>
+                        <input type="text" name="lastName" class="input-field" value="${lastName}">
+                    </div>
+                    <div class="input-group full">
+                        <span class="label">Email Address</span>
+                        <input type="email" name="email" class="input-field" value="${profile.email}">
+                    </div>
+                    <div class="input-group full">
+                        <span class="label">Phone Number</span>
+                        <input type="text" name="phone" class="input-field" value="${profile.phone}">
+                    </div>
+                    <div class="input-group full">
+                        <span class="label">Preferred language</span>
+                        <input type="text" name="language" class="input-field" value="${profile.language}">
+                    </div>
+                    <div class="input-group full">
+                        <span class="label">Preferences</span>
+                        <select name="interestPreferences" class="input-field" multiple size="5" style="min-height: 150px;">
+                            ${["Adventure","Culture","Food","Nature","History"].map((option) => `
+                                <option value="${option}" ${((profile.interestPreferences || []).includes(option)) ? 'selected' : ''}>${option}</option>
+                            `).join("")}
+                        </select>
+                    </div>
+                    <div class="input-group full">
+                        <span class="label">Hobbies / Interests</span>
+                        <input type="text" name="hobbies" class="input-field" value="${profile.hobbies.join(', ')}">
+                    </div>
+                    <div class="input-group full">
+                        <span class="label">Bio</span>
+                        <textarea name="bio" class="input-field" rows="5">${profile.bio}</textarea>
+                    </div>
+                </div>
+                <div class="save-all-container" style="margin-top:1.5rem;">
+                    <button type="button" class="secondary-btn" id="cancel-profile-edit">Cancel</button>
+                    <button type="submit" class="primary-btn">Save profile</button>
                 </div>
             </form>
         `;
@@ -255,15 +192,19 @@ export function initTravelerProfilePage(containerId) {
             event.preventDefault();
             const form = event.currentTarget;
             const profile = getTravelerProfile();
+            const firstName = form.elements.firstName.value.trim();
+            const lastName = form.elements.lastName.value.trim();
+            const hobbiesRaw = form.elements.hobbies.value.split(",").map((h) => h.trim()).filter(Boolean);
+            const preferenceOptions = Array.from(form.elements.interestPreferences.selectedOptions || []).map((option) => option.value);
             const payload = {
                 ...profile,
-                fullName: form.elements.fullName.value.trim(),
+                fullName: `${firstName} ${lastName}`.trim(),
                 email: form.elements.email.value.trim(),
                 phone: form.elements.phone.value.trim(),
-                location: form.elements.location.value.trim(),
                 language: form.elements.language.value.trim(),
-                gender: form.elements.gender.value.trim(),
-                bio: form.elements.bio.value.trim()
+                bio: form.elements.bio.value.trim(),
+                hobbies: hobbiesRaw,
+                interestPreferences: preferenceOptions
             };
 
             const errors = validateProfile(payload);
@@ -280,19 +221,6 @@ export function initTravelerProfilePage(containerId) {
             state.errors = {};
             showWorkspaceToast("Profile updated.");
             render();
-        });
-
-        container.querySelectorAll("[data-security-toggle]").forEach((toggle) => {
-            toggle.addEventListener("change", () => {
-                const profile = getTravelerProfile();
-                profile.security[toggle.dataset.securityToggle] = toggle.checked;
-                saveTravelerProfile(profile);
-                showWorkspaceToast("Security settings updated.");
-            });
-        });
-
-        container.querySelector("#deactivate-profile-btn")?.addEventListener("click", () => {
-            showWorkspaceToast("Mock mode only: account deactivation has been safely blocked.", "error");
         });
     }
 

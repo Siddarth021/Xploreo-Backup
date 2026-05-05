@@ -1,4 +1,4 @@
-import { partnerStatusStyles } from '../../data/usersData.js';
+import { partnerStatusStyles } from '../api/legacyData.js';
 
 export function getPartnerTableShellHTML() {
     return `

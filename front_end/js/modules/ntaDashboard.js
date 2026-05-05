@@ -1,5 +1,5 @@
 // Non-Technical Admin Dashboard Renderer
-import { nontechAdminData } from "../../data/nontechadmin_data.js";
+import { nontechAdminData } from "../api/legacyData.js";
 
 export function renderNtaDashboard(containerId) {
     console.log("Rendering Non-Technical Admin Dashboard...");

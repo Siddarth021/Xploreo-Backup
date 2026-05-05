@@ -1,4 +1,4 @@
-import { chartData, financeStats, payoutData } from '../../data/financeData.js';
+import { chartData, financeStats, payoutData } from '../api/legacyData.js';
 import { buildFinanceHTML } from './finance-ui.js';
 
 export function initFinance() {

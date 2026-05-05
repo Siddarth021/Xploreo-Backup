@@ -1,8 +1,7 @@
-import { travelerData } from "../../data/traveler.js";
+import { travelerData } from "../api/legacyData.js";
 
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const SELECTED_FLIGHT_KEY = "traveler_selected_flight";
-const FLIGHT_WISHLIST_KEY = "traveler_flight_wishlist";
 const FLIGHT_DETAIL_PAGE = "./traveller_flight-detail.html";
 
 export function renderTravelerFlightSearchPage(containerId) {
@@ -16,27 +15,45 @@ export function renderTravelerFlightSearchPage(containerId) {
     let sortMode = "Cheapest";
     let visibleCount = 4;
     let selectedDate = getInitialSelectedDate(state);
+    let dateWindowStart = 0;
+    const VISIBLE_DATE_CHIPS = 6;
 
     function render() {
         const routeFlights = getRouteFlights();
         const flights = getFilteredFlights(routeFlights);
         const searchValues = state.values?.flights || {};
         const routeMeta = getRouteMeta(searchValues);
-        const visibleDates = buildDateChips(routeFlights, searchValues);
+        const allDates = buildDateChips(routeFlights, searchValues);
+        const maxWindowStart = Math.max(0, allDates.length - VISIBLE_DATE_CHIPS);
+
+        if (!allDates.some(item => item.value === selectedDate)) {
+            selectedDate = allDates[0]?.value || selectedDate;
+        }
+
+        const selectedIndex = allDates.findIndex(item => item.value === selectedDate);
+        if (selectedIndex >= 0) {
+            if (selectedIndex < dateWindowStart) {
+                dateWindowStart = selectedIndex;
+            } else if (selectedIndex >= dateWindowStart + VISIBLE_DATE_CHIPS) {
+                dateWindowStart = Math.max(0, Math.min(maxWindowStart, selectedIndex - VISIBLE_DATE_CHIPS + 1));
+            }
+        }
+
+        dateWindowStart = Math.max(0, Math.min(maxWindowStart, dateWindowStart));
+        const visibleDates = allDates.slice(dateWindowStart, dateWindowStart + VISIBLE_DATE_CHIPS);
+
+        if (!visibleDates.some(item => item.value === selectedDate)) {
+            selectedDate = visibleDates[0]?.value || selectedDate;
+        }
+
         const limitedFlights = flights.slice(0, visibleCount);
         const hasMoreFlights = flights.length > visibleCount;
-        const wishlist = getFlightWishlist();
 
         container.innerHTML = `
             <main class="flight-search-page">
                 <section class="flight-search-shell">
                     <div class="flight-search-topbar">
-                        <div class="trip-mode-toggle">
-                            <button class="trip-mode-btn ${state.tripType === "One Way" ? "active" : ""}" data-trip-mode="One Way">One Way</button>
-                            <button class="trip-mode-btn ${state.tripType === "Round Trip" ? "active" : ""}" data-trip-mode="Round Trip">Round Trip</button>
-                        </div>
-
-                        <div class="flight-search-summary-grid ${state.tripType === "Round Trip" ? "round-trip-layout" : "one-way-layout"}">
+                        <div class="flight-search-summary-grid one-way-layout">
                             <div class="flight-search-field field-with-icon">
                                 <span>From</span>
                                 <strong>${getSummaryLocationLabel(searchValues.from || "New York (JFK)")}</strong>
@@ -50,12 +67,6 @@ export function renderTravelerFlightSearchPage(containerId) {
                                 <span>Departure</span>
                                 <strong>${formatDate(searchValues.departure || selectedDate)}</strong>
                             </div>
-                            ${state.tripType === "Round Trip" ? `
-                                <div class="flight-search-field field-with-icon">
-                                    <span>Return</span>
-                                    <strong>${formatDate(searchValues.returnDate || selectedDate)}</strong>
-                                </div>
-                            ` : ""}
                             <div class="flight-search-field field-with-icon traveler-count-field">
                                 <span>Travellers</span>
                                 <strong>${searchValues.travellers || "1 Traveller, Economy"}</strong>
@@ -128,7 +139,6 @@ export function renderTravelerFlightSearchPage(containerId) {
                                 <article class="flight-result-card">
                                     <div class="flight-card-save-corner">
                                         <span class="save-chip">${getSaveLabel(flight, sortMode)}</span>
-                                        <button class="wishlist-chip-btn ${wishlist.includes(flight.id) ? "active" : ""}" data-flight-save="${flight.id}" aria-label="Save flight">♡</button>
                                     </div>
 
                                     <div class="flight-card-left">
@@ -291,22 +301,17 @@ export function renderTravelerFlightSearchPage(containerId) {
 
         container.querySelectorAll("[data-date-nav]").forEach(button => {
             button.addEventListener("click", () => {
-                const dateList = buildDateChips(getRouteFlights(), state.values?.flights || {}).map(item => item.value);
-                const currentIndex = dateList.indexOf(selectedDate);
+                const allDates = buildDateChips(getRouteFlights(), state.values?.flights || {});
+                const maxWindowStart = Math.max(0, allDates.length - VISIBLE_DATE_CHIPS);
                 const direction = button.dataset.dateNav === "next" ? 1 : -1;
-                const nextIndex = Math.max(0, Math.min(dateList.length - 1, currentIndex + direction));
-                selectedDate = dateList[nextIndex];
-                visibleCount = 4;
-                render();
-            });
-        });
+                dateWindowStart = Math.max(0, Math.min(maxWindowStart, dateWindowStart + direction));
 
-        container.querySelectorAll("[data-trip-mode]").forEach(button => {
-            button.addEventListener("click", () => {
-                state.tripType = button.dataset.tripMode;
-                if (typeof localStorage !== "undefined") {
-                    localStorage.setItem(SEARCH_STORAGE_KEY, JSON.stringify(state));
+                const visibleDates = allDates.slice(dateWindowStart, dateWindowStart + VISIBLE_DATE_CHIPS);
+                if (!visibleDates.some(item => item.value === selectedDate)) {
+                    selectedDate = visibleDates[0]?.value || selectedDate;
                 }
+
+                visibleCount = 4;
                 render();
             });
         });
@@ -324,19 +329,6 @@ export function renderTravelerFlightSearchPage(containerId) {
                     localStorage.setItem(SELECTED_FLIGHT_KEY, JSON.stringify(payload));
                 }
                 window.location.href = `${FLIGHT_DETAIL_PAGE}?flight=${encodeURIComponent(flight.id)}`;
-            });
-        });
-
-        container.querySelectorAll("[data-flight-save]").forEach(button => {
-            button.addEventListener("click", () => {
-                const flightId = button.dataset.flightSave;
-                const wishlist = getFlightWishlist();
-                const nextWishlist = wishlist.includes(flightId)
-                    ? wishlist.filter(item => item !== flightId)
-                    : [...wishlist, flightId];
-
-                localStorage.setItem(FLIGHT_WISHLIST_KEY, JSON.stringify(nextWishlist));
-                render();
             });
         });
 
@@ -408,7 +400,7 @@ function buildDateChips(routeFlights, searchValues = {}) {
         flightsByDate.get(flight.departure).push(flight);
     });
 
-    return [...flightsByDate.keys()].sort().slice(0, 6).map(date => {
+    return [...flightsByDate.keys()].sort().map(date => {
         const cheapest = Math.min(...flightsByDate.get(date).map(flight => getNumericPrice(flight.price)));
         return {
             value: date,
@@ -591,17 +583,6 @@ function buildSelectedFlightPayload(flight, state) {
     };
 }
 
-function getFlightWishlist() {
-    if (typeof localStorage === "undefined") {
-        return [];
-    }
-
-    try {
-        return JSON.parse(localStorage.getItem(FLIGHT_WISHLIST_KEY) || "[]");
-    } catch (error) {
-        return [];
-    }
-}
 
 function parsePassengerSummary(summary) {
     const countMatch = String(summary).match(/(\d+)/);

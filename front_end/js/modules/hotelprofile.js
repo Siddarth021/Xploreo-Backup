@@ -1,5 +1,5 @@
 // hotelprofile.js
-import { users } from '../../data/user.js';
+import { users } from '../api/legacyData.js';
 
 export function initHotelProfile() {
     const profileForm = document.getElementById('profileForm');

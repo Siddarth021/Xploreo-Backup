@@ -1,4 +1,4 @@
-import { userStatusStyles, activityIcons } from '../../data/usersData.js';
+import { userStatusStyles, activityIcons } from '../api/legacyData.js';
 
 export function generateProfileHTML(user) {
     if (!user) {

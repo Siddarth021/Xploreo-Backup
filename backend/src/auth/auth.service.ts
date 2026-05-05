@@ -8,6 +8,7 @@ import { AuthRepository } from './auth.repository';
 import { RegisterDto } from './dto/create-auth.dto';
 import { LoginDto } from './dto/login.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { QueryFailedError } from 'typeorm';
 
 @Injectable()
 export class AuthService {
@@ -17,16 +18,32 @@ export class AuthService {
     const existing = await this.authRepository.findByUsername(dto.username);
     if (existing) throw new ConflictException('Username already exists');
 
-    const user = await this.authRepository.create({
-      userId: dto.username,
-      username: dto.username,
-      password: dto.password,
-      role: dto.role,
-      name: dto.name,
-      email: dto.email,
-      phone: dto.phone,
-      status: 'active',
-    });
+    const existingEmail = await this.authRepository.findByEmail(dto.email);
+    if (existingEmail) throw new ConflictException('Email already exists');
+
+    let user;
+    try {
+      user = await this.authRepository.create({
+        userId: dto.username,
+        username: dto.username,
+        password: dto.password,
+        role: dto.role,
+        name: dto.name,
+        email: dto.email,
+        phone: dto.phone,
+        status: 'active',
+      });
+    } catch (error) {
+      if (
+        error instanceof QueryFailedError &&
+        String((error as { message?: string }).message || '').includes(
+          'UNIQUE constraint failed: users.email',
+        )
+      ) {
+        throw new ConflictException('Email already exists');
+      }
+      throw error;
+    }
 
     const { password: _pw, ...safe } = user;
     return { message: 'Registered successfully', user: safe };

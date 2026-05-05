@@ -1,4 +1,4 @@
-import { travelerData } from "../../data/traveler.js";
+import { travelerData } from "../api/legacyData.js";
 import { getTravelerBookings } from "../utils/travelerWorkspaceState.js";
 import { fetchTripsForGuide, fetchTripsForTraveller } from "../api/services.js";
 import { mapTripToLegacyTour } from "../api/adapters.js";

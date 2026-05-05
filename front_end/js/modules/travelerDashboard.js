@@ -1,4 +1,4 @@
-import { travelerData } from "../../data/traveler.js";
+import { travelerData } from "../api/legacyData.js";
 import { attachLocationAutocomplete, getTodayDateString, extractUniqueLocations, extractFlightOrigins, extractFlightDestinations } from "../utils/locationAutocomplete.js";
 
 // Heart SVG helper
@@ -100,10 +100,6 @@ export function renderTravelerDashboard(containerId, user) {
                     </div>
                     
                     <div class="search-panel active" id="flights-panel">
-                        <div class="trip-type-toggles">
-                            <button class="toggle-btn active">One Way</button>
-                            <button class="toggle-btn">Round Trip</button>
-                        </div>
                         <div class="search-inputs-row">
                             <div class="input-group">
                                 <label>From</label>
@@ -128,14 +124,6 @@ export function renderTravelerDashboard(containerId, user) {
                                     <input type="date" id="flight-departure" value="${searchState.values.flights.departure}" min="${getTodayDateString()}">
                                 </div>
                                 <span class="search-field-error" id="flight-departure-error"></span>
-                            </div>
-                            <div class="input-group hidden" id="return-date-group">
-                                <label>Return</label>
-                                <div class="input-wrapper">
-                                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="date" id="flight-return" value="${searchState.values.flights.returnDate}" min="${getNextDateValue(searchState.values.flights.departure) || getTodayDateString()}">
-                                </div>
-                                <span class="search-field-error" id="flight-return-error"></span>
                             </div>
                             <div class="input-group" id="travellers-group">
                                 <label>Travellers</label>
@@ -488,29 +476,6 @@ function attachDashboardEvents() {
         });
     });
 
-    // Toggle button for Trip Type inside Flights
-    const toggleBtns = document.querySelectorAll(".toggle-btn");
-    const returnDateGroup = document.getElementById("return-date-group");
-    const travellersGroup = document.getElementById("travellers-group");
-
-    toggleBtns.forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            toggleBtns.forEach(b => b.classList.remove("active"));
-            e.target.classList.add("active");
-            
-            // Toggle Round Trip Layout formatting for 2-column grid
-            if (e.target.textContent === "Round Trip") {
-                searchState.tripType = "Round Trip";
-                returnDateGroup.classList.remove("hidden");
-                travellersGroup.classList.add("full-width-input");
-            } else {
-                searchState.tripType = "One Way";
-                returnDateGroup.classList.add("hidden");
-                travellersGroup.classList.remove("full-width-input");
-            }
-        });
-    });
-
     hydrateFlightLayout();
     bindSearchActions();
     bindDateMinConstraints();
@@ -701,19 +666,8 @@ function bindSearchActions() {
 }
 
 function hydrateFlightLayout() {
-    const returnDateGroup = document.getElementById("return-date-group");
     const travellersGroup = document.getElementById("travellers-group");
-    const toggleBtns = document.querySelectorAll(".toggle-btn");
-
-    toggleBtns.forEach(btn => {
-        btn.classList.toggle("active", btn.textContent.trim() === searchState.tripType);
-    });
-
-    if (searchState.tripType === "Round Trip") {
-        returnDateGroup.classList.remove("hidden");
-        travellersGroup.classList.add("full-width-input");
-    } else {
-        returnDateGroup.classList.add("hidden");
+    if (travellersGroup) {
         travellersGroup.classList.remove("full-width-input");
     }
 }

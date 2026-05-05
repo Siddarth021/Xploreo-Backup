@@ -1,6 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { AppState } from '../app-state/entities/app-state.entity';
+import { loadDefaultAppState } from '../app-state/default-app-state.seed';
 import { Auth, Role } from '../auth/entities/auth.entity';
 import { Hotel } from '../hotels/entities/hotel.entity';
 import {
@@ -24,6 +26,8 @@ export class DatabaseSeederService implements OnModuleInit {
     private readonly plansRepository: Repository<Plan>,
     @InjectRepository(Trip)
     private readonly tripsRepository: Repository<Trip>,
+    @InjectRepository(AppState)
+    private readonly appStateRepository: Repository<AppState>,
   ) {}
 
   async onModuleInit() {
@@ -32,6 +36,7 @@ export class DatabaseSeederService implements OnModuleInit {
     await this.seedExperiences();
     await this.seedPlans();
     await this.seedTrips();
+    await this.seedAppState();
   }
 
   private async seedUsers() {
@@ -321,5 +326,23 @@ export class DatabaseSeederService implements OnModuleInit {
     ];
 
     await this.tripsRepository.save(trips);
+  }
+
+  private async seedAppState() {
+    const defaults = await loadDefaultAppState();
+
+    for (const [key, value] of Object.entries(defaults)) {
+      const exists = await this.appStateRepository.exists({ where: { key } });
+      if (exists) {
+        continue;
+      }
+
+      await this.appStateRepository.save(
+        this.appStateRepository.create({
+          key,
+          value,
+        }),
+      );
+    }
   }
 }

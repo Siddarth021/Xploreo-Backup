@@ -1,4 +1,4 @@
-import { bookingsData } from "../../data/experience_bookings.js";
+import { bookingsData } from "../api/legacyData.js";
 import {
     closeModal,
     getBookingStatusMeta,

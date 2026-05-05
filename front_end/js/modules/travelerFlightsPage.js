@@ -1,4 +1,4 @@
-import { flightsData } from "../../data/flights.js";
+import { flightsData } from "../api/legacyData.js";
 
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const SAVED_FLIGHTS_KEY = "traveler_saved_mock_flights";

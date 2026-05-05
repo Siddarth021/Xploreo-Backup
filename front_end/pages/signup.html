@@ -1054,14 +1054,12 @@
     import { renderLandingNavbar } from "../components/layout/navbar_landing.js";
     renderLandingNavbar();
 
-    const BASE_PATH = window.location.pathname.includes("23_Xploreo") ? "/23_Xploreo" : "";
-
     document.addEventListener("click", function (event) {
         if (event.target.closest("#login-btn")) {
-            window.location.href = BASE_PATH + "/front_end/pages/login.html";
+            window.location.href = new URL("./login.html", window.location.href).href;
         }
         if (event.target.closest("#signup-btn")) {
-            window.location.href = BASE_PATH + "/front_end/pages/signup.html";
+            window.location.href = new URL("./signup.html", window.location.href).href;
         }
     });
 </script>

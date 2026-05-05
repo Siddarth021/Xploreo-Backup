@@ -1,4 +1,4 @@
-import { getDisputesData } from '../../data/disputesData.js';
+import { getDisputesData } from '../api/legacyData.js';
 
 export function getDisputesHTML() {
     // 1. Fetch the dynamic list of disputes

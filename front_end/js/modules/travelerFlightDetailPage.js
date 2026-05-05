@@ -4,7 +4,7 @@ const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const CONFIRMED_BOOKING_KEY = "traveler_confirmed_booking";
 const CONFIRMED_BOOKING_SESSION_KEY = "traveler_confirmed_booking_session";
 const DEFAULT_HERO_IMAGE = "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=1600";
-import { travelerData } from "../../data/traveler.js";
+import { travelerData } from "../api/legacyData.js";
 
 export function renderTravelerFlightDetailPage(containerId) {
     const container = document.getElementById(containerId);
@@ -27,7 +27,6 @@ export function renderTravelerFlightDetailPage(containerId) {
     const status = new URLSearchParams(window.location.search).get("status")?.trim().toLowerCase() || "";
     const isBooked = status === "completed" || status === "upcoming";
     const totalAmount = selectedFlight.price + selectedFlight.taxes;
-    const isSaved = getFlightWishlist().includes(selectedFlight.id);
     const travelerForm = selectedFlight.travelerDetails || getTravelerFormDefaults();
 
     container.innerHTML = `
@@ -39,7 +38,6 @@ export function renderTravelerFlightDetailPage(containerId) {
                         <h1>${selectedFlight.routeLabel}</h1>
                     </div>
                     <div class="flight-detail-hero-actions">
-                        <button class="flight-icon-btn ${isSaved ? "active" : ""}" id="save-flight-btn" aria-label="Save flight">${isSaved ? "♥" : "♡"}</button>
                         <button class="flight-icon-btn" id="share-flight-btn" aria-label="Share flight">↗</button>
                     </div>
                 </section>
@@ -179,28 +177,6 @@ export function renderTravelerFlightDetailPage(containerId) {
 }
 
 function bindEvents(selectedFlight) {
-    document.getElementById("save-flight-btn")?.addEventListener("click", () => {
-        const wishlist = getFlightWishlist();
-        const isSaved = wishlist.includes(selectedFlight.id);
-        const nextWishlist = isSaved
-            ? wishlist.filter(id => id !== selectedFlight.id)
-            : [...wishlist, selectedFlight.id];
-
-        localStorage.setItem(FLIGHT_WISHLIST_KEY, JSON.stringify(nextWishlist));
-
-        const button = document.getElementById("save-flight-btn");
-        if (button) {
-            button.textContent = isSaved ? "♡" : "♥";
-            button.classList.toggle("active", !isSaved);
-        }
-
-        showFlightDetailToast(
-            isSaved
-                ? `${selectedFlight.airline} removed from saved flights`
-                : `${selectedFlight.airline} saved to wishlist`
-        );
-    });
-
     document.getElementById("share-flight-btn")?.addEventListener("click", async () => {
         const shareLink = window.location.href;
         const copied = await copyText(shareLink);

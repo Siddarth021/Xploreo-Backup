@@ -1,4 +1,4 @@
-import { getLedgerData } from '../../data/ledgerData.js';
+import { getLedgerData } from '../api/legacyData.js';
 
 export function getLedgerHTML() {
     // 1. Get the pre-processed data from the data folder

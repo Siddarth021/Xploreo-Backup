@@ -1,5 +1,4 @@
-import { initialUsersData} from '../../data/usersData.js';
-import { initialPartnersData } from '../../data/usersData.js';
+import { initialUsersData, initialPartnersData } from '../api/legacyData.js';
 import { getUserStylesHTML } from './userStyles.js';
 import { getUserStatsHTML } from './userStats.js';
 import { getUserTableShellHTML, generateUserRowsHTML } from './userTable.js';

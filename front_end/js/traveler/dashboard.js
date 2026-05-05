@@ -1,4 +1,4 @@
-import { travelerData } from "../../data/traveler.js";
+import { travelerData } from "../api/legacyData.js";
 
 export const TRAVELER_BOOKING_KEYS = {
     selectedPackage: [

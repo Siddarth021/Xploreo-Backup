@@ -135,6 +135,7 @@ export function renderProfilePage(containerId, user) {
                                 <button type="button" class="edit-btn" id="addLangBtn" style="padding: 4px 10px; font-size: 11px;">+ Add Language</button>
                             </div>
                         </div>
+                        ${currentUser.role !== 'experience' ? `
                         <div class="input-group full">
                             <span class="label">Certifications</span>
                             <div class="cert-list">
@@ -154,6 +155,7 @@ export function renderProfilePage(containerId, user) {
                                 <input type="file" id="certFileInput" accept=".pdf,image/*" style="display: none;">
                             </div>
                         </div>
+                        ` : ''}
                     </div>
                 </div>
 

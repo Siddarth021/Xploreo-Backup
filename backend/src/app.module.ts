@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AppStateModule } from './app-state/app-state.module';
+import { AppState } from './app-state/entities/app-state.entity';
 import { AuthModule } from './auth/auth.module';
 import { TravellerModule } from './traveller/traveller.module';
 import { GuideModule } from './guide/guide.module';
@@ -28,11 +30,12 @@ import { DatabaseSeederService } from './database/database-seeder.service';
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: process.env.DB_PATH ?? 'data/xploreo.sqlite',
-      entities: [Auth, Hotel, Experience, Plan, Trip],
+      entities: [AppState, Auth, Hotel, Experience, Plan, Trip],
       synchronize: true,
       autoLoadEntities: true,
     }),
-    TypeOrmModule.forFeature([Auth, Hotel, Experience, Plan, Trip]),
+    TypeOrmModule.forFeature([AppState, Auth, Hotel, Experience, Plan, Trip]),
+    AppStateModule,
     AuthModule,
     TravellerModule,
     GuideModule,

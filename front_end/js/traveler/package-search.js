@@ -1,4 +1,4 @@
-import { travelerData } from "../../data/traveler.js";
+import { travelerData } from "../api/legacyData.js";
 import { TRAVELER_BOOKING_KEYS } from "./dashboard.js";
 
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";

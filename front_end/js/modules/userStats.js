@@ -1,4 +1,4 @@
-import { opsData } from '../../data/usersData.js';
+import { opsData } from '../api/legacyData.js';
 
 export function getUserStatsHTML(users = [], partners = []) {
     // 1. Calculate Real-Time Metrics

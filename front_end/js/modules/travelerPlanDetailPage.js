@@ -1,4 +1,4 @@
-import { travelerData } from "../../data/traveler.js";
+import { travelerData } from "../api/legacyData.js";
 
 const SELECTED_PLAN_KEY = "traveler_selected_plan";
 const SELECTED_FLIGHT_KEY = "traveler_selected_flight";

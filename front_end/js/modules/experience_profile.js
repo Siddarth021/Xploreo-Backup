@@ -1,6 +1,4 @@
-import { bookingsData } from "../../data/experience_bookings.js";
-import { experiences as experienceCatalog } from "../../data/experience_experience_data.js";
-import { profileData as experienceProfile } from "../../data/experience_profile.js";
+import { bookingsData, experiences as experienceCatalog, profileData as experienceProfile } from "../api/legacyData.js";
 import { validateEmail, validatePhone } from "../utils/validation.js";
 import {
     clearFieldErrors,

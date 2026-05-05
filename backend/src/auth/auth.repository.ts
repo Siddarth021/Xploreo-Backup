@@ -27,6 +27,10 @@ export class AuthRepository {
     return this.repository.findOne({ where: { username } });
   }
 
+  findByEmail(email: string): Promise<Auth | null> {
+    return this.repository.findOne({ where: { email } });
+  }
+
   async update(userId: string, data: Partial<Auth>): Promise<Auth | null> {
     await this.repository.update({ userId }, data);
     return this.findById(userId);

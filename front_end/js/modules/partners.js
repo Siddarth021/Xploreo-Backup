@@ -1,4 +1,4 @@
-import { partners } from "../../data/partners.js";
+import { partners } from "../api/legacyData.js";
 
 export function renderPartners(containerId) {
     const container = document.getElementById(containerId);

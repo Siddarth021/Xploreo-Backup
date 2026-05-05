@@ -1,4 +1,4 @@
-import { earningsData } from "../../data/experience_earningsData.js";
+import { earningsData } from "../api/legacyData.js";
 import {
     formatCurrency,
     readStorage,

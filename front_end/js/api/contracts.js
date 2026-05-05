@@ -9,6 +9,8 @@ export const APP_ROLES = Object.freeze({
 });
 
 export const API_ENDPOINTS = Object.freeze({
+    appState: "/app-state",
+    appStateBootstrap: "/app-state/bootstrap",
     login: "/auth/login",
     register: "/auth/register",
     users: "/auth/users",

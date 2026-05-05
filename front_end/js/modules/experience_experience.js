@@ -1,4 +1,4 @@
-import { experiences as experienceCatalog } from "../../data/experience_experience_data.js";
+import { experiences as experienceCatalog } from "../api/legacyData.js";
 import {
     attachModalDismissals,
     clearFieldErrors,

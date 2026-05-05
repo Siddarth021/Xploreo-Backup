@@ -8,7 +8,7 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiHeader, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiQuery,ApiBearerAuth } from '@nestjs/swagger';
 import { PlansService } from './plans.service';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
@@ -16,8 +16,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../auth/entities/auth.entity';
 
 @ApiTags('Plans')
-@ApiHeader({ name: 'x-user-id', required: true })
-@ApiHeader({ name: 'x-user-role', required: true })
+@ApiBearerAuth()
 @Controller('plans')
 export class PlansController {
   constructor(private readonly plansService: PlansService) {}

@@ -6,8 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiOperation,ApiBearerAuth } from '@nestjs/swagger';
 import { TravellerService } from './traveller.service';
 import { CreateTravellerDto } from './dto/create-traveller.dto';
 import { UpdateTravellerDto } from './dto/update-traveller.dto';
@@ -15,16 +16,16 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../auth/entities/auth.entity';
 
 @ApiTags('Traveller')
-@ApiHeader({ name: 'x-user-id', required: true })
-@ApiHeader({ name: 'x-user-role', required: true })
+@ApiBearerAuth()
 @Controller('traveller')
 export class TravellerController {
   constructor(private readonly travellerService: TravellerService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a traveller profile' })
-  create(@Body() dto: CreateTravellerDto) {
-    return this.travellerService.create(dto);
+  create(@Req() req: any, @Body() dto: CreateTravellerDto) {
+    const userId = req.user.userId;
+    return this.travellerService.create(userId, dto);
   }
 
   @Roles(Role.SUPERADMIN, Role.NONTECHADMIN)

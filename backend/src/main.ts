@@ -1,6 +1,6 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { setupSwagger } from './docs/swagger.setup';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
@@ -38,16 +38,7 @@ async function bootstrap() {
   app.useGlobalGuards(new AuthGuard(reflector), new RolesGuard(reflector));
 
   // Swagger
-  const config = new DocumentBuilder()
-    .setTitle('Xploreo API')
-    .setDescription('Complete backend API for the Xploreo travel platform')
-    .setVersion('1.0')
-    .addApiKey({ type: 'apiKey', name: 'x-user-id', in: 'header' }, 'x-user-id')
-    .addApiKey({ type: 'apiKey', name: 'x-user-role', in: 'header' }, 'x-user-role')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  setupSwagger(app);
 
   const port = process.env.PORT ?? 3000;
   await app.listen(port);

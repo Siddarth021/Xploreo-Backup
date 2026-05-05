@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiOperation,ApiBearerAuth } from '@nestjs/swagger';
 import { NontechadminService } from './nontechadmin.service';
 import { CreateNontechadminDto } from './dto/create-nontechadmin.dto';
 import { UpdateNontechadminDto } from './dto/update-nontechadmin.dto';
@@ -7,9 +7,8 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../auth/entities/auth.entity';
 
 @ApiTags('Nontechadmin')
-@ApiHeader({ name: 'x-user-id', required: true })
-@ApiHeader({ name: 'x-user-role', required: true })
 @Roles(Role.SUPERADMIN)
+@ApiBearerAuth()
 @Controller('nontechadmin')
 export class NontechadminController {
   constructor(private readonly nontechadminService: NontechadminService) {}

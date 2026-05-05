@@ -7,8 +7,9 @@ import { UpdateTravellerDto } from './dto/update-traveller.dto';
 export class TravellerService {
   constructor(private readonly travellerRepository: TravellerRepository) {}
 
-  create(dto: CreateTravellerDto) {
+  create(userId: string, dto: CreateTravellerDto) {
     return this.travellerRepository.create({
+      userId,
       fname: dto.fname,
       lname: dto.lname,
       email: dto.email,

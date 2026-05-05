@@ -23,8 +23,7 @@ export class GuideRepository {
     },
   ];
 
-  create(data: Omit<Guide, 'userId'>): Guide {
-    const guide: Guide = { userId: uuidv4(), ...data };
+  create(guide: Guide): Guide {
     this.guides.push(guide);
     return guide;
   }

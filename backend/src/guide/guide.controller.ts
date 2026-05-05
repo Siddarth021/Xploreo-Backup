@@ -6,8 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth} from '@nestjs/swagger';
 import { GuideService } from './guide.service';
 import { CreateGuideDto } from './dto/create-guide.dto';
 import { UpdateGuideDto } from './dto/update-guide.dto';
@@ -15,8 +16,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../auth/entities/auth.entity';
 
 @ApiTags('Guide')
-@ApiHeader({ name: 'x-user-id', required: true })
-@ApiHeader({ name: 'x-user-role', required: true })
+@ApiBearerAuth()
 @Controller('guide')
 export class GuideController {
   constructor(private readonly guideService: GuideService) {}
@@ -24,8 +24,9 @@ export class GuideController {
   @Roles(Role.SUPERADMIN, Role.NONTECHADMIN)
   @Post()
   @ApiOperation({ summary: 'Create a guide profile' })
-  create(@Body() dto: CreateGuideDto) {
-    return this.guideService.create(dto);
+  create(@Req() req: any, @Body() dto: CreateGuideDto) {
+    const userId = req.user.userId;
+    return this.guideService.create(userId, dto);
   }
 
   @Get()

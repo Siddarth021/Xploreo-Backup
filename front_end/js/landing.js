@@ -37,3 +37,17 @@ function switchRole(role) {
 }
 
 window.switchRole = switchRole;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.querySelector(".search-box input");
+    if (searchInput) {
+        searchInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                const val = searchInput.value.trim();
+                if (val) {
+                    document.getElementById("loginPromptModal").style.display = "flex";
+                }
+            }
+        });
+    }
+});

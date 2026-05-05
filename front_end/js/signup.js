@@ -53,7 +53,7 @@ export function initSignup() {
         card.addEventListener("click", function () {
             cards.forEach(c => c.classList.remove("selected"));
             card.classList.add("selected");
-            selectedRole = card.querySelector("h4").innerText;
+            selectedRole = card.querySelector("h4").innerText.trim();
             console.log("Selected Role:", selectedRole);
         });
     });
@@ -410,17 +410,53 @@ async function createUser(role) {
         "Hotel": "hotel",
         "Experiences": "experience"
     };
+    const mappedRole = roleMap[role] || "traveller";
+    try {
+        const response = await fetch("http://localhost:3000/api/auth/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password,
+                role: mappedRole
+            })
+        });
 
-    const response = await registerWithApi({
-        username,
-        password,
-        name,
-        email,
-        phone,
-        role: roleMap[role] || "traveller"
-    });
+        if (!response.ok) {
+            const errData = await response.json();
+            alert("Registration failed: " + (errData.message || "Unknown error"));
+            return false;
+        }
 
-    console.log("User Saved:", response?.user || username);
+        const data = await response.json();
+        
+        // Mock fallback to keep UI functional until full DB migration
+        const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+        const allUsers = [...users, ...storedUsers];
+        const newId = generateUniqueUserId(allUsers);
+
+        const newUser = {
+            id: data.user?.userId || newId,
+            name: name,
+            username: username,
+            email: email,
+            phone: phone,
+            password: password,
+            role: mappedRole,
+            profilePic: "",
+            status: "active"
+        };
+
+        saveUser(newUser);
+        console.log("User Saved to Backend and Mock Storage:", newUser);
+        return true;
+    } catch (err) {
+        console.error("Signup API error:", err);
+        alert("Network error. Make sure the backend server is running.");
+        return false;
+    }
 }
 
 /* ROLE STEP 3 ROUTING */

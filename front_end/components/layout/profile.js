@@ -64,6 +64,6 @@ window.addEventListener("click", function (e) {
 // Handle Logout
 window.logout = function () {
   localStorage.removeItem("currentUser");
-  localStorage.clear();
-  window.location.href = "login.html";
+  const isPages = window.location.pathname.includes("/pages/");
+  window.location.href = isPages ? "login.html" : "pages/login.html";
 };

@@ -28,7 +28,6 @@ function buildProfileBridge(currentUser) {
 document.addEventListener("DOMContentLoaded", () => {
     void (async () => {
         const path = window.location.pathname.split("/").pop() || "index.html";
-
         if (path === "login.html") {
             renderLandingNavbar();
             initLogin();

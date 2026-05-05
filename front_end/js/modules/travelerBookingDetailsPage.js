@@ -65,7 +65,7 @@ export function renderTravelerBookingDetailsPage(containerId) {
 
                         <div class="traveler-detail-actions">
                             <button type="button" class="traveler-circle-action" aria-label="Save package">${heartIcon()}</button>
-                            <button type="button" class="traveler-circle-action" aria-label="Share package">${shareIcon()}</button>
+
                         </div>
                     </div>
                 </section>

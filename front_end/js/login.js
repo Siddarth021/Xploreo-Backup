@@ -28,27 +28,95 @@ export function initLogin(users) {
 
 
     const forgotLink = document.querySelector(".forgot-link");
-    if (forgotLink) {
+    const modal = document.getElementById("forgot-password-modal");
+    const closeModal = document.getElementById("close-forgot-modal");
+    
+    const step1 = document.getElementById("forgot-step-1");
+    const step2 = document.getElementById("forgot-step-2");
+    const step3 = document.getElementById("forgot-step-3");
+    
+    const identifierInput = document.getElementById("forgot-identifier");
+    const verifyBtn = document.getElementById("forgot-verify-btn");
+    const error1 = document.getElementById("forgot-error-1");
+    
+    const newPasswordInput = document.getElementById("forgot-new-password");
+    const resetBtn = document.getElementById("forgot-reset-btn");
+    const error2 = document.getElementById("forgot-error-2");
+    
+    const closeBtn = document.getElementById("forgot-close-btn");
+
+    let targetUserIndex = -1;
+
+    if (forgotLink && modal) {
         forgotLink.addEventListener("click", (e) => {
             e.preventDefault();
-            const identifier = prompt("Enter your username or email to reset your password:");
+            // Reset modal state
+            step1.classList.remove("hidden");
+            step2.classList.add("hidden");
+            step3.classList.add("hidden");
+            identifierInput.value = "";
+            newPasswordInput.value = "";
+            error1.style.display = "none";
+            error2.style.display = "none";
+            targetUserIndex = -1;
             
-            if (identifier) {
-                const users = JSON.parse(localStorage.getItem("users")) || [];
-                const targetIndex = users.findIndex(u => u.username === identifier || u.email === identifier);
-                
-                if (targetIndex !== -1) {
-                    const newPassword = prompt(`Account found for ${identifier}. Enter your new password:`);
-                    if (newPassword && newPassword.trim() !== "") {
-                        users[targetIndex].password = newPassword.trim();
-                        localStorage.setItem("users", JSON.stringify(users));
-                        alert("Password successfully reset! You can now log in.");
-                    } else {
-                        alert("Password reset cancelled. Cannot be blank.");
-                    }
+            modal.classList.remove("hidden");
+        });
+
+        const hideModal = () => modal.classList.add("hidden");
+        closeModal.addEventListener("click", hideModal);
+        closeBtn.addEventListener("click", hideModal);
+        
+        verifyBtn.addEventListener("click", () => {
+            const identifier = identifierInput.value.trim();
+            if (!identifier) {
+                error1.innerText = "Please enter a username or email.";
+                error1.style.display = "block";
+                return;
+            }
+
+            const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+            const allUsers = [...users, ...storedUsers];
+            
+            targetUserIndex = storedUsers.findIndex(u => u.username === identifier || u.email === identifier);
+            
+            if (targetUserIndex !== -1) {
+                error1.style.display = "none";
+                step1.classList.add("hidden");
+                step2.classList.remove("hidden");
+            } else {
+                // Check if they are a mock data user (read-only for password resets)
+                const isMockUser = users.find(u => u.username === identifier || u.email === identifier);
+                if (isMockUser) {
+                    error1.innerText = "Cannot reset password for default demo users.";
                 } else {
-                    alert("No account found with that username or email.");
+                    error1.innerText = "No account found with that username or email.";
                 }
+                error1.style.display = "block";
+            }
+        });
+
+        resetBtn.addEventListener("click", () => {
+            const newPassword = newPasswordInput.value.trim();
+            if (!newPassword) {
+                error2.innerText = "Password cannot be blank.";
+                error2.style.display = "block";
+                return;
+            }
+            if (newPassword.length < 6) {
+                error2.innerText = "Password must be at least 6 characters.";
+                error2.style.display = "block";
+                return;
+            }
+
+            const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+            if (targetUserIndex !== -1 && storedUsers[targetUserIndex]) {
+                storedUsers[targetUserIndex].password = newPassword;
+                localStorage.setItem("users", JSON.stringify(storedUsers));
+                
+                error2.style.display = "none";
+                step2.classList.add("hidden");
+                step3.classList.remove("hidden");
             }
         });
     }
@@ -79,7 +147,10 @@ export function initLogin(users) {
                 return;
             }
             
-            const currentUser = users.find(u => 
+            const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+            const allUsers = [...users, ...storedUsers];
+
+            const currentUser = allUsers.find(u => 
                 (u.username === username || u.email === username) && 
                 u.password === password
             );

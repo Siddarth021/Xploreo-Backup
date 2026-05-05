@@ -59,9 +59,9 @@ export function initTravelerProfilePage(containerId) {
                         </div>
                     </div>
                     <div class="traveler-stat-grid">
-                        <article><span>Reputation</span><strong>${profile.reputation}</strong><small>12 trips completed</small></article>
-                        <article><span>Traveller rating</span><strong>4.7 / 5</strong><small>Based on guides and partners</small></article>
-                        <article><span>Total trips</span><strong>${profile.countries} countries</strong><small>${profile.totalTrips} continents explored</small></article>
+                        <article><span>Reputation</span><strong>${profile.reputation}</strong><small>Level ${profile.level || 1}</small></article>
+                        <article><span>Traveller rating</span><strong>${profile.totalTrips > 0 ? "4.7 / 5" : "New"}</strong><small>${profile.totalTrips > 0 ? "Based on guides and partners" : "No ratings yet"}</small></article>
+                        <article><span>Experience</span><strong>${profile.totalTrips || 0} trips</strong><small>${profile.countries || 0} countries explored</small></article>
                     </div>
                 </section>
 

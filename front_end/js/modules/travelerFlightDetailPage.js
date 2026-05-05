@@ -40,7 +40,7 @@ export function renderTravelerFlightDetailPage(containerId) {
                     </div>
                     <div class="flight-detail-hero-actions">
                         <button class="flight-icon-btn ${isSaved ? "active" : ""}" id="save-flight-btn" aria-label="Save flight">${isSaved ? "♥" : "♡"}</button>
-                        <button class="flight-icon-btn" id="share-flight-btn" aria-label="Share flight">↗</button>
+
                     </div>
                 </section>
 

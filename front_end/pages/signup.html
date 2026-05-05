@@ -270,6 +270,22 @@
                     </div>
 
                     <div class="form-group" style="width: 100%;">
+                        <label>Date of Birth</label>
+                        <input id="dob" type="date" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 10px; background: #F5F7F8; color: #1F2937; font-size: 14px;">
+                    </div>
+
+                    <div class="form-group" style="width: 100%;">
+                        <label>Gender</label>
+                        <select id="gender" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 10px; background: #F5F7F8; color: #1F2937; font-size: 14px;">
+                            <option value="">Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                            <option value="Prefer not to say">Prefer not to say</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="width: 100%;">
                         <label>Password</label>
                         <div class="password-wrapper" style="position: relative; width: 100%;">
                             <input id="password" type="password" placeholder="••••••••" style="width: 100%;">
@@ -327,11 +343,14 @@
 
                         <div class="step3-traveler-left">
 
-                            <label>
-                                Preferred Travel Style
-                            </label>
+                            <label>Home Location</label>
+                            <input id="homeLocation" type="text" class="step3-traveler-input" placeholder="e.g. New York, USA">
 
-                            <select class="step3-traveler-input">
+                            <label>Preferred Language</label>
+                            <input id="prefLanguage" type="text" class="step3-traveler-input" placeholder="e.g. English, Spanish">
+
+                            <label>Activity Style</label>
+                            <select id="activityStyle" class="step3-traveler-input">
                                 <option value="">Select your style</option>
                                 <option value="Backpacking">Backpacking</option>
                                 <option value="Luxury">Luxury</option>
@@ -340,45 +359,43 @@
                                 <option value="Relaxation">Relaxation</option>
                             </select>
 
-                            <label>
-                                Budget Range
-                            </label>
-
-                            <select class="step3-traveler-input">
+                            <label>Budget Range</label>
+                            <select id="budgetRange" class="step3-traveler-input">
                                 <option value="">Select budget range</option>
                                 <option value="Budget">Budget ($)</option>
                                 <option value="Moderate">Moderate ($$)</option>
                                 <option value="Luxury">Luxury ($$$)</option>
                             </select>
 
-                            <label>
-                                Preferred Language
-                            </label>
-
-                            <select class="step3-traveler-input">
-                                <option>
-                                    English
-                                </option>
+                            <label>Transport Preference</label>
+                            <select id="transportPref" class="step3-traveler-input">
+                                <option value="">Select transport</option>
+                                <option value="Flight">Flight</option>
+                                <option value="Train">Train</option>
+                                <option value="Bus">Bus</option>
+                                <option value="Car">Car</option>
                             </select>
 
-                            <label>
-                                Preferred Destination Types
-                                <span class="step3-traveler-optional">
-                                    (Optional)
-                                </span>
-                            </label>
-
-                            <input
-                                type="text"
-                                class="step3-traveler-input"
-                                placeholder="e.g. Coastal, Mountains, Urban"
-                            >
+                            <label>Accommodation Preference</label>
+                            <select id="accommodationPref" class="step3-traveler-input">
+                                <option value="">Select accommodation</option>
+                                <option value="Hotel">Hotel</option>
+                                <option value="Hostel">Hostel</option>
+                                <option value="Resort">Resort</option>
+                                <option value="Airbnb">Airbnb</option>
+                            </select>
 
                         </div>
 
 
 
                         <div class="step3-traveler-right">
+
+                            <label>
+                                About Me
+                            </label>
+
+                            <textarea id="bio" class="step3-traveler-input" placeholder="Tell us a little about yourself" style="min-height: 100px; resize: vertical; margin-bottom: 20px; padding: 15px;"></textarea>
 
                             <label>
                                 Travel Interests
@@ -530,20 +547,6 @@
                         <!-- LEFT -->
 
                         <div class="step3-guide-left">
-
-                            <label>
-
-                                Guide Name
-
-                            </label>
-
-                            <input
-                                type="text"
-                                class="step3-guide-input"
-                                placeholder="Full name for your profile"
-                            >
-
-
 
                             <label>
 
@@ -836,24 +839,6 @@
                             type="text"
                             id="service-location"
                             placeholder="City, Country"
-                        >
-
-                    </div>
-
-                    <!-- Contact Person -->
-
-                    <div class="form-group">
-
-                        <label>
-
-                            Contact Person
-
-                        </label>
-
-                        <input
-                            type="text"
-                            id="contact-person"
-                            placeholder="Full name of representative"
                         >
 
                     </div>

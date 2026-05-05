@@ -2005,7 +2005,7 @@ export const travelerData = {
         packages: [
             {
                 id: "package-bali-escape",
-                origin: "New Delhi",
+                origin: "New Delhi, Mumbai, Bangalore, Chennai, Kolkata",
                 destination: "Bali",
                 title: "Magical Bali - Island Paradise Escape",
                 image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1400",
@@ -2024,7 +2024,7 @@ export const travelerData = {
             },
             {
                 id: "package-maldives-honeymoon",
-                origin: "New Delhi",
+                origin: "New Delhi, Mumbai, Bangalore, Chennai, Kolkata",
                 destination: "Maldives",
                 title: "Maldives Luxury Honeymoon Package",
                 image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&q=80&w=1400",
@@ -2043,7 +2043,7 @@ export const travelerData = {
             },
             {
                 id: "package-dubai-gold",
-                origin: "New Delhi",
+                origin: "New Delhi, Mumbai, Bangalore, Chennai, Kolkata",
                 destination: "Dubai",
                 title: "Dubai - The City of Gold Experience",
                 image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=1400",
@@ -2062,7 +2062,7 @@ export const travelerData = {
             },
             {
                 id: "package-thailand-phuket",
-                origin: "New Delhi",
+                origin: "New Delhi, Mumbai, Bangalore, Chennai, Kolkata",
                 destination: "Thailand",
                 title: "Thailand Beach Paradise - Phuket & Krabi",
                 image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1400",
@@ -2081,7 +2081,7 @@ export const travelerData = {
             },
             {
                 id: "package-switzerland-alps",
-                origin: "Mumbai",
+                origin: "New Delhi, Mumbai, Bangalore, Chennai, Kolkata",
                 destination: "Switzerland",
                 title: "Switzerland Alps Adventure",
                 image: "https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&q=80&w=1400",

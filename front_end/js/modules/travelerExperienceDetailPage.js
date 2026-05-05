@@ -61,7 +61,7 @@ export function renderTravelerExperienceDetailPage(containerId) {
                         </div>
                         <div class="traveler-experience-header-actions">
                             <button type="button" id="traveler-experience-favorite-btn" aria-label="Save experience">${heartOutlineIcon()}</button>
-                            <button type="button" id="traveler-experience-share-btn" aria-label="Share experience">${shareIcon()}</button>
+
                         </div>
                     </div>
 

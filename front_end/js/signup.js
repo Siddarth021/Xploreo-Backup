@@ -100,6 +100,17 @@ export function initSignup() {
         });
     }
 
+    /* STEP 1.5 SELECTION (HOTEL OR EXPERIENCES) */
+    const partnerTypeCards = document.querySelectorAll(".partner-type-card");
+    partnerTypeCards.forEach(function (card) {
+        card.addEventListener("click", function () {
+            partnerTypeCards.forEach(c => c.classList.remove("selected"));
+            card.classList.add("selected");
+            selectedRole = card.querySelector("h4").innerText.trim();
+            console.log("Selected Sub-Role:", selectedRole);
+        });
+    });
+
     /* BACK BUTTON */
     if (backBtn) {
         backBtn.addEventListener("click", function () {
@@ -109,30 +120,10 @@ export function initSignup() {
 
     /* STEP 2 SUBMIT */
     if (step2NextBtn) {
-        step2NextBtn.addEventListener("click", async function () {
+        step2NextBtn.addEventListener("click", function () {
             setStep2RequestMessage("");
             if (validateStep2()) {
-                step2NextBtn.disabled = true;
-                try {
-                    await createUser(selectedRole);
-                    showRoleStep3(selectedRole);
-                } catch (error) {
-                    const message = error?.message || "We couldn't create your account. Please try again.";
-
-                    if (/email already exists/i.test(message)) {
-                        const emailInput = document.getElementById("email");
-                        clearError(emailInput);
-                        showError(emailInput, message);
-                    } else if (/username already exists/i.test(message)) {
-                        const usernameInput = document.getElementById("username");
-                        clearError(usernameInput);
-                        showError(usernameInput, message);
-                    } else {
-                        setStep2RequestMessage(message);
-                    }
-                } finally {
-                    step2NextBtn.disabled = false;
-                }
+                showRoleStep3(selectedRole);
             }
         });
     }
@@ -150,11 +141,19 @@ export function initSignup() {
     }
 
     if (step3CompleteBtn) {
-        step3CompleteBtn.addEventListener("click", function () {
+        step3CompleteBtn.addEventListener("click", async function () {
             if (!validateStep3()) return;
-            console.log("Traveler completing signup...");
-            saveTravelerPreferences();
-            showStep4();
+            step3CompleteBtn.disabled = true;
+            try {
+                await submitFullRegistration(selectedRole);
+                showStep4();
+            } catch (err) {
+                alert("Signup failed: " + err.message);
+                // Return to step 2 to show validation errors if needed
+                if (/exists|required|invalid/i.test(err.message)) showStep(2);
+            } finally {
+                step3CompleteBtn.disabled = false;
+            }
         });
     }
 
@@ -171,9 +170,18 @@ export function initSignup() {
     }
 
     if (guideCompleteBtn) {
-        guideCompleteBtn.addEventListener("click", function () {
+        guideCompleteBtn.addEventListener("click", async function () {
             if (!validateStep3()) return;
-            showStep4();
+            guideCompleteBtn.disabled = true;
+            try {
+                await submitFullRegistration(selectedRole);
+                showStep4();
+            } catch (err) {
+                alert("Signup failed: " + err.message);
+                if (/exists|required|invalid/i.test(err.message)) showStep(2);
+            } finally {
+                guideCompleteBtn.disabled = false;
+            }
         });
     }
 
@@ -188,10 +196,18 @@ export function initSignup() {
     }
 
     if (partnerCompleteBtn) {
-        partnerCompleteBtn.addEventListener("click", () => {
+        partnerCompleteBtn.addEventListener("click", async () => {
             if (!validateStep3()) return;
-            console.log("Service Partner completed signup");
-            showStep4();
+            partnerCompleteBtn.disabled = true;
+            try {
+                await submitFullRegistration(selectedRole);
+                showStep4();
+            } catch (err) {
+                alert("Signup failed: " + err.message);
+                if (/exists|required|invalid/i.test(err.message)) showStep(2);
+            } finally {
+                partnerCompleteBtn.disabled = false;
+            }
         });
     }
 
@@ -395,67 +411,124 @@ function validateStep3() {
     return isValid;
 }
 
+/* FULL REGISTRATION FLOW */
+async function submitFullRegistration(role) {
+    // 1. Create User
+    const userData = await createUser(role);
+    
+    // 2. Login to get token
+    const token = await loginUser(userData.username, document.getElementById("password").value);
+    
+    // 3. Create Profile based on role
+    await createProfile(role, token);
+}
+
 /* SAVE USER */
 async function createUser(role) {
     const name = document.getElementById("fullName").value.trim();
     const username = document.getElementById("username").value.trim();
     const email = document.getElementById("email").value.trim();
-    const phone = document.getElementById("phone").value.trim();
+    const phoneInput = document.getElementById("phone").value.trim();
     const password = document.getElementById("password").value;
+
+    const phoneVal = phoneInput.replace(/\s/g, '').replace(/-/g, '');
 
     const roleMap = {
         "Traveler": "traveller",
         "Local Guide": "guide",
-        "Service Partner": "service_partner",
         "Hotel": "hotel",
         "Experiences": "experience"
     };
     const mappedRole = roleMap[role] || "traveller";
-    try {
-        const response = await fetch("http://localhost:3000/api/auth/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password,
-                role: mappedRole
-            })
-        });
-
-        if (!response.ok) {
-            const errData = await response.json();
-            alert("Registration failed: " + (errData.message || "Unknown error"));
-            return false;
-        }
-
-        const data = await response.json();
-        
-        // Mock fallback to keep UI functional until full DB migration
-        const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
-        const allUsers = [...users, ...storedUsers];
-        const newId = generateUniqueUserId(allUsers);
-
-        const newUser = {
-            id: data.user?.userId || newId,
+    
+    const response = await fetch("http://localhost:3000/api/auth/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
             name: name,
             username: username,
             email: email,
-            phone: phone,
+            phone: phoneVal,
             password: password,
-            role: mappedRole,
-            profilePic: "",
-            status: "active"
-        };
+            role: mappedRole
+        })
+    });
 
-        saveUser(newUser);
-        console.log("User Saved to Backend and Mock Storage:", newUser);
-        return true;
-    } catch (err) {
-        console.error("Signup API error:", err);
-        alert("Network error. Make sure the backend server is running.");
-        return false;
+    const data = await response.json();
+    if (!response.ok) {
+        let msg = data.message || "Unknown error";
+        if (Array.isArray(msg)) msg = msg.join(", ");
+        throw new Error(msg);
+    }
+    
+    return { username: username, role: mappedRole };
+}
+
+/* LOGIN TO GET TOKEN */
+async function loginUser(username, password) {
+    const response = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    });
+    
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error("Failed to login after registration");
+    }
+    return data.token;
+}
+
+/* CREATE PROFILE */
+async function createProfile(role, token) {
+    // Collect specific data based on role
+    let endpoint = "";
+    let payload = {};
+
+    if (role === "Traveler") {
+        endpoint = "http://localhost:3000/api/traveller";
+        const nameParts = document.getElementById("fullName").value.trim().split(" ");
+        
+        const interests = [];
+        document.querySelectorAll(".step3-traveler-interest-card input:checked").forEach(checkbox => {
+            interests.push(checkbox.parentElement.innerText.trim().toUpperCase());
+        });
+        
+        payload = {
+            fname: nameParts[0] || "",
+            lname: nameParts.slice(1).join(" ") || "Doe",
+            email: document.getElementById("email").value.trim(),
+            phno: Number(document.getElementById("phone").value.replace(/\D/g, '')),
+            plang: ["English"],
+            bio: "New Traveler",
+            interests: interests.length ? interests : undefined
+        };
+    } else {
+        // Simplified fallback for other roles for now.
+        // In a complete implementation, gather Guide/Hotel specific inputs here.
+        console.log("Profile creation skipped for non-traveler in this demo.");
+        return;
+    }
+
+    if (endpoint) {
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            let msg = data.message || "Profile creation failed";
+            if (Array.isArray(msg)) msg = msg.join(", ");
+            console.error("Profile error:", msg);
+            // Optionally throw, or just log if profile is optional
+        }
     }
 }
 

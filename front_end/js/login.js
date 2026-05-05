@@ -30,12 +30,11 @@ export function initLogin() {
         passwordInput.addEventListener("input", () => clearError(passwordInput));
     }
 
-
     const forgotLink = document.querySelector(".forgot-link");
     if (forgotLink) {
         forgotLink.addEventListener("click", (e) => {
             e.preventDefault();
-            alert("Password reset is now managed on the backend. Please contact support until the reset API is added.");
+            alert("Password reset is managed on the backend. Please contact support.");
         });
     }
 
@@ -50,6 +49,7 @@ export function initLogin() {
 
             const usernameElement = document.getElementById("login-username");
             const passwordElement = document.getElementById("login-password");
+            const submitBtn = loginForm.querySelector("button[type='submit']");
 
             const username = usernameElement.value.trim();
             const password = passwordElement.value;
@@ -59,53 +59,34 @@ export function initLogin() {
             clearError(passwordElement);
 
             if (!username) {
-                showError(usernameElement, "Username or Email is required.");
+                showError(usernameElement, "Username is required.");
                 return;
             }
             if (!password) {
                 showError(passwordElement, "Password is required.");
                 return;
             }
-            
+
+            if (submitBtn) submitBtn.disabled = true;
+
             try {
-                const response = await fetch("http://localhost:3000/api/auth/login", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ username, password })
-                });
+                // Use the centralised service — it stores session, token and currentUser
+                const currentUser = await loginWithApi({ username, password });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    showError(passwordElement, errorData.message || "Invalid username or password.");
-                    return;
-                }
-
-                const data = await response.json();
-                
-                // Store the JWT token
-                localStorage.setItem("token", data.token);
-
-                // Preserve UI mock dependencies by merging API user with mock user data
-                const mockUser = users.find(u => u.username === username || u.email === username) || {};
-                const currentUser = {
-                    ...mockUser,
-                    id: data.user.userId,
-                    username: data.user.username,
-                    role: data.user.role.toLowerCase()
-                };
-
-                localStorage.setItem("currentUser", JSON.stringify(currentUser));
-                
-                if (currentUser.role === "traveller") {
-                    window.location.href = BASE_PATH + "/front_end/pages/traveller_dashboard.html";
+                // Redirect based on role
+                const role = (currentUser.role || "").toLowerCase();
+                if (role === "traveller") {
+                    window.location.href = "./traveller_dashboard.html";
+                } else if (role === "guide") {
+                    window.location.href = "./guide_dashboard.html";
                 } else {
-                    window.location.href = BASE_PATH + "/front_end/pages/dashboard.html";
+                    window.location.href = "./dashboard.html";
                 }
             } catch (err) {
-                console.error("Login API error:", err);
-                showError(passwordElement, "Network error. Make sure the backend server is running.");
+                console.error("Login error:", err);
+                showError(passwordElement, err.message || "Invalid username or password.");
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
             }
         });
     }
@@ -117,8 +98,8 @@ export function initLogin() {
         input.style.borderColor = "#EF4444";
         const wrapper = input.parentElement;
         let errorEl = wrapper.nextElementSibling;
-        
-        if (!errorEl || !errorEl.classList.contains('login-error-msg')) {
+
+        if (!errorEl || !errorEl.classList.contains("login-error-msg")) {
             errorEl = document.createElement("small");
             errorEl.className = "login-error-msg";
             errorEl.style.color = "#EF4444";
@@ -134,7 +115,7 @@ export function initLogin() {
         input.style.borderColor = "";
         const wrapper = input.parentElement;
         const errorEl = wrapper.nextElementSibling;
-        if (errorEl && errorEl.classList.contains('login-error-msg')) {
+        if (errorEl && errorEl.classList.contains("login-error-msg")) {
             errorEl.remove();
         }
     }

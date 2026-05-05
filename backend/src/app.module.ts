@@ -1,10 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppStateModule } from './app-state/app-state.module';
-import { AppState } from './app-state/entities/app-state.entity';
 import { AuthModule } from './auth/auth.module';
 import { TravellerModule } from './traveller/traveller.module';
 import { GuideModule } from './guide/guide.module';
@@ -17,24 +15,10 @@ import { PlansModule } from './plans/plans.module';
 import { TripsModule } from './trips/trips.module';
 import { LocationModule } from './location/location.module';
 import { CitiesModule } from './cities/cities.module';
-import { Auth } from './auth/entities/auth.entity';
-import { Hotel } from './hotels/entities/hotel.entity';
-import { Experience } from './experiences/entities/experience.entity';
-import { Plan } from './plans/entities/plan.entity';
-import { Trip } from './trips/entities/trip.entity';
-import { DatabaseSeederService } from './database/database-seeder.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: process.env.DB_PATH ?? 'data/xploreo.sqlite',
-      entities: [AppState, Auth, Hotel, Experience, Plan, Trip],
-      synchronize: true,
-      autoLoadEntities: true,
-    }),
-    TypeOrmModule.forFeature([AppState, Auth, Hotel, Experience, Plan, Trip]),
     AppStateModule,
     AuthModule,
     TravellerModule,
@@ -50,6 +34,6 @@ import { DatabaseSeederService } from './database/database-seeder.service';
     CitiesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, DatabaseSeederService],
+  providers: [AppService],
 })
 export class AppModule {}

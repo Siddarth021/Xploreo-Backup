@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AppStateModule } from './app-state/app-state.module';
 import { AuthModule } from './auth/auth.module';
 import { TravellerModule } from './traveller/traveller.module';
 import { GuideModule } from './guide/guide.module';
@@ -17,11 +16,15 @@ import { LocationModule } from './location/location.module';
 import { CitiesModule } from './cities/cities.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { ScheduleModule } from './schedule/schedule.module';
+import { GuideRequestsModule } from './guide-requests/guide-requests.module';
+import { BookingsModule } from './bookings/bookings.module';
+import { PartnersModule } from './partners/partners.module';
+import { ExperienceBookingsModule } from './experience-bookings/experience-bookings.module';
+import { TicketsModule } from './tickets/tickets.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    AppStateModule,
     AuthModule,
     TravellerModule,
     GuideModule,
@@ -34,6 +37,11 @@ import { ScheduleModule } from './schedule/schedule.module';
     TripsModule,
     ReviewsModule,
     ScheduleModule,
+    GuideRequestsModule,
+    BookingsModule,
+    PartnersModule,
+    ExperienceBookingsModule,
+    TicketsModule,
     LocationModule,
     CitiesModule,
   ],

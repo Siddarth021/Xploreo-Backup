@@ -1,0 +1,49 @@
+import { Body, Controller, Get, Param, Patch, Post, Req } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Role } from '../auth/entities/auth.entity';
+import {
+  ApiCreateEndpoint,
+  ApiProtectedResource,
+  ApiReadEndpoint,
+  ApiUpdateEndpoint,
+} from '../common/decorators/api-docs.decorator';
+import { Roles } from '../common/decorators/roles.decorator';
+import { NonEmptyStringPipe } from '../common/pipes/non-empty-string.pipe';
+import { CreateTicketDto } from './dto/create-ticket.dto';
+import { ResolveTicketDto } from './dto/resolve-ticket.dto';
+import { TicketsService } from './tickets.service';
+
+@ApiTags('Phase 3 - Support Tickets')
+@ApiProtectedResource()
+@Controller('tickets')
+export class TicketsController {
+  constructor(private readonly ticketsService: TicketsService) {}
+
+  @Post()
+  @Roles(Role.TRAVELLER_ACTOR, Role.TRAVELLER)
+  @ApiOperation({ summary: 'Traveller creates a support ticket' })
+  @ApiCreateEndpoint(CreateTicketDto)
+  create(@Body() dto: CreateTicketDto, @Req() req: any) {
+    return this.ticketsService.create(req.user?.userId, dto);
+  }
+
+  @Get()
+  @Roles(Role.TECH_ADMIN, Role.TECHADMIN)
+  @ApiOperation({ summary: 'Technical admin views all support tickets' })
+  @ApiReadEndpoint()
+  findAll() {
+    return this.ticketsService.findAll();
+  }
+
+  @Patch(':id')
+  @Roles(Role.TECH_ADMIN, Role.TECHADMIN)
+  @ApiOperation({ summary: 'Technical admin resolves a support ticket' })
+  @ApiUpdateEndpoint(ResolveTicketDto)
+  resolve(
+    @Param('id', NonEmptyStringPipe) id: string,
+    @Body() dto: ResolveTicketDto,
+    @Req() req: any,
+  ) {
+    return this.ticketsService.resolve(id, req.user?.userId, dto);
+  }
+}

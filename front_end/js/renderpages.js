@@ -1,26 +1,31 @@
 import { renderAdminDashboard } from "./adminDashboard.js";
-import { renderdasboard } from "./dashboard.js";
+import { renderGuideDashboard } from "./dashboard.js?v=frontend-ui-6";
 import { renderHotelDashboard } from "./modules/hotelDashboard.js";
-import { renderBookingsPage } from "./modules/hotel-bookings-page.js";
-import { renderServicesPage } from "./modules/hotel-services-page.js";
+import { renderBookingsPage } from "./modules/hotel-bookings-page.js?v=hotel-workflow-2";
+import { renderServicesPage } from "./modules/hotel-services-page.js?v=hotel-workflow-2";
 import { renderHotelEarningPage } from "./modules/hotel-earning-page.js";
-import { rendertourpage } from "./tours.js";
-import { renderEarningsPage } from "./earnings.js";
-import { renderReviewsPage } from "./reviews.js";
-import { renderSchedulePage } from "./schedule.js";
+import { rendertourpage } from "./tours.js?v=frontend-ui-6";
+import { renderEarningsPage } from "./earnings.js?v=frontend-ui-6";
+import { renderReviewsPage } from "./reviews.js?v=frontend-ui-6";
+import { renderSchedulePage } from "./schedule.js?v=frontend-ui-6";
 import { renderProfilePage } from "./profile.js";
 import { renderSupportPage } from "./support.js";
-import { renderGuideCrudPage, renderPlansCrudPage, renderTripsCrudPage } from "./moduleCrudPages.js";
+import {
+  renderGuideCrudPage,
+  renderPlansCrudPage,
+  renderTripsCrudPage,
+} from "./moduleCrudPages.js";
 import { initUsers } from "./modules/users.js";
 import { initFinance } from "./modules/finance.js";
-import { renderExperienceHomePage } from "./modules/experience_home.js";
-import { renderExperienceEarningsPage } from "./modules/experience_earnings.js";
-import { renderExperienceBookingsPage } from "./modules/experience_bookings.js";
-import { renderExperienceCatalogPage } from "./modules/experience_experience.js";
-import { renderExperienceProfilePage } from "./modules/experience_profile.js";
+import { renderExperienceHomePage } from "./modules/experience_home.js?v=phase2-bookings-v2";
+import { renderExperienceDashboard } from "./modules/experienceDashboard.js?v=phase2-bookings-v2";
+import { renderExperienceEarningsPage } from "./modules/experience_earnings.js?v=phase2-bookings-v2";
+import { renderExperienceBookingsPage } from "./modules/experience_bookings.js?v=phase2-bookings-v2";
+import { renderExperienceCatalogPage } from "./modules/experience_experience.js?v=phase2-bookings-v2";
+import { renderExperienceProfilePage } from "./modules/experience_profile.js?v=phase2-bookings-v2";
 import { initOperations } from "./modules/operations.js";
 import { renderTechAdminDashboard } from "./techAdminDashboard.js";
-import { initTicketManagement } from "./modules/tech_tickets.js";
+import { initTicketManagement } from "./modules/tech_tickets.js?v=phase3-tickets";
 import { initTechActivity } from "./modules/tech_activity.js";
 import { initTechLogs } from "./modules/tech_logs.js";
 import { renderTechTicketDetail } from "./modules/tech_ticket_detail.js";
@@ -28,9 +33,9 @@ import { renderNtaDashboard } from "./modules/ntaDashboard.js";
 import { initNtaPlans } from "./modules/ntaPlans.js";
 
 // Traveler modules
-import { renderTravelerDashboard } from "./modules/travelerDashboard.js";
-import { renderTravelerWishlist } from "./modules/travelerWishlist.js";
-import { renderTravelerTrips } from "./modules/travelerTrips.js";
+import { renderTravelerDashboard as renderTravellerDashboard } from "./modules/travelerDashboard.js?v=traveller-ui-6";
+import { renderTravelerWishlist } from "./modules/travelerWishlist.js?v=traveller-ui-6";
+import { renderTravelerTrips } from "./modules/travelerTrips.js?v=traveller-ui-6";
 import { renderTravelerPlanDetailPage } from "./modules/travelerPlanDetailPage.js";
 import { renderTravelerPackageSearchPage } from "./modules/travelerPackageSearchPage.js";
 import { renderTravelerHotelSearchPage } from "./modules/travelerHotelSearchPage.js";
@@ -43,157 +48,275 @@ import { renderTravelerFlightDetailPage } from "./modules/travelerFlightDetailPa
 import { renderTravelerBookingConfirmationPage } from "./modules/travelerBookingConfirmationPage.js";
 import { renderTravelerBookingDetailsPage } from "./modules/travelerBookingDetailsPage.js";
 import { initTravelerProfilePage } from "./modules/travelerProfilePage.js";
-import { renderTravelerSupportPage } from "./modules/travelerSupportPage.js";
+import { renderTravelerSupportPage } from "./modules/travelerSupportPage.js?v=phase3-tickets";
 
-import { renderTravelerExperienceSearchPage } from "./modules/travelerExperienceSearchPage.js";
-import { renderTravelerExperienceDetailPage } from "./modules/travelerExperienceDetailPage.js";
-import { renderTravelerExperienceBookingPage } from "./modules/travelerExperienceBookingPage.js";
-import { renderTravelerExperienceConfirmationPage } from "./modules/travelerExperienceConfirmationPage.js";
+import { renderTravelerExperienceSearchPage } from "./modules/travelerExperienceSearchPage.js?v=phase2-bookings-v2";
+import { renderTravelerExperienceDetailPage } from "./modules/travelerExperienceDetailPage.js?v=phase2-bookings-v2";
+import { renderTravelerExperienceBookingPage } from "./modules/travelerExperienceBookingPage.js?v=phase2-bookings-v2";
+import { renderTravelerExperienceConfirmationPage } from "./modules/travelerExperienceConfirmationPage.js?v=phase2-bookings-v2";
 import { initTripPlannerPage } from "./modules/tripPlannerPage.js";
 
-export function renderPageContent(user) {
-    const path = window.location.pathname.split("/").pop() || "dashboard.html";
+export async function renderPageContent(user) {
+  const page = window.location.pathname.split("/").pop() || "dashboard.html";
+  const role = user.role;
 
-    if (user.role === "traveller" && (path === "dashboard.html" || path === "traveller_dashboard.html" || path === "travelerDashboard.html")) {
-        renderTravelerDashboard("main", user);
-        return;
+  if (
+    user.role === "traveller" &&
+    (page === "dashboard.html" ||
+      page === "traveller_dashboard.html" ||
+      page === "travelerDashboard.html")
+  ) {
+    showOnlyDashboard("main");
+    await renderSafely("Render traveller dashboard", () =>
+      renderTravellerDashboard("main", user),
+    );
+    return;
+  }
+
+  if (
+    user.role === "traveller" &&
+    (page === "wishlist.html" || page === "traveller_wishlist.html")
+  ) {
+    await renderSafely("Render traveller wishlist", () =>
+      renderTravelerWishlist("main", user),
+    );
+    return;
+  }
+
+  if (
+    user.role === "traveller" &&
+    (page === "mytrips.html" || page === "traveller_mytrips.html")
+  ) {
+    await renderSafely("Render traveller trips", () =>
+      renderTravelerTrips("main", user),
+    );
+    return;
+  }
+
+  if (user.role === "traveller") {
+    const travelerRoutes = {
+      "traveller_plan-detail.html": renderTravelerPlanDetailPage,
+      "traveller_package-search.html": renderTravelerPackageSearchPage,
+      "traveller_hotel-search.html": renderTravelerHotelSearchPage,
+      "traveller_hotel-detail.html": renderTravelerHotelDetailPage,
+      "traveller_hotel-confirmation.html": renderTravelerHotelConfirmationPage,
+      "traveller_hotel-booking.html": renderTravelerHotelBookingPage,
+      "traveller_flights.html": renderTravelerFlightsPage,
+      "traveller_flight-search.html": renderTravelerFlightSearchPage,
+      "traveller_flight-detail.html": renderTravelerFlightDetailPage,
+      "traveller_booking-confirmation.html":
+        renderTravelerBookingConfirmationPage,
+      "traveller_booking-details.html": renderTravelerBookingDetailsPage,
+      "traveller_experience-search.html": renderTravelerExperienceSearchPage,
+      "traveller_experience-detail.html": renderTravelerExperienceDetailPage,
+      "traveller_experience-booking.html": renderTravelerExperienceBookingPage,
+      "traveller_experience-confirmation.html":
+        renderTravelerExperienceConfirmationPage,
+      "traveller_trip-planning.html": initTripPlannerPage,
+      "traveller_profile.html": initTravelerProfilePage,
+      "traveller_support.html": renderTravelerSupportPage,
+    };
+
+    if (travelerRoutes[page]) {
+      await renderSafely(`Render ${page}`, () =>
+        travelerRoutes[page]("main", user),
+      );
+      return;
     }
+  }
+  if (user.role === "guide" && page === "dashboard.html") {
+    await renderSafely("Render guide dashboard", () =>
+      renderGuideDashboard("main", user),
+    );
+    const main = document.getElementById("main");
+    const admin = document.getElementById("admin-dashboard");
+    const hotel = document.getElementById("hotel-dashboard");
+    if (main) main.style.display = "block";
+    if (admin) admin.style.display = "none";
+    if (hotel) hotel.style.display = "none";
+  } else if (user.role === "superadmin" && page === "dashboard.html") {
+    renderAdminDashboard("admin-dashboard");
+    const main = document.getElementById("main");
+    const admin = document.getElementById("admin-dashboard");
+    const hotel = document.getElementById("hotel-dashboard");
+    if (admin) admin.style.display = "block";
+    if (main) main.style.display = "none";
+    if (hotel) hotel.style.display = "none";
+    document.getElementById("tech-admin-dash").style.display = "none";
+  } else if (user.role === "superadmin" && page === "users.html") {
+    initUsers();
+  } else if (
+    (user.role === "superadmin" || user.role === "nontechadmin") &&
+    page === "guide.html"
+  ) {
+    renderGuideCrudPage("main", user);
+  } else if (
+    (user.role === "superadmin" || user.role === "nontechadmin") &&
+    page === "plans.html"
+  ) {
+    renderPlansCrudPage("main", user);
+  } else if (
+    (user.role === "superadmin" || user.role === "nontechadmin") &&
+    page === "trips.html"
+  ) {
+    renderTripsCrudPage("main", user);
+  } else if (user.role === "superadmin" && page === "opsbook.html") {
+    const mainDiv = document.getElementById("main");
+    if (mainDiv) mainDiv.style.display = "block";
+    initOperations();
+  } else if (user.role === "superadmin" && page === "finance.html") {
+    const adminDash = document.getElementById("admin-dashboard");
+    if (adminDash) adminDash.style.display = "none";
 
-    if (user.role === "traveller" && (path === "wishlist.html" || path === "traveller_wishlist.html")) {
-        renderTravelerWishlist("main", user);
-        return;
-    }
+    const mainDiv = document.getElementById("main");
+    if (mainDiv) mainDiv.style.display = "block";
 
-    if (user.role === "traveller" && (path === "mytrips.html" || path === "traveller_mytrips.html")) {
-        renderTravelerTrips("main", user);
-        return;
-    }
+    initFinance();
+  } else if (
+    (role === "techadmin" || role === "TECH_ADMIN") &&
+    page === "dashboard.html"
+  ) {
+    renderTechAdminDashboard("tech-admin-dash");
+    document.getElementById("tech-admin-dash").style.display = "block";
+  } else if (
+    (role === "techadmin" || role === "TECH_ADMIN") &&
+    page === "tech_tickets.html"
+  ) {
+    initTicketManagement();
+  } else if (
+    (role === "techadmin" || role === "TECH_ADMIN") &&
+    page === "tech_ticket_detail.html"
+  ) {
+    renderTechTicketDetail("main");
+  } else if (
+    (role === "techadmin" || role === "TECH_ADMIN") &&
+    page === "tech_activity.html"
+  ) {
+    initTechActivity();
+  } else if (
+    (role === "techadmin" || role === "TECH_ADMIN") &&
+    page === "tech_logs.html"
+  ) {
+    initTechLogs();
+  } else if (user.role === "guide" && page === "tours.html") {
+    rendertourpage("main", user);
+  } else if (user.role === "guide" && page === "earnings.html") {
+    renderEarningsPage("main", user);
+  } else if (user.role === "guide" && page === "reviews.html") {
+    renderReviewsPage("main", user);
+  } else if (user.role === "guide" && page === "schedule.html") {
+    renderSchedulePage("main", user);
+  } else if (
+    (user.role === "guide" ||
+      user.role === "experience" ||
+      user.role === "EXPERIENCE_PARTNER" ||
+      role === "techadmin" ||
+      role === "TECH_ADMIN" ||
+      user.role === "nontechadmin") &&
+    page === "profile.html"
+  ) {
+    renderProfilePage("main", user);
+  } else if (
+    (user.role === "guide" ||
+      user.role === "hotel" ||
+      user.role === "experience" ||
+      user.role === "EXPERIENCE_PARTNER") &&
+    page === "support.html"
+  ) {
+    renderSupportPage("main", user);
+  } else if (
+    (role === "hotel" || role === "PARTNER") &&
+    (page === "dashboard.html" || page === "hotelDashboard.html")
+  ) {
+    renderHotelDashboard(user);
+    const main = document.getElementById("main");
+    const admin = document.getElementById("admin-dashboard");
+    const hotel = document.getElementById("hotel-dashboard");
+    if (main) main.style.display = "none";
+    if (admin) admin.style.display = "none";
+    if (hotel) hotel.style.display = "block";
+  } else if (
+    (role === "hotel" || role === "PARTNER") &&
+    page === "hotelBookings.html"
+  ) {
+    await renderSafely("Render hotel partner bookings", () =>
+      renderBookingsPage("main", user),
+    );
+  } else if (
+    (role === "hotel" || role === "PARTNER") &&
+    page === "hotelRooms.html"
+  ) {
+    await renderSafely("Render hotel partner services", () =>
+      renderServicesPage("main", user),
+    );
+  } else if (
+    (role === "hotel" || role === "PARTNER") &&
+    page === "hotelEarning.html"
+  ) {
+    renderHotelEarningPage();
+  } else if (
+    (role === "experience" || role === "EXPERIENCE_PARTNER") &&
+    page === "dashboard.html"
+  ) {
+    showOnlyDashboard("experience-dashboard");
+    await renderSafely("Render experience dashboard", () =>
+      renderExperienceDashboard("experience-dashboard", user),
+    );
+  } else if (
+    (role === "experience" || role === "EXPERIENCE_PARTNER") &&
+    page === "experience_home.html"
+  ) {
+    await renderSafely("Render experience home", () =>
+      renderExperienceHomePage("main", user),
+    );
+  } else if (
+    (role === "experience" || role === "EXPERIENCE_PARTNER") &&
+    page === "experience_earnings.html"
+  ) {
+    renderExperienceEarningsPage();
+  } else if (
+    (role === "experience" || role === "EXPERIENCE_PARTNER") &&
+    page === "experience_bookings.html"
+  ) {
+    renderExperienceBookingsPage();
+  } else if (
+    (role === "experience" || role === "EXPERIENCE_PARTNER") &&
+    page === "experience_experience.html"
+  ) {
+    renderExperienceCatalogPage();
+  } else if (
+    (role === "experience" || role === "EXPERIENCE_PARTNER") &&
+    page === "experience_profile.html"
+  ) {
+    renderExperienceProfilePage();
+  } else if (
+    user.role === "nontechadmin" &&
+    (page === "dashboard.html" || page === "nta_dashboard.html")
+  ) {
+    renderNtaDashboard("nta-dashboard");
+  } else if (user.role === "nontechadmin" && page === "nta_plans.html") {
+    initNtaPlans();
+  }
+}
 
-    if (user.role === "traveller") {
-        const travelerRoutes = {
-            "traveller_plan-detail.html": renderTravelerPlanDetailPage,
-            "traveller_package-search.html": renderTravelerPackageSearchPage,
-            "traveller_hotel-search.html": renderTravelerHotelSearchPage,
-            "traveller_hotel-detail.html": renderTravelerHotelDetailPage,
-            "traveller_hotel-confirmation.html": renderTravelerHotelConfirmationPage,
-            "traveller_hotel-booking.html": renderTravelerHotelBookingPage,
-            "traveller_flights.html": renderTravelerFlightsPage,
-            "traveller_flight-search.html": renderTravelerFlightSearchPage,
-            "traveller_flight-detail.html": renderTravelerFlightDetailPage,
-            "traveller_booking-confirmation.html": renderTravelerBookingConfirmationPage,
-            "traveller_booking-details.html": renderTravelerBookingDetailsPage,
-            "traveller_experience-search.html": renderTravelerExperienceSearchPage,
-            "traveller_experience-detail.html": renderTravelerExperienceDetailPage,
-            "traveller_experience-booking.html": renderTravelerExperienceBookingPage,
-            "traveller_experience-confirmation.html": renderTravelerExperienceConfirmationPage,
-            "traveller_trip-planning.html": initTripPlannerPage,
-            "traveller_profile.html": initTravelerProfilePage,
-            "traveller_support.html": renderTravelerSupportPage
-        };
+async function renderSafely(label, renderFn) {
+  try {
+    await renderFn();
+  } catch (error) {
+    console.error(`${label} failed:`, error);
+  }
+}
 
-        if (travelerRoutes[path]) {
-            travelerRoutes[path]("main");
-            return;
-        }
-    }
-    if (user.role === "guide" && path === "dashboard.html") {
-        renderdasboard("main", user);
-        const main = document.getElementById("main");
-        const admin = document.getElementById("admin-dashboard");
-        const hotel = document.getElementById("hotel-dashboard");
-        if (main) main.style.display = "block";
-        if (admin) admin.style.display = "none";
-        if (hotel) hotel.style.display = "none";
-
-    } else if (user.role === "superadmin" && path === "dashboard.html") {
-        renderAdminDashboard("admin-dashboard");
-        const main = document.getElementById("main");
-        const admin = document.getElementById("admin-dashboard");
-        const hotel = document.getElementById("hotel-dashboard");
-        if (admin) admin.style.display = "block";
-        if (main) main.style.display = "none";
-        if (hotel) hotel.style.display = "none";
-        document.getElementById("tech-admin-dash").style.display = "none";
-
-    } else if (user.role === "superadmin" && path === "users.html") {
-        initUsers();
-
-    } else if ((user.role === "superadmin" || user.role === "nontechadmin") && path === "guide.html") {
-        renderGuideCrudPage("main", user);
-    } else if ((user.role === "superadmin" || user.role === "nontechadmin") && path === "plans.html") {
-        renderPlansCrudPage("main", user);
-    } else if ((user.role === "superadmin" || user.role === "nontechadmin") && path === "trips.html") {
-        renderTripsCrudPage("main", user);
-    } else if (user.role === "superadmin" && path === "opsbook.html") {
-        const mainDiv = document.getElementById("main");
-        if (mainDiv) mainDiv.style.display = "block";
-        initOperations();
-    }
-    else if (user.role === "superadmin" && path === "finance.html") {
-        const adminDash = document.getElementById("admin-dashboard");
-        if (adminDash) adminDash.style.display = "none";
-
-        const mainDiv = document.getElementById("main");
-        if (mainDiv) mainDiv.style.display = "block";
-
-        initFinance();
-    } else if (user.role === "techadmin" && path === "dashboard.html") {
-        renderTechAdminDashboard("tech-admin-dash");
-        document.getElementById("tech-admin-dash").style.display = "block";
-    } else if (user.role === "techadmin" && path === "tech_tickets.html") {
-        initTicketManagement();
-    } else if (user.role === "techadmin" && path === "tech_ticket_detail.html") {
-        renderTechTicketDetail("main");
-    } else if (user.role === "techadmin" && path === "tech_activity.html") {
-        initTechActivity();
-    } else if (user.role === "techadmin" && path === "tech_logs.html") {
-        initTechLogs();
-    } else if (user.role === "guide" && path === "tours.html") {
-        rendertourpage("main", user);
-    } else if (user.role === "guide" && path === "earnings.html") {
-        renderEarningsPage("main", user);
-    } else if (user.role === "guide" && path === "reviews.html") {
-        renderReviewsPage("main", user);
-    } else if (user.role === "guide" && path === "schedule.html") {
-        renderSchedulePage("main", user);
-    } else if ((user.role === "guide" || user.role === "experience" || user.role === "techadmin" || user.role === "nontechadmin") && path === "profile.html") {
-        renderProfilePage("main", user);
-    } else if ((user.role === "guide" || user.role === "hotel" || user.role === "experience") && path === "support.html") {
-        renderSupportPage("main", user);
-    } else if (user.role === "hotel" && (path === "dashboard.html" || path === "hotelDashboard.html")) {
-        renderHotelDashboard(user);
-        const main = document.getElementById("main");
-        const admin = document.getElementById("admin-dashboard");
-        const hotel = document.getElementById("hotel-dashboard");
-        if (main) main.style.display = "none";
-        if (admin) admin.style.display = "none";
-        if (hotel) hotel.style.display = "block";
-    } else if (user.role === "hotel" && path === "hotelBookings.html") {
-        renderBookingsPage();
-    } else if (user.role === "hotel" && path === "hotelRooms.html") {
-        renderServicesPage();
-    } else if (user.role === "hotel" && path === "hotelEarning.html") {
-        renderHotelEarningPage();
-    } else if (user.role === "experience" && path === "dashboard.html") {
-        renderExperienceHomePage();
-        document.getElementById("experience-dashboard").style.display = "block";
-        document.getElementById("admin-dashboard").style.display = "none";
-        document.getElementById("main").style.display = "none";
-        document.getElementById("hotel-dashboard").style.display = "none";
-        document.getElementById("tech-admin-dash").style.display = "none";
-    } else if (user.role === "experience" && path === "experience_home.html") {
-        renderExperienceHomePage();
-    } else if (user.role === "experience" && path === "experience_earnings.html") {
-        renderExperienceEarningsPage();
-    } else if (user.role === "experience" && path === "experience_bookings.html") {
-        renderExperienceBookingsPage();
-    } else if (user.role === "experience" && path === "experience_experience.html") {
-        renderExperienceCatalogPage();
-    } else if (user.role === "experience" && path === "experience_profile.html") {
-        renderExperienceProfilePage();
-    } else if (user.role === "nontechadmin" && (path === "dashboard.html" || path === "nta_dashboard.html")) {
-        renderNtaDashboard("nta-dashboard");
-    } else if (user.role === "nontechadmin" && path === "nta_plans.html") {
-        initNtaPlans();
-    }
+function showOnlyDashboard(activeId) {
+  [
+    "main",
+    "admin-dashboard",
+    "hotel-dashboard",
+    "tech-admin-dash",
+    "nta-dashboard",
+    "experience-dashboard",
+  ].forEach((id) => {
+    const element = document.getElementById(id);
+    if (element) element.style.display = id === activeId ? "block" : "none";
+  });
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { City } from './entities/city.entity';
-import { v4 as uuidv4 } from 'uuid';
+import { createId } from '../common/utils/id';
 
 @Injectable()
 export class CitiesRepository {
@@ -13,7 +13,7 @@ export class CitiesRepository {
   ];
 
   create(data: Omit<City, 'id'>): City {
-    const city: City = { id: uuidv4(), ...data };
+    const city: City = { id: createId(), ...data };
     this.cities.push(city);
     return city;
   }

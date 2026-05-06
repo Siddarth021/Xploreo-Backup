@@ -4,13 +4,10 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import * as jwt from 'jsonwebtoken';
 import { AuthRepository } from './auth.repository';
 import { RegisterDto } from './dto/create-auth.dto';
 import { LoginDto } from './dto/login.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-
-const JWT_SECRET = 'XPLOREO_SECRET_KEY';
 
 @Injectable()
 export class AuthService {
@@ -39,25 +36,19 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const user = await this.authRepository.findByUsername(dto.username);
+    const user =
+      this.authRepository.findByUsername(dto.username) ??
+      this.authRepository.findByEmail(dto.username);
     if (!user || user.password !== dto.password) {
       throw new UnauthorizedException('Invalid username or password');
     }
 
-    // Sign a proper JWT that the AuthGuard can verify
-    const token = jwt.sign(
-      { userId: user.userId, role: user.role },
-      JWT_SECRET,
-      { expiresIn: '24h' },
-    );
-
     const { password: _pw, ...safe } = user;
     return {
-      token,
       user: safe,
       headers: {
         'x-user-id': user.userId,
-        'x-user-role': user.role,
+        'x-user-role': toApiHeaderRole(user.role),
       },
     };
   }
@@ -86,4 +77,10 @@ export class AuthService {
     if (!deleted) throw new NotFoundException(`User ${id} not found`);
     return { message: `User ${id} deleted` };
   }
+}
+
+function toApiHeaderRole(role: string): string {
+  if (role === 'traveller') return 'TRAVELLER';
+  if (role === 'hotel') return 'PARTNER';
+  return role;
 }

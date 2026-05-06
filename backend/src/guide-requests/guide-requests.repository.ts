@@ -24,6 +24,9 @@ export class GuideRequestsRepository {
       tripId: data.tripId!,
       experienceId: data.experienceId!,
       guideId: data.guideId || undefined,
+      travellerName: data.travellerName,
+      destination: data.destination,
+      itinerarySummary: data.itinerarySummary || [],
       status: data.status || GuideRequestStatus.PENDING,
     };
 

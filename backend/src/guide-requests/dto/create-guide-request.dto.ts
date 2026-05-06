@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateGuideRequestDto {
   @ApiProperty({ example: 'traveller-123' })
@@ -13,4 +13,9 @@ export class CreateGuideRequestDto {
   @ApiProperty({ example: 'exp-1' })
   @IsString()
   experienceId!: string;
+
+  @ApiProperty({ example: '10001', required: false })
+  @IsOptional()
+  @IsString()
+  guideId?: string;
 }

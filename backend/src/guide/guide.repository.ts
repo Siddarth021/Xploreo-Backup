@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Guide } from './entities/guide.entity';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class GuideRepository {
   private guides: Guide[] = [
     {
-      userId: 'seed-guide-1',
-      fname: 'Ali',
-      lname: 'Khan',
-      email: 'ali@xploreo.com',
+      userId: '10001',
+      fname: 'Sreekar',
+      lname: 'K',
+      email: 'sreekar@gmail.com',
       phone: 9876543210,
       location: 'loc-mumbai-1',
       prof_title: 'Senior Trek Guide',

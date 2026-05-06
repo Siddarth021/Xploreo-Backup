@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Nontechadmin } from './entities/nontechadmin.entity';
-import { v4 as uuidv4 } from 'uuid';
+import { createId } from '../common/utils/id';
 
 @Injectable()
 export class NontechadminRepository {
@@ -9,7 +9,7 @@ export class NontechadminRepository {
   ];
 
   create(data: Omit<Nontechadmin, 'adminId'>): Nontechadmin {
-    const admin: Nontechadmin = { adminId: uuidv4(), ...data };
+    const admin: Nontechadmin = { adminId: createId(), ...data };
     this.admins.push(admin);
     return admin;
   }

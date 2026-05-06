@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Superadmin } from './entities/superadmin.entity';
-import { v4 as uuidv4 } from 'uuid';
+import { createId } from '../common/utils/id';
 
 @Injectable()
 export class SuperadminRepository {
@@ -9,7 +9,7 @@ export class SuperadminRepository {
   ];
 
   create(data: Omit<Superadmin, 'adminId'>): Superadmin {
-    const admin: Superadmin = { adminId: uuidv4(), ...data };
+    const admin: Superadmin = { adminId: createId(), ...data };
     this.admins.push(admin);
     return admin;
   }

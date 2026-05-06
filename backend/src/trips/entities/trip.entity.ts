@@ -1,47 +1,31 @@
+import { StructuredItinerary } from '../../common/entities/itinerary.entity';
+
 export enum TripStatus {
-  UPCOMING = 'upcoming',
-  ONGOING = 'ongoing',
+  DRAFT = 'draft',
+  CONFIRMED = 'confirmed',
+  STARTED = 'started',
   COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
 }
 
-export enum TripType {
-  PACKAGE = 'package',
-  HOTEL = 'hotel',
-  EXPERIENCE = 'experience',
-  FLIGHT = 'flight',
+export enum TripTrackingStatus {
+  NOT_STARTED = 'not_started',
+  ONGOING = 'ongoing',
+  PAUSED = 'paused',
+  COMPLETED = 'completed',
 }
 
 export class Trip {
   id!: string;
   travellerId!: string;
-  guideId!: string;
   planId!: string;
-  title!: string;
-  destination!: string;
-  location!: string;
-  startDate!: string;
-  endDate!: string;
+  guideId?: string;
   status!: TripStatus;
-  amount!: number;
-  guests!: number;
-  durationLabel!: string;
-  type!: TripType;
-  itinerary!: Array<{
-    day: string;
-    title: string;
-    detail: string;
-  }>;
-  currentLocation!: string | null;
-  paymentBreakdown!: {
-    flights: number;
-    stay: number;
-    activities: number;
-    guide: number;
-  };
-  documents!: Array<{
-    id: string;
-    title: string;
-    status: string;
-  }>;
+  itinerary!: StructuredItinerary;
+  totalAmount!: number;
+  currentDay!: number;
+  currentStop!: string;
+  currentLocation!: string;
+  trackingStatus!: TripTrackingStatus;
+  progressPercentage!: number;
+  lastUpdatedAt!: string;
 }

@@ -6,56 +6,101 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation,ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ExperiencesService } from './experiences.service';
 import { CreateExperienceDto } from './dto/create-experience.dto';
 import { UpdateExperienceDto } from './dto/update-experience.dto';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../auth/entities/auth.entity';
+import { NonEmptyStringPipe } from '../common/pipes/non-empty-string.pipe';
+import {
+  ApiProtectedResource,
+  ApiCreateEndpoint,
+  ApiUpdateEndpoint,
+  ApiReadEndpoint,
+  ApiDeleteEndpoint,
+} from '../common/decorators/api-docs.decorator';
 
 @ApiTags('Experiences')
-@ApiBearerAuth()
+@ApiProtectedResource()
+@Roles(
+  Role.TRAVELLER,
+  Role.GUIDE,
+  Role.SUPERADMIN,
+  Role.NONTECHADMIN,
+  Role.EXPERIENCE,
+  Role.TRAVELLER_ACTOR,
+  Role.EXPERIENCE_PARTNER,
+)
 @Controller('experiences')
 export class ExperiencesController {
   constructor(private readonly experiencesService: ExperiencesService) {}
 
-  @Roles(Role.SUPERADMIN, Role.NONTECHADMIN, Role.EXPERIENCE)
+  @Roles(
+    Role.SUPERADMIN,
+    Role.NONTECHADMIN,
+    Role.EXPERIENCE,
+    Role.EXPERIENCE_PARTNER,
+  )
   @Post()
   @ApiOperation({ summary: 'Create an experience' })
-  create(@Body() dto: CreateExperienceDto) {
-    return this.experiencesService.create(dto);
+  @ApiCreateEndpoint(CreateExperienceDto)
+  @ApiBody({ type: CreateExperienceDto })
+  @ApiResponse({ status: 201, description: 'Experience created' })
+  @ApiResponse({ status: 400, description: 'Invalid experience payload' })
+  @ApiResponse({
+    status: 403,
+    description: 'Missing or unauthorized role header',
+  })
+  create(@Body() dto: CreateExperienceDto, @Req() req: any) {
+    return this.experiencesService.create(req.user?.userId, dto);
   }
 
   @Get()
+  @Roles(Role.TRAVELLER_ACTOR, Role.TRAVELLER, Role.EXPERIENCE_PARTNER)
   @ApiOperation({ summary: 'Get all experiences' })
-  findAll() {
+  @ApiReadEndpoint()
+  findAll(@Req() req: any) {
+    if (req.user?.role === Role.EXPERIENCE_PARTNER) {
+      return this.experiencesService.findForPartner(req.user?.userId);
+    }
+
     return this.experiencesService.findAll();
   }
 
   @Get('location/:locationId')
   @ApiOperation({ summary: 'Get experiences by location' })
-  findByLocation(@Param('locationId') locationId: string) {
+  @ApiReadEndpoint()
+  findByLocation(@Param('locationId', NonEmptyStringPipe) locationId: string) {
     return this.experiencesService.findByLocation(locationId);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get experience by ID' })
-  findOne(@Param('id') id: string) {
+  @ApiReadEndpoint()
+  findOne(@Param('id', NonEmptyStringPipe) id: string) {
     return this.experiencesService.findOne(id);
   }
 
   @Roles(Role.SUPERADMIN, Role.NONTECHADMIN, Role.EXPERIENCE)
   @Patch(':id')
   @ApiOperation({ summary: 'Update an experience' })
-  update(@Param('id') id: string, @Body() dto: UpdateExperienceDto) {
+  @ApiUpdateEndpoint(UpdateExperienceDto)
+  @ApiBody({ type: UpdateExperienceDto })
+  update(
+    @Param('id', NonEmptyStringPipe) id: string,
+    @Body() dto: UpdateExperienceDto,
+  ) {
     return this.experiencesService.update(id, dto);
   }
 
   @Roles(Role.SUPERADMIN)
   @Delete(':id')
   @ApiOperation({ summary: 'Delete an experience' })
-  remove(@Param('id') id: string) {
+  @ApiDeleteEndpoint()
+  remove(@Param('id', NonEmptyStringPipe) id: string) {
     return this.experiencesService.remove(id);
   }
 }

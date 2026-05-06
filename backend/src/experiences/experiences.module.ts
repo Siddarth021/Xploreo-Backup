@@ -7,6 +7,6 @@ import { ExperiencesRepository } from './experiences.repository';
   imports: [],
   controllers: [ExperiencesController],
   providers: [ExperiencesService, ExperiencesRepository],
-  exports: [ExperiencesRepository],
+  exports: [ExperiencesService, ExperiencesRepository],
 })
 export class ExperiencesModule {}

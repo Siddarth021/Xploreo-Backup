@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ExperiencesRepository } from './experiences.repository';
 import { CreateExperienceDto } from './dto/create-experience.dto';
 import { UpdateExperienceDto } from './dto/update-experience.dto';
@@ -7,12 +11,35 @@ import { UpdateExperienceDto } from './dto/update-experience.dto';
 export class ExperiencesService {
   constructor(private readonly expRepository: ExperiencesRepository) {}
 
-  create(dto: CreateExperienceDto) {
-    return this.expRepository.create(dto);
+  create(partnerId: string | undefined, dto: CreateExperienceDto) {
+    if (!partnerId) {
+      throw new ForbiddenException(
+        'x-user-id header is required for EXPERIENCE_PARTNER',
+      );
+    }
+
+    return this.expRepository.create(partnerId, {
+      ...dto,
+      availability: dto.availability ?? undefined,
+      booked: dto.booked ?? 0,
+      image: dto.image ?? '',
+      nextSlot: dto.nextSlot ?? '',
+      slots: dto.slots ?? [],
+    });
   }
 
   findAll() {
     return this.expRepository.findAll();
+  }
+
+  findForPartner(partnerId: string | undefined) {
+    if (!partnerId) {
+      throw new ForbiddenException(
+        'x-user-id header is required for EXPERIENCE_PARTNER',
+      );
+    }
+
+    return this.expRepository.findByPartnerId(partnerId);
   }
 
   async findOne(id: string) {

@@ -1,32 +1,19 @@
 import {
   IsArray,
   IsBoolean,
+  IsDefined,
   IsNumber,
+  IsOptional,
   IsString,
   Min,
-  ValidateNested,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-
-class PlanItineraryItemDto {
-  @ApiProperty()
-  @IsString()
-  day!: string;
-
-  @ApiProperty()
-  @IsString()
-  title!: string;
-
-  @ApiProperty()
-  @IsString()
-  detail!: string;
-}
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreatePlanDto {
-  @ApiProperty({ example: 'plan-kyoto-cultural-escape' })
+  @ApiPropertyOptional({ example: 'plan-kyoto-cultural-escape' })
+  @IsOptional()
   @IsString()
-  id!: string;
+  id?: string;
 
   @ApiProperty({ example: 'Kyoto Cultural Escape' })
   @IsString()
@@ -36,45 +23,96 @@ export class CreatePlanDto {
   @IsString()
   description!: string;
 
-  @ApiProperty({ example: 'Hyderabad' })
+  @ApiPropertyOptional({
+    example: 'Hyderabad',
+    description: 'Traveller-facing source city. Alias of originCity.',
+  })
+  @IsOptional()
   @IsString()
-  originCity!: string;
+  from?: string;
+
+  @ApiPropertyOptional({ example: 'Hyderabad' })
+  @IsOptional()
+  @IsString()
+  originCity?: string;
 
   @ApiProperty({ example: 'Kyoto, Japan' })
   @IsString()
   destination!: string;
 
-  @ApiProperty({ example: 5 })
+  @ApiPropertyOptional({
+    example: 5,
+    description: 'Package duration in nights. Alias of durationNights.',
+  })
+  @IsOptional()
   @IsNumber()
   @Min(1)
-  durationNights!: number;
+  duration?: number;
 
-  @ApiProperty({ example: 251000 })
+  @ApiPropertyOptional({ example: 5 })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  durationNights?: number;
+
+  @ApiPropertyOptional({
+    example: 251000,
+    description: 'Package price per traveller. Alias of pricePerPerson.',
+  })
+  @IsOptional()
   @IsNumber()
   @Min(0)
-  pricePerPerson!: number;
+  price?: number;
 
-  @ApiProperty({ example: 5 })
+  @ApiPropertyOptional({ example: 251000 })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  pricePerPerson?: number;
+
+  @ApiPropertyOptional({ example: 5 })
+  @IsOptional()
   @IsNumber()
   @Min(1)
-  hotelStars!: number;
+  hotelStars?: number;
 
-  @ApiProperty({ example: true })
+  @ApiPropertyOptional({ example: true })
+  @IsOptional()
   @IsBoolean()
-  includesFlight!: boolean;
+  includesFlight?: boolean;
 
-  @ApiProperty({ example: 'https://images.unsplash.com/photo-1528164344705-47542687000d' })
+  @ApiPropertyOptional({
+    example: 'https://images.unsplash.com/photo-1528164344705-47542687000d',
+  })
+  @IsOptional()
   @IsString()
-  image!: string;
+  image?: string;
 
-  @ApiProperty({ example: ['Culture', 'Luxury', 'Guided'] })
+  @ApiPropertyOptional({ example: ['Culture', 'Luxury', 'Guided'] })
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  tags!: string[];
+  tags?: string[];
 
-  @ApiProperty({ type: [PlanItineraryItemDto] })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => PlanItineraryItemDto)
-  itinerary!: PlanItineraryItemDto[];
+  @ApiProperty({
+    oneOf: [
+      {
+        type: 'object',
+        description: 'Structured itinerary object with day1 and days.',
+      },
+      {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            day: { type: 'string', example: 'Day 1' },
+            title: { type: 'string', example: 'Arrival and hotel check-in' },
+            detail: { type: 'string', example: 'Transfer and evening walk.' },
+          },
+        },
+      },
+    ],
+  })
+  @IsDefined()
+  itinerary!: unknown;
 }

@@ -12,10 +12,6 @@ export function setupSwagger(app: INestApplication) {
     .setDescription(configJson.info.description)
     .setVersion(configJson.info.version);
 
-  if (configJson.components?.securitySchemes?.bearer) {
-    builder.addBearerAuth();
-  }
-
   const document = SwaggerModule.createDocument(app, builder.build());
   SwaggerModule.setup('api/docs', app, document);
 }

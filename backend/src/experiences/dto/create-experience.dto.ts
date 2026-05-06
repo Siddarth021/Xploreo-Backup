@@ -1,12 +1,14 @@
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsNumber,
+  IsOptional,
   IsString,
   Min,
   ValidateNested,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   ExperienceAvailability,
@@ -37,19 +39,24 @@ class ExperienceSlotDto {
   capacity!: number;
 
   @ApiProperty()
+  @IsBoolean()
   available!: boolean;
 }
 
 export class CreateExperienceDto {
-  @ApiProperty({ example: 'exp-sunset-walk' })
+  @ApiPropertyOptional({ example: 'exp-sunset-walk' })
+  @IsOptional()
   @IsString()
-  id!: string;
+  id?: string;
 
   @ApiProperty({ example: 'Sunset Beach Photography Walk' })
   @IsString()
   title!: string;
 
-  @ApiProperty({ example: 'Golden-hour guided walk for photographers and first-time visitors.' })
+  @ApiProperty({
+    example:
+      'Golden-hour guided walk for photographers and first-time visitors.',
+  })
   @IsString()
   description!: string;
 
@@ -57,13 +64,20 @@ export class CreateExperienceDto {
   @IsString()
   destination!: string;
 
-  @ApiProperty({ enum: ExperienceCategory, example: ExperienceCategory.PHOTOGRAPHY })
+  @ApiProperty({
+    enum: ExperienceCategory,
+    example: ExperienceCategory.PHOTOGRAPHY,
+  })
   @IsEnum(ExperienceCategory)
   category!: ExperienceCategory;
 
-  @ApiProperty({ enum: ExperienceAvailability, example: ExperienceAvailability.AVAILABLE })
+  @ApiPropertyOptional({
+    enum: ExperienceAvailability,
+    example: ExperienceAvailability.AVAILABLE,
+  })
+  @IsOptional()
   @IsEnum(ExperienceAvailability)
-  availability!: ExperienceAvailability;
+  availability?: ExperienceAvailability;
 
   @ApiProperty({ example: 75 })
   @IsNumber()
@@ -80,22 +94,28 @@ export class CreateExperienceDto {
   @Min(1)
   capacity!: number;
 
-  @ApiProperty({ example: 8 })
+  @ApiPropertyOptional({ example: 8 })
+  @IsOptional()
   @IsNumber()
   @Min(0)
-  booked!: number;
+  booked?: number;
 
-  @ApiProperty({ example: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e' })
+  @ApiPropertyOptional({
+    example: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
+  })
+  @IsOptional()
   @IsString()
-  image!: string;
+  image?: string;
 
-  @ApiProperty({ example: '10:00 AM' })
+  @ApiPropertyOptional({ example: '2026-07-12 10:00 AM' })
+  @IsOptional()
   @IsString()
-  nextSlot!: string;
+  nextSlot?: string;
 
-  @ApiProperty({ type: [ExperienceSlotDto] })
+  @ApiPropertyOptional({ type: [ExperienceSlotDto] })
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ExperienceSlotDto)
-  slots!: ExperienceSlotDto[];
+  slots?: ExperienceSlotDto[];
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Location } from './entities/location.entity';
-import { v4 as uuidv4 } from 'uuid';
+import { createId } from '../common/utils/id';
 
 @Injectable()
 export class LocationRepository {
@@ -13,7 +13,7 @@ export class LocationRepository {
   ];
 
   create(data: Omit<Location, 'locationId'>): Location {
-    const loc: Location = { locationId: uuidv4(), ...data };
+    const loc: Location = { locationId: createId(), ...data };
     this.locations.push(loc);
     return loc;
   }

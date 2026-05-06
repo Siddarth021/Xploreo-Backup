@@ -10,5 +10,8 @@ export class GuideRequest {
   tripId!: string;
   experienceId!: string;
   guideId?: string;
+  travellerName?: string;
+  destination?: string;
+  itinerarySummary?: string[];
   status!: GuideRequestStatus;
 }

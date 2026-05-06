@@ -1,4 +1,9 @@
 export enum AppRole {
+  PARTNER = 'PARTNER',
+  TRAVELLER_ACTOR = 'TRAVELLER',
+  ADMIN = 'ADMIN',
+  TECH_ADMIN = 'TECH_ADMIN',
+  EXPERIENCE_PARTNER = 'EXPERIENCE_PARTNER',
   SUPERADMIN = 'superadmin',
   TRAVELLER = 'traveller',
   GUIDE = 'guide',
@@ -30,7 +35,6 @@ export interface AuthLoginRequest {
 }
 
 export interface AuthLoginResponse {
-  token: string;
   user: AppUser;
   headers: {
     'x-user-id': string;
@@ -79,6 +83,59 @@ export interface ExperienceRecord {
   slots: ExperienceSlot[];
 }
 
+export interface ItineraryFlightRecord {
+  id: string;
+  airline: string;
+  flightNumber: string;
+  fromAirport: string;
+  toAirport: string;
+  departureAt: string;
+  arrivalAt: string;
+  status: 'planned' | 'confirmed' | 'cancelled';
+}
+
+export interface ItineraryTransportRecord {
+  id: string;
+  provider: string;
+  vehicleType: string;
+  pickupLocation: string;
+  dropoffLocation: string;
+  pickupAt: string;
+  status: 'planned' | 'confirmed' | 'cancelled';
+}
+
+export interface ItineraryHotelRecord {
+  id: string;
+  hotelId: string;
+  name: string;
+  checkInDate: string;
+  checkOutDate: string;
+  roomType: string;
+  status: 'planned' | 'confirmed' | 'cancelled';
+}
+
+export interface ItineraryExperienceRecord {
+  id: string;
+  experienceId: string;
+  title: string;
+  location: string;
+  startsAt: string;
+  endsAt: string;
+  status: 'planned' | 'confirmed' | 'cancelled';
+}
+
+export interface StructuredItineraryRecord {
+  day1: {
+    flight?: ItineraryFlightRecord | null;
+    transport: ItineraryTransportRecord;
+    hotel: ItineraryHotelRecord;
+  };
+  days: Array<{
+    dayNumber: number;
+    experiences: ItineraryExperienceRecord[];
+  }>;
+}
+
 export interface PlanRecord {
   id: string;
   title: string;
@@ -91,43 +148,24 @@ export interface PlanRecord {
   includesFlight: boolean;
   image: string;
   tags: string[];
-  itinerary: Array<{
-    day: string;
-    title: string;
-    detail: string;
-  }>;
+  itinerary: StructuredItineraryRecord;
 }
 
 export interface TripRecord {
   id: string;
   travellerId: string;
-  guideId: string;
   planId: string;
-  title: string;
-  destination: string;
-  location: string;
-  startDate: string;
-  endDate: string;
-  status: 'upcoming' | 'completed' | 'cancelled' | 'ongoing';
-  amount: number;
-  guests: number;
-  durationLabel: string;
-  type: 'package' | 'hotel' | 'experience' | 'flight';
-  itinerary: Array<{
-    day: string;
-    title: string;
-    detail: string;
-  }>;
-  currentLocation: string | null;
-  paymentBreakdown: {
-    flights: number;
-    stay: number;
-    activities: number;
-    guide: number;
-  };
-  documents: Array<{
-    id: string;
-    title: string;
-    status: string;
-  }>;
+  guideId?: string;
+  status: 'draft' | 'confirmed' | 'started' | 'completed';
+  itinerary: StructuredItineraryRecord;
+  totalAmount: number;
+}
+
+export interface GuideRequestRecord {
+  id: string;
+  travellerId: string;
+  tripId: string;
+  experienceId: string;
+  guideId?: string;
+  status: 'pending' | 'accepted' | 'rejected';
 }

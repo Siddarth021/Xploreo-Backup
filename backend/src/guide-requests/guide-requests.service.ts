@@ -37,6 +37,10 @@ export class GuideRequestsService {
       travellerId: dto.travellerId,
       tripId: dto.tripId,
       experienceId: dto.experienceId,
+      guideId: dto.guideId,
+      travellerName: dto.travellerId,
+      destination: trip.itinerary?.day1?.transport?.dropoffLocation,
+      itinerarySummary: this.buildItinerarySummary(trip),
       status: GuideRequestStatus.PENDING,
     });
   }
@@ -103,5 +107,21 @@ export class GuideRequestsService {
     const deleted = this.repository.delete(id);
     if (!deleted) throw new NotFoundException(`Guide request ${id} not found`);
     return { message: `Guide request ${id} deleted` };
+  }
+
+  private buildItinerarySummary(trip: ReturnType<TripsService['findOne']>): string[] {
+    const day1 = trip.itinerary?.day1;
+    const items = [
+      day1?.flight
+        ? `Flight ${day1.flight.flightNumber}: ${day1.flight.fromAirport} to ${day1.flight.toAirport}`
+        : 'No flight selected',
+      day1?.hotel ? `Hotel: ${day1.hotel.name}` : 'No hotel selected',
+      ...(trip.itinerary?.days || []).flatMap((day) =>
+        (day.experiences || []).map(
+          (experience) => `Day ${day.dayNumber}: ${experience.title}`,
+        ),
+      ),
+    ];
+    return items;
   }
 }

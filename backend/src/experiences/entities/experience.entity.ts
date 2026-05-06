@@ -14,6 +14,7 @@ export enum ExperienceAvailability {
 
 export class Experience {
   id!: string;
+  partnerId!: string;
   title!: string;
   description!: string;
   destination!: string;

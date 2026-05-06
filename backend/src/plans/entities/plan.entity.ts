@@ -1,3 +1,5 @@
+import { StructuredItinerary } from '../../common/entities/itinerary.entity';
+
 export class Plan {
   id!: string;
   title!: string;
@@ -10,9 +12,5 @@ export class Plan {
   includesFlight!: boolean;
   image!: string;
   tags!: string[];
-  itinerary!: Array<{
-    day: string;
-    title: string;
-    detail: string;
-  }>;
+  itinerary!: StructuredItinerary;
 }

@@ -1,14 +1,86 @@
 import { Injectable } from '@nestjs/common';
-import { Auth } from './entities/auth.entity';
-import { v4 as uuidv4 } from 'uuid';
+import { Auth, Role } from './entities/auth.entity';
+import { createId } from '../common/utils/id';
 
 @Injectable()
 export class AuthRepository {
-  private users: Auth[] = [];
+  private users: Auth[] = [
+    {
+      userId: '20001',
+      username: 'anjali_s',
+      password: 'anjali@123',
+      role: 'traveller' as Auth['role'],
+      name: 'Anjali Sharma',
+      email: 'anjali@xploreo.com',
+      phone: '9123456780',
+      status: 'active',
+    },
+
+    {
+      userId: '10001',
+      username: 'sreekar_k',
+      password: 'sreekar',
+      role: 'guide' as Auth['role'],
+      name: 'Sreekar',
+      email: 'sreekar@gmail.com',
+      phone: '9876543210',
+      status: 'active',
+    },
+    {
+      userId: '00001',
+      username: 'rahul_v',
+      password: 'rahul@123',
+      role: 'superadmin' as Auth['role'],
+      name: 'Rahul Varma',
+      email: 'rahul@xploreo.com',
+      phone: '9876543210',
+      status: 'active',
+    },
+    {
+      userId: 'TA0001',
+      username: 'TA001',
+      password: 'rahul@123',
+      role: 'techadmin' as Auth['role'],
+      name: 'Rahul Varma',
+      email: 'rahul@xploreo.com',
+      phone: '9876543210',
+      status: 'active',
+    },
+    {
+      userId: 'NTA0001',
+      username: 'nontech_admin',
+      password: 'admin@123',
+      role: Role.NONTECHADMIN,
+      name: 'Neha Mehra',
+      email: 'nontech.admin@xploreo.com',
+      phone: '9000000003',
+      status: 'active',
+    },
+    {
+      userId: 'partner-1',
+      username: 'hotel_partner',
+      password: 'partner@123',
+      role: Role.PARTNER,
+      name: 'Xploreo Hotel Partner',
+      email: 'hotel.partner@xploreo.com',
+      phone: '9000000001',
+      status: 'active',
+    },
+    {
+      userId: 'experience-partner-1',
+      username: 'experience_partner',
+      password: 'experience@123',
+      role: Role.EXPERIENCE_PARTNER,
+      name: 'Xploreo Experience Partner',
+      email: 'experience.partner@xploreo.com',
+      phone: '9000000002',
+      status: 'active',
+    },
+  ];
 
   create(data: Partial<Auth>): Auth {
     const user: Auth = {
-      userId: data.userId || uuidv4(),
+      userId: data.userId || createId(),
       username: data.username!,
       password: data.password!,
       role: data.role!,

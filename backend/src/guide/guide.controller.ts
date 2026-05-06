@@ -8,15 +8,30 @@ import {
   Delete,
   Req,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth} from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { GuideService } from './guide.service';
 import { CreateGuideDto } from './dto/create-guide.dto';
 import { UpdateGuideDto } from './dto/update-guide.dto';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../auth/entities/auth.entity';
+import { NonEmptyStringPipe } from '../common/pipes/non-empty-string.pipe';
+import {
+  ApiProtectedResource,
+  ApiCreateEndpoint,
+  ApiUpdateEndpoint,
+  ApiReadEndpoint,
+  ApiDeleteEndpoint,
+} from '../common/decorators/api-docs.decorator';
 
 @ApiTags('Guide')
-@ApiBearerAuth()
+@ApiProtectedResource()
+@Roles(
+  Role.TRAVELLER,
+  Role.TRAVELLER_ACTOR,
+  Role.GUIDE,
+  Role.SUPERADMIN,
+  Role.NONTECHADMIN,
+)
 @Controller('guide')
 export class GuideController {
   constructor(private readonly guideService: GuideService) {}
@@ -24,6 +39,7 @@ export class GuideController {
   @Roles(Role.SUPERADMIN, Role.NONTECHADMIN)
   @Post()
   @ApiOperation({ summary: 'Create a guide profile' })
+  @ApiCreateEndpoint(CreateGuideDto)
   create(@Req() req: any, @Body() dto: CreateGuideDto) {
     const userId = req.user.userId;
     return this.guideService.create(userId, dto);
@@ -31,33 +47,41 @@ export class GuideController {
 
   @Get()
   @ApiOperation({ summary: 'Get all guides' })
+  @ApiReadEndpoint()
   findAll() {
     return this.guideService.findAll();
   }
 
   @Get('location/:locationId')
   @ApiOperation({ summary: 'Get guides by location' })
-  findByLocation(@Param('locationId') locationId: string) {
+  @ApiReadEndpoint()
+  findByLocation(@Param('locationId', NonEmptyStringPipe) locationId: string) {
     return this.guideService.findByLocation(locationId);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get guide by ID' })
-  findOne(@Param('id') id: string) {
+  @ApiReadEndpoint()
+  findOne(@Param('id', NonEmptyStringPipe) id: string) {
     return this.guideService.findOne(id);
   }
 
   @Roles(Role.SUPERADMIN, Role.NONTECHADMIN, Role.GUIDE)
   @Patch(':id')
   @ApiOperation({ summary: 'Update a guide profile' })
-  update(@Param('id') id: string, @Body() dto: UpdateGuideDto) {
+  @ApiUpdateEndpoint(UpdateGuideDto)
+  update(
+    @Param('id', NonEmptyStringPipe) id: string,
+    @Body() dto: UpdateGuideDto,
+  ) {
     return this.guideService.update(id, dto);
   }
 
   @Roles(Role.SUPERADMIN)
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a guide' })
-  remove(@Param('id') id: string) {
+  @ApiDeleteEndpoint()
+  remove(@Param('id', NonEmptyStringPipe) id: string) {
     return this.guideService.remove(id);
   }
 }

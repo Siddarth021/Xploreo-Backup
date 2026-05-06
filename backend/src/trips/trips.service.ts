@@ -1,22 +1,53 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { TripsRepository } from './trips.repository';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { StructuredItinerary } from '../common/entities/itinerary.entity';
+import { mergeStructuredItineraryPatch } from '../common/utils/itinerary-mapper';
+import { PlansRepository } from '../plans/plans.repository';
 import { CreateTripDto } from './dto/create-trip.dto';
+import { UpdateTripTrackingDto } from './dto/update-trip-tracking.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
+import { Trip, TripStatus, TripTrackingStatus } from './entities/trip.entity';
+import { TripsRepository } from './trips.repository';
 
 @Injectable()
 export class TripsService {
-  constructor(private readonly tripsRepository: TripsRepository) {}
+  constructor(
+    private readonly tripsRepository: TripsRepository,
+    private readonly plansRepository: PlansRepository,
+  ) {}
 
   create(dto: CreateTripDto) {
-    return this.tripsRepository.create(dto);
+    const plan = this.plansRepository.findById(dto.planId);
+    if (!plan) throw new NotFoundException(`Plan ${dto.planId} not found`);
+
+    const itinerary = dto.itinerary || plan.itinerary;
+
+    return this.tripsRepository.create({
+      id: dto.id,
+      travellerId: dto.travellerId,
+      planId: dto.planId,
+      status: TripStatus.DRAFT,
+      itinerary,
+      totalAmount: this.calculateTotalAmount(itinerary, plan.pricePerPerson),
+      currentDay: 1,
+      currentStop: 'Not started',
+      currentLocation: itinerary.day1?.transport?.pickupLocation || plan.originCity,
+      trackingStatus: TripTrackingStatus.NOT_STARTED,
+      progressPercentage: 0,
+      lastUpdatedAt: new Date().toISOString(),
+    });
   }
 
   findAll() {
     return this.tripsRepository.findAll();
   }
 
-  async findOne(id: string) {
-    const trip = await this.tripsRepository.findById(id);
+  findOne(id: string) {
+    const trip = this.tripsRepository.findById(id);
     if (!trip) throw new NotFoundException(`Trip ${id} not found`);
     return trip;
   }
@@ -29,15 +60,146 @@ export class TripsService {
     return this.tripsRepository.findByGuide(guideId);
   }
 
-  async update(id: string, dto: UpdateTripDto) {
-    const updated = await this.tripsRepository.update(id, dto);
+  update(id: string, dto: UpdateTripDto, actor?: { userId?: string; role?: string }) {
+    const trip = this.findOne(id);
+    const plan = this.plansRepository.findById(trip.planId);
+    if (!plan) throw new NotFoundException(`Plan ${trip.planId} not found`);
+
+    if (dto.status) {
+      this.assertStatusTransition(trip, dto.status, actor);
+    }
+
+    if (dto.guideId && actor?.role === 'guide' && dto.guideId !== actor.userId) {
+      throw new ForbiddenException('Guide can only assign their own guideId');
+    }
+
+    const itinerary = dto.itinerary
+      ? mergeStructuredItineraryPatch(trip.itinerary, dto.itinerary)
+      : trip.itinerary;
+
+    const updated = this.tripsRepository.update(id, {
+      guideId: dto.guideId ?? trip.guideId,
+      status: dto.status ?? trip.status,
+      itinerary,
+      totalAmount: dto.totalAmount ?? this.calculateTotalAmount(itinerary, plan.pricePerPerson),
+    });
+
     if (!updated) throw new NotFoundException(`Trip ${id} not found`);
     return updated;
   }
 
-  async remove(id: string) {
-    const deleted = await this.tripsRepository.delete(id);
+  assignGuide(tripId: string, guideId: string): Trip {
+    const trip = this.findOne(tripId);
+    const updated = this.tripsRepository.update(trip.id, {
+      guideId,
+      status: TripStatus.CONFIRMED,
+    });
+    if (!updated) throw new NotFoundException(`Trip ${tripId} not found`);
+    return updated;
+  }
+
+  updateTracking(
+    id: string,
+    dto: UpdateTripTrackingDto,
+    actor?: { userId?: string; role?: string },
+  ) {
+    const trip = this.findOne(id);
+    const role = actor?.role;
+    const isAdmin = role === 'superadmin' || role === 'nontechadmin';
+    const isAssignedGuide = role === 'guide' && trip.guideId === actor?.userId;
+
+    if (!isAdmin && !isAssignedGuide) {
+      throw new ForbiddenException('Only the assigned guide can update tracking');
+    }
+
+    const trackingStatus = dto.trackingStatus ?? trip.trackingStatus;
+    const progressPercentage =
+      trackingStatus === TripTrackingStatus.COMPLETED
+        ? 100
+        : dto.progressPercentage ?? trip.progressPercentage;
+
+    const status =
+      trackingStatus === TripTrackingStatus.COMPLETED
+        ? TripStatus.COMPLETED
+        : trackingStatus === TripTrackingStatus.ONGOING
+          ? TripStatus.STARTED
+          : trip.status;
+
+    const updated = this.tripsRepository.update(id, {
+      status,
+      currentDay: dto.currentDay ?? trip.currentDay,
+      currentStop: dto.currentStop ?? trip.currentStop,
+      currentLocation: dto.currentLocation ?? trip.currentLocation,
+      trackingStatus,
+      progressPercentage,
+      lastUpdatedAt: new Date().toISOString(),
+    });
+
+    if (!updated) throw new NotFoundException(`Trip ${id} not found`);
+    return updated;
+  }
+
+  experienceExistsOnTrip(tripId: string, experienceId: string): boolean {
+    const trip = this.findOne(tripId);
+    return trip.itinerary.days.some((day) =>
+      day.experiences.some((experience) => experience.experienceId === experienceId),
+    );
+  }
+
+  remove(id: string) {
+    const deleted = this.tripsRepository.delete(id);
     if (!deleted) throw new NotFoundException(`Trip ${id} not found`);
     return { message: `Trip ${id} deleted` };
+  }
+
+  private calculateTotalAmount(itinerary: StructuredItinerary, basePrice: number): number {
+    const flightAmount = itinerary.day1.flight ? 12000 : 0;
+    const hotelAmount = itinerary.day1.hotel ? 18000 : 0;
+    const experienceAmount = itinerary.days.reduce(
+      (sum, day) => sum + day.experiences.length * 3500,
+      0,
+    );
+
+    return Math.max(basePrice, flightAmount + hotelAmount + experienceAmount);
+  }
+
+  private assertStatusTransition(
+    trip: Trip,
+    status: TripStatus,
+    actor?: { userId?: string; role?: string },
+  ) {
+    if (status === trip.status) return;
+
+    const allowedTransitions: Record<TripStatus, TripStatus[]> = {
+      [TripStatus.DRAFT]: [TripStatus.CONFIRMED],
+      [TripStatus.CONFIRMED]: [TripStatus.STARTED],
+      [TripStatus.STARTED]: [TripStatus.COMPLETED],
+      [TripStatus.COMPLETED]: [],
+    };
+
+    if (!allowedTransitions[trip.status].includes(status)) {
+      throw new BadRequestException(
+        `Invalid trip status transition from ${trip.status} to ${status}`,
+      );
+    }
+
+    if (
+      status === TripStatus.CONFIRMED &&
+      (actor?.role === 'traveller' || actor?.role === 'TRAVELLER')
+    ) {
+      if (trip.travellerId !== actor.userId) {
+        throw new ForbiddenException('Traveller can only confirm their own trip');
+      }
+      return;
+    }
+
+    if (status === TripStatus.STARTED || status === TripStatus.COMPLETED) {
+      if (actor?.role !== 'guide') {
+        throw new ForbiddenException('Only guides can progress assigned trips');
+      }
+      if (!trip.guideId || trip.guideId !== actor.userId) {
+        throw new ForbiddenException('Guide is not assigned to this trip');
+      }
+    }
   }
 }

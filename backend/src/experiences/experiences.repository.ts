@@ -4,13 +4,14 @@ import {
   ExperienceCategory,
   ExperienceAvailability,
 } from './entities/experience.entity';
-import { v4 as uuidv4 } from 'uuid';
+import { createId } from '../common/utils/id';
 
 @Injectable()
 export class ExperiencesRepository {
   private experiences: Experience[] = [
     {
       id: 'exp-1',
+      partnerId: 'experience-partner-seed',
       title: 'Western Ghats Trek',
       description: 'A guided trek through the lush Western Ghats forest trail.',
       destination: 'Coorg',
@@ -35,9 +36,10 @@ export class ExperiencesRepository {
     },
   ];
 
-  create(data: Partial<Experience>): Experience {
+  create(partnerId: string, data: Partial<Experience>): Experience {
     const exp: Experience = {
-      id: data.id || uuidv4(),
+      id: data.id || createId(),
+      partnerId,
       title: data.title!,
       description: data.description!,
       destination: data.destination!,
@@ -52,33 +54,44 @@ export class ExperiencesRepository {
       slots: data.slots ?? [],
     };
     this.experiences.push(exp);
-    return exp;
+    return cloneExperience(exp);
   }
 
   findAll(): Experience[] {
-    return [...this.experiences].sort((a, b) => a.title.localeCompare(b.title));
+    return [...this.experiences]
+      .sort((a, b) => a.title.localeCompare(b.title))
+      .map(cloneExperience);
   }
 
   findById(id: string): Experience | undefined {
-    return this.experiences.find((e) => e.id === id);
+    const experience = this.experiences.find((e) => e.id === id);
+    return experience ? cloneExperience(experience) : undefined;
+  }
+
+  findByPartnerId(partnerId: string): Experience[] {
+    return this.experiences
+      .filter((experience) => experience.partnerId === partnerId)
+      .map(cloneExperience);
   }
 
   findByLocation(locationId: string): Experience[] {
     const q = locationId.toLowerCase();
-    return this.experiences.filter((e) =>
-      e.destination.toLowerCase().includes(q),
-    );
+    return this.experiences
+      .filter((e) => e.destination.toLowerCase().includes(q))
+      .map(cloneExperience);
   }
 
   findByCategory(category: ExperienceCategory): Experience[] {
-    return this.experiences.filter((e) => e.category === category);
+    return this.experiences
+      .filter((e) => e.category === category)
+      .map(cloneExperience);
   }
 
   update(id: string, data: Partial<Experience>): Experience | undefined {
     const idx = this.experiences.findIndex((e) => e.id === id);
     if (idx === -1) return undefined;
     this.experiences[idx] = { ...this.experiences[idx], ...data };
-    return this.experiences[idx];
+    return cloneExperience(this.experiences[idx]);
   }
 
   delete(id: string): boolean {
@@ -87,4 +100,11 @@ export class ExperiencesRepository {
     this.experiences.splice(idx, 1);
     return true;
   }
+}
+
+function cloneExperience(experience: Experience): Experience {
+  return {
+    ...experience,
+    slots: experience.slots.map((slot) => ({ ...slot })),
+  };
 }

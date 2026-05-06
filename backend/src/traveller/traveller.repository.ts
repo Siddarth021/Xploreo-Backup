@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Traveller, Interest } from './entities/traveller.entity';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class TravellerRepository {
   private travellers: Traveller[] = [
     {
-      userId: 'seed-traveller-1',
-      fname: 'Sara',
-      lname: 'Patel',
-      email: 'sara@xploreo.com',
-      phno: 9123456789,
+      userId: '20001',
+      fname: 'Anjali',
+      lname: 'Sharma',
+      email: 'anjali@xploreo.com',
+      phno: 9123456780,
       plang: ['English', 'Gujarati'],
       bio: 'Loves exploring local cultures and street food',
       interests: [Interest.FOOD, Interest.CULTURE],

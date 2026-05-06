@@ -127,8 +127,16 @@ export function deleteGuideRequest(id) {
 /* ===================================================
    HOTELS
 =================================================== */
-export function fetchHotels() {
-  return apiGet(API_ENDPOINTS.hotels);
+export function fetchHotels(params = {}) {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(
+      ([, value]) => value !== undefined && value !== "",
+    ),
+  ).toString();
+  const url = query ? `${API_ENDPOINTS.hotels}?${query}` : API_ENDPOINTS.hotels;
+  return apiGet(url).then((response) =>
+    Array.isArray(response) ? response : [],
+  );
 }
 
 export function fetchHotel(id) {

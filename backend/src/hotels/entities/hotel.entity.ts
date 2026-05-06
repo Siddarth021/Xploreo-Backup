@@ -1,5 +1,6 @@
 export class Hotel {
   id!: string;
+  partnerId!: string;
   name!: string;
   city!: string;
   location!: string;
@@ -12,4 +13,5 @@ export class Hotel {
   image!: string;
   amenities!: string[];
   status!: 'active' | 'inactive';
+  createdAt!: Date;
 }

@@ -1,0 +1,76 @@
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { HotelsRepository } from '../hotels/hotels.repository';
+import { CreateBookingDto } from './dto/create-booking.dto';
+import { BookingsRepository } from './bookings.repository';
+
+@Injectable()
+export class BookingsService {
+  constructor(
+    private readonly bookingsRepository: BookingsRepository,
+    private readonly hotelsRepository: HotelsRepository,
+  ) {}
+
+  create(travellerId: string | undefined, dto: CreateBookingDto) {
+    if (!travellerId) {
+      throw new ForbiddenException(
+        'x-user-id header is required for TRAVELLER',
+      );
+    }
+
+    const hotel = this.hotelsRepository.findById(dto.hotelId);
+    if (!hotel || hotel.status !== 'active') {
+      throw new NotFoundException(`Hotel ${dto.hotelId} not found`);
+    }
+
+    const checkIn = new Date(`${dto.checkIn}T00:00:00.000Z`);
+    const checkOut = new Date(`${dto.checkOut}T00:00:00.000Z`);
+    if (Number.isNaN(checkIn.getTime()) || Number.isNaN(checkOut.getTime())) {
+      throw new BadRequestException('Invalid check-in or check-out date');
+    }
+    if (checkOut <= checkIn) {
+      throw new BadRequestException('checkOut must be after checkIn');
+    }
+
+    const nights = Math.ceil(
+      (checkOut.getTime() - checkIn.getTime()) / 86_400_000,
+    );
+    const totalAmount = nights * (hotel.pricePerNight + hotel.taxesAndFees);
+
+    const booking = this.bookingsRepository.create({
+      hotelId: hotel.id,
+      travellerId,
+      guestName: dto.guestName,
+      email: dto.email,
+      phone: dto.phone,
+      checkIn: dto.checkIn,
+      checkOut: dto.checkOut,
+      guests: dto.guests,
+      roomType: dto.roomType,
+      notes: dto.notes,
+      totalAmount,
+    });
+
+    return { ...booking, hotel };
+  }
+
+  findForPartner(partnerId: string | undefined) {
+    if (!partnerId) {
+      throw new ForbiddenException('x-user-id header is required for PARTNER');
+    }
+
+    const partnerHotels = this.hotelsRepository.findByPartnerId(partnerId);
+    const hotelById = new Map(partnerHotels.map((hotel) => [hotel.id, hotel]));
+
+    return this.bookingsRepository
+      .findByHotelIds(partnerHotels.map((hotel) => hotel.id))
+      .map((booking) => ({
+        ...booking,
+        hotel: hotelById.get(booking.hotelId),
+      }));
+  }
+}

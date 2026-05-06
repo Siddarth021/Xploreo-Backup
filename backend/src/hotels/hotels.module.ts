@@ -7,6 +7,6 @@ import { HotelsRepository } from './hotels.repository';
   imports: [],
   controllers: [HotelsController],
   providers: [HotelsService, HotelsRepository],
-  exports: [HotelsRepository],
+  exports: [HotelsService, HotelsRepository],
 })
 export class HotelsModule {}

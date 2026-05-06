@@ -1,387 +1,250 @@
-let selectedStatus = "active";
-let editServiceId = null;
-let uploadedImages = [];
-let selectedThumbnail = null;
-let selectedServiceId = null;
+import { fetchPartnerHotels } from "../api/services.js?v=hotel-workflow-2";
+import {
+  getApiBaseUrl,
+  getApiSession,
+} from "../api/session.js?v=hotel-workflow-2";
 
-/* =========================
-RENDER SERVICES
-========================= */
-export function renderServicesPage() {
-    const container = document.getElementById("service-grid");
-    if (!container) return;
+const DEFAULT_IMAGE =
+  "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=900";
 
-    const services = JSON.parse(localStorage.getItem("hotelServices")) || [];
+export async function renderServicesPage(containerId = "main") {
+  const root =
+    document.getElementById(containerId) || document.getElementById("main");
+  if (!root) return;
 
-    if (services.length === 0) {
-        container.innerHTML = `
-            <div class="hotel-empty">
-                <p>No services added yet</p>
-                <button class="btn-blue" onclick="openServiceModal()">+ Add Service</button>
-            </div>
-        `;
-        return;
-    }
+  root.innerHTML = renderShell("Loading hotel services...");
+  const hotels = await fetchPartnerHotels().catch((error) => {
+    console.error("Failed to load partner hotels:", error);
+    return [];
+  });
 
-    container.innerHTML = services.map(service => {
-
-        const statusClass = service.status === "active" ? "active" : "inactive";
-        const statusText = service.status === "active" ? "Active" : "Inactive";
-
-        const imageSrc = service.thumbnail
-            ? service.thumbnail
-            : "../components/ui/dashboard.png";
-
-        return `
-        <div class="hotel-service-card">
-
-            <div class="hotel-service-header">
-                <img src="${imageSrc}" class="hotel-service-img"/>
-
-                <div>
-                    <h3>${service.name}</h3>
-                    <span class="hotel-status ${statusClass}">
-                        ${statusText}
-                    </span>
-                </div>
-            </div>
-
-            <div class="hotel-service-info">
-
-                <div>
-                    <p class="hotel-sub-text">Price per Night</p>
-                    <h4>$${service.price}</h4>
-                </div>
-
-                <div>
-                    <p class="hotel-sub-text">Capacity</p>
-                    <h4>${service.capacity} guests</h4>
-                </div>
-
-                <div>
-                    <p class="hotel-sub-text">Rooms Available</p>
-                    <h4>${service.availableRooms} / ${service.totalRooms}</h4>
-                </div>
-
-            </div>
-
-            <div class="hotel-service-actions">
-                <button class="btn-light" onclick="editService(${service.id})">Edit</button>
-                <button class="btn-blue" onclick="openAvailabilityModal(${service.id})">Manage Availability</button>
-            </div>
-
-        </div>
-        `;
-    }).join("");
+  render(root, hotels);
 }
 
-/* =========================
-MODAL OPEN / CLOSE
-========================= */
-window.openServiceModal = function () {
-    const modal = document.getElementById("add-service-modal");
-    if (modal) modal.classList.remove("hidden");
-};
+function render(root, hotels) {
+  root.innerHTML = `
+    <div class="hotel-page-header hotel-flex-header">
+      <div>
+        <h1>Services</h1>
+        <p>Manage your hotel offerings from the backend catalogue</p>
+      </div>
+      <button class="btn-blue" id="open-service-modal" type="button">+ Add Hotel</button>
+    </div>
 
-window.closeServiceModal = function () {
-    const modal = document.getElementById("add-service-modal");
+    <section class="hotel-content-card hotel-summary-strip">
+      <div><span>Total Hotels</span><strong>${hotels.length}</strong></div>
+      <div><span>Active</span><strong>${hotels.filter((hotel) => hotel.status === "active").length}</strong></div>
+      <div><span>Total Bookable Rooms</span><strong>${hotels.length * 10}</strong></div>
+    </section>
 
-    if (modal) modal.classList.add("hidden");
+    <div id="service-grid">
+      ${
+        hotels.length
+          ? hotels.map(renderHotelCard).join("")
+          : `<div class="hotel-empty-state"><h2>No hotels yet</h2><p>Add your first hotel so travellers can find and book it.</p></div>`
+      }
+    </div>
 
-    editServiceId = null;
+    ${renderModal()}
+  `;
 
-    // RESET INPUTS
-    document.getElementById("serviceName").value = "";
-    document.getElementById("servicePrice").value = "";
-    document.getElementById("serviceCapacity").value = "";
-    document.getElementById("serviceTotal").value = "";
+  bindEvents(root);
+}
 
-    // RESET IMAGES
-    uploadedImages = [];
-    selectedThumbnail = null;
+function renderShell(message) {
+  return `
+    <div class="hotel-page-header hotel-flex-header">
+      <div>
+        <h1>Services</h1>
+        <p>Manage your hotel offerings</p>
+      </div>
+    </div>
+    <div class="hotel-content-card">${escapeHtml(message)}</div>
+  `;
+}
 
-    renderImagePreview();
+function renderHotelCard(hotel) {
+  return `
+    <article class="hotel-service-card">
+      <div class="hotel-service-header">
+        <img src="${escapeHtmlAttr(hotel.image || DEFAULT_IMAGE)}" class="hotel-service-img" alt="${escapeHtmlAttr(hotel.name)}">
+        <div>
+          <h2>${escapeHtml(hotel.name)}</h2>
+          <p>${escapeHtml(hotel.city)} · ${escapeHtml(hotel.location)}</p>
+        </div>
+        <span class="hotel-status">${escapeHtml(hotel.status)}</span>
+      </div>
+      <div class="hotel-service-info">
+        <span>${Number(hotel.stars || 0)} star hotel</span>
+        <span>₹${Number(hotel.pricePerNight || 0).toLocaleString()} / night</span>
+        <span>₹${Number(hotel.taxesAndFees || 0).toLocaleString()} taxes & fees</span>
+        <span>${(hotel.amenities || []).join(", ") || "No amenities listed"}</span>
+      </div>
+      <p class="hotel-service-desc">${escapeHtml(hotel.description || "")}</p>
+    </article>
+  `;
+}
 
-    // RESET TITLE
-    const modalTitle = document.querySelector(".hotel-modal-header h2");
-    if (modalTitle) modalTitle.innerText = "Add Service";
-};
+function renderModal() {
+  return `
+    <div id="add-service-modal" class="hotel-modal hidden">
+      <div class="hotel-modal-box">
+        <div class="hotel-modal-header">
+          <h2>Add Hotel</h2>
+          <button class="hotel-modal-close-btn" id="close-service-modal" type="button">x</button>
+        </div>
+        <form id="hotel-service-form" class="hotel-modal-body" novalidate>
+          <div class="hotel-form-grid">
+            ${field("hotelName", "Hotel Name", "Xploreo Beach Resort")}
+            ${field("hotelCity", "City", "Goa")}
+            ${field("hotelLocation", "Location", "Calangute Beach, Goa")}
+            ${field("hotelStars", "Stars", "5", "number", "1", "5")}
+            ${field("hotelPrice", "Price per Night", "4800", "number", "0")}
+            ${field("hotelTaxes", "Taxes & Fees", "650", "number", "0")}
+          </div>
+          <label>Description</label>
+          <textarea id="hotelDescription" placeholder="Beachfront hotel with pool, breakfast, and WiFi."></textarea>
+          <label>Amenities</label>
+          <input id="hotelAmenities" type="text" placeholder="Pool, Breakfast, WiFi">
+          <label>Image URL</label>
+          <input id="hotelImage" type="url" placeholder="${DEFAULT_IMAGE}">
+          <p class="hotel-form-error" id="hotel-form-error"></p>
+          <div class="hotel-modal-footer">
+            <button class="btn-light" id="cancel-service-modal" type="button">Cancel</button>
+            <button class="btn-blue" type="submit">Save Hotel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+}
 
+function field(id, label, placeholder, type = "text", min = "", max = "") {
+  return `
+    <div>
+      <label for="${id}">${escapeHtml(label)}</label>
+      <input id="${id}" type="${type}" placeholder="${escapeHtmlAttr(placeholder)}" ${min ? `min="${min}"` : ""} ${max ? `max="${max}"` : ""}>
+    </div>
+  `;
+}
 
-/* =========================
-STATUS TOGGLE
-========================= */
-window.setStatus = function(status) {
-    selectedStatus = status;
+function bindEvents(root) {
+  const modal = root.querySelector("#add-service-modal");
+  root.querySelector("#open-service-modal")?.addEventListener("click", () => {
+    modal?.classList.remove("hidden");
+  });
+  root.querySelector("#close-service-modal")?.addEventListener("click", () => {
+    modal?.classList.add("hidden");
+  });
+  root.querySelector("#cancel-service-modal")?.addEventListener("click", () => {
+    modal?.classList.add("hidden");
+  });
 
-    const activeBtn = document.getElementById("statusActive");
-    const inactiveBtn = document.getElementById("statusInactive");
+  root
+    .querySelector("#hotel-service-form")
+    ?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const error = root.querySelector("#hotel-form-error");
+      if (error) error.textContent = "";
 
-    if (!activeBtn || !inactiveBtn) return;
-
-    activeBtn.classList.remove("active");
-    inactiveBtn.classList.remove("active");
-
-    if (status === "active") {
-        activeBtn.classList.add("active");
-    } else {
-        inactiveBtn.classList.add("active");
-    }
-};
-
-/* =========================
-SAVE SERVICE
-========================= */
-window.saveService = function () {
-
-    const name = document.getElementById("serviceName")?.value.trim();
-    const price = Number(document.getElementById("servicePrice")?.value);
-    const capacity = Number(document.getElementById("serviceCapacity")?.value);
-    const total = Number(document.getElementById("serviceTotal")?.value);
-
-    // Check empty / invalid
-    if (!name || isNaN(price) || isNaN(capacity) || isNaN(total)) {
-        alert("Fill all fields correctly");
+      const payload = readHotelPayload();
+      const validationError = validateHotelPayload(payload);
+      if (validationError) {
+        if (error) error.textContent = validationError;
         return;
-    }
+      }
 
-    // 🚫 BLOCK NEGATIVE VALUES
-    if (price < 0 || capacity < 0 || total < 0) {
-        alert("Negative values are not allowed");
-        return;
-    }
-
-    let services = JSON.parse(localStorage.getItem("hotelServices")) || [];
-
-    if (editServiceId) {
-
-        services = services.map(s =>
-            s.id === editServiceId
-                ? {
-                    ...s,
-                    name,
-                    price,
-                    capacity,
-                    totalRooms: total,
-                    status: selectedStatus,
-                    images: uploadedImages.length ? uploadedImages : s.images,
-                    thumbnail: selectedThumbnail || s.thumbnail
-                }
-                : s
-        );
-
-        editServiceId = null;
-
-    } else {
-
-        const newService = {
-            id: Date.now(),
-            name,
-            price,
-            capacity,
-            totalRooms: total,
-            availableRooms: total,
-            status: selectedStatus,
-            images: uploadedImages,
-            thumbnail: selectedThumbnail
-        };
-
-        services.push(newService);
-    }
-
-    localStorage.setItem("hotelServices", JSON.stringify(services));
-
-    closeServiceModal();
-    renderServicesPage();
-};
-window.addEventListener("DOMContentLoaded", () => {
-    const numberInputs = ["servicePrice", "serviceCapacity", "serviceTotal"];
-
-    numberInputs.forEach(id => {
-        const input = document.getElementById(id);
-
-        if (!input) return;
-
-        input.addEventListener("keydown", (e) => {
-            if (e.key === "-" || e.key === "e") {
-                e.preventDefault();
-            }
-        });
-
-        input.addEventListener("input", () => {
-            if (input.value < 0) {
-                input.value = 0;
-            }
-        });
-    });
-});
-/* =========================
-EDIT (PLACEHOLDER FOR NEXT)
-========================= */
-window.editService = function(id) {
-
-    const services = JSON.parse(localStorage.getItem("hotelServices")) || [];
-    const service = services.find(s => s.id === id);
-
-    if (!service) return;
-
-    editServiceId = id;
-
-    // PREFILL FIELDS
-    document.getElementById("serviceName").value = service.name;
-    document.getElementById("servicePrice").value = service.price;
-    document.getElementById("serviceCapacity").value = service.capacity;
-    document.getElementById("serviceTotal").value = service.totalRooms;
-
-    // STATUS
-    selectedStatus = service.status;
-    setStatus(service.status);
-
-    // IMAGES
-    uploadedImages = service.images || [];
-    selectedThumbnail = service.thumbnail || null;
-
-    renderImagePreview();
-
-    // CHANGE TITLE
-    const modalTitle = document.querySelector(".hotel-modal-header h2");
-    if (modalTitle) {
-        modalTitle.innerText = `Edit Service – ${service.name}`;
-    }
-
-    openServiceModal();
-};
-
-/* OPEN FILE SELECTOR */
-window.triggerImageUpload = function () {
-    document.getElementById("imageInput").click();
-};
-
-/* HANDLE MULTIPLE IMAGES */
-const imageInput = document.getElementById("imageInput");
-
-if (imageInput) {
-    imageInput.addEventListener("change", function (e) {
-
-        const files = Array.from(e.target.files);
-
-        if (uploadedImages.length + files.length > 4) {
-            alert("Max 4 images allowed");
-            return;
-        }
-
-        files.forEach(file => {
-            const reader = new FileReader();
-
-            reader.onload = function (event) {
-                uploadedImages.push(event.target.result);
-
-                // set first image as thumbnail automatically
-                if (!selectedThumbnail) {
-                    selectedThumbnail = event.target.result;
-                }
-
-                renderImagePreview();
-            };
-
-            reader.readAsDataURL(file);
-        });
+      try {
+        await createPartnerHotel(payload);
+        const hotels = await fetchPartnerHotels();
+        render(root, hotels);
+      } catch (err) {
+        console.error("Create hotel failed:", err);
+        if (error) error.textContent = err.message || "Unable to save hotel.";
+      }
     });
 }
 
-function renderImagePreview() {
-    const preview = document.getElementById("imagePreview");
-    if (!preview) return;
+async function createPartnerHotel(payload) {
+  const session = getApiSession();
+  const userId =
+    session?.headers?.["x-user-id"] ||
+    session?.user?.userId ||
+    session?.user?.id;
+  const role =
+    session?.user?.role === "PARTNER" || session?.user?.role === "hotel"
+      ? "PARTNER"
+      : session?.headers?.["x-user-role"];
 
-    preview.innerHTML = uploadedImages.map((img, index) => `
-        <div class="img-box">
+  const response = await fetch(`${getApiBaseUrl()}/hotels`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-user-id": userId || "",
+      "x-user-role": role || "PARTNER",
+    },
+    body: JSON.stringify(payload),
+  });
 
-            <img 
-                src="${img}" 
-                class="${img === selectedThumbnail ? 'active' : ''}"
-                onclick="setThumbnail(${index})"
-            />
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = body?.message || body?.error || "Unable to save hotel.";
+    throw new Error(Array.isArray(message) ? message.join(", ") : message);
+  }
 
-            <span class="delete-img" onclick="deleteImage(${index})">✕</span>
-
-        </div>
-    `).join("");
+  return Object.prototype.hasOwnProperty.call(body, "data") ? body.data : body;
 }
 
-window.deleteImage = function(index) {
+function readHotelPayload() {
+  return {
+    name: value("hotelName"),
+    city: value("hotelCity"),
+    location: value("hotelLocation"),
+    description: value("hotelDescription"),
+    stars: Number(value("hotelStars")),
+    pricePerNight: Number(value("hotelPrice")),
+    taxesAndFees: Number(value("hotelTaxes") || 0),
+    image: value("hotelImage") || DEFAULT_IMAGE,
+    amenities: value("hotelAmenities")
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean),
+  };
+}
 
-    const removedImage = uploadedImages[index];
+function validateHotelPayload(payload) {
+  if (!payload.name || !payload.city || !payload.location)
+    return "Name, city, and location are required.";
+  if (!payload.description) return "Description is required.";
+  if (
+    !Number.isInteger(payload.stars) ||
+    payload.stars < 1 ||
+    payload.stars > 5
+  )
+    return "Stars must be between 1 and 5.";
+  if (!Number.isFinite(payload.pricePerNight) || payload.pricePerNight < 0)
+    return "Price must be a valid number.";
+  return "";
+}
 
-    // remove image
-    uploadedImages.splice(index, 1);
+function value(id) {
+  return String(document.getElementById(id)?.value || "").trim();
+}
 
-    // if deleted image was thumbnail → update
-    if (removedImage === selectedThumbnail) {
-        selectedThumbnail = uploadedImages.length > 0 ? uploadedImages[0] : null;
-    }
+function escapeHtml(value) {
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    (ch) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;",
+      })[ch],
+  );
+}
 
-    renderImagePreview();
-};
-
-/* SELECT DP IMAGE */
-window.setThumbnail = function(index) {
-    selectedThumbnail = uploadedImages[index];
-    renderImagePreview();
-};
-
-window.openAvailabilityModal = function(id) {
-
-    const services = JSON.parse(localStorage.getItem("hotelServices")) || [];
-    const service = services.find(s => s.id === id);
-
-    if (!service) return;
-
-    selectedServiceId = id;
-
-    document.getElementById("availabilityTitle").innerText =
-        `Manage Availability – ${service.name}`;
-
-    document.getElementById("totalRoomsInput").value = service.totalRooms;
-    document.getElementById("availableRoomsInput").value = service.availableRooms;
-
-    const occupied = service.totalRooms - service.availableRooms;
-    document.getElementById("occupiedRoomsInput").value = occupied;
-
-    // ✅ 👉 ADD YOUR CODE HERE
-    const input = document.getElementById("availableRoomsInput");
-
-    input.oninput = function () {
-        const total = Number(document.getElementById("totalRoomsInput").value);
-        const available = Number(this.value);
-
-        const occupied = total - available;
-
-        document.getElementById("occupiedRoomsInput").value =
-            occupied >= 0 ? occupied : 0;
-    };
-
-    // OPEN MODAL
-    document.getElementById("availability-modal").classList.remove("hidden");
-};
-
-window.saveAvailability = function() {
-
-    let services = JSON.parse(localStorage.getItem("hotelServices")) || [];
-
-    const available = Number(document.getElementById("availableRoomsInput").value);
-
-    services = services.map(s =>
-        s.id === selectedServiceId
-            ? { ...s, availableRooms: available }
-            : s
-    );
-
-    localStorage.setItem("hotelServices", JSON.stringify(services));
-
-    closeAvailabilityModal();
-    renderServicesPage();
-};
-
-window.closeAvailabilityModal = function () {
-    document.getElementById("availability-modal").classList.add("hidden");
-};
+function escapeHtmlAttr(value) {
+  return escapeHtml(value).replace(/`/g, "&#096;");
+}

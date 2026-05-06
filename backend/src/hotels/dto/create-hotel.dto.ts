@@ -1,20 +1,22 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsArray,
   IsIn,
+  IsInt,
   IsNumber,
   IsOptional,
   IsString,
   Max,
   Min,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateHotelDto {
-  @ApiProperty({ example: 'hotel-grand-goa' })
+  @ApiPropertyOptional({ example: 'hotel-goa-001' })
+  @IsOptional()
   @IsString()
-  id!: string;
+  id?: string;
 
-  @ApiProperty({ example: 'The Grand Xploreo Goa' })
+  @ApiProperty({ example: 'Xploreo Beach Resort' })
   @IsString()
   name!: string;
 
@@ -26,48 +28,41 @@ export class CreateHotelDto {
   @IsString()
   location!: string;
 
-  @ApiProperty({ example: 'Luxury beachfront hotel with sunrise views and curated stays.' })
+  @ApiProperty({
+    example: 'Beachfront hotel with pool, breakfast, and airport transfers.',
+  })
   @IsString()
   description!: string;
 
-  @ApiProperty({ example: 5 })
-  @IsNumber()
+  @ApiProperty({ example: 5, minimum: 1, maximum: 5 })
+  @IsInt()
   @Min(1)
   @Max(5)
   stars!: number;
 
-  @ApiProperty({ example: 4.8 })
-  @IsNumber()
-  @Min(0)
-  @Max(5)
-  rating!: number;
-
-  @ApiProperty({ example: 312 })
-  @IsNumber()
-  @Min(0)
-  reviewCount!: number;
-
-  @ApiProperty({ example: 285 })
+  @ApiProperty({ example: 4800, minimum: 0 })
   @IsNumber()
   @Min(0)
   pricePerNight!: number;
 
-  @ApiPropertyOptional({ example: 42 })
+  @ApiPropertyOptional({ example: 650, minimum: 0 })
   @IsOptional()
   @IsNumber()
   @Min(0)
   taxesAndFees?: number;
 
-  @ApiProperty({ example: 'https://images.unsplash.com/photo-1566073771259-6a8506099945' })
+  @ApiPropertyOptional({ example: 'https://example.com/hotel.jpg' })
+  @IsOptional()
   @IsString()
-  image!: string;
+  image?: string;
 
-  @ApiProperty({ example: ['Pool', 'Breakfast Included', 'Airport Transfer'] })
+  @ApiPropertyOptional({ example: ['Pool', 'Breakfast', 'WiFi'] })
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  amenities!: string[];
+  amenities?: string[];
 
-  @ApiPropertyOptional({ example: 'active' })
+  @ApiPropertyOptional({ example: 'active', enum: ['active', 'inactive'] })
   @IsOptional()
   @IsIn(['active', 'inactive'])
   status?: 'active' | 'inactive';

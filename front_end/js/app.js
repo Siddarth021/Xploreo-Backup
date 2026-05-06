@@ -1,6 +1,6 @@
 import { renderNavbar } from "../components/layout/navbar.js";
 import { bindProfileActions } from "../components/layout/profile.js";
-import { renderPageContent } from "./renderpages.js?v=phase3-tickets";
+import { renderPageContent } from "./renderpages.js?v=phase3-ticket-support";
 import { initLogin } from "./login.js";
 import { initSignup } from "./signup.js";
 import { getCurrentUser } from "./api/session.js";

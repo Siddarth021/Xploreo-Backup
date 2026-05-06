@@ -59,9 +59,11 @@ import { initTripPlannerPage } from "./modules/tripPlannerPage.js";
 export async function renderPageContent(user) {
   const page = window.location.pathname.split("/").pop() || "dashboard.html";
   const role = user.role;
+  const isTraveller =
+    role === "traveller" || role === "TRAVELLER" || role === "TRAVELER";
 
   if (
-    user.role === "traveller" &&
+    isTraveller &&
     (page === "dashboard.html" ||
       page === "traveller_dashboard.html" ||
       page === "travelerDashboard.html")
@@ -74,7 +76,7 @@ export async function renderPageContent(user) {
   }
 
   if (
-    user.role === "traveller" &&
+    isTraveller &&
     (page === "wishlist.html" || page === "traveller_wishlist.html")
   ) {
     await renderSafely("Render traveller wishlist", () =>
@@ -84,7 +86,7 @@ export async function renderPageContent(user) {
   }
 
   if (
-    user.role === "traveller" &&
+    isTraveller &&
     (page === "mytrips.html" || page === "traveller_mytrips.html")
   ) {
     await renderSafely("Render traveller trips", () =>
@@ -93,7 +95,7 @@ export async function renderPageContent(user) {
     return;
   }
 
-  if (user.role === "traveller") {
+  if (isTraveller) {
     const travelerRoutes = {
       "traveller_plan-detail.html": renderTravelerPlanDetailPage,
       "traveller_package-search.html": renderTravelerPackageSearchPage,
@@ -115,6 +117,7 @@ export async function renderPageContent(user) {
       "traveller_trip-planning.html": initTripPlannerPage,
       "traveller_profile.html": initTravelerProfilePage,
       "traveller_support.html": renderTravelerSupportPage,
+      "support.html": renderTravelerSupportPage,
     };
 
     if (travelerRoutes[page]) {

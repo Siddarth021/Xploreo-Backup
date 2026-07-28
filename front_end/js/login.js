@@ -94,8 +94,10 @@ export function initLogin() {
         const role = (currentUser.role || "").toLowerCase();
         if (role === "traveller") {
           window.location.href = "./traveller_dashboard.html";
-        } else if (role === "guide" || role === "experience_partner") {
+        } else if ( role === "experience_partner") {
           window.location.href = "./experience_home.html";
+        } else if(role === "guide") {
+          window.location.href = "./dashboard.html";
         } else if (role === "partner") {
           window.location.href = "./hotelRooms.html";
         } else if (role === "tech_admin" || role === "techadmin") {

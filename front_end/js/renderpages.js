@@ -1,5 +1,5 @@
 import { renderAdminDashboard } from "./adminDashboard.js";
-import { renderdasboard } from "./dashboard.js";
+import { renderdashboard } from "./dashboard.js";
 import { renderHotelDashboard } from "./modules/hotelDashboard.js";
 import { renderBookingsPage } from "./modules/hotel-bookings-page.js?v=hotel-workflow-2";
 import { renderServicesPage } from "./modules/hotel-services-page.js?v=hotel-workflow-2";
@@ -128,9 +128,7 @@ export async function renderPageContent(user) {
     }
   }
   if (user.role === "guide" && page === "dashboard.html") {
-    await renderSafely("Render guide dashboard", () =>
-      renderdashboard("main", user),
-    );
+    renderdashboard("main", user)
     const main = document.getElementById("main");
     const admin = document.getElementById("admin-dashboard");
     const hotel = document.getElementById("hotel-dashboard");

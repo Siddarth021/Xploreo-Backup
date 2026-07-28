@@ -3,7 +3,7 @@ export enum AppRole {
   TRAVELLER_ACTOR = 'TRAVELLER',
   ADMIN = 'ADMIN',
   TECH_ADMIN = 'TECH_ADMIN',
-  EXPERIENCE_PARTNER = 'EXPERIENCE_PARTNER',
+  EXPERIENCE_PARTNER = 'experience',
   SUPERADMIN = 'superadmin',
   TRAVELLER = 'traveller',
   GUIDE = 'guide',

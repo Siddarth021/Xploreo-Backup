@@ -4,6 +4,8 @@ import { getNotification } from "./notification.js";
 
 export function renderNavbar(user) {
   console.log(user);
+  console.log(user.role);
+  console.log(getNavLinks(user.role));
   const navbar = `
     <nav class="navbar">
       <div class="navbar-left">

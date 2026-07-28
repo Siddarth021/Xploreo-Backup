@@ -127,7 +127,7 @@ const navlinks = [
   },
   {
     name: "Home",
-    path: "../pages/dashboard.html",
+    path: "../pages/experience_home.html",
     icon: "../components/ui/dashboard.svg",
     roles: ["experience"]
   },

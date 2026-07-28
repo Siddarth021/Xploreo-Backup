@@ -4,7 +4,7 @@ import { renderWelcomemsg} from "./modules/welcome-card.js";
 import { renderDashEarnings } from "./modules/dash-earnings.js";
 import { renderDashReviews } from "./modules/dash-reviews.js";
 
-export function renderdasboard(containerId, currentUser) {
+export function renderdashboard(containerId, currentUser) {
     renderWelcomemsg("welcome-section", currentUser);
     renderStats("stats-section", currentUser);
     renderTour("tour-section", currentUser);

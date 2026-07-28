@@ -1,13 +1,13 @@
 import { renderAdminDashboard } from "./adminDashboard.js";
-import { renderGuideDashboard } from "./dashboard.js?v=frontend-ui-6";
+import { renderdasboard } from "./dashboard.js";
 import { renderHotelDashboard } from "./modules/hotelDashboard.js";
 import { renderBookingsPage } from "./modules/hotel-bookings-page.js?v=hotel-workflow-2";
 import { renderServicesPage } from "./modules/hotel-services-page.js?v=hotel-workflow-2";
 import { renderHotelEarningPage } from "./modules/hotel-earning-page.js";
-import { rendertourpage } from "./tours.js?v=frontend-ui-6";
-import { renderEarningsPage } from "./earnings.js?v=frontend-ui-6";
-import { renderReviewsPage } from "./reviews.js?v=frontend-ui-6";
-import { renderSchedulePage } from "./schedule.js?v=frontend-ui-6";
+import { rendertourpage } from "./tours.js";
+import { renderEarningsPage } from "./earnings.js";
+import { renderReviewsPage } from "./reviews.js";
+import { renderSchedulePage } from "./schedule.js";
 import { renderProfilePage } from "./profile.js";
 import { renderSupportPage } from "./support.js";
 import {
@@ -18,7 +18,7 @@ import {
 import { initUsers } from "./modules/users.js";
 import { initFinance } from "./modules/finance.js";
 import { renderExperienceHomePage } from "./modules/experience_home.js?v=phase2-bookings-v2";
-import { renderExperienceDashboard } from "./modules/experienceDashboard.js?v=phase2-bookings-v2";
+//import { renderExperienceDashboard } from "./modules/experienceDashboard.js?v=phase2-bookings-v2";
 import { renderExperienceEarningsPage } from "./modules/experience_earnings.js?v=phase2-bookings-v2";
 import { renderExperienceBookingsPage } from "./modules/experience_bookings.js?v=phase2-bookings-v2";
 import { renderExperienceCatalogPage } from "./modules/experience_experience.js?v=phase2-bookings-v2";
@@ -129,7 +129,7 @@ export async function renderPageContent(user) {
   }
   if (user.role === "guide" && page === "dashboard.html") {
     await renderSafely("Render guide dashboard", () =>
-      renderGuideDashboard("main", user),
+      renderdashboard("main", user),
     );
     const main = document.getElementById("main");
     const admin = document.getElementById("admin-dashboard");
@@ -257,7 +257,7 @@ export async function renderPageContent(user) {
     page === "hotelEarning.html"
   ) {
     renderHotelEarningPage();
-  } else if (
+  } /*else if (
     (role === "experience" || role === "EXPERIENCE_PARTNER") &&
     page === "dashboard.html"
   ) {
@@ -265,7 +265,7 @@ export async function renderPageContent(user) {
     await renderSafely("Render experience dashboard", () =>
       renderExperienceDashboard("experience-dashboard", user),
     );
-  } else if (
+  } */else if (
     (role === "experience" || role === "EXPERIENCE_PARTNER") &&
     page === "experience_home.html"
   ) {

@@ -1,5 +1,5 @@
 import { renderNavbar } from "../components/layout/navbar.js";
-import { bindProfileActions } from "../components/layout/profile.js";
+import { getProfile } from "../components/layout/profile.js";
 import { renderPageContent } from "./renderpages.js?v=phase3-ticket-support";
 import { initLogin } from "./login.js";
 import { initSignup } from "./signup.js";
@@ -11,6 +11,7 @@ async function initApp() {
     const path = window.location.pathname.split("/").pop() || "index.html";
     if (path === "login.html") {
       renderLandingNavbar();
+      console.log("Initializing login page...");
       initLogin();
       return;
     }
@@ -34,7 +35,7 @@ async function initApp() {
     }
 
     renderNavbar(currentUser);
-    bindProfileActions();
+    await getProfile(currentUser);
     await renderPageContent(currentUser);
   } catch (error) {
     console.error("App initialization failed:", error);
@@ -43,8 +44,10 @@ async function initApp() {
 
 if (document.readyState !== "loading") {
   void initApp();
+  console.log("App initialized immediately.");
 } else {
   document.addEventListener("DOMContentLoaded", () => {
     void initApp();
+    console.log("App initialized on DOMContentLoaded.");
   });
 }

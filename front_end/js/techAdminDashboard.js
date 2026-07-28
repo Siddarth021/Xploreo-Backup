@@ -14,18 +14,18 @@ export function renderTechAdminDashboard(containerId) {
     if (mainDash) mainDash.style.display = "none";
     if (hotelDash) hotelDash.style.display = "none";
 
-    if (!techAdminData) {
+    /*if (!techAdminData) {
         console.error("techAdminData not found in localStorage!");
         if (techDash) {
             techDash.innerHTML = `<div style="padding: 50px; text-align: center;"><h2>Error: Data not initialized. Please refresh.</h2></div>`;
         }
         return;
-    }
+    }*/
 
     // Safely calculate stats
-    const tickets = techAdminData.tickets || [];
-    const logs = techAdminData.systemLogs || [];
-    const activity = techAdminData.userActivity || [];
+    const tickets = [] || techAdminData.tickets;
+    const logs = [] || techAdminData.systemLogs;
+    const activity = [] || techAdminData.userActivity;
 
     const total = tickets.length;
     const pendingTicketsCount = tickets.filter(t => t && (t.status === 'pending' || t.status === 'in-progress')).length;

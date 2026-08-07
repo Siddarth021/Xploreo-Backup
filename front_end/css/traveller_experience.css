@@ -30,11 +30,11 @@
 
 .traveler-experience-toolbar-field {
     display: grid;
-    gap: 10px;
-    min-height: 84px;
-    padding: 16px 20px 14px;
+    gap: 6px;
+    min-height: 60px;
+    padding: 10px 16px;
     border: 1px solid #d9e0ea;
-    border-radius: 18px;
+    border-radius: 12px;
     background: #f8faff;
     box-sizing: border-box;
 }
@@ -99,21 +99,20 @@
 .traveler-experience-search-btn,
 .traveler-experience-view-btn {
     border: none;
-    cursor: pointer;
-    font: inherit;
-    background: linear-gradient(90deg, #1fb8b1 0%, #2d62eb 100%);
+    border-radius: 12px;
+    background: #2d62eb;
     color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
 }
 
 .traveler-experience-search-btn {
-    min-height: 84px;
-    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    font-size: 17px;
-    font-weight: 800;
+    gap: 10px;
     letter-spacing: 0.02em;
 }
 
@@ -215,7 +214,7 @@
 
 .traveler-experience-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 28px;
 }
 
@@ -394,12 +393,13 @@
 }
 
 .traveler-experience-view-btn {
-    min-width: 194px;
-    min-height: 88px;
-    padding: 18px 28px;
-    border-radius: 20px;
-    font-size: 17px;
-    font-weight: 800;
+    min-width: 120px;
+    min-height: 44px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
 }
 
 .traveler-experience-empty {

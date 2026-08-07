@@ -69,7 +69,7 @@ export function mapPlanToPackage(plan, searchValues = {}) {
             "above-2000",
         departureDate: searchValues.departureDate || "",
         tags: plan.tags || [],
-        itinerary: Array.isArray(plan.itinerary) ? plan.itinerary : []
+        itinerary: plan.itinerary || []
     };
 }
 

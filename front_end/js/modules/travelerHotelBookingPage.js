@@ -1,13 +1,14 @@
 import { getHotelDetailDataById } from "./travelerHotelDetailPage.js";
+import { getTravelerProfile } from "../utils/travelerWorkspaceState.js";
 
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const HOTEL_CONFIRMATION_PAGE = "./traveller_hotel-confirmation.html";
 
-export function renderTravelerHotelBookingPage(containerId) {
+export async function renderTravelerHotelBookingPage(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const hotel = getSelectedHotel();
+    const hotel = await getSelectedHotel();
     const searchValues = getSearchValues();
     const selectedRoom = getSelectedRoom(hotel);
     const guestProfile = buildGuestProfile(hotel, selectedRoom);
@@ -182,10 +183,10 @@ function bindEvents() {
     });
 }
 
-function getSelectedHotel() {
+async function getSelectedHotel() {
     const params = new URLSearchParams(window.location.search);
     const hotelId = params.get("hotel");
-    return getHotelDetailDataById(hotelId);
+    return await getHotelDetailDataById(hotelId);
 }
 
 function getSelectedRoom(hotel) {
@@ -216,7 +217,7 @@ function getSearchValues() {
             checkIn: values.checkIn || fallback.checkIn,
             checkOut: values.checkOut || fallback.checkOut,
             rooms: values.rooms || fallback.rooms,
-            guestCount: values.guestCount || parseGuestCount(values.guests) || fallback.guestCount
+            guestCount: values.guestCount || fallback.guestCount
         };
     } catch (error) {
         return fallback;
@@ -247,43 +248,38 @@ function parseGuestCount(value) {
 }
 
 function buildGuestProfile(hotel, selectedRoom) {
-    const profiles = [
-        {
-            firstName: "Aarav",
-            lastName: "Mehta",
-            email: "aarav.mehta@example.com",
-            phone: "+91 98765 43210"
-        },
-        {
-            firstName: "Saanvi",
-            lastName: "Kapoor",
-            email: "saanvi.kapoor@example.com",
-            phone: "+91 98111 22334"
-        },
-        {
-            firstName: "Riya",
-            lastName: "Sharma",
-            email: "riya.sharma@example.com",
-            phone: "+91 99001 11223"
-        },
-        {
-            firstName: "Vivaan",
-            lastName: "Nair",
-            email: "vivaan.nair@example.com",
-            phone: "+91 98222 33445"
-        }
-    ];
-
-    const profile = profiles[hashValue(`${hotel.id}-${selectedRoom.id}`) % profiles.length];
-
+    const currentTraveler = getCurrentTraveler();
+    const nameParts = (currentTraveler.name || "Saanvi Kapoor").split(" ");
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(" ") || "";
+    
     return {
-        ...profile,
+        firstName: firstName,
+        lastName: lastName,
+        email: currentTraveler.email || "saanvi.kapoor@example.com",
+        phone: currentTraveler.phone || "+91 98111 22334",
         specialRequest: `High floor ${selectedRoom.name.toLowerCase()}, quiet side if available, and an early check-in request.`
     };
 }
 
 function hashValue(value) {
     return [...String(value || "")].reduce((total, char) => total + char.charCodeAt(0), 0);
+}
+
+function getCurrentTraveler() {
+    if (typeof localStorage === "undefined") {
+        return { id: "traveler-fallback", name: "Traveler", email: "", phone: "" };
+    }
+
+    try {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+        if (!currentUser || !currentUser.role) {
+            return { id: "traveler-fallback", name: "Traveler", email: "", phone: "" };
+        }
+        return currentUser;
+    } catch (error) {
+        return { id: "traveler-fallback", name: "Traveler", email: "", phone: "" };
+    }
 }
 
 function escapeHtml(value) {

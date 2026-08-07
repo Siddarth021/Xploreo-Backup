@@ -6,6 +6,7 @@ import {
   ApiProtectedResource,
   ApiReadEndpoint,
 } from '../common/decorators/api-docs.decorator';
+import { Public } from '../common/decorators/public.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
 import { NonEmptyStringPipe } from '../common/pipes/non-empty-string.pipe';
 import { CreateHotelDto } from './dto/create-hotel.dto';
@@ -26,6 +27,7 @@ export class HotelsController {
   }
 
   @Get()
+  @Public()
   @Roles(Role.TRAVELLER_ACTOR, Role.PARTNER)
   @ApiOperation({
     summary: 'Traveller searches active hotels; partner lists own hotels',
@@ -41,6 +43,7 @@ export class HotelsController {
   }
 
   @Get(':id')
+  @Public()
   @Roles(Role.TRAVELLER_ACTOR, Role.PARTNER)
   @ApiOperation({ summary: 'Get hotel by ID' })
   @ApiReadEndpoint()

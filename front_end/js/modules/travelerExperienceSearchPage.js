@@ -9,27 +9,24 @@ const SELECTED_EXPERIENCE_KEY = "traveler_selected_experience";
 let EXPERIENCE_RESULTS = null;
 
 export async function renderTravelerExperienceSearchPage(containerId) {
-    if (!EXPERIENCE_RESULTS) {
-        const container = document.getElementById(containerId);
-        if (container) {
-            container.innerHTML = `<div class="traveler-experience-empty">Loading experiences...</div>`;
-        }
-        try {
-            const experiences = await fetchExperiences();
-            EXPERIENCE_RESULTS = experiences.map(mapExperienceToSearchCard);
-        } catch (error) {
-            if (container) {
-                container.innerHTML = `<div class="traveler-experience-empty">Unable to load experiences right now.</div>`;
-            }
-            return;
-        }
-    }
     const container = document.getElementById(containerId);
+    if (container) {
+        container.innerHTML = `<div class="traveler-experience-empty">Loading experiences...</div>`;
+    }
+    try {
+        const experiences = await fetchExperiences();
+        EXPERIENCE_RESULTS = experiences.map(normalizeExperience);
+    } catch (error) {
+        if (container) {
+            container.innerHTML = `<div class="traveler-experience-empty">Unable to load experiences right now.</div>`;
+        }
+        return;
+    }
     if (!container) return;
 
     const state = {
         searchValues: getSearchValues(),
-        maxPrice: 300,
+        maxPrice: 100000,
         selectedCategories: new Set(),
         selectedDurations: new Set()
     };
@@ -57,12 +54,12 @@ export async function renderTravelerExperienceSearchPage(containerId) {
                             <div class="traveler-experience-filter-group">
                                 <h3>Price Range</h3>
                                 <div class="traveler-experience-slider-wrap">
-                                    <input id="traveler-experience-price" type="range" min="0" max="500" step="5" value="${state.maxPrice}">
+                                    <input id="traveler-experience-price" type="range" min="0" max="100000" step="500" value="${state.maxPrice}">
                                 </div>
                                 <div class="traveler-experience-slider-labels">
                                     <span>$0</span>
-                                    <span class="active">${formatCurrency(state.maxPrice)}</span>
-                                    <span>$500</span>
+                                    <span class="active-label">${formatCurrency(state.maxPrice)}</span>
+                                    <span>$100,000</span>
                                 </div>
                             </div>
 
@@ -199,8 +196,8 @@ function normalizeExperience(item, index) {
     const priceValue = extractAmount(item.price);
     const title = String(item.title || "Signature Experience").trim();
     const destination = String(item.destination || "Explore").trim();
-    const category = inferCategory(title, destination, index);
-    const durationHours = extractDurationHours(item.time);
+    const category = item.category || inferCategory(title, destination, index);
+    const durationHours = item.durationHours ? Number(item.durationHours) : extractDurationHours(item.time);
     const originalPrice = category.includes("Tickets") || category === "Cruises"
         ? priceValue + 20
         : priceValue > 60
@@ -309,7 +306,7 @@ function persistSelectedExperience(item) {
 
 function getSearchValues() {
     const fallback = {
-        destination: "Dubai",
+        destination: "Mumbai",
         activityDate: ""
     };
 
@@ -370,7 +367,7 @@ function getHeadline(destination, count, matchMode) {
     }
 
     if (matchMode === "all") {
-        return `Showing traveler mock experiences${destination ? ` inspired by ${destination}` : ""}.`;
+        return `No exact matches found. Showing other popular experiences${destination ? ` near ${destination}` : ""}.`;
     }
 
     return `Showing activities in ${destination || "your selected destination"}`;

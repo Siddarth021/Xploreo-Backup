@@ -241,7 +241,7 @@ function renderTravelerPackageSearchPage(containerId) {
 function getSearchValues() {
     const fallback = {
         fromCity: "New Delhi",
-        destination: "Bali",
+        destination: "Goa",
         departureDate: "",
         rooms: "1",
         guestCount: "2",
@@ -476,7 +476,7 @@ function renderPackageCard(item) {
                             <strong>${formatCurrency(item.pricePerPerson)}</strong>
                             <span class="traveler-package-total-copy">Total: ${formatCurrency(item.totalPriceDisplay)}</span>
                         </div>
-                        <p class="traveler-package-emi-copy">or EMI from ${formatCurrency(item.emi)}/month</p>
+
                     </div>
 
                     <button class="traveler-package-view-btn" type="button" data-package-details="${item.id}">View Details</button>

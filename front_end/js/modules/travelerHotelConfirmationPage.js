@@ -4,11 +4,11 @@ const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const MY_TRIPS_PAGE = "./traveller_mytrips.html";
 const EXPLORE_PAGE = "./traveller_dashboard.html";
 
-export function renderTravelerHotelConfirmationPage(containerId) {
+export async function renderTravelerHotelConfirmationPage(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-        const hotel = getSelectedHotel();
+    const hotel = await getSelectedHotel();
     const searchValues = getSearchValues();
     const selectedRoom = getSelectedRoom(hotel);
     const locationLabel = getLocationLabel(hotel);
@@ -18,7 +18,7 @@ export function renderTravelerHotelConfirmationPage(containerId) {
     const roomSubtotal = selectedRoom.price * stayNights * roomCount;
     const taxTotal = Number(hotel.taxes || 0) * roomCount;
     const totalAmount = roomSubtotal + taxTotal;
-    const bookingId = `XPL-HTL-${new Date(searchValues.checkIn + "T00:00:00").getFullYear()}-${String(Math.abs(hashCode(hotel.id))).slice(0, 4)}`;
+    const bookingId = `XPL-HTL-${new Date(searchValues.checkIn + "T00:00:00").getFullYear()}-${String(Math.abs(hashCode(hotel.id))).slice(0, 4)}-${Date.now().toString().slice(-4)}`;
 
     const currentTraveler = getCurrentTraveler();
 
@@ -104,11 +104,11 @@ export function renderTravelerHotelConfirmationPage(containerId) {
                         <div class="traveler-hotel-confirmation-grid">
                             <div>
                                 <span>Guests</span>
-                                <strong>${escapeHtml(hotel.adults)}</strong>
+                                <strong>${guestCount} Guest${guestCount === 1 ? "" : "s"}</strong>
                             </div>
                             <div>
                                 <span>Rooms</span>
-                                <strong>1 Room</strong>
+                                <strong>${roomCount} Room${roomCount === 1 ? "" : "s"}</strong>
                             </div>
                             <div>
                                 <span>Room Type</span>
@@ -116,7 +116,7 @@ export function renderTravelerHotelConfirmationPage(containerId) {
                             </div>
                             <div>
                                 <span>Duration</span>
-                                <strong>${getDurationNights(searchValues.checkIn, searchValues.checkOut)} Nights</strong>
+                                <strong>${stayNights} Night${stayNights === 1 ? "" : "s"}</strong>
                             </div>
                         </div>
                     </section>
@@ -172,9 +172,9 @@ function bindEvents() {
     });
 }
 
-function getSelectedHotel() {
+async function getSelectedHotel() {
     const params = new URLSearchParams(window.location.search);
-    return getHotelDetailDataById(params.get("hotel"));
+    return await getHotelDetailDataById(params.get("hotel"));
 }
 
 function getSelectedRoom(hotel) {
@@ -247,13 +247,15 @@ function getLocationLabel(hotel) {
     if (hotel.location) return hotel.location;
     if (hotel.area && hotel.city) return `${hotel.area}, ${hotel.city}`;
     if (hotel.area) return hotel.area;
-    return "Downtown Dubai";
+    return "Downtown Mumbai";
 }
 
 function getSearchValues() {
     const fallback = {
         checkIn: "2026-03-21",
-        checkOut: "2026-03-24"
+        checkOut: "2026-03-24",
+        rooms: "1",
+        guestCount: "2"
     };
 
     if (typeof localStorage === "undefined") {
@@ -265,7 +267,9 @@ function getSearchValues() {
         const values = stored.values?.hotels || {};
         return {
             checkIn: values.checkIn || fallback.checkIn,
-            checkOut: values.checkOut || fallback.checkOut
+            checkOut: values.checkOut || fallback.checkOut,
+            rooms: values.rooms || fallback.rooms,
+            guestCount: values.guestCount || fallback.guestCount
         };
     } catch (error) {
         return fallback;

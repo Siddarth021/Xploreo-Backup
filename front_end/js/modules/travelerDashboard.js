@@ -25,7 +25,7 @@ const searchState = {
     summary: "",
     values: {
         flights: {
-            from: "New York (JFK)",
+            from: "Chennai (MAA)",
             to: "",
             departure: "",
             returnDate: "",
@@ -711,10 +711,24 @@ function runSearch(tab) {
 
 function persistSearchValues() {
     const flightTravellers = readNumericValue("flight-travellers", "1");
-    const hotelRooms = readNumericValue("hotel-rooms", "1");
-    const hotelGuests = readNumericValue("hotel-guests", "2");
-    const packageRooms = readNumericValue("package-rooms", "1");
-    const packageGuests = readNumericValue("package-guests", "2");
+    let hotelRooms = Number(readNumericValue("hotel-rooms", "1"));
+    let hotelGuests = Number(readNumericValue("hotel-guests", "2"));
+    let packageRooms = Number(readNumericValue("package-rooms", "1"));
+    let packageGuests = Number(readNumericValue("package-guests", "2"));
+
+    if (hotelGuests > hotelRooms * 4) {
+        hotelRooms = Math.ceil(hotelGuests / 4);
+        const roomsEl = document.getElementById("hotel-rooms");
+        if (roomsEl) roomsEl.value = hotelRooms;
+        showToast(`Rooms adjusted to ${hotelRooms} to accommodate ${hotelGuests} guests (max 4 per room)`);
+    }
+
+    if (packageGuests > packageRooms * 4) {
+        packageRooms = Math.ceil(packageGuests / 4);
+        const roomsEl = document.getElementById("package-rooms");
+        if (roomsEl) roomsEl.value = packageRooms;
+        showToast(`Rooms adjusted to ${packageRooms} to accommodate ${packageGuests} guests (max 4 per room)`);
+    }
 
     searchState.values.flights = {
         from: readValue("flight-from"),
@@ -728,18 +742,18 @@ function persistSearchValues() {
         city: readValue("hotel-city"),
         checkIn: readValue("hotel-checkin"),
         checkOut: readValue("hotel-checkout"),
-        rooms: hotelRooms,
-        guestCount: hotelGuests,
-        guests: formatRoomsGuests(hotelRooms, hotelGuests)
+        rooms: String(hotelRooms),
+        guestCount: String(hotelGuests),
+        guests: formatRoomsGuests(String(hotelRooms), String(hotelGuests))
     };
 
     searchState.values.packages = {
         fromCity: readValue("package-from"),
         destination: readValue("package-destination"),
         departureDate: readValue("package-departure"),
-        rooms: packageRooms,
-        guestCount: packageGuests,
-        guests: formatRoomsGuests(packageRooms, packageGuests)
+        rooms: String(packageRooms),
+        guestCount: String(packageGuests),
+        guests: formatRoomsGuests(String(packageRooms), String(packageGuests))
     };
 
     searchState.values.experiences = {

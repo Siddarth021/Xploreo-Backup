@@ -1,17 +1,38 @@
 // Non-Technical Admin - Manage Travel Packages (Full CRUD)
 import { nontechAdminData } from "../api/legacyData.js";
+import { createPlan, updatePlan, deletePlan, fetchPlans } from "../api/services.js";
 
 let currentEditId = null;
 let currentDeleteId = null;
 let featuresList = [];
+let planUploadedImageUrl = null;
 
-export function initNtaPlans() {
+export async function initNtaPlans() {
     console.log("Initializing Non-Technical Admin Travel Packages Page...");
 
-    // Initialize data
-    if (!localStorage.getItem("ntaPlans")) {
-        localStorage.setItem("ntaPlans", JSON.stringify(nontechAdminData.plans));
+    // Initialize data from backend
+    try {
+        const backendPlans = await fetchPlans();
+        const mappedPlans = backendPlans.map(plan => ({
+            id: plan.id,
+            name: plan.title,
+            description: plan.description,
+            price: plan.pricePerPerson,
+            duration: `${plan.durationNights} Days / ${plan.durationNights - 1 > 0 ? plan.durationNights - 1 : 0} Night`,
+            destination: plan.destination,
+            category: plan.category || "Tours",
+            features: plan.tags || [],
+            status: plan.isActive !== false ? "available" : "unavailable",
+            createdAt: plan.createdAt || new Date().toISOString()
+        }));
+        localStorage.setItem("ntaPlans", JSON.stringify(mappedPlans));
+    } catch (e) {
+        console.warn("Failed to fetch plans from backend, falling back to local data", e);
+        if (!localStorage.getItem("ntaPlans")) {
+            localStorage.setItem("ntaPlans", JSON.stringify(nontechAdminData.plans));
+        }
     }
+
     if (!localStorage.getItem("ntaActivity")) {
         localStorage.setItem("ntaActivity", JSON.stringify(nontechAdminData.recentActivity));
     }
@@ -117,6 +138,7 @@ function renderPlansTable(filteredPlans) {
 function openCreateModal() {
     currentEditId = null;
     featuresList = [];
+    planUploadedImageUrl = null;
     renderPlanModal("Create New Package", {
         name: "",
         description: "",
@@ -125,7 +147,8 @@ function openCreateModal() {
         destination: "",
         category: "",
         features: [],
-        status: "available"
+        status: "available",
+        image: ""
     });
 }
 
@@ -136,6 +159,7 @@ function openEditModal(planId) {
 
     currentEditId = planId;
     featuresList = [...(plan.features || [])];
+    planUploadedImageUrl = plan.image || null;
     renderPlanModal("Edit Package", plan);
 }
 
@@ -221,6 +245,15 @@ function renderPlanModal(title, plan) {
             </div>
 
             <div class="nta-form-group">
+                <label for="plan-image">Package Image (Optional)</label>
+                <input type="file" id="plan-image" accept="image/*">
+                <div id="plan-image-preview" class="nta-image-preview" style="margin-top: 10px;">
+                    ${plan.image ? `<img src="${plan.image}" alt="Package Image" style="max-width: 120px; border-radius: 4px;" onerror="this.style.display='none'">` : ''}
+                </div>
+                <div class="nta-form-hint">Upload an image for this package. If you skip this, no image will be shown.</div>
+            </div>
+
+            <div class="nta-form-group">
                 <label>Availability</label>
                 <div class="nta-toggle-wrap">
                     <label class="nta-toggle">
@@ -258,6 +291,26 @@ function renderPlanModal(title, plan) {
             if (e.key === "Enter") {
                 e.preventDefault();
                 window.ntaAddFeature();
+            }
+        });
+    }
+
+    // Image upload handler
+    const imageInput = document.getElementById("plan-image");
+    const imagePreview = document.getElementById("plan-image-preview");
+    if (imageInput && imagePreview) {
+        imageInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    planUploadedImageUrl = e.target.result;
+                    imagePreview.innerHTML = `<img src="${planUploadedImageUrl}" alt="Package Image" style="max-width: 120px; border-radius: 4px;" onerror="this.style.display='none'">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                planUploadedImageUrl = currentEditId ? JSON.parse(localStorage.getItem("ntaPlans"))?.find(p => p.id === currentEditId)?.image || "" : "";
+                imagePreview.innerHTML = planUploadedImageUrl ? `<img src="${planUploadedImageUrl}" alt="Package Image" style="max-width: 120px; border-radius: 4px;" onerror="this.style.display='none'">` : '';
             }
         });
     }
@@ -317,49 +370,55 @@ function savePlan() {
         if (idx !== -1) {
             plans[idx] = {
                 ...plans[idx],
-                name,
-                description,
-                price,
-                duration,
-                destination,
-                category,
+                name, description, price, duration, destination, category,
                 features: [...featuresList],
-                status: statusChecked ? "available" : "unavailable"
+                status: statusChecked ? "available" : "unavailable",
+                image: planUploadedImageUrl || ""
             };
 
-            activityLog.unshift({
-                id: Date.now(),
-                action: "Package updated",
-                detail: `"${name}" was updated`,
-                user: getCurrentUserName(),
-                timestamp: new Date().toISOString(),
-                type: "update"
-            });
+            activityLog.unshift({ id: Date.now(), action: "Package updated", detail: `"${name}" was updated`, user: getCurrentUserName(), timestamp: new Date().toISOString(), type: "update" });
+            
+            // Sync to backend
+            updatePlan(currentEditId, {
+                title: name,
+                description,
+                pricePerPerson: Number(price),
+                durationNights: parseInt(duration) || 3,
+                destination,
+                originCity: "Any",
+                tags: featuresList,
+                itinerary: [{ day: "Day 1", title: "Arrival", detail: "Arrival and check-in" }],
+                image: planUploadedImageUrl || ""
+            }).catch(e => console.warn("Failed to sync plan update to backend", e));
         }
     } else {
         // CREATE
+        const newId = "PKG-" + String(plans.length + 1).padStart(3, "0");
         const newPlan = {
-            id: "PKG-" + String(plans.length + 1).padStart(3, "0"),
-            name,
-            description,
-            price,
-            duration,
-            destination,
-            category,
+            id: newId,
+            name, description, price, duration, destination, category,
             features: [...featuresList],
             status: statusChecked ? "available" : "unavailable",
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            image: planUploadedImageUrl || ""
         };
         plans.push(newPlan);
 
-        activityLog.unshift({
-            id: Date.now(),
-            action: "Package created",
-            detail: `"${name}" was added`,
-            user: getCurrentUserName(),
-            timestamp: new Date().toISOString(),
-            type: "create"
-        });
+        activityLog.unshift({ id: Date.now(), action: "Package created", detail: `"${name}" was added`, user: getCurrentUserName(), timestamp: new Date().toISOString(), type: "create" });
+        
+        // Sync to backend
+        createPlan({
+            id: newId,
+            title: name,
+            description,
+            pricePerPerson: Number(price),
+            durationNights: parseInt(duration) || 3,
+            destination,
+            originCity: "Any",
+            tags: featuresList,
+            itinerary: [{ day: "Day 1", title: "Arrival", detail: "Arrival and check-in" }],
+            image: planUploadedImageUrl || ""
+        }).catch(e => console.warn("Failed to sync plan creation to backend", e));
     }
 
     localStorage.setItem("ntaPlans", JSON.stringify(plans));
@@ -389,6 +448,9 @@ function confirmDelete() {
             type: "status"
         });
         localStorage.setItem("ntaActivity", JSON.stringify(activityLog));
+
+        // Sync to backend
+        deletePlan(currentDeleteId).catch(e => console.warn("Failed to sync plan deletion to backend", e));
     }
 
     currentDeleteId = null;

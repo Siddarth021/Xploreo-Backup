@@ -1,4 +1,6 @@
 import { travelerData } from "../api/legacyData.js";
+import { fetchHotel } from "../api/services.js";
+import { mapHotelToSearchCard } from "../api/adapters.js";
 
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const HOTEL_BOOKING_PAGE = "./traveller_hotel-booking.html";
@@ -13,8 +15,8 @@ export const HOTEL_DETAIL_DATA = {
         title: "The Grand Luxury Resort",
         area: "Downtown Dubai",
         distance: "2.5 km from city center",
-        rating: 4.8,
-        reviews: 1245,
+        rating: 0,
+        reviews: 0,
         stars: 5,
         roomName: "Deluxe King Room",
         adults: "2 Adults",
@@ -98,8 +100,8 @@ export const HOTEL_DETAIL_DATA = {
         title: "Beachfront Paradise Villa",
         area: "Jumeirah Beach",
         distance: "0.5 km from beach",
-        rating: 4.9,
-        reviews: 856,
+        rating: 0,
+        reviews: 0,
         stars: 5,
         roomName: "Private Ocean Villa",
         adults: "2 Adults",
@@ -171,8 +173,8 @@ export const HOTEL_DETAIL_DATA = {
         title: "Modern Boutique Hotel",
         area: "Dubai Marina",
         distance: "1.8 km from marina",
-        rating: 4.6,
-        reviews: 432,
+        rating: 0,
+        reviews: 0,
         stars: 4,
         roomName: "Boutique Queen Room",
         adults: "2 Adults",
@@ -245,8 +247,8 @@ export const HOTEL_DETAIL_DATA = {
         title: "Family Resort & Spa",
         area: "Al Barsha",
         distance: "3.2 km from Mall of Emirates",
-        rating: 4.7,
-        reviews: 698,
+        rating: 0,
+        reviews: 0,
         stars: 5,
         roomName: "Family Deluxe Room",
         adults: "2 Adults, 2 Children",
@@ -318,8 +320,8 @@ export const HOTEL_DETAIL_DATA = {
         title: "Skyline Party Lofts",
         area: "Business Bay",
         distance: "1.1 km from nightlife district",
-        rating: 4.3,
-        reviews: 288,
+        rating: 0,
+        reviews: 0,
         stars: 4,
         roomName: "Skyline Loft",
         adults: "2 Adults",
@@ -388,14 +390,15 @@ export const HOTEL_DETAIL_DATA = {
     }
 };
 
-export function renderTravelerHotelDetailPage(containerId) {
+export async function renderTravelerHotelDetailPage(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const hotel = getSelectedHotel();
+    let hotel = await getSelectedHotel();
+
     const initialSearchValues = normalizeSearchValues(getSearchValues(hotel));
-    const params = new URLSearchParams(window.location.search);
     const defaultRoom = hotel.rooms.find((room) => room.selected) || hotel.rooms[0];
+    const params = new URLSearchParams(window.location.search);
     const selectedRoomFromUrl = params.get("room");
     const state = {
         selectedImageIndex: 0,
@@ -406,7 +409,7 @@ export function renderTravelerHotelDetailPage(containerId) {
     function render() {
         const selectedRoom = hotel.rooms.find((room) => room.id === state.selectedRoomId) || defaultRoom;
         const status = new URLSearchParams(window.location.search).get("status")?.trim().toLowerCase() || "";
-        const isCompleted = status === "completed" || status === "upcoming";
+        const isCompleted = status === "completed" || status === "upcoming" || status === "cancelled";
         const mainImage = hotel.gallery[state.selectedImageIndex] || hotel.gallery[0];
         const stayNights = getStayNights(state.searchValues.checkIn, state.searchValues.checkOut);
         const roomCount = Math.max(1, Number.parseInt(state.searchValues.rooms, 10) || 1);
@@ -533,8 +536,12 @@ export function renderTravelerHotelDetailPage(containerId) {
                             </div>
 
                             <div class="traveler-hotel-booking-actions">
-                                ${isCompleted ? "" : `<button class="traveler-hotel-primary-btn" type="button">Book This Now</button>`}
-                                <button class="traveler-hotel-secondary-btn" type="button">View All Rooms</button>
+                                ${status === "upcoming" ? `
+                                    <button class="traveler-hotel-danger-btn" type="button" data-cancel-hotel-booking style="background: #ef4444; color: white; padding: 12px; border-radius: 8px; width: 100%; border: none; cursor: pointer; font-weight: 600; margin-bottom: 12px;">Cancel Booking</button>
+                                ` : !isCompleted ? `
+                                    <button class="traveler-hotel-primary-btn" type="button">Book This Now</button>
+                                    <button class="traveler-hotel-secondary-btn" type="button">View All Rooms</button>
+                                ` : ""}
                             </div>
                         </aside>
                     </section>
@@ -702,6 +709,44 @@ export function renderTravelerHotelDetailPage(containerId) {
             container.querySelector("#traveler-hotel-room-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
         });
 
+        container.querySelector("[data-cancel-hotel-booking]")?.addEventListener("click", () => {
+            const params = new URLSearchParams(window.location.search);
+            const bookingId = params.get("bookingId");
+            if (!bookingId) {
+                showWishlistToast("Booking ID not found.");
+                return;
+            }
+
+            let myTrips = [];
+            try { myTrips = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]"); } catch (e) {}
+            const tripIndex = myTrips.findIndex(t => String(t.id) === String(bookingId) || String(t.bookingId) === String(bookingId));
+            if (tripIndex >= 0) {
+                myTrips[tripIndex].status = "Cancelled";
+                localStorage.setItem("traveler_my_trips", JSON.stringify(myTrips));
+            }
+
+            let tours = [];
+            try { tours = JSON.parse(localStorage.getItem("tours") || "[]"); } catch (e) {}
+            const tourIndex = tours.findIndex(t => String(t.id) === String(bookingId) || String(t.bookingId) === String(bookingId));
+            if (tourIndex >= 0) {
+                tours[tourIndex].status = "Cancelled";
+                localStorage.setItem("tours", JSON.stringify(tours));
+            }
+
+            let hotelBookings = [];
+            try { hotelBookings = JSON.parse(localStorage.getItem("hotelBookings") || "[]"); } catch (e) {}
+            const hbIndex = hotelBookings.findIndex(b => String(b.id) === String(bookingId));
+            if (hbIndex >= 0) {
+                hotelBookings[hbIndex].status = "Cancelled";
+                localStorage.setItem("hotelBookings", JSON.stringify(hotelBookings));
+            }
+
+            showWishlistToast("Booking successfully cancelled.");
+            setTimeout(() => {
+                window.location.href = "./traveller_mytrips.html";
+            }, 1500);
+        });
+
         container.querySelector("[data-hotel-wishlist]")?.addEventListener("click", () => {
             const wishlist = getWishlistItems();
             const existingIndex = wishlist.findIndex((item) => item.title === hotel.title);
@@ -723,16 +768,33 @@ export function renderTravelerHotelDetailPage(containerId) {
     render();
 }
 
-function getSelectedHotel() {
+async function getSelectedHotel() {
     const params = new URLSearchParams(window.location.search);
     const hotelId = params.get("hotel");
-    return getHotelDetailDataById(hotelId);
+    return await getHotelDetailDataById(hotelId);
 }
 
-export function getHotelDetailDataById(hotelId) {
+export async function getHotelDetailDataById(hotelId) {
     const resolvedId = HOTEL_DETAIL_ALIASES[hotelId] || hotelId;
     if (HOTEL_DETAIL_DATA[resolvedId]) {
         return HOTEL_DETAIL_DATA[resolvedId];
+    }
+
+    if (hotelId && hotelId !== "grand-luxury") {
+        try {
+            const backendHotel = await fetchHotel(hotelId);
+            if (backendHotel && backendHotel.id) {
+                const searchCard = mapHotelToSearchCard(backendHotel);
+                return buildGeneratedHotelDetail({
+                    ...searchCard,
+                    name: searchCard.title,
+                    priceValue: searchCard.price,
+                    maxGuests: searchCard.maxGuests || 4,
+                });
+            }
+        } catch (e) {
+            console.warn("Could not fetch hotel from API", e);
+        }
     }
 
     const searchHotel = travelerData.searchCatalog.hotels.find((hotel) => hotel.id === hotelId);

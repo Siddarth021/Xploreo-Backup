@@ -93,12 +93,12 @@ export async function renderTravelerTrips(containerId, user) {
                             ` : ''}
                             
                             <div class="trip-actions">
-                                <button class="btn-solid-blue" data-trip-view="${escapeHtmlAttr(getTripViewKey(trip))}">View Details</button>
+                                <button class="btn-solid-blue" data-trip-view="${escapeHtml(getTripViewKey(trip))}">View Details</button>
                                 ${trip.status === 'Completed'
-                                    ? `<button class="btn-outline-teal" data-trip-review="${escapeHtmlAttr(getTripViewKey(trip))}">Review Trip</button>`
+                                    ? `<button class="btn-outline-teal" data-trip-review="${escapeHtml(getTripViewKey(trip))}">Review Trip</button>`
                                     : ``}
                                 ${trip.status !== 'Completed' && (trip.type.toLowerCase() === 'tour' || trip.type.toLowerCase() === 'experience' || trip.currentStop) 
-                                    ? `<button class="btn-outline-blue" data-trip-route="${escapeHtmlAttr(getTripViewKey(trip))}">View Live Route</button>`
+                                    ? `<button class="btn-outline-blue" data-trip-route="${escapeHtml(getTripViewKey(trip))}">View Live Route</button>`
                                     : ``}
                             </div>
                         </div>
@@ -254,6 +254,11 @@ function getTravelerTripsData() {
     // Also read traveler_my_trips which stores locally confirmed bookings
     let myTripsRaw = [];
     try { myTripsRaw = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]"); } catch (e) { myTripsRaw = []; }
+
+    const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+    if (currentUser && currentUser.id) {
+        myTripsRaw = myTripsRaw.filter(t => String(t.customerId) === String(currentUser.id) || !t.customerId);
+    }
 
     // Merge: unifiedBookings first, then any myTrips entries not already present
     const bookingIdsSeen = new Set(unifiedBookings.map(b => String(b.id)));
@@ -465,19 +470,14 @@ function openFlightTrip(trip) {
 }
 
 function openExperienceTrip(trip) {
-    const experience = travelerData.searchCatalog.experiences.find((item) => item.id === trip.experienceId);
-    if (!experience || typeof localStorage === "undefined") return;
-
-    localStorage.setItem(SELECTED_EXPERIENCE_KEY, JSON.stringify(experience));
-    window.location.href = `./traveller_experience-detail.html?experience=${encodeURIComponent(experience.id)}${getTripStatusParam(trip)}`;
+    const experienceId = trip.experienceId || "1";
+    window.location.href = `./traveller_experience-detail.html?experience=${encodeURIComponent(experienceId)}${getTripStatusParam(trip)}`;
 }
 
 function openHotelTrip(trip) {
-    const hotel = resolveHotelForTrip(trip);
-    if (!hotel || typeof localStorage === "undefined") return;
-
-    localStorage.setItem(SELECTED_HOTEL_KEY, JSON.stringify(hotel));
-    window.location.href = `./traveller_hotel-detail.html?hotel=${encodeURIComponent(hotel.id)}${getTripStatusParam(trip)}`;
+    const hotelId = trip.hotelId || "grand-luxury";
+    const bookingIdParam = trip.bookingId ? `&bookingId=${encodeURIComponent(trip.bookingId)}` : "";
+    window.location.href = `./traveller_hotel-detail.html?hotel=${encodeURIComponent(hotelId)}${getTripStatusParam(trip)}${bookingIdParam}`;
 }
 
 function openExperienceBookingTrip(trip) {

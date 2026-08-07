@@ -8,6 +8,8 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { AuthGuard } from './common/guards/auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 
+import * as express from 'express';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -18,6 +20,10 @@ async function bootstrap() {
 
   // CORS
   app.enableCors();
+
+  // Payload limits (for Base64 images)
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
   // Global validation
   app.useGlobalPipes(

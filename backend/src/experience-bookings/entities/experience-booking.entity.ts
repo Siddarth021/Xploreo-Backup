@@ -13,6 +13,8 @@ export class ExperienceBooking {
   email!: string;
   phone!: string;
   date!: string;
+  time?: string;
+  slotId?: string;
   participants!: number;
   totalAmount!: number;
   status!: ExperienceBookingStatus;

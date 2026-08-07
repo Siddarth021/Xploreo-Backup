@@ -15,6 +15,33 @@ function clone(value) {
 
 function getTravelerProfilePreset(user) {
     const presets = {
+        "20001": {
+            fullName: "Anjali Sharma",
+            email: "anjali@xploreo.com",
+            phone: "+91 91234 56780",
+            location: "Mumbai, Maharashtra",
+            language: "English (IN)",
+            gender: "Female",
+            dob: "2001-08-15",
+            bio: "Avid explorer and photography enthusiast who loves experiencing premium heritage stays, local culinary trails, and beach retreats across India.",
+            reputation: "Elite Explorer",
+            level: 4,
+            totalTrips: 18,
+            countries: 0,
+            preferences: {
+                transport: "First Class Trains / Flights",
+                stay: "5-Star Resorts / Heritage Villas",
+                budget: "Premium (Rs30k - Rs70k / day)",
+                activityStyle: "Sightseeing / Food Walks / Spa"
+            },
+            interestPreferences: ["Beach", "Heritage", "Food"],
+            hobbies: ["Photography", "Nature trails", "Wellness retreats", "Historical tours"],
+            security: {
+                twoFactorAuth: true,
+                emailNotifications: true,
+                publicProfile: true
+            }
+        },
         "20002": {
             fullName: "Meera Iyer",
             email: "meera@xploreo.com",

@@ -77,6 +77,11 @@ function queueStatePersist(key, value) {
     const timeoutId = setTimeout(async () => {
         pendingWrites.delete(key);
 
+        if (!API_ENDPOINTS.appState) {
+            // Backend endpoint not mapped yet; skip sync to avoid 404
+            return;
+        }
+
         try {
             await apiPatch(`${API_ENDPOINTS.appState}/${encodeURIComponent(key)}`, {
                 value: normalizeStateValue(value)

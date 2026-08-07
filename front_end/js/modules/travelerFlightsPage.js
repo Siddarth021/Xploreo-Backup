@@ -424,8 +424,8 @@ function getDefaultSelectedDate(dateTabs) {
 
 function getSearchValues() {
     const fallback = {
-        from: "New York (JFK)",
-        to: "Dubai (DXB)",
+        from: "Chennai (MAA)",
+        to: "Mumbai (BOM)",
         departure: "2026-06-15",
         returnDate: "",
         travellers: "1 Traveller, Economy",

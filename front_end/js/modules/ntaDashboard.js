@@ -143,7 +143,7 @@ export function renderNtaDashboard(containerId) {
             <div class="card-header">
                 <div>
                     <h2 style="margin: 0 0 4px 0; font-size: 18px; color: #111827;">Package Pricing</h2>
-                    <p style="margin: 0; font-size: 13px; color: #6b7280;">Price comparison across travel packages</p>
+                    <p style="margin: 0; font-size: 13px; color: #6b7280;">Price comdelhion across travel packages</p>
                 </div>
                 <button class="view-all-btn" onclick="window.location.href='nta_plans.html'">View Packages</button>
             </div>

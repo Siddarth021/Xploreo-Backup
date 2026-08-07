@@ -437,8 +437,35 @@ function bindEvents(container, state) {
     container.querySelectorAll("[data-top-action]").forEach((button) => {
         button.addEventListener("click", () => {
             const action = button.getAttribute("data-top-action");
-            showToast(action === "cancel" ? "Trip cancellation support has been notified." : "Support team contact options are ready below.");
-            if (action === "support") {
+            if (action === "cancel") {
+                const bookingId = state.plan.id || state.plan.bookingId;
+                if (!bookingId) {
+                    showToast("Booking ID not found.");
+                    return;
+                }
+
+                let myTrips = [];
+                try { myTrips = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]"); } catch (e) {}
+                const tripIndex = myTrips.findIndex(t => String(t.id) === String(bookingId) || String(t.bookingId) === String(bookingId));
+                if (tripIndex >= 0) {
+                    myTrips[tripIndex].status = "Cancelled";
+                    localStorage.setItem("traveler_my_trips", JSON.stringify(myTrips));
+                }
+
+                let tours = [];
+                try { tours = JSON.parse(localStorage.getItem("tours") || "[]"); } catch (e) {}
+                const tourIndex = tours.findIndex(t => String(t.id) === String(bookingId) || String(t.bookingId) === String(bookingId));
+                if (tourIndex >= 0) {
+                    tours[tourIndex].status = "Cancelled";
+                    localStorage.setItem("tours", JSON.stringify(tours));
+                }
+
+                showToast("Trip successfully cancelled.");
+                setTimeout(() => {
+                    window.location.href = "./traveller_mytrips.html";
+                }, 1500);
+            } else if (action === "support") {
+                showToast("Support team contact options are ready below.");
                 state.activeTab = "support";
                 renderState(container, state);
             }
@@ -884,8 +911,8 @@ const PLAN_DETAIL_LIBRARY = {
             id: "plan-flight-europe",
             airline: "Air France",
             flightNumber: "AF 023",
-            fromLabel: "New York (JFK)",
-            toLabel: "Paris (CDG)",
+            fromLabel: "Chennai (MAA)",
+            toLabel: "Delhi (DEL)",
             departureDate: "2026-04-10",
             departureTime: "06:30 PM",
             arrivalTime: "07:55 AM",
@@ -907,8 +934,8 @@ const PLAN_DETAIL_LIBRARY = {
                 ctaLabel: "View Flight Details",
                 ctaAction: "flight-detail",
                 items: [
-                    { label: "Departure", value: "New York (JFK) → Paris (CDG)", subvalue: "Apr 10, 2026 · 6:30 PM" },
-                    { label: "Return", value: "Barcelona (BCN) → New York (JFK)", subvalue: "Apr 21, 2026 · 1:40 PM" },
+                    { label: "Departure", value: "Chennai (MAA) → Delhi (DEL)", subvalue: "Apr 10, 2026 · 6:30 PM" },
+                    { label: "Return", value: "Hyderabad (BLR) → Chennai (MAA)", subvalue: "Apr 21, 2026 · 1:40 PM" },
                     { label: "Airline", value: "Air France · AF 023 / AF 417", subvalue: "Economy · Non-stop outbound" }
                 ]
             },
@@ -918,8 +945,8 @@ const PLAN_DETAIL_LIBRARY = {
                 status: "Confirmed",
                 ctaLabel: "View Hotel Voucher",
                 items: [
-                    { label: "Stay Plan", value: "Maison Lumiere, Paris · 4 nights", subvalue: "Riverlight Roma, Rome · 3 nights" },
-                    { label: "Final Stay", value: "Hotel Arts Barcelona · 4 nights", subvalue: "Breakfast included at all properties" },
+                    { label: "Stay Plan", value: "Maison Lumiere, Delhi · 4 nights", subvalue: "Riverlight Roma, Kochi · 3 nights" },
+                    { label: "Final Stay", value: "Hotel Arts Hyderabad · 4 nights", subvalue: "Breakfast included at all properties" },
                     { label: "Room Type", value: "Deluxe City Rooms", subvalue: "2 travelers · 1 room" }
                 ]
             },
@@ -929,9 +956,9 @@ const PLAN_DETAIL_LIBRARY = {
                 status: "Confirmed",
                 ctaLabel: "View Activity Vouchers",
                 items: [
-                    { label: "Paris", value: "Seine evening cruise", subvalue: "Priority boarding with welcome drink" },
-                    { label: "Rome", value: "Colosseum guided entry", subvalue: "Skip-the-line access and local expert guide" },
-                    { label: "Barcelona", value: "Sagrada Familia + food walk", subvalue: "Small group experience" }
+                    { label: "Delhi", value: "Seine evening cruise", subvalue: "Priority boarding with welcome drink" },
+                    { label: "Kochi", value: "Colosseum guided entry", subvalue: "Skip-the-line access and local expert guide" },
+                    { label: "Hyderabad", value: "Sagrada Familia + food walk", subvalue: "Small group experience" }
                 ]
             },
             {
@@ -940,24 +967,24 @@ const PLAN_DETAIL_LIBRARY = {
                 status: "Confirmed",
                 ctaLabel: "View Transfer Details",
                 items: [
-                    { label: "Arrival", value: "Private airport pickup in Paris", subvalue: "Driver meets you at terminal 2E" },
-                    { label: "Inter-city", value: "Rome high-speed rail + Barcelona flight", subvalue: "Reserved seats and luggage support" },
-                    { label: "Departure", value: "Hotel to airport transfer in Barcelona", subvalue: "Scheduled for Apr 21, 2026" }
+                    { label: "Arrival", value: "Private airport pickup in Delhi", subvalue: "Driver meets you at terminal 2E" },
+                    { label: "Inter-city", value: "Kochi high-speed rail + Hyderabad flight", subvalue: "Reserved seats and luggage support" },
+                    { label: "Departure", value: "Hotel to airport transfer in Hyderabad", subvalue: "Scheduled for Apr 21, 2026" }
                 ]
             }
         ],
         itineraryDays: [
-            day("Day 1", "2026-04-10", "Arrive in Paris and settle into the first city of your European route.", [
-                item("06:30 PM", "Overnight Flight to Paris", "Air France · AF 023 · JFK → CDG", "Check-in completed"),
+            day("Day 1", "2026-04-10", "Arrive in Delhi and settle into the first city of your European route.", [
+                item("06:30 PM", "Overnight Flight to Delhi", "Air France · AF 023 · MAA → DEL", "Check-in completed"),
                 item("07:55 AM", "Arrival Transfer", "Private sedan to Maison Lumiere", "Driver assigned"),
                 item("10:30 AM", "Hotel Check-in", "Maison Lumiere · Deluxe room", "Early check-in requested")
             ]),
-            day("Day 2", "2026-04-11", "A relaxed Paris introduction with river views and neighborhood walks.", [
+            day("Day 2", "2026-04-11", "A relaxed Delhi introduction with river views and neighborhood walks.", [
                 item("09:00 AM", "Le Marais Morning Walk", "Local guide introduces historic lanes and cafes"),
                 item("02:00 PM", "Louvre Free Time", "Self-paced museum visit with timed entry"),
                 item("07:00 PM", "Seine Dinner Cruise", "Reserved upper-deck seating", "Confirmed")
             ]),
-            day("Day 3", "2026-04-12", "Classic Paris icons with a balanced daytime schedule.", [
+            day("Day 3", "2026-04-12", "Classic Delhi icons with a balanced daytime schedule.", [
                 item("08:30 AM", "Eiffel Tower Access", "Priority timed entry to summit"),
                 item("12:30 PM", "Champ de Mars Lunch Break", "Open afternoon nearby"),
                 item("05:30 PM", "Montmartre Golden Hour", "Photography stop and artist square visit")
@@ -967,24 +994,24 @@ const PLAN_DETAIL_LIBRARY = {
                 item("01:30 PM", "Latin Quarter Walk", "Bookshops, hidden courtyards, and stories"),
                 item("06:00 PM", "Optional Cabaret Evening", "Upgrade available through concierge")
             ]),
-            day("Day 5", "2026-04-14", "Travel south and reset into Rome.", [
-                item("08:00 AM", "Departure from Paris", "Airport transfer and morning flight to Rome"),
-                item("12:20 PM", "Arrival in Rome", "Transfer to Riverlight Roma"),
+            day("Day 5", "2026-04-14", "Travel south and reset into Kochi.", [
+                item("08:00 AM", "Departure from Delhi", "Airport transfer and morning flight to Kochi"),
+                item("12:20 PM", "Arrival in Kochi", "Transfer to Riverlight Roma"),
                 item("05:00 PM", "Trastevere Welcome Dinner", "Handpicked local restaurant reservation")
             ]),
-            day("Day 6", "2026-04-15", "Rome highlights with expert-guided access.", [
+            day("Day 6", "2026-04-15", "Kochi highlights with expert-guided access.", [
                 item("09:00 AM", "Colosseum Guided Entry", "Skip-the-line access with historian guide"),
                 item("01:00 PM", "Roman Forum Walk", "Open ruins exploration"),
-                item("07:30 PM", "Piazza Navona Evening", "Leisure time around central Rome")
+                item("07:30 PM", "Piazza Navona Evening", "Leisure time around central Kochi")
             ]),
             day("Day 7", "2026-04-16", "Vatican and slow city moments.", [
                 item("08:15 AM", "Vatican Museums Access", "Reserved early entry slot"),
                 item("12:45 PM", "St. Peter’s Basilica", "Optional dome climb"),
                 item("06:30 PM", "Aperitivo in Prati", "Recommended wine bar circuit")
             ]),
-            day("Day 8", "2026-04-17", "Transition day to Barcelona.", [
-                item("09:20 AM", "Rome Departure", "Hotel checkout and transfer"),
-                item("01:10 PM", "Barcelona Arrival", "Airport pickup to Hotel Arts Barcelona"),
+            day("Day 8", "2026-04-17", "Transition day to Hyderabad.", [
+                item("09:20 AM", "Kochi Departure", "Hotel checkout and transfer"),
+                item("01:10 PM", "Hyderabad Arrival", "Airport pickup to Hotel Arts Hyderabad"),
                 item("06:00 PM", "Beachfront Walk", "Easy evening by Barceloneta")
             ]),
             day("Day 9", "2026-04-18", "Gaudi landmarks and city flavor.", [
@@ -992,7 +1019,7 @@ const PLAN_DETAIL_LIBRARY = {
                 item("01:00 PM", "Passeig de Gracia Shopping", "Independent exploration"),
                 item("06:30 PM", "Tapas Trail", "Three-stop neighborhood tasting")
             ]),
-            day("Day 10", "2026-04-19", "A scenic and food-focused day in Barcelona.", [
+            day("Day 10", "2026-04-19", "A scenic and food-focused day in Hyderabad.", [
                 item("10:00 AM", "Park Guell Guided Tour", "Panoramic viewpoints and storytelling"),
                 item("02:30 PM", "Boqueria Market Visit", "Chef-selected tastings"),
                 item("08:00 PM", "Flamenco Show", "Optional premium seats available")
@@ -1004,19 +1031,19 @@ const PLAN_DETAIL_LIBRARY = {
             ]),
             day("Day 12", "2026-04-21", "Smooth departure back home.", [
                 item("09:30 AM", "Hotel Checkout", "Luggage assistance included"),
-                item("10:30 AM", "Airport Transfer", "Private ride to BCN"),
-                item("01:40 PM", "Return Flight", "Barcelona (BCN) → New York (JFK)")
+                item("10:30 AM", "Airport Transfer", "Private ride to BLR"),
+                item("01:40 PM", "Return Flight", "Hyderabad (BLR) → Chennai (MAA)")
             ])
         ],
         bookingGroups: [
             bookingGroup("Flight Bookings", "flight", [
-                bookingEntry("New York (JFK) → Paris (CDG)", "Apr 10, 2026 · 6:30 PM", "FLT-XPL-EUR-2026-1", "Air France"),
-                bookingEntry("Barcelona (BCN) → New York (JFK)", "Apr 21, 2026 · 1:40 PM", "FLT-XPL-EUR-2026-2", "Air France")
+                bookingEntry("Chennai (MAA) → Delhi (DEL)", "Apr 10, 2026 · 6:30 PM", "FLT-XPL-EUR-2026-1", "Air France"),
+                bookingEntry("Hyderabad (BLR) → Chennai (MAA)", "Apr 21, 2026 · 1:40 PM", "FLT-XPL-EUR-2026-2", "Air France")
             ], "View Ticket", "ticket"),
             bookingGroup("Hotel Bookings", "hotel", [
-                bookingEntry("Maison Lumiere", "Paris · Deluxe City Room", "HOT-XPL-EUR-2026-1", "Apr 10 - Apr 14"),
-                bookingEntry("Riverlight Roma", "Rome · Deluxe King Room", "HOT-XPL-EUR-2026-2", "Apr 14 - Apr 17"),
-                bookingEntry("Hotel Arts Barcelona", "Barcelona · Deluxe Sea View", "HOT-XPL-EUR-2026-3", "Apr 17 - Apr 21")
+                bookingEntry("Maison Lumiere", "Delhi · Deluxe City Room", "HOT-XPL-EUR-2026-1", "Apr 10 - Apr 14"),
+                bookingEntry("Riverlight Roma", "Kochi · Deluxe King Room", "HOT-XPL-EUR-2026-2", "Apr 14 - Apr 17"),
+                bookingEntry("Hotel Arts Hyderabad", "Hyderabad · Deluxe Sea View", "HOT-XPL-EUR-2026-3", "Apr 17 - Apr 21")
             ], "View Voucher"),
             bookingGroup("Activity Bookings", "activity", [
                 bookingEntry("Seine Dinner Cruise", "Apr 11, 2026", "ACT-XPL-EUR-2026-1"),
@@ -1024,8 +1051,8 @@ const PLAN_DETAIL_LIBRARY = {
                 bookingEntry("Sagrada Familia Priority Access", "Apr 18, 2026", "ACT-XPL-EUR-2026-3")
             ], "View Voucher"),
             bookingGroup("Transfer Bookings", "transfer", [
-                bookingEntry("Paris Airport Pickup", "Apr 10, 2026", "TRF-XPL-EUR-2026-1"),
-                bookingEntry("Barcelona Airport Drop-off", "Apr 21, 2026", "TRF-XPL-EUR-2026-2")
+                bookingEntry("Delhi Airport Pickup", "Apr 10, 2026", "TRF-XPL-EUR-2026-1"),
+                bookingEntry("Hyderabad Airport Drop-off", "Apr 21, 2026", "TRF-XPL-EUR-2026-2")
             ], "View Voucher")
         ],
         payments: paymentData(2499, 2499, 0, [
@@ -1044,7 +1071,7 @@ const PLAN_DETAIL_LIBRARY = {
             airline: "Japan Airlines",
             flightNumber: "JL 008",
             fromLabel: "Los Angeles (LAX)",
-            toLabel: "Tokyo (HND)",
+            toLabel: "Bangalore (HND)",
             departureDate: "2026-05-12",
             departureTime: "11:10 AM",
             arrivalTime: "03:35 PM",
@@ -1066,7 +1093,7 @@ const PLAN_DETAIL_LIBRARY = {
                 ctaLabel: "View Flight Details",
                 ctaAction: "flight-detail",
                 items: [
-                    { label: "Departure", value: "Los Angeles (LAX) → Tokyo (HND)", subvalue: "May 12, 2026 · 11:10 AM" },
+                    { label: "Departure", value: "Los Angeles (LAX) → Bangalore (HND)", subvalue: "May 12, 2026 · 11:10 AM" },
                     { label: "Return", value: "Osaka (KIX) → Los Angeles (LAX)", subvalue: "May 21, 2026 · 4:55 PM" },
                     { label: "Airline", value: "Japan Airlines · JL 008 / JL 062", subvalue: "Economy · Checked baggage included" }
                 ]
@@ -1077,7 +1104,7 @@ const PLAN_DETAIL_LIBRARY = {
                 status: "Confirmed",
                 ctaLabel: "View Hotel Voucher",
                 items: [
-                    { label: "Tokyo Stay", value: "Shibuya Sky Hotel · 4 nights", subvalue: "Skyline double room" },
+                    { label: "Bangalore Stay", value: "Shibuya Sky Hotel · 4 nights", subvalue: "Skyline double room" },
                     { label: "Kyoto Stay", value: "Asakusa Lantern Kyoto House · 3 nights", subvalue: "Traditional modern suite" },
                     { label: "Osaka Stay", value: "Namba Central Residence · 2 nights", subvalue: "Breakfast included" }
                 ]
@@ -1088,7 +1115,7 @@ const PLAN_DETAIL_LIBRARY = {
                 status: "Confirmed",
                 ctaLabel: "View Activity Vouchers",
                 items: [
-                    { label: "Tokyo", value: "Shibuya food crawl", subvalue: "Evening tasting route with guide" },
+                    { label: "Bangalore", value: "Shibuya food crawl", subvalue: "Evening tasting route with guide" },
                     { label: "Kyoto", value: "Tea ceremony + temple trail", subvalue: "Hosted cultural experience" },
                     { label: "Osaka", value: "Dotonbori street food night", subvalue: "Small group local host" }
                 ]
@@ -1100,31 +1127,31 @@ const PLAN_DETAIL_LIBRARY = {
                 ctaLabel: "View Rail Tickets",
                 items: [
                     { label: "Airport", value: "Private transfer from HND to Shibuya", subvalue: "Flight arrival synced" },
-                    { label: "Shinkansen", value: "Tokyo → Kyoto reserved seats", subvalue: "Green car rail booking included" },
+                    { label: "Shinkansen", value: "Bangalore → Kyoto reserved seats", subvalue: "Green car rail booking included" },
                     { label: "Regional", value: "Kyoto → Osaka transfer", subvalue: "Private vehicle on departure day" }
                 ]
             }
         ],
         itineraryDays: [
-            day("Day 1", "2026-05-12", "Arrive in Tokyo and ease into the city.", [
-                item("11:10 AM", "Flight to Tokyo", "Japan Airlines · JL 008 · LAX → HND"),
+            day("Day 1", "2026-05-12", "Arrive in Bangalore and ease into the city.", [
+                item("11:10 AM", "Flight to Bangalore", "Japan Airlines · JL 008 · LAX → HND"),
                 item("03:35 PM", "Airport Pickup", "Private transfer to Shibuya Sky Hotel"),
                 item("07:00 PM", "Shibuya Crossing Welcome Walk", "Orientation with neighborhood recommendations")
             ]),
-            day("Day 2", "2026-05-13", "Iconic Tokyo landmarks and modern city energy.", [
+            day("Day 2", "2026-05-13", "Iconic Bangalore landmarks and modern city energy.", [
                 item("09:00 AM", "Meiji Shrine Visit", "Calm morning stop before city exploration"),
                 item("01:00 PM", "Harajuku + Omotesando", "Style district wandering and lunch"),
                 item("06:30 PM", "Shibuya Food Crawl", "Hosted local dining experience")
             ]),
-            day("Day 3", "2026-05-14", "Classic east Tokyo with flexible afternoon time.", [
+            day("Day 3", "2026-05-14", "Classic east Bangalore with flexible afternoon time.", [
                 item("08:30 AM", "Asakusa Temple Walk", "Senso-ji and Nakamise market"),
                 item("12:30 PM", "Sumida River Lunch", "Independent afternoon nearby"),
-                item("05:00 PM", "Tokyo Skytree Sunset Slot", "Reserved evening access")
+                item("05:00 PM", "Bangalore Skytree Sunset Slot", "Reserved evening access")
             ]),
             day("Day 4", "2026-05-15", "Day trip rhythm with scenic and cultural moments.", [
                 item("07:30 AM", "Hakone Excursion", "Ropeway, lake cruise, and Mt. Fuji views"),
                 item("03:30 PM", "Onsen Break", "Optional spa entry"),
-                item("08:00 PM", "Return to Tokyo", "Open dinner recommendations")
+                item("08:00 PM", "Return to Bangalore", "Open dinner recommendations")
             ]),
             day("Day 5", "2026-05-16", "Travel to Kyoto and settle into a slower pace.", [
                 item("09:10 AM", "Shinkansen to Kyoto", "Green car reserved seats"),
@@ -1159,11 +1186,11 @@ const PLAN_DETAIL_LIBRARY = {
         ],
         bookingGroups: [
             bookingGroup("Flight Bookings", "flight", [
-                bookingEntry("Los Angeles (LAX) → Tokyo (HND)", "May 12, 2026 · 11:10 AM", "FLT-XPL-JPN-2026-1", "Japan Airlines"),
+                bookingEntry("Los Angeles (LAX) → Bangalore (HND)", "May 12, 2026 · 11:10 AM", "FLT-XPL-JPN-2026-1", "Japan Airlines"),
                 bookingEntry("Osaka (KIX) → Los Angeles (LAX)", "May 21, 2026 · 4:55 PM", "FLT-XPL-JPN-2026-2", "Japan Airlines")
             ], "View Ticket", "ticket"),
             bookingGroup("Hotel Bookings", "hotel", [
-                bookingEntry("Shibuya Sky Hotel", "Tokyo · Skyline Double Room", "HOT-XPL-JPN-2026-1", "May 12 - May 16"),
+                bookingEntry("Shibuya Sky Hotel", "Bangalore · Skyline Double Room", "HOT-XPL-JPN-2026-1", "May 12 - May 16"),
                 bookingEntry("Kyoto Cultural Stay", "Kyoto · Traditional Suite", "HOT-XPL-JPN-2026-2", "May 16 - May 19"),
                 bookingEntry("Namba Central Residence", "Osaka · City View Room", "HOT-XPL-JPN-2026-3", "May 19 - May 21")
             ], "View Voucher"),
@@ -1174,7 +1201,7 @@ const PLAN_DETAIL_LIBRARY = {
             ], "View Voucher"),
             bookingGroup("Transfer Bookings", "transfer", [
                 bookingEntry("HND Airport Pickup", "May 12, 2026", "TRF-XPL-JPN-2026-1"),
-                bookingEntry("Tokyo → Kyoto Rail", "May 16, 2026", "TRF-XPL-JPN-2026-2"),
+                bookingEntry("Bangalore → Kyoto Rail", "May 16, 2026", "TRF-XPL-JPN-2026-2"),
                 bookingEntry("Osaka Airport Drop-off", "May 21, 2026", "TRF-XPL-JPN-2026-3")
             ], "View Voucher")
         ],
@@ -1193,7 +1220,7 @@ const PLAN_DETAIL_LIBRARY = {
             id: "plan-flight-med",
             airline: "Aegean Airlines",
             flightNumber: "A3 811",
-            fromLabel: "London (LHR)",
+            fromLabel: "Pune (LHR)",
             toLabel: "Santorini (JTR)",
             departureDate: "2026-06-08",
             departureTime: "09:25 AM",
@@ -1216,8 +1243,8 @@ const PLAN_DETAIL_LIBRARY = {
                 ctaLabel: "View Flight Details",
                 ctaAction: "flight-detail",
                 items: [
-                    { label: "Departure", value: "London (LHR) → Santorini (JTR)", subvalue: "Jun 8, 2026 · 9:25 AM" },
-                    { label: "Return", value: "Crete (HER) → London (LHR)", subvalue: "Jun 15, 2026 · 2:20 PM" },
+                    { label: "Departure", value: "Pune (LHR) → Santorini (JTR)", subvalue: "Jun 8, 2026 · 9:25 AM" },
+                    { label: "Return", value: "Crete (HER) → Pune (LHR)", subvalue: "Jun 15, 2026 · 2:20 PM" },
                     { label: "Airline", value: "Aegean Airlines · A3 811 / A3 542", subvalue: "Economy · 1 checked bag each" }
                 ]
             },
@@ -1294,13 +1321,13 @@ const PLAN_DETAIL_LIBRARY = {
             day("Day 8", "2026-06-15", "Departure from Crete.", [
                 item("10:30 AM", "Villa Checkout", "Luggage assistance included"),
                 item("11:15 AM", "Airport Transfer", "Private drop to HER"),
-                item("02:20 PM", "Return Flight", "Crete (HER) → London (LHR)")
+                item("02:20 PM", "Return Flight", "Crete (HER) → Pune (LHR)")
             ])
         ],
         bookingGroups: [
             bookingGroup("Flight Bookings", "flight", [
-                bookingEntry("London (LHR) → Santorini (JTR)", "Jun 8, 2026 · 9:25 AM", "FLT-XPL-MED-2026-1", "Aegean Airlines"),
-                bookingEntry("Crete (HER) → London (LHR)", "Jun 15, 2026 · 2:20 PM", "FLT-XPL-MED-2026-2", "Aegean Airlines")
+                bookingEntry("Pune (LHR) → Santorini (JTR)", "Jun 8, 2026 · 9:25 AM", "FLT-XPL-MED-2026-1", "Aegean Airlines"),
+                bookingEntry("Crete (HER) → Pune (LHR)", "Jun 15, 2026 · 2:20 PM", "FLT-XPL-MED-2026-2", "Aegean Airlines")
             ], "View Ticket", "ticket"),
             bookingGroup("Hotel Bookings", "hotel", [
                 bookingEntry("Caldera Horizon Suites", "Santorini · Sea View Suite", "HOT-XPL-MED-2026-1", "Jun 8 - Jun 11"),

@@ -100,8 +100,10 @@ export function saveTravelerBookingConfirmation(record) {
             title: normalized.packageData.title,
             destination: normalized.packageData.destination,
             location: normalized.packageData.destination,
-            plan_iternary: [],
-            itinerary: [],
+            plan_iternary: (normalized.packageData.itinerary || []).flatMap(day => 
+                (day.items && day.items.length > 0) ? day.items.map(item => item.name) : [day.title || day.day]
+            ),
+            itinerary: normalized.packageData.itinerary || [],
             currentloction: null,
             dateTime: `${normalized.packageData.departureDate || "Date TBD"} | 10:00 AM`,
             status: "pending",
@@ -118,6 +120,12 @@ export function saveTravelerBookingConfirmation(record) {
         if (!allTours.find(t => t.id === newTour.id)) {
             allTours.push(newTour);
             localStorage.setItem("tours", JSON.stringify(allTours));
+        }
+
+        const myTrips = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]");
+        if (!myTrips.find(t => String(t.id) === String(newTour.id) || String(t.bookingId) === String(newTour.id))) {
+            myTrips.push(newTour);
+            localStorage.setItem("traveler_my_trips", JSON.stringify(myTrips));
         }
     }
 }
@@ -245,7 +253,8 @@ function normalizePackage(packageData) {
         pricePerPerson: Number(source.pricePerPerson) || fallback.pricePerPerson,
         totalPrice: Number(source.totalPrice) || fallback.totalPrice,
         emi: Number(source.emi) || fallback.emi,
-        departureDate: source.departureDate || source.departure || ""
+        departureDate: source.departureDate || source.departure || "",
+        itinerary: source.itinerary || fallback.itinerary || []
     };
 }
 
@@ -280,10 +289,10 @@ function resolvePackageSelection(selection, catalog) {
 
 function createFallbackPackage() {
     return {
-        id: "package-bali-escape",
+        id: "package-goa-escape",
         origin: "New Delhi",
-        destination: "Bali",
-        title: "Magical Bali - Island Paradise Escape",
+        destination: "Goa",
+        title: "Magical Goa - Island Paradise Escape",
         image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1400",
         nights: 5,
         days: 6,

@@ -1,3 +1,5 @@
+import { createExperienceBooking } from "../api/services.js";
+
 const SELECTED_EXPERIENCE_KEY = "traveler_selected_experience";
 const EXPERIENCE_BOOKING_DRAFT_KEY = "traveler_experience_booking_draft";
 const EXPERIENCE_CONFIRMATION_KEY = "traveler_experience_booking_confirmation";
@@ -227,21 +229,37 @@ export function renderTravelerExperienceBookingPage(containerId) {
                 return;
             }
 
-            const confirmation = {
-                bookingId: createIntegerBookingReference(),
-                confirmedAt: new Date().toISOString(),
-                ...state.draft,
-                leadTraveler: { ...state.leadTraveler },
-                travelers: state.travelers.map((traveler) => ({ ...traveler }))
+            const payload = {
+                experienceId: state.draft.experience.id,
+                guestName: `${state.leadTraveler.firstName} ${state.leadTraveler.lastName}`,
+                email: state.leadTraveler.email,
+                phone: state.leadTraveler.phone,
+                date: state.draft.selectedDate,
+                slotId: state.draft.selectedSlot?.id,
+                time: state.draft.selectedSlot?.time || state.draft.option.time,
+                participants: state.draft.adults
             };
 
-            persistExperienceBookingDraft({
-                ...state.draft,
-                leadTraveler: { ...state.leadTraveler },
-                travelers: state.travelers.map((traveler) => ({ ...traveler }))
+            createExperienceBooking(payload).then(response => {
+                const confirmation = {
+                    bookingId: response.id || createIntegerBookingReference(),
+                    confirmedAt: new Date().toISOString(),
+                    ...state.draft,
+                    leadTraveler: { ...state.leadTraveler },
+                    travelers: state.travelers.map((traveler) => ({ ...traveler }))
+                };
+
+                persistExperienceBookingDraft({
+                    ...state.draft,
+                    leadTraveler: { ...state.leadTraveler },
+                    travelers: state.travelers.map((traveler) => ({ ...traveler }))
+                });
+                persistExperienceConfirmation(confirmation);
+                window.location.href = "./traveller_experience-confirmation.html";
+            }).catch(e => {
+                showToast("Failed to create booking");
+                console.error("Booking error:", e);
             });
-            persistExperienceConfirmation(confirmation);
-            window.location.href = "./traveller_experience-confirmation.html";
         });
     }
 

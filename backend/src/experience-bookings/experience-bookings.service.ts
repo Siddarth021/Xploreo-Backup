@@ -34,12 +34,30 @@ export class ExperienceBookingsService {
       throw new BadRequestException('Experience capacity exceeded');
     }
 
+    let updatedSlots = experience.slots;
+    if (dto.slotId) {
+      const slotIndex = experience.slots.findIndex((s) => s.id === dto.slotId);
+      if (slotIndex !== -1) {
+        const slot = experience.slots[slotIndex];
+        if (slot.booked + dto.participants > slot.capacity) {
+          throw new BadRequestException('Slot capacity exceeded');
+        }
+        updatedSlots = [...experience.slots];
+        updatedSlots[slotIndex] = {
+          ...slot,
+          booked: slot.booked + dto.participants,
+          available: slot.booked + dto.participants < slot.capacity,
+        };
+      }
+    }
+
     const updated = this.experiencesRepository.update(experience.id, {
       booked: experience.booked + dto.participants,
       availability:
         experience.booked + dto.participants >= experience.capacity
           ? ExperienceAvailability.NOT_AVAILABLE
           : ExperienceAvailability.AVAILABLE,
+      slots: updatedSlots,
     });
 
     const booking = this.bookingsRepository.create({
@@ -49,6 +67,8 @@ export class ExperienceBookingsService {
       email: dto.email,
       phone: dto.phone,
       date: dto.date,
+      time: dto.time,
+      slotId: dto.slotId,
       participants: dto.participants,
       totalAmount: experience.price * dto.participants,
     });

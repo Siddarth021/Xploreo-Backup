@@ -7,7 +7,7 @@ const SELECTED_PACKAGE_STORAGE_KEY = "traveler_selected_package";
 const SEARCH_STORAGE_KEY = "traveler_dashboard_search_state";
 const WISHLIST_STORAGE_KEY = "traveler_wishlist";
 const ROOM_OPTIONS = ["1", "2", "3", "4", "5", "6", "7", "8"];
-const GUEST_OPTIONS = ["1", "2", "3", "4", "5", "6", "7", "8"];
+const GUEST_OPTIONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
 let PACKAGE_RESULTS = [];
 
@@ -19,21 +19,19 @@ export async function renderTravelerPackageSearchPage(containerId) {
         searchValues: getSearchValues(),
         minDuration: 1,
         flightMode: "with",
-        maxBudget: 5000,
+        maxBudget: 100000,
         selectedBudgets: new Set(),
         selectedCategories: new Set(),
         occupancyOpen: false
     };
 
-    if (!PACKAGE_RESULTS.length) {
-        container.innerHTML = `<div class="traveler-package-empty">Loading packages...</div>`;
-        try {
-            const plans = await fetchPlans();
-            PACKAGE_RESULTS = plans.map((plan) => mapPlanToPackage(plan, getSearchValues()));
-        } catch (error) {
-            container.innerHTML = `<div class="traveler-package-empty">Unable to load packages right now.</div>`;
-            return;
-        }
+    container.innerHTML = `<div class="traveler-package-empty">Loading packages...</div>`;
+    try {
+        const plans = await fetchPlans();
+        PACKAGE_RESULTS = plans.map((plan) => mapPlanToPackage(plan, getSearchValues()));
+    } catch (error) {
+        container.innerHTML = `<div class="traveler-package-empty">Unable to load packages right now.</div>`;
+        return;
     }
 
     function render() {
@@ -80,12 +78,12 @@ export async function renderTravelerPackageSearchPage(containerId) {
                             <div class="traveler-package-filter-group">
                                 <h3>Budget</h3>
                                 <div class="traveler-package-slider-wrap">
-                                    <input id="traveler-package-budget" type="range" min="0" max="10000" step="100" value="${state.maxBudget}">
+                                    <input id="traveler-package-budget" type="range" min="0" max="100000" step="500" value="${state.maxBudget}">
                                 </div>
                                 <div class="traveler-package-slider-labels traveler-package-budget-labels">
                                     <span>$0</span>
                                     <span class="active">${formatCurrency(state.maxBudget)}</span>
-                                    <span>$10,000</span>
+                                    <span>$100,000</span>
                                 </div>
                                 <div class="traveler-package-checkbox-list">
                                     ${renderBudgetCheck("under-500", "Under $500", state.selectedBudgets.has("under-500"))}
@@ -286,7 +284,7 @@ function attachPackageSearchAutocomplete(container) {
 function getSearchValues() {
     const fallback = {
         fromCity: "New Delhi",
-        destination: "Bali",
+        destination: "Goa",
         departureDate: "",
         rooms: "1",
         guestCount: "2",
@@ -348,7 +346,7 @@ function getFilteredPackages(state) {
     const guestCount = Number.parseInt(state.searchValues.guestCount, 10) || 2;
 
     return PACKAGE_RESULTS
-        .filter((item) => !originTerm || normalizeText(item.origin).includes(originTerm))
+        .filter((item) => !originTerm || normalizeText(item.origin) === "any" || normalizeText(item.origin).includes(originTerm))
         .filter((item) =>
             !destinationTerm ||
             normalizeText(item.destination).includes(destinationTerm) ||
@@ -402,13 +400,13 @@ function renderOccupancyField(state) {
                     <label>
                         <span>Rooms</span>
                         <select data-package-field="rooms">
-                            ${ROOM_OPTIONS.map((option) => `<option value="${option}" ${option === state.searchValues.rooms ? "selected" : ""}>${option}</option>`).join("")}
+                            ${ROOM_OPTIONS.map((option) => `<option value="${option}" ${option === String(state.searchValues.rooms) ? "selected" : ""}>${option} Room${option === "1" ? "" : "s"}</option>`).join("")}
                         </select>
                     </label>
                     <label>
                         <span>Guests</span>
                         <select data-package-field="guestCount">
-                            ${GUEST_OPTIONS.map((option) => `<option value="${option}" ${option === state.searchValues.guestCount ? "selected" : ""}>${option}</option>`).join("")}
+                            ${GUEST_OPTIONS.map((option) => `<option value="${option}" ${option === String(state.searchValues.guestCount) ? "selected" : ""}>${option} Guest${option === "1" ? "" : "s"}</option>`).join("")}
                         </select>
                     </label>
                 </div>
@@ -439,7 +437,8 @@ function renderPackageCard(item) {
 
     return `
         <article class="traveler-package-card">
-            <div class="traveler-package-card-media" style="background-image:url('${item.image}')">
+            <div class="traveler-package-card-media" style="${item.image ? `background-image:url('${item.image}')` : `background:#f5f5f5; display:flex; align-items:center; justify-content:center; color:#999;`}">
+                ${!item.image ? `<div style="position:absolute;">No Image</div>` : ""}
                 <button class="traveler-package-fav ${wishlisted ? "active" : ""}" type="button" data-package-wishlist="${item.id}" aria-label="Save package">
                     ${heartIcon()}
                 </button>
@@ -467,7 +466,7 @@ function renderPackageCard(item) {
                             <strong>${formatCurrency(item.pricePerPerson)}</strong>
                             <span class="traveler-package-total-copy">Total: ${formatCurrency(item.totalPriceDisplay)}</span>
                         </div>
-                        <p class="traveler-package-emi-copy">or EMI from ${formatCurrency(item.emi)}/month</p>
+
                     </div>
 
                     <button class="traveler-package-view-btn" type="button" data-package-details="${item.id}">View Details</button>

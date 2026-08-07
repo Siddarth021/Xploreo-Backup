@@ -1,13 +1,14 @@
 import { travelerData } from "../api/legacyData.js";
+import { fetchExperience } from "../api/services.js";
 
 const SELECTED_EXPERIENCE_KEY = "traveler_selected_experience";
 const EXPERIENCE_BOOKING_DRAFT_KEY = "traveler_experience_booking_draft";
 
-export function renderTravelerExperienceDetailPage(containerId) {
+export async function renderTravelerExperienceDetailPage(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const experience = getSelectedExperience();
+    let experience = getSelectedExperience();
     if (!experience) {
         container.innerHTML = `
             <main class="traveler-experience-detail-page">
@@ -21,16 +22,40 @@ export function renderTravelerExperienceDetailPage(containerId) {
         return;
     }
 
+    // Fetch the latest slots from the backend
+    try {
+        const freshExp = await fetchExperience(experience.id);
+        if (freshExp) {
+            experience.slots = freshExp.slots || [];
+        }
+    } catch (e) {
+        console.warn("Failed to fetch fresh slots from backend", e);
+    }
+
     const state = {
         experience,
         activeImage: experience.gallery[0] || experience.image,
         activeTab: "about",
         adults: 2,
         selectedDate: getDefaultDate(),
+        selectedSlotId: null,
         selectedOptionId: getDefaultOptionId(experience),
         galleryOpen: false,
         wishlisted: isWishlisted(experience)
     };
+
+    // Initialize default slot if slots exist
+    const availableSlots = (state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available);
+    if (availableSlots.length) {
+        state.selectedSlotId = availableSlots[0].id;
+    }
+
+    // Limit initial adults to the max available seats of the selected slot
+    const initialSlot = availableSlots.find(s => s.id === state.selectedSlotId);
+    const initialMaxSeats = initialSlot ? (initialSlot.capacity - initialSlot.booked) : state.experience.capacity;
+    if (state.adults > initialMaxSeats && initialMaxSeats > 0) {
+        state.adults = initialMaxSeats;
+    }
 
     function isExperienceCompleted() {
         const status = new URLSearchParams(window.location.search).get("status")?.trim().toLowerCase();
@@ -89,9 +114,9 @@ export function renderTravelerExperienceDetailPage(containerId) {
                         <section class="traveler-experience-sections">
                             <div class="traveler-experience-tabs">
                                 ${renderTab("about", "About", state.activeTab)}
-                                ${renderTab("highlights", "Highlights", state.activeTab)}
-                                ${renderTab("options", "Activity Options", state.activeTab)}
-                                ${renderTab("important", "Important Info", state.activeTab)}
+                                ${state.experience.highlights && state.experience.highlights.length ? renderTab("highlights", "Highlights", state.activeTab) : ""}
+                                ${state.experience.options && state.experience.options.length > 1 ? renderTab("options", "Activity Options", state.activeTab) : ""}
+                                ${(state.experience.cancellation && state.experience.cancellation.length) || (state.experience.bring && state.experience.bring.length) || (state.experience.requirements && state.experience.requirements.length) ? renderTab("important", "Important Info", state.activeTab) : ""}
                             </div>
                             ${renderActiveSection(state, selectedOption)}
                         </section>
@@ -107,6 +132,16 @@ export function renderTravelerExperienceDetailPage(containerId) {
                             <input class="traveler-experience-side-input" type="date" id="traveler-experience-date" value="${escapeHtml(state.selectedDate)}" ${isCompleted ? "disabled" : ""}>
                         </label>
 
+                        <label class="traveler-experience-side-field">
+                            <span class="traveler-experience-side-label">${clockIcon()} Select Time Slot</span>
+                            <select class="traveler-experience-side-input" id="traveler-experience-time-slot" ${isCompleted ? "disabled" : ""}>
+                                ${(state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available).length ? 
+                                    (state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available).map(slot => `<option value="${slot.id}" ${slot.id === state.selectedSlotId ? "selected" : ""}>${slot.time} (${slot.capacity - slot.booked} seats left)</option>`).join("") 
+                                    : `<option value="" disabled>No slots available (Flexible timing)</option>`
+                                }
+                            </select>
+                        </label>
+
                         <div class="traveler-experience-side-field">
                             <span class="traveler-experience-side-label">${usersIcon()} Number of Adults</span>
                             <div class="traveler-experience-side-stepper">
@@ -119,7 +154,7 @@ export function renderTravelerExperienceDetailPage(containerId) {
                         <div class="traveler-experience-selected-option">
                             <span>Selected Option</span>
                             <strong>${escapeHtml(selectedOption.title)}</strong>
-                            <p>${escapeHtml(selectedOption.time)}</p>
+                            <p>${(state.experience.slots || []).find(s => s.id === state.selectedSlotId)?.time || escapeHtml(selectedOption.time)}</p>
                         </div>
 
                         <div class="traveler-experience-side-total-row">
@@ -190,12 +225,34 @@ export function renderTravelerExperienceDetailPage(containerId) {
         });
 
         container.querySelector("#traveler-adults-increase")?.addEventListener("click", () => {
-            state.adults = Math.min(12, state.adults + 1);
+            const selectedSlot = (state.experience.slots || []).find(s => s.id === state.selectedSlotId);
+            const availableSeats = selectedSlot ? (selectedSlot.capacity - selectedSlot.booked) : state.experience.capacity;
+            state.adults = Math.min(availableSeats, Math.min(12, state.adults + 1));
             render();
         });
 
         container.querySelector("#traveler-experience-date")?.addEventListener("change", (event) => {
             state.selectedDate = event.target.value || getDefaultDate();
+            const slots = (state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available);
+            state.selectedSlotId = slots.length ? slots[0].id : null;
+            
+            const newSlot = slots.find(s => s.id === state.selectedSlotId);
+            const maxSeats = newSlot ? (newSlot.capacity - newSlot.booked) : state.experience.capacity;
+            if (state.adults > maxSeats && maxSeats > 0) {
+                state.adults = maxSeats;
+            }
+            render();
+        });
+
+        container.querySelector("#traveler-experience-time-slot")?.addEventListener("change", (event) => {
+            state.selectedSlotId = event.target.value || null;
+            
+            const newSlot = (state.experience.slots || []).find(s => s.id === state.selectedSlotId);
+            const maxSeats = newSlot ? (newSlot.capacity - newSlot.booked) : state.experience.capacity;
+            if (state.adults > maxSeats && maxSeats > 0) {
+                state.adults = maxSeats;
+            }
+            render();
         });
 
         container.querySelector("#traveler-experience-gallery-btn")?.addEventListener("click", () => {
@@ -251,6 +308,7 @@ export function renderTravelerExperienceDetailPage(containerId) {
                     experience: state.experience,
                     option: { ...currentOption },
                     selectedDate: state.selectedDate,
+                    selectedSlot: (state.experience.slots || []).find(s => s.id === state.selectedSlotId) || null,
                     adults: state.adults,
                     totalPrice: currentOption.price * state.adults
                 });
@@ -397,16 +455,21 @@ function renderActiveSection(state, selectedOption) {
     }
 
     return `
+        ${state.experience.description.length ? `
         <article class="traveler-experience-detail-card">
             <h2>About</h2>
             ${state.experience.description.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
         </article>
+        ` : ""}
+        ${state.experience.audience.length ? `
         <article class="traveler-experience-detail-card">
             <h2>Who It's For</h2>
             <ul class="traveler-experience-list">
                 ${state.experience.audience.map((item) => `<li>${checkCircleIcon()} ${escapeHtml(item)}</li>`).join("")}
             </ul>
         </article>
+        ` : ""}
+        ${state.experience.expectations.length ? `
         <article class="traveler-experience-detail-card">
             <h2>What to Expect</h2>
             <div class="traveler-experience-highlight-grid">
@@ -421,6 +484,7 @@ function renderActiveSection(state, selectedOption) {
                 `).join("")}
             </div>
         </article>
+        ` : ""}
     `;
 }
 

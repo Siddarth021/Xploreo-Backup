@@ -345,12 +345,14 @@ export function renderTravelerBookingDetailsPage(containerId) {
             const validation = validateTravelers(state.travelers);
             if (!validation.valid) {
                 setFeedback(validation.message, true);
+                alert(validation.message); // Explicit alert so user knows they must fill the form
                 return;
             }
 
             const draft = createTravelerDraft({
                 ...state.packageData,
-                departureDate: state.selectedDate
+                departureDate: state.selectedDate,
+                itinerary: state.itinerary // Include customized itinerary!
             }, state.travelers);
             const confirmation = createTravelerConfirmation(draft);
 
@@ -605,9 +607,9 @@ function buildPackageViewModel(packageData) {
 
 function inferLocationLabel(destination) {
     const map = {
-        bali: "Bali, Indonesia",
+        goa: "Goa, Indonesia",
         maldives: "Maldives",
-        dubai: "Dubai, UAE",
+        mumbai: "Mumbai, UAE",
         thailand: "Phuket & Krabi, Thailand",
         switzerland: "Swiss Alps, Switzerland",
         goa: "Goa, India",
@@ -626,7 +628,7 @@ function inferReviews(packageData) {
 }
 
 function createGallery(keyword, fallbackImage) {
-    if (keyword.includes("bali")) {
+    if (keyword.includes("goa")) {
         return [
             fallbackImage,
             "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?auto=format&fit=crop&q=80&w=1400",
@@ -644,7 +646,7 @@ function createGallery(keyword, fallbackImage) {
         ];
     }
 
-    if (keyword.includes("dubai")) {
+    if (keyword.includes("mumbai")) {
         return [
             fallbackImage,
             "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=1400",
@@ -695,9 +697,9 @@ function createHighlights(packageData) {
 }
 
 function createItinerary(packageData, keyword) {
-    if (keyword.includes("bali")) {
+    if (keyword.includes("goa")) {
         return [
-            itineraryDay("Arrival & Check-in", [itineraryItem(transferIcon(), "Arrival Transfer", "Coordinated transfer and hotel check-in", "Private AC Sedan", "transfer"), itineraryItem(hotelSmallIcon(), "Hotel Check-in", "Check-in at your selected hotel and relax", "Grand Mirage Resort & Thalasso Bali (4★)", "hotel")]),
+            itineraryDay("Arrival & Check-in", [itineraryItem(transferIcon(), "Arrival Transfer", "Coordinated transfer and hotel check-in", "Private AC Sedan", "transfer"), itineraryItem(hotelSmallIcon(), "Hotel Check-in", "Check-in at your selected hotel and relax", "Grand Mirage Resort & Thalasso Goa (4★)", "hotel")]),
             itineraryDay("Explore Destination", [itineraryItem(compassIcon(), "Guided Experience", "Visit Tegallalang Rice Terraces, Tirta Empul Temple, and Ubud Monkey Forest", "", "activity")]),
             itineraryDay("Water Sports & Beach Day", [itineraryItem(wavesIcon(), "Water Sports Activities", "Full day at Nusa Dua Beach for water sports activities", "Water Sports Package - Standard", "activity")]),
             itineraryDay("Temple Tour", [itineraryItem(cameraIcon(), "Temple Tours", "Visit Tanah Lot Temple and Uluwatu Temple with Kecak Fire Dance performance", "", "activity")]),
@@ -755,7 +757,7 @@ function getModifyOptions(item) {
 
     if (item.kind === "hotel") {
         return [
-            optionCard("Grand Mirage Resort & Thalasso Bali (4★)", "Beachfront Stay • Breakfast Included", ["Oceanfront", "Spa Access", "Daily Breakfast"], "Included in package", hotelImage, hotelSmallIcon(), "Selected"),
+            optionCard("Grand Mirage Resort & Thalasso Goa (4★)", "Beachfront Stay • Breakfast Included", ["Oceanfront", "Spa Access", "Daily Breakfast"], "Included in package", hotelImage, hotelSmallIcon(), "Selected"),
             optionCard("Nusa Dua Grand Villas (5★)", "Luxury Villa Stay • Private Pool", ["Private Pool", "Premium Lounge", "Butler Support"], "+$190 per person", hotelImage, hotelSmallIcon()),
             optionCard("Sanur Breeze Hotel (4★)", "Seaside Stay • Calm Area", ["Beach Access", "Family Friendly", "Breakfast Included"], "+$60 per person", hotelImage, hotelSmallIcon())
         ];
@@ -763,7 +765,7 @@ function getModifyOptions(item) {
 
     return [
         optionCard("Private Temple Tour", "Cultural Experience • 4 hours", ["Hotel Pickup", "Guide Included", "Entrance Fees"], "+$75 per person", image, cameraIcon(), "Recommended"),
-        optionCard("Balinese Cooking Class", "Culinary Experience • 3 hours", ["Market Tour", "All Ingredients", "Recipe Book"], "+$65 per person", "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&q=80&w=800", mealIcon()),
+        optionCard("Goanese Cooking Class", "Culinary Experience • 3 hours", ["Market Tour", "All Ingredients", "Recipe Book"], "+$65 per person", "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&q=80&w=800", mealIcon()),
         optionCard("Sunset Dinner Cruise", "Water Activity • 2.5 hours", ["Buffet Dinner", "Live Music", "Transfers"], "+$95 per person", "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&q=80&w=800", wavesIcon())
     ];
 }
@@ -771,10 +773,10 @@ function getModifyOptions(item) {
 function getAddOptions(destination, dayIndex) {
     const lower = String(destination || "").toLowerCase();
 
-    if (lower.includes("bali")) {
+    if (lower.includes("goa")) {
         return [
             addCard("Private Temple Tour", "Cultural Experience • 4 hours", "4.8", "156", "$75 per person", ["Hotel Pickup", "Guide Included", "Entrance Fees"], "https://images.unsplash.com/photo-1512100356356-de1b84283e18?auto=format&fit=crop&q=80&w=800", cameraIcon()),
-            addCard("Balinese Cooking Class", "Culinary Experience • 3 hours", "4.9", "203", "$65 per person", ["Market Tour", "All Ingredients", "Recipe Book"], "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&q=80&w=800", mealIcon()),
+            addCard("Goanese Cooking Class", "Culinary Experience • 3 hours", "4.9", "203", "$65 per person", ["Market Tour", "All Ingredients", "Recipe Book"], "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&q=80&w=800", mealIcon()),
             addCard("Sunset Dinner Cruise", "Water Activity • 2.5 hours", "4.7", "178", "$95 per person", ["Buffet Dinner", "Live Music", "Transfers"], "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&q=80&w=800", wavesIcon()),
             addCard(`Leisure Activity for Day ${dayIndex + 1}`, "Flexible Experience • 2 hours", "4.6", "91", "$40 per person", ["Flexible Timing", "Local Support", "Instant Confirmation"], "https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&q=80&w=800", sparkleIcon())
         ];

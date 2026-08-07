@@ -46,25 +46,25 @@ function createLiveProxy(key, fallback) {
 const defaultTravelerData = {
     destinations: [
         {
-            title: "Dubai",
+            title: "Mumbai",
             subtitle: "City escapes and desert adventures",
             image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=800",
             tours: "24 tours"
         },
         {
-            title: "Paris",
+            title: "Delhi",
             subtitle: "Food, art, and classic city walks",
             image: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=800",
             tours: "18 tours"
         },
         {
-            title: "Bali",
+            title: "Goa",
             subtitle: "Beaches, temples, and wellness stays",
             image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=800",
             tours: "21 tours"
         },
         {
-            title: "Tokyo",
+            title: "Bangalore",
             subtitle: "Culture, food, and neon neighborhoods",
             image: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&q=80&w=800",
             tours: "16 tours"

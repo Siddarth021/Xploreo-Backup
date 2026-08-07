@@ -13,6 +13,7 @@ import { ExperiencesService } from './experiences.service';
 import { CreateExperienceDto } from './dto/create-experience.dto';
 import { UpdateExperienceDto } from './dto/update-experience.dto';
 import { Roles } from '../common/decorators/roles.decorator';
+import { Public } from '../common/decorators/public.decorator';
 import { Role } from '../auth/entities/auth.entity';
 import { NonEmptyStringPipe } from '../common/pipes/non-empty-string.pipe';
 import {
@@ -59,6 +60,7 @@ export class ExperiencesController {
   }
 
   @Get()
+  @Public()
   @Roles(Role.TRAVELLER_ACTOR, Role.TRAVELLER, Role.EXPERIENCE_PARTNER)
   @ApiOperation({ summary: 'Get all experiences' })
   @ApiReadEndpoint()
@@ -71,6 +73,7 @@ export class ExperiencesController {
   }
 
   @Get('location/:locationId')
+  @Public()
   @ApiOperation({ summary: 'Get experiences by location' })
   @ApiReadEndpoint()
   findByLocation(@Param('locationId', NonEmptyStringPipe) locationId: string) {
@@ -78,13 +81,19 @@ export class ExperiencesController {
   }
 
   @Get(':id')
+  @Public()
   @ApiOperation({ summary: 'Get experience by ID' })
   @ApiReadEndpoint()
   findOne(@Param('id', NonEmptyStringPipe) id: string) {
     return this.experiencesService.findOne(id);
   }
 
-  @Roles(Role.SUPERADMIN, Role.NONTECHADMIN, Role.EXPERIENCE)
+  @Roles(
+    Role.SUPERADMIN,
+    Role.NONTECHADMIN,
+    Role.EXPERIENCE,
+    Role.EXPERIENCE_PARTNER,
+  )
   @Patch(':id')
   @ApiOperation({ summary: 'Update an experience' })
   @ApiUpdateEndpoint(UpdateExperienceDto)
@@ -96,7 +105,12 @@ export class ExperiencesController {
     return this.experiencesService.update(id, dto);
   }
 
-  @Roles(Role.SUPERADMIN)
+  @Roles(
+    Role.SUPERADMIN,
+    Role.NONTECHADMIN,
+    Role.EXPERIENCE,
+    Role.EXPERIENCE_PARTNER,
+  )
   @Delete(':id')
   @ApiOperation({ summary: 'Delete an experience' })
   @ApiDeleteEndpoint()

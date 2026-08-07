@@ -1,4 +1,5 @@
 import { bookingsData } from "../api/legacyData.js";
+import { fetchExperiencePartnerBookings } from "../api/services.js";
 import {
     closeModal,
     getBookingStatusMeta,
@@ -7,13 +8,51 @@ import {
     writeStorage
 } from "./experience_shared.js";
 
-export function renderExperienceBookingsPage() {
+export async function renderExperienceBookingsPage() {
     const container = document.getElementById("bookingList");
     const filterExperience = document.getElementById("experienceFilter");
     const filterStatus = document.getElementById("statusFilter");
     const modal = document.getElementById("bookingModal");
     const modalClose = document.getElementById("bookingModalClose");
-    let experienceBookings = readStorage("experienceBookings", bookingsData);
+    
+    let experienceBookings = [];
+    try {
+        const backendBookings = await fetchExperiencePartnerBookings();
+        if (backendBookings && backendBookings.length > 0) {
+            const grouped = {};
+            backendBookings.forEach((b) => {
+                const expTitle = b.experience?.title || "Unknown Experience";
+                const date = b.date || "";
+                const time = b.time || "";
+                const key = `${expTitle}|${date}|${time}`;
+                
+                if (!grouped[key]) {
+                    grouped[key] = {
+                        title: expTitle,
+                        date: date,
+                        time: time,
+                        users: []
+                    };
+                }
+                
+                grouped[key].users.push({
+                    id: String(b.id),
+                    name: b.guestName,
+                    email: b.email,
+                    phone: b.phone,
+                    seats: b.participants,
+                    status: b.status ? b.status.toLowerCase() : "confirmed",
+                    totalAmount: b.totalAmount
+                });
+            });
+            experienceBookings = Object.values(grouped);
+        } else {
+            experienceBookings = readStorage("experienceBookings", bookingsData);
+        }
+    } catch (error) {
+        console.warn("Failed to fetch experience bookings from backend", error);
+        experienceBookings = readStorage("experienceBookings", bookingsData);
+    }
 
     function findBookingById(id) {
         for (const exp of experienceBookings) {
@@ -114,9 +153,9 @@ export function renderExperienceBookingsPage() {
         setElementText("modalTime", exp.time);
         setElementText("modalGuests", `${user.seats} guests`);
         setElementText("modalCustomer", user.name);
-        setElementText("modalPhone", "+1 (555) 123-4567");
-        setElementText("modalEmail", `${user.name.toLowerCase().replace(/\s+/g, ".")}@email.com`);
-        setElementText("modalAmount", formatAmount(user.seats * 90));
+        setElementText("modalPhone", user.phone || "+1 (555) 123-4567");
+        setElementText("modalEmail", user.email || `${user.name.toLowerCase().replace(/\s+/g, ".")}@email.com`);
+        setElementText("modalAmount", formatAmount(user.totalAmount || (user.seats * 90)));
         setElementText("modalPaymentStatus", user.status === "cancelled" ? "Refunded" : "Paid");
 
         const statusEl = document.getElementById("modalStatus");

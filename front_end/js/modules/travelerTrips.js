@@ -1,6 +1,6 @@
 import { travelerData } from "../api/legacyData.js";
 import { getTravelerBookings } from "../utils/travelerWorkspaceState.js";
-import { fetchTripsForGuide, fetchTripsForTraveller } from "../api/services.js";
+import { fetchTripsForGuide, fetchTripsForTraveller, fetchExperienceBookings } from "../api/services.js";
 import { mapTripToLegacyTour } from "../api/adapters.js";
 
 const CONFIRMED_BOOKING_KEY = "traveler_confirmed_booking";
@@ -240,7 +240,37 @@ async function syncTripsFromApi(user) {
             ? await fetchTripsForGuide(currentUser.id)
             : await fetchTripsForTraveller(currentUser.id);
 
-        const legacyTrips = trips.map((trip) => mapTripToLegacyTour(trip, currentUser.role));
+        let legacyTrips = trips.map((trip) => mapTripToLegacyTour(trip, currentUser.role));
+
+        if (currentUser.role.toLowerCase() === "traveller") {
+            try {
+                const expBookings = await fetchExperienceBookings();
+                const expLegacyTrips = expBookings.map(b => ({
+                    id: String(b.id),
+                    bookingId: String(b.id),
+                    customerId: String(currentUser.id),
+                    customer: currentUser.name || "Traveler",
+                    title: b.experience?.title || b.experience?.name || "Experience",
+                    destination: b.experience?.location || b.experience?.destination || "Experience Location",
+                    location: b.experience?.location || b.experience?.destination || "Experience Location",
+                    dateTime: `${b.date} | ${b.time || "09:00 AM"}`,
+                    dateRange: b.date,
+                    status: "Upcoming",
+                    type: "Experience",
+                    experienceId: b.experience?.id,
+                    guests: b.participants,
+                    amount: b.totalAmount,
+                    duration: b.experience?.durationLabel || "3 hours",
+                    coverImage: b.experience?.image || "",
+                    image: b.experience?.image || "",
+                    plan_iternary: [b.experience?.title || "Experience"]
+                }));
+                legacyTrips = [...legacyTrips, ...expLegacyTrips];
+            } catch (e) {
+                console.warn("Failed to fetch experience bookings", e);
+            }
+        }
+
         localStorage.setItem("tours", JSON.stringify(legacyTrips));
     } catch (error) {
         console.error("Failed to sync trips from backend", error);

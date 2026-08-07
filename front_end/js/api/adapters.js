@@ -27,6 +27,7 @@ export function mapExperienceToSearchCard(experience) {
     return {
         id: experience.id,
         title: experience.title,
+        description: experience.description || experience.title,
         price: Number(experience.price),
         duration: `${experience.durationHours} hours`,
         capacity: Number(experience.capacity),

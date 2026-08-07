@@ -21,6 +21,7 @@ export async function renderExperienceCatalogPage() {
         experiences = backendExps.map(exp => ({
             id: Number(exp.id) || Date.now(),
             title: exp.title,
+            description: exp.description || exp.title,
             price: exp.price,
             duration: `${exp.durationHours} hours`,
             capacity: exp.capacity,
@@ -158,12 +159,18 @@ export async function renderExperienceCatalogPage() {
     function validateExperiencePayload(prefix) {
         let isValid = true;
         const name = sanitizeValue(document.getElementById(`${prefix}Name`).value);
+        const description = sanitizeValue(document.getElementById(`${prefix}Description`).value);
         const price = Number(document.getElementById(`${prefix}Price`).value);
         const duration = sanitizeValue(document.getElementById(`${prefix}Duration`).value);
         const capacity = Number(document.getElementById(`${prefix}Capacity`).value);
 
         if (!name || name.length < 3) {
             setFieldError(`${prefix}Name`, "Enter a name with at least 3 characters.");
+            isValid = false;
+        }
+
+        if (!description || description.length < 10) {
+            setFieldError(`${prefix}Description`, "Enter a description with at least 10 characters.");
             isValid = false;
         }
 
@@ -182,7 +189,7 @@ export async function renderExperienceCatalogPage() {
             isValid = false;
         }
 
-        return { isValid, name, price, duration, capacity };
+        return { isValid, name, description, price, duration, capacity };
     }
 
     function validateAddImage() {
@@ -497,6 +504,7 @@ export async function renderExperienceCatalogPage() {
         if (actionButton.dataset.action === "edit-experience") {
             currentEditId = expId;
             document.getElementById("editName").value = selectedExperience.title;
+            document.getElementById("editDescription").value = selectedExperience.description || selectedExperience.title;
             document.getElementById("editPrice").value = selectedExperience.price;
             document.getElementById("editDuration").value = selectedExperience.duration;
             document.getElementById("editCapacity").value = selectedExperience.capacity;
@@ -628,6 +636,7 @@ export async function renderExperienceCatalogPage() {
         const expPayload = {
             id: newExperienceId,
             title: payload.name,
+            description: payload.description,
             price: payload.price,
             duration: payload.duration,
             capacity: payload.capacity,
@@ -646,7 +655,7 @@ export async function renderExperienceCatalogPage() {
         createExperience({
             id: String(newExperienceId),
             title: payload.name,
-            description: payload.name, 
+            description: payload.description, 
             destination: payload.name, 
             category: "adventure",
             price: Number(payload.price),
@@ -674,6 +683,7 @@ export async function renderExperienceCatalogPage() {
         if (!exp) return;
 
         exp.title = payload.name;
+        exp.description = payload.description;
         exp.price = payload.price;
         exp.duration = payload.duration;
         exp.capacity = payload.capacity;
@@ -683,7 +693,7 @@ export async function renderExperienceCatalogPage() {
         // Sync to backend
         updateExperience(String(currentEditId), {
             title: payload.name,
-            description: payload.name,
+            description: payload.description,
             destination: payload.name,
             category: "adventure",
             price: Number(payload.price),

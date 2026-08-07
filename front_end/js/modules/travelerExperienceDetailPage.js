@@ -369,7 +369,7 @@ function normalizeExperienceDetail(item) {
         rating: Number(item?.rating) || 4.7,
         customizable: Boolean(item?.customizable),
         durationLabel: item?.time || item?.durationLabel || "3 hours",
-        description: Array.isArray(item?.description) ? item.description : [],
+        description: Array.isArray(item?.description) ? item.description : (typeof item?.description === "string" ? [item.description] : [item?.title || ""]),
         audience: Array.isArray(item?.audience) ? item.audience : [],
         expectations: Array.isArray(item?.expectations) ? item.expectations : [],
         highlights: Array.isArray(item?.highlights) ? item.highlights : [],

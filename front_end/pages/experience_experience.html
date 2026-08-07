@@ -63,6 +63,12 @@
           <small class="field-error" data-error-for="expName"></small>
         </label>
 
+        <label class="field-group field-group-full" for="expDescription">
+          <span>Description</span>
+          <textarea id="expDescription" name="description" required rows="3" maxlength="300" placeholder="Describe the experience..."></textarea>
+          <small class="field-error" data-error-for="expDescription"></small>
+        </label>
+
         <label class="field-group" for="expPrice">
           <span>Price per Person</span>
           <input id="expPrice" name="price" type="number" min="1" step="1" required>
@@ -124,6 +130,12 @@
             <span>Experience Name</span>
             <input id="editName" name="title" required maxlength="80">
             <small class="field-error" data-error-for="editName"></small>
+          </label>
+
+          <label class="field-group field-group-full" for="editDescription">
+            <span>Description</span>
+            <textarea id="editDescription" name="description" required rows="3" maxlength="300"></textarea>
+            <small class="field-error" data-error-for="editDescription"></small>
           </label>
 
           <label class="field-group field-group-full" for="editPrice">

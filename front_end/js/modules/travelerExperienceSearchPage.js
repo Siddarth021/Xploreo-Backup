@@ -438,6 +438,7 @@ function renderExperienceCard(item) {
             <div class="traveler-experience-card-body">
                 <h3>${escapeHtml(item.title)}</h3>
                 <p class="traveler-experience-duration">${clockIcon()} ${escapeHtml(item.durationLabel)}</p>
+                <p class="traveler-experience-description" style="color: #666; font-size: 0.9em; margin: 8px 0; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${escapeHtml(item.description || item.title)}</p>
 
                 <ul class="traveler-experience-perks">
                     ${item.perks.map((perk) => `<li>${checkIcon()} ${escapeHtml(perk)}</li>`).join("")}

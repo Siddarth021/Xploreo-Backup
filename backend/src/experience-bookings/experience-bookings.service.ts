@@ -8,6 +8,7 @@ import { ExperienceAvailability } from '../experiences/entities/experience.entit
 import { ExperiencesRepository } from '../experiences/experiences.repository';
 import { CreateExperienceBookingDto } from './dto/create-experience-booking.dto';
 import { ExperienceBookingsRepository } from './experience-bookings.repository';
+import { Role } from '../auth/entities/auth.entity';
 
 @Injectable()
 export class ExperienceBookingsService {
@@ -122,5 +123,45 @@ export class ExperienceBookingsService {
         ...booking,
         experience: experienceById.get(booking.experienceId),
       }));
+  }
+
+  updateStatus(
+    id: string,
+    userId: string | undefined,
+    userRole: string | undefined,
+    status: import('./entities/experience-booking.entity').ExperienceBookingStatus,
+  ) {
+    if (!userId || !userRole) {
+      throw new ForbiddenException('User ID and Role headers are required');
+    }
+
+    const booking = this.bookingsRepository.findAll().find((b) => b.id === id);
+    if (!booking) {
+      throw new NotFoundException(`Booking ${id} not found`);
+    }
+
+    const experience = this.experiencesRepository.findById(
+      booking.experienceId,
+    );
+
+    if (status === 'COMPLETED') {
+      if ((userRole !== Role.TRAVELLER && userRole !== Role.TRAVELLER_ACTOR) || booking.travellerId !== userId) {
+        throw new ForbiddenException('Only the traveler can complete the booking');
+      }
+    } else {
+      if (userRole !== Role.EXPERIENCE_PARTNER || !experience || experience.partnerId !== userId) {
+        throw new ForbiddenException('Not authorized to update this booking status');
+      }
+    }
+
+    const updated = this.bookingsRepository.updateStatus(id, status);
+    if (!updated) {
+      throw new NotFoundException(`Booking ${id} not found`);
+    }
+
+    return {
+      ...updated,
+      experience,
+    };
   }
 }

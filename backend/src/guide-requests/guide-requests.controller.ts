@@ -71,7 +71,12 @@ export class GuideRequestsController {
     return this.guideRequestsService.findByGuide(id);
   }
 
-  @Roles(Role.TRAVELLER, Role.TRAVELLER_ACTOR, Role.SUPERADMIN, Role.NONTECHADMIN)
+  @Roles(
+    Role.TRAVELLER,
+    Role.TRAVELLER_ACTOR,
+    Role.SUPERADMIN,
+    Role.NONTECHADMIN,
+  )
   @Get('traveller/:id')
   @ApiOperation({ summary: 'Get guide requests created by a traveller' })
   @ApiReadEndpoint()

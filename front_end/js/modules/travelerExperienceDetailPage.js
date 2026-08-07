@@ -46,12 +46,16 @@ export async function renderTravelerExperienceDetailPage(containerId) {
 
     // Initialize default slot if slots exist
     const availableSlots = (state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available);
-    if (availableSlots.length) {
-        state.selectedSlotId = availableSlots[0].id;
+    const nonFullSlot = availableSlots.find(slot => slot.capacity - slot.booked > 0);
+    
+    if (nonFullSlot) {
+        state.selectedSlotId = nonFullSlot.id;
+    } else if (availableSlots.length) {
+        state.selectedSlotId = null; // Don't default to a full slot
     }
 
     // Limit initial adults to the max available seats of the selected slot
-    const initialSlot = availableSlots.find(s => s.id === state.selectedSlotId);
+    const initialSlot = availableSlots.find(s => String(s.id) === String(state.selectedSlotId));
     const initialMaxSeats = initialSlot ? (initialSlot.capacity - initialSlot.booked) : state.experience.capacity;
     if (state.adults > initialMaxSeats && initialMaxSeats > 0) {
         state.adults = initialMaxSeats;
@@ -129,15 +133,15 @@ export async function renderTravelerExperienceDetailPage(containerId) {
 
                         <label class="traveler-experience-side-field">
                             <span class="traveler-experience-side-label">${calendarIcon()} Select Date</span>
-                            <input class="traveler-experience-side-input" type="date" id="traveler-experience-date" value="${escapeHtml(state.selectedDate)}" ${isCompleted ? "disabled" : ""}>
+                            <input class="traveler-experience-side-input" type="date" id="traveler-experience-date" value="${escapeHtml(state.selectedDate)}" min="${new Date().toISOString().split('T')[0]}" ${isCompleted ? "disabled" : ""}>
                         </label>
 
                         <label class="traveler-experience-side-field">
                             <span class="traveler-experience-side-label">${clockIcon()} Select Time Slot</span>
                             <select class="traveler-experience-side-input" id="traveler-experience-time-slot" ${isCompleted ? "disabled" : ""}>
                                 ${(state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available).length ? 
-                                    (state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available).map(slot => `<option value="${slot.id}" ${slot.id === state.selectedSlotId ? "selected" : ""}>${slot.time} (${slot.capacity - slot.booked} seats left)</option>`).join("") 
-                                    : `<option value="" disabled>No slots available (Flexible timing)</option>`
+                                    (state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available).map(slot => `<option value="${slot.id}" ${String(slot.id) === String(state.selectedSlotId) ? "selected" : ""} ${slot.capacity - slot.booked <= 0 ? "disabled" : ""}>${slot.time} ${slot.capacity - slot.booked <= 0 ? "(Full)" : `(${slot.capacity - slot.booked} seats left)`}</option>`).join("") 
+                                    : `<option value="" disabled selected>No slots available</option>`
                                 }
                             </select>
                         </label>
@@ -154,7 +158,7 @@ export async function renderTravelerExperienceDetailPage(containerId) {
                         <div class="traveler-experience-selected-option">
                             <span>Selected Option</span>
                             <strong>${escapeHtml(selectedOption.title)}</strong>
-                            <p>${(state.experience.slots || []).find(s => s.id === state.selectedSlotId)?.time || escapeHtml(selectedOption.time)}</p>
+                            <p>${(state.experience.slots || []).find(s => String(s.id) === String(state.selectedSlotId))?.time || escapeHtml(selectedOption.time)}</p>
                         </div>
 
                         <div class="traveler-experience-side-total-row">
@@ -166,7 +170,7 @@ export async function renderTravelerExperienceDetailPage(containerId) {
                             <strong>${formatCurrency(total)}</strong>
                         </div>
 
-                        ${isCompleted ? `<div class="traveler-experience-completed-note">This experience has already been completed. The details are shown for your reference.</div>` : `<button class="traveler-experience-continue-btn" type="button" id="traveler-experience-continue-btn">Continue</button>`}
+                        ${isCompleted ? `<div class="traveler-experience-completed-note">This experience has already been completed. The details are shown for your reference.</div>` : `<button class="traveler-experience-continue-btn" type="button" id="traveler-experience-continue-btn" ${!state.selectedSlotId ? "disabled" : ""}>Continue</button>`}
 
                         <ul class="traveler-experience-side-list">
                             <li>${checkCircleIcon()} Free cancellation available</li>
@@ -225,7 +229,7 @@ export async function renderTravelerExperienceDetailPage(containerId) {
         });
 
         container.querySelector("#traveler-adults-increase")?.addEventListener("click", () => {
-            const selectedSlot = (state.experience.slots || []).find(s => s.id === state.selectedSlotId);
+            const selectedSlot = (state.experience.slots || []).find(s => String(s.id) === String(state.selectedSlotId));
             const availableSeats = selectedSlot ? (selectedSlot.capacity - selectedSlot.booked) : state.experience.capacity;
             state.adults = Math.min(availableSeats, Math.min(12, state.adults + 1));
             render();
@@ -234,12 +238,16 @@ export async function renderTravelerExperienceDetailPage(containerId) {
         container.querySelector("#traveler-experience-date")?.addEventListener("change", (event) => {
             state.selectedDate = event.target.value || getDefaultDate();
             const slots = (state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available);
-            state.selectedSlotId = slots.length ? slots[0].id : null;
             
-            const newSlot = slots.find(s => s.id === state.selectedSlotId);
+            const nonFullSlot = slots.find(slot => slot.capacity - slot.booked > 0);
+            state.selectedSlotId = nonFullSlot ? nonFullSlot.id : null;
+            
+            const newSlot = slots.find(s => String(s.id) === String(state.selectedSlotId));
             const maxSeats = newSlot ? (newSlot.capacity - newSlot.booked) : state.experience.capacity;
-            if (state.adults > maxSeats && maxSeats > 0) {
+            if (maxSeats > 0 && state.adults > maxSeats) {
                 state.adults = maxSeats;
+            } else if (!newSlot) {
+                state.adults = 1; // Reset to 1 if no valid slot selected
             }
             render();
         });
@@ -247,7 +255,7 @@ export async function renderTravelerExperienceDetailPage(containerId) {
         container.querySelector("#traveler-experience-time-slot")?.addEventListener("change", (event) => {
             state.selectedSlotId = event.target.value || null;
             
-            const newSlot = (state.experience.slots || []).find(s => s.id === state.selectedSlotId);
+            const newSlot = (state.experience.slots || []).find(s => String(s.id) === String(state.selectedSlotId));
             const maxSeats = newSlot ? (newSlot.capacity - newSlot.booked) : state.experience.capacity;
             if (state.adults > maxSeats && maxSeats > 0) {
                 state.adults = maxSeats;
@@ -301,6 +309,18 @@ export async function renderTravelerExperienceDetailPage(containerId) {
 
         if (!isExperienceCompleted()) {
             container.querySelector("#traveler-experience-continue-btn")?.addEventListener("click", () => {
+                const selectedSlot = (state.experience.slots || []).find(s => String(s.id) === String(state.selectedSlotId));
+                
+                if (!state.selectedSlotId || !selectedSlot) {
+                    alert("Please select an available time slot before continuing.");
+                    return;
+                }
+
+                if (selectedSlot.capacity - selectedSlot.booked < state.adults) {
+                    alert(`Only ${selectedSlot.capacity - selectedSlot.booked} seats left for this slot. Please reduce the number of adults or select a different slot/date.`);
+                    return;
+                }
+
                 const currentOption = getSelectedOption(state);
 
                 persistBookingDraft({
@@ -308,7 +328,7 @@ export async function renderTravelerExperienceDetailPage(containerId) {
                     experience: state.experience,
                     option: { ...currentOption },
                     selectedDate: state.selectedDate,
-                    selectedSlot: (state.experience.slots || []).find(s => s.id === state.selectedSlotId) || null,
+                    selectedSlot: (state.experience.slots || []).find(s => String(s.id) === String(state.selectedSlotId)) || null,
                     adults: state.adults,
                     totalPrice: currentOption.price * state.adults
                 });
@@ -353,7 +373,7 @@ function normalizeExperienceDetail(item) {
         title: "Standard Option",
         time: "Flexible timing",
         price: extractAmount(item?.price) || 79,
-        features: item?.perks || ["Instant Confirmation", "Flexible Access"]
+        features: Array.isArray(item?.perks) && item.perks.length > 0 ? item.perks : (item?.partnerId === "experience-partner-seed" ? ["Instant Confirmation", "Flexible Access"] : [])
     }];
 
     const gallery = Array.isArray(item?.gallery) && item.gallery.length

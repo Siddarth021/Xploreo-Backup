@@ -35,7 +35,8 @@ export class TripsService {
       totalAmount: this.calculateTotalAmount(itinerary, plan.pricePerPerson),
       currentDay: 1,
       currentStop: 'Not started',
-      currentLocation: itinerary.day1?.transport?.pickupLocation || plan.originCity,
+      currentLocation:
+        itinerary.day1?.transport?.pickupLocation || plan.originCity,
       trackingStatus: TripTrackingStatus.NOT_STARTED,
       progressPercentage: 0,
       lastUpdatedAt: new Date().toISOString(),
@@ -60,7 +61,11 @@ export class TripsService {
     return this.tripsRepository.findByGuide(guideId);
   }
 
-  update(id: string, dto: UpdateTripDto, actor?: { userId?: string; role?: string }) {
+  update(
+    id: string,
+    dto: UpdateTripDto,
+    actor?: { userId?: string; role?: string },
+  ) {
     const trip = this.findOne(id);
     const plan = this.plansRepository.findById(trip.planId);
     if (!plan) throw new NotFoundException(`Plan ${trip.planId} not found`);
@@ -69,7 +74,11 @@ export class TripsService {
       this.assertStatusTransition(trip, dto.status, actor);
     }
 
-    if (dto.guideId && actor?.role === 'guide' && dto.guideId !== actor.userId) {
+    if (
+      dto.guideId &&
+      actor?.role === 'guide' &&
+      dto.guideId !== actor.userId
+    ) {
       throw new ForbiddenException('Guide can only assign their own guideId');
     }
 
@@ -81,7 +90,9 @@ export class TripsService {
       guideId: dto.guideId ?? trip.guideId,
       status: dto.status ?? trip.status,
       itinerary,
-      totalAmount: dto.totalAmount ?? this.calculateTotalAmount(itinerary, plan.pricePerPerson),
+      totalAmount:
+        dto.totalAmount ??
+        this.calculateTotalAmount(itinerary, plan.pricePerPerson),
     });
 
     if (!updated) throw new NotFoundException(`Trip ${id} not found`);
@@ -109,14 +120,16 @@ export class TripsService {
     const isAssignedGuide = role === 'guide' && trip.guideId === actor?.userId;
 
     if (!isAdmin && !isAssignedGuide) {
-      throw new ForbiddenException('Only the assigned guide can update tracking');
+      throw new ForbiddenException(
+        'Only the assigned guide can update tracking',
+      );
     }
 
     const trackingStatus = dto.trackingStatus ?? trip.trackingStatus;
     const progressPercentage =
       trackingStatus === TripTrackingStatus.COMPLETED
         ? 100
-        : dto.progressPercentage ?? trip.progressPercentage;
+        : (dto.progressPercentage ?? trip.progressPercentage);
 
     const status =
       trackingStatus === TripTrackingStatus.COMPLETED
@@ -142,7 +155,9 @@ export class TripsService {
   experienceExistsOnTrip(tripId: string, experienceId: string): boolean {
     const trip = this.findOne(tripId);
     return trip.itinerary.days.some((day) =>
-      day.experiences.some((experience) => experience.experienceId === experienceId),
+      day.experiences.some(
+        (experience) => experience.experienceId === experienceId,
+      ),
     );
   }
 
@@ -152,7 +167,10 @@ export class TripsService {
     return { message: `Trip ${id} deleted` };
   }
 
-  private calculateTotalAmount(itinerary: StructuredItinerary, basePrice: number): number {
+  private calculateTotalAmount(
+    itinerary: StructuredItinerary,
+    basePrice: number,
+  ): number {
     const flightAmount = itinerary.day1.flight ? 12000 : 0;
     const hotelAmount = itinerary.day1.hotel ? 18000 : 0;
     const experienceAmount = itinerary.days.reduce(
@@ -188,7 +206,9 @@ export class TripsService {
       (actor?.role === 'traveller' || actor?.role === 'TRAVELLER')
     ) {
       if (trip.travellerId !== actor.userId) {
-        throw new ForbiddenException('Traveller can only confirm their own trip');
+        throw new ForbiddenException(
+          'Traveller can only confirm their own trip',
+        );
       }
       return;
     }

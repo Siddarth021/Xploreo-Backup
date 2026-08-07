@@ -11,13 +11,15 @@ export class HotelsRepository {
       name: 'The Grand Luxury Resort',
       city: 'Mumbai',
       location: 'Marine Drive, Mumbai',
-      description: 'Experience luxury at its finest at The Grand Luxury Resort with views of the Arabian Sea.',
+      description:
+        'Experience luxury at its finest at The Grand Luxury Resort with views of the Arabian Sea.',
       stars: 5,
       rating: 0,
       reviewCount: 0,
       pricePerNight: 850,
       taxesAndFees: 120,
-      image: 'https://images.unsplash.com/photo-1542314831-c6a4d142104d?auto=format&fit=crop&q=80&w=800',
+      image:
+        'https://images.unsplash.com/photo-1542314831-c6a4d142104d?auto=format&fit=crop&q=80&w=800',
       amenities: ['Pool', 'Spa', 'Gym', 'Free WiFi', 'Restaurant'],
       status: 'active',
       createdAt: new Date(),
@@ -34,7 +36,8 @@ export class HotelsRepository {
       reviewCount: 0,
       pricePerNight: 450,
       taxesAndFees: 60,
-      image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&q=80&w=800',
+      image:
+        'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&q=80&w=800',
       amenities: ['Free Breakfast', 'Free WiFi', 'Restaurant'],
       status: 'active',
       createdAt: new Date(),
@@ -45,13 +48,15 @@ export class HotelsRepository {
       name: 'Goa Beachfront Villa',
       city: 'Goa',
       location: 'Baga Beach, Goa',
-      description: 'Relax at our stunning beachfront property offering direct beach access.',
+      description:
+        'Relax at our stunning beachfront property offering direct beach access.',
       stars: 5,
       rating: 0,
       reviewCount: 0,
       pricePerNight: 950,
       taxesAndFees: 150,
-      image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80&w=800',
+      image:
+        'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80&w=800',
       amenities: ['Pool', 'Beach Access', 'Bar', 'Spa'],
       status: 'active',
       createdAt: new Date(),
@@ -62,17 +67,19 @@ export class HotelsRepository {
       name: 'Tech Park Business Hotel',
       city: 'Bangalore',
       location: 'Whitefield, Bangalore',
-      description: 'Modern hotel catering to business travelers with excellent coworking spaces.',
+      description:
+        'Modern hotel catering to business travelers with excellent coworking spaces.',
       stars: 3,
       rating: 0,
       reviewCount: 0,
       pricePerNight: 200,
       taxesAndFees: 30,
-      image: 'https://images.unsplash.com/photo-1551882547-ff40c0d129df?auto=format&fit=crop&q=80&w=800',
+      image:
+        'https://images.unsplash.com/photo-1551882547-ff40c0d129df?auto=format&fit=crop&q=80&w=800',
       amenities: ['Coworking', 'Gym', 'Free WiFi'],
       status: 'active',
       createdAt: new Date(),
-    }
+    },
   ];
 
   create(

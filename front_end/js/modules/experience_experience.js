@@ -19,7 +19,7 @@ export async function renderExperienceCatalogPage() {
     try {
         const backendExps = await fetchExperiences();
         experiences = backendExps.map(exp => ({
-            id: Number(exp.id) || Date.now(),
+            id: exp.id || String(Date.now()),
             title: exp.title,
             description: exp.description || exp.title,
             price: exp.price,
@@ -30,16 +30,7 @@ export async function renderExperienceCatalogPage() {
             images: exp.images || (exp.image ? [exp.image] : []),
             nextSlot: exp.nextSlot || "10:00 AM",
             booked: exp.booked || 0,
-            slots: exp.slots || [
-                {
-                    id: `${exp.id}-1`,
-                    date: "2026-03-27",
-                    time: "10:00 AM",
-                    booked: 0,
-                    capacity: exp.capacity,
-                    available: true
-                }
-            ]
+            slots: exp.slots || []
         }));
         writeStorage("experienceCatalog", experiences);
     } catch (error) {
@@ -121,18 +112,7 @@ export async function renderExperienceCatalogPage() {
 
             return {
                 ...exp,
-                slots: importedSlots.length
-                    ? importedSlots
-                    : [
-                        {
-                            id: `${exp.id}-1`,
-                            date: "2026-03-27",
-                            time: exp.nextSlot || "10:00 AM",
-                            booked: exp.booked || 0,
-                            capacity: exp.capacity,
-                            available: true
-                        }
-                    ]
+                slots: importedSlots
             };
         });
 
@@ -489,8 +469,8 @@ export async function renderExperienceCatalogPage() {
         const actionButton = event.target.closest("[data-action]");
         if (!actionButton) return;
 
-        const expId = Number(actionButton.dataset.id);
-        const selectedExperience = experiences.find((item) => item.id === expId);
+        const expId = actionButton.dataset.id;
+        const selectedExperience = experiences.find((item) => String(item.id) === String(expId));
 
         if (actionButton.dataset.action === "view-bookings") {
             const params = new URLSearchParams();

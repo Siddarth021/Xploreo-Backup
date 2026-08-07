@@ -220,7 +220,8 @@ function normalizeExperience(item, index) {
         originalPrice,
         discount: originalPrice > priceValue ? Math.max(10, Math.round(((originalPrice - priceValue) / originalPrice) * 100)) : 0,
         category: item.category || category,
-        perks: Array.isArray(item.perks) && item.perks.length ? item.perks : getPerksForCategory(category, title),
+        capacity: Number(item.capacity) || 12,
+        perks: Array.isArray(item.perks) && item.perks.length ? item.perks : (item.partnerId === "experience-partner-seed" ? getPerksForCategory(category, title) : []),
         customizable: Boolean(item.customizable),
         description: item.description || [],
         audience: item.audience || [],
@@ -438,7 +439,7 @@ function renderExperienceCard(item) {
             <div class="traveler-experience-card-body">
                 <h3>${escapeHtml(item.title)}</h3>
                 <p class="traveler-experience-duration">${clockIcon()} ${escapeHtml(item.durationLabel)}</p>
-                <p class="traveler-experience-description" style="color: #666; font-size: 0.9em; margin: 8px 0; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${escapeHtml(item.description || item.title)}</p>
+                <p class="traveler-experience-description" style="color: #666; font-size: 0.9em; margin: 8px 0; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${escapeHtml(Array.isArray(item.description) ? item.description.join(" ") : (item.description || item.title))}</p>
 
                 <ul class="traveler-experience-perks">
                     ${item.perks.map((perk) => `<li>${checkIcon()} ${escapeHtml(perk)}</li>`).join("")}

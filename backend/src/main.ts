@@ -11,7 +11,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import * as express from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bodyParser: false });
 
   const reflector = app.get(Reflector);
 
@@ -38,7 +38,10 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // Global interceptors
-  app.useGlobalInterceptors(new LoggingInterceptor(), new ResponseInterceptor());
+  app.useGlobalInterceptors(
+    new LoggingInterceptor(),
+    new ResponseInterceptor(),
+  );
 
   // Global guards
   app.useGlobalGuards(new AuthGuard(reflector), new RolesGuard(reflector));

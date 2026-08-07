@@ -1,5 +1,5 @@
 import { bookingsData } from "../api/legacyData.js";
-import { fetchExperiencePartnerBookings } from "../api/services.js";
+import { fetchExperiencePartnerBookings, updateExperienceBookingStatus } from "../api/services.js";
 import {
     closeModal,
     getBookingStatusMeta,
@@ -125,10 +125,10 @@ export async function renderExperienceBookingsPage() {
                             <div><span class="status ${getBookingStatusMeta(user.status).className}">${getBookingStatusMeta(user.status).label}</span></div>
                             <div class="booking-actions">
                                 <button type="button" data-action="view-booking" data-id="${user.id}">View Details</button>
-                                ${user.status === "confirmed"
+                                ${user.status === "confirmed" || user.status === "CONFIRMED"
                                     ? `<button type="button" class="primary-btn" data-action="check-in" data-id="${user.id}">Mark Check-in</button>`
-                                    : user.status === "checked"
-                                        ? `<span class="booking-checked-label">Checked-in</span>`
+                                    : (user.status === "checked" || user.status === "checked_in" || user.status === "CHECKED_IN")
+                                        ? `<button type="button" class="btn-outline-blue" data-action="request-end" data-id="${user.id}">Request End</button>`
                                         : ""}
                             </div>
                         </div>
@@ -170,14 +170,37 @@ export async function renderExperienceBookingsPage() {
         return `$${value}`;
     }
 
-    function markCheckIn(id) {
-        experienceBookings = experienceBookings.map((exp) => ({
-            ...exp,
-            users: exp.users.map((user) => user.id === id ? { ...user, status: "checked" } : user)
-        }));
+    async function markCheckIn(id) {
+        try {
+            await updateExperienceBookingStatus(id, "CHECKED_IN");
+            experienceBookings = experienceBookings.map((exp) => ({
+                ...exp,
+                users: exp.users.map((user) => user.id === id ? { ...user, status: "checked_in" } : user)
+            }));
 
-        writeStorage("experienceBookings", experienceBookings);
-        renderBookings();
+            writeStorage("experienceBookings", experienceBookings);
+            renderBookings();
+        } catch (error) {
+            console.error("Failed to check in:", error);
+            alert("Failed to mark check-in. Please try again.");
+        }
+    }
+
+    async function markRequestEnd(id) {
+        try {
+            await updateExperienceBookingStatus(id, "END_REQUESTED");
+            experienceBookings = experienceBookings.map((exp) => ({
+                ...exp,
+                users: exp.users.map((user) => user.id === id ? { ...user, status: "END_REQUESTED" } : user)
+            }));
+
+            writeStorage("experienceBookings", experienceBookings);
+            renderBookings();
+            alert("End of experience requested. Waiting for traveler confirmation.");
+        } catch (error) {
+            console.error("Failed to request end:", error);
+            alert("Failed to request end of experience. Please try again.");
+        }
     }
 
     function handleUrlParams() {
@@ -205,6 +228,10 @@ export async function renderExperienceBookingsPage() {
 
             if (actionButton.dataset.action === "check-in") {
                 markCheckIn(actionButton.dataset.id);
+            }
+
+            if (actionButton.dataset.action === "request-end") {
+                markRequestEnd(actionButton.dataset.id);
             }
         };
     }

@@ -201,8 +201,12 @@ function mapLegacyItinerary(
         flightNumber: context.flightNumber || 'TBD',
         fromAirport: context.fromAirportCode || originCity,
         toAirport: context.toAirportCode || destination,
-        departureAt: context.departureTime ? `${startDate}T${context.departureTime}:00.000Z` : `${startDate}T09:00:00.000Z`,
-        arrivalAt: context.arrivalTime ? `${startDate}T${context.arrivalTime}:00.000Z` : `${startDate}T11:00:00.000Z`,
+        departureAt: context.departureTime
+          ? `${startDate}T${context.departureTime}:00.000Z`
+          : `${startDate}T09:00:00.000Z`,
+        arrivalAt: context.arrivalTime
+          ? `${startDate}T${context.arrivalTime}:00.000Z`
+          : `${startDate}T11:00:00.000Z`,
         status: ItineraryItemStatus.PLANNED,
         description: `Flight from ${context.fromAirportCode || originCity} to ${context.toAirportCode || destination}`,
       }

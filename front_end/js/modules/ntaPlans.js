@@ -248,7 +248,7 @@ function renderPlanModal(title, plan) {
                 <label for="plan-image">Package Image (Optional)</label>
                 <input type="file" id="plan-image" accept="image/*">
                 <div id="plan-image-preview" class="nta-image-preview" style="margin-top: 10px;">
-                    ${plan.image ? `<img src="${plan.image}" alt="Package Image" style="max-width: 120px; border-radius: 4px;" onerror="this.style.display='none'">` : ''}
+                    ${plan.image ? `<img src="${plan.image}" alt="Package Image" style="max-width: 120px; border-radius: 4px;" onerror="this.style.display='none'">` : `<div style="display:flex; align-items:center; justify-content:center; background:#f5f5f5; color:#999; border-radius:4px; width:120px; height:80px; font-size:12px;">No Image</div>`}
                 </div>
                 <div class="nta-form-hint">Upload an image for this package. If you skip this, no image will be shown.</div>
             </div>

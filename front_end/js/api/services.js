@@ -198,6 +198,10 @@ export function fetchExperienceBookings() {
   );
 }
 
+export function updateExperienceBookingStatus(id, status) {
+  return apiPatch(`${API_ENDPOINTS.experienceBookings}/${id}/status`, { status });
+}
+
 export async function fetchExperiencePartnerBookings() {
   let scopedBookings = [];
   try {

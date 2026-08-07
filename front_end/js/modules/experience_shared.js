@@ -86,11 +86,19 @@ export function sanitizeValue(value) {
 }
 
 export function getBookingStatusMeta(status) {
-    if (status === "checked") {
+    if (status === "checked" || status === "checked_in" || status === "CHECKED_IN") {
         return { label: "Checked-In", className: "checked" };
     }
 
-    if (status === "confirmed") {
+    if (status === "end_requested" || status === "END_REQUESTED") {
+        return { label: "Pending Confirm", className: "pending" };
+    }
+
+    if (status === "completed" || status === "COMPLETED") {
+        return { label: "Completed", className: "completed" };
+    }
+
+    if (status === "confirmed" || status === "CONFIRMED") {
         return { label: "Confirmed", className: "confirmed" };
     }
 

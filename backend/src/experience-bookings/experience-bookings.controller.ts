@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Param, Post, Req } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Role } from '../auth/entities/auth.entity';
 import {
@@ -39,5 +39,22 @@ export class ExperienceBookingsController {
     }
 
     return this.experienceBookingsService.findAll();
+  }
+
+  @Patch(':id/status')
+  @Roles(Role.EXPERIENCE_PARTNER, Role.TRAVELLER_ACTOR, Role.TRAVELLER)
+  @ApiOperation({ summary: 'Update experience booking status' })
+  updateStatus(
+    @Param('id') id: string,
+    @Body()
+    dto: import('./dto/update-experience-booking-status.dto').UpdateExperienceBookingStatusDto,
+    @Req() req: any,
+  ) {
+    return this.experienceBookingsService.updateStatus(
+      id,
+      req.user?.userId,
+      req.user?.role,
+      dto.status,
+    );
   }
 }

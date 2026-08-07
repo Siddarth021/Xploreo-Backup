@@ -37,7 +37,11 @@ export class CreateTravellerDto {
   @IsString()
   bio?: string;
 
-  @ApiPropertyOptional({ enum: Interest, isArray: true, example: [Interest.ADVENTURE, Interest.FOOD] })
+  @ApiPropertyOptional({
+    enum: Interest,
+    isArray: true,
+    example: [Interest.ADVENTURE, Interest.FOOD],
+  })
   @IsOptional()
   @IsArray()
   @IsEnum(Interest, { each: true })

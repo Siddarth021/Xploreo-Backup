@@ -48,6 +48,15 @@ export async function renderTravelerTrips(containerId, user) {
 
     const HTML = `
         <div class="dashboard-container trips-page-container">
+            ${displayedTrips.some(t => t.backendStatus === "END_REQUESTED") ? `
+                <div class="end-request-banner" style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 16px; margin-bottom: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin: 0 0 4px 0; color: #b45309; font-size: 16px;">Action Required</h3>
+                        <p style="margin: 0; color: #92400e; font-size: 14px;">One or more of your experiences has ended. Please confirm completion to finalize the booking.</p>
+                    </div>
+                </div>
+            ` : ""}
+            
             <div class="trips-header">
                 <div class="trips-header-left">
                     <h1>My Trips</h1>
@@ -97,7 +106,10 @@ export async function renderTravelerTrips(containerId, user) {
                                 ${trip.status === 'Completed'
                                     ? `<button class="btn-outline-teal" data-trip-review="${escapeHtml(getTripViewKey(trip))}">Review Trip</button>`
                                     : ``}
-                                ${trip.status !== 'Completed' && (trip.type.toLowerCase() === 'tour' || trip.type.toLowerCase() === 'experience' || trip.currentStop) 
+                                ${trip.backendStatus === 'END_REQUESTED'
+                                    ? `<button class="primary-btn" style="background-color: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;" data-trip-confirm="${trip.bookingId}">Confirm Completion</button>`
+                                    : ``}
+                                ${trip.status !== 'Completed' && trip.backendStatus !== 'END_REQUESTED' && (trip.type.toLowerCase() === 'tour' || trip.type.toLowerCase() === 'experience' || trip.currentStop) 
                                     ? `<button class="btn-outline-blue" data-trip-route="${escapeHtml(getTripViewKey(trip))}">View Live Route</button>`
                                     : ``}
                             </div>
@@ -169,6 +181,23 @@ export async function renderTravelerTrips(containerId, user) {
     container.querySelector("[data-review-close]")?.addEventListener("click", () => {
         resetReviewState();
         rerender();
+    });
+
+    container.querySelectorAll("[data-trip-confirm]").forEach((button) => {
+        button.addEventListener("click", async () => {
+            const bookingId = button.getAttribute("data-trip-confirm");
+            if (!bookingId) return;
+
+            try {
+                const { updateExperienceBookingStatus } = await import("../api/services.js");
+                await updateExperienceBookingStatus(bookingId, "COMPLETED");
+                alert("Experience marked as completed!");
+                renderTravelerTrips(containerId, user);
+            } catch (error) {
+                console.error("Failed to confirm completion:", error);
+                alert("Failed to confirm completion. Please try again.");
+            }
+        });
     });
 
     container.querySelector(".trip-review-modal-backdrop")?.addEventListener("click", (event) => {
@@ -255,7 +284,7 @@ async function syncTripsFromApi(user) {
                     location: b.experience?.location || b.experience?.destination || "Experience Location",
                     dateTime: `${b.date} | ${b.time || "09:00 AM"}`,
                     dateRange: b.date,
-                    status: "Upcoming",
+                    status: b.status || "Upcoming",
                     type: "Experience",
                     experienceId: b.experience?.id,
                     guests: b.participants,
@@ -393,6 +422,7 @@ function normalizeTripRecord(trip) {
         title: normalizedTitle,
         location: normalizedLocation,
         type: normalizedType,
+        backendStatus: trip.status,
         status: normalizeTripStatus(trip.status),
         hotelId: trip.hotelId || (normalizedType.toLowerCase().includes("hotel") ? hotel?.id || "" : "")
     };
@@ -405,8 +435,8 @@ function normalizeTripStatus(status) {
         return "Cancelled";
     }
 
-    if (value === "completed" || value === "complete") {
-        return "Completed";
+    if (value === "completed" || value === "complete" || value === "end_requested") {
+        return value === "end_requested" ? "Upcoming" : "Completed";
     }
 
     return "Upcoming";

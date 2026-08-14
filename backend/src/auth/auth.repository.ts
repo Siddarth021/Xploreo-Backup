@@ -59,7 +59,7 @@ export class AuthRepository {
     {
       userId: 'partner-1',
       username: 'hotel_partner',
-      password: 'partner@123',
+      password: 'hotel@123',
       role: Role.HOTEL,
       name: 'Xploreo Hotel Partner',
       email: 'hotel.partner@xploreo.com',

@@ -1,15 +1,18 @@
-import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Delete, Post, Query, Req } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Role } from '../auth/entities/auth.entity';
 import {
   ApiCreateEndpoint,
   ApiProtectedResource,
   ApiReadEndpoint,
+  ApiUpdateEndpoint,
+  ApiDeleteEndpoint,
 } from '../common/decorators/api-docs.decorator';
 import { Public } from '../common/decorators/public.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
 import { NonEmptyStringPipe } from '../common/pipes/non-empty-string.pipe';
 import { CreateHotelDto } from './dto/create-hotel.dto';
+import { UpdateHotelDto } from './dto/update-hotel.dto';
 import { HotelsService } from './hotels.service';
 
 @ApiTags('Phase 1 - Hotels')
@@ -49,5 +52,24 @@ export class HotelsController {
   @ApiReadEndpoint()
   findOne(@Param('id', NonEmptyStringPipe) id: string) {
     return this.hotelsService.findOne(id);
+  }
+
+  @Patch(':id')
+  @Roles(Role.PARTNER)
+  @ApiOperation({ summary: 'Update a hotel' })
+  @ApiUpdateEndpoint(UpdateHotelDto)
+  update(
+    @Param('id', NonEmptyStringPipe) id: string,
+    @Body() dto: UpdateHotelDto,
+  ) {
+    return this.hotelsService.update(id, dto);
+  }
+
+  @Delete(':id')
+  @Roles(Role.PARTNER)
+  @ApiOperation({ summary: 'Delete a hotel' })
+  @ApiDeleteEndpoint()
+  remove(@Param('id', NonEmptyStringPipe) id: string) {
+    return this.hotelsService.remove(id);
   }
 }

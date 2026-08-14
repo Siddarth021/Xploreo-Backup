@@ -18,6 +18,8 @@ export class HotelsRepository {
       reviewCount: 0,
       pricePerNight: 850,
       taxesAndFees: 120,
+      totalRooms: 15,
+      availableRooms: 15,
       image:
         'https://images.unsplash.com/photo-1542314831-c6a4d142104d?auto=format&fit=crop&q=80&w=800',
       amenities: ['Pool', 'Spa', 'Gym', 'Free WiFi', 'Restaurant'],
@@ -36,6 +38,8 @@ export class HotelsRepository {
       reviewCount: 0,
       pricePerNight: 450,
       taxesAndFees: 60,
+      totalRooms: 8,
+      availableRooms: 8,
       image:
         'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&q=80&w=800',
       amenities: ['Free Breakfast', 'Free WiFi', 'Restaurant'],
@@ -55,6 +59,8 @@ export class HotelsRepository {
       reviewCount: 0,
       pricePerNight: 950,
       taxesAndFees: 150,
+      totalRooms: 12,
+      availableRooms: 12,
       image:
         'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80&w=800',
       amenities: ['Pool', 'Beach Access', 'Bar', 'Spa'],
@@ -74,6 +80,8 @@ export class HotelsRepository {
       reviewCount: 0,
       pricePerNight: 200,
       taxesAndFees: 30,
+      totalRooms: 20,
+      availableRooms: 20,
       image:
         'https://images.unsplash.com/photo-1551882547-ff40c0d129df?auto=format&fit=crop&q=80&w=800',
       amenities: ['Coworking', 'Gym', 'Free WiFi'],
@@ -84,7 +92,7 @@ export class HotelsRepository {
 
   create(
     partnerId: string,
-    data: Omit<Hotel, 'id' | 'partnerId' | 'createdAt'> & { id?: string },
+    data: Omit<Hotel, 'id' | 'partnerId' | 'createdAt' | 'availableRooms'> & { id?: string, availableRooms?: number },
   ): Hotel {
     const hotel: Hotel = {
       id: data.id || randomUUID(),
@@ -98,6 +106,8 @@ export class HotelsRepository {
       reviewCount: data.reviewCount,
       pricePerNight: data.pricePerNight,
       taxesAndFees: data.taxesAndFees,
+      totalRooms: data.totalRooms,
+      availableRooms: data.availableRooms ?? data.totalRooms,
       image: data.image,
       amenities: data.amenities,
       status: data.status,

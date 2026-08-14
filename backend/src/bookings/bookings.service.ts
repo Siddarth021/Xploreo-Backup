@@ -26,6 +26,9 @@ export class BookingsService {
     if (!hotel || hotel.status !== 'active') {
       throw new NotFoundException(`Hotel ${dto.hotelId} not found`);
     }
+    if (hotel.availableRooms <= 0) {
+      throw new BadRequestException('No available rooms in this hotel');
+    }
 
     const checkIn = new Date(`${dto.checkIn}T00:00:00.000Z`);
     const checkOut = new Date(`${dto.checkOut}T00:00:00.000Z`);
@@ -53,6 +56,10 @@ export class BookingsService {
       roomType: dto.roomType,
       notes: dto.notes,
       totalAmount,
+    });
+
+    this.hotelsRepository.update(hotel.id, {
+      availableRooms: hotel.availableRooms - 1,
     });
 
     return { ...booking, hotel };

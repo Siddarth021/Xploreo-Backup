@@ -28,7 +28,6 @@ export async function renderExperienceCatalogPage() {
             status: "active",
             image: exp.image || "",
             images: exp.images || (exp.image ? [exp.image] : []),
-            nextSlot: exp.nextSlot || "10:00 AM",
             booked: exp.booked || 0,
             slots: exp.slots || []
         }));
@@ -192,6 +191,16 @@ export async function renderExperienceCatalogPage() {
         if (!date) {
             setFieldError("slotDate", "A slot date is required.");
             isValid = false;
+        } else {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const slotDateObj = new Date(date);
+            slotDateObj.setHours(0, 0, 0, 0);
+            
+            if (slotDateObj <= today) {
+                setFieldError("slotDate", "Slots can only be created for tomorrow or later.");
+                isValid = false;
+            }
         }
 
         if (!time) {
@@ -258,11 +267,18 @@ export async function renderExperienceCatalogPage() {
     }
 
     function timeToMinutes(value) {
-        const match = String(value).trim().match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
-        if (!match) return Number.MAX_SAFE_INTEGER;
-        let hour = Number(match[1]) % 12;
-        const minute = Number(match[2]);
-        const period = match[3].toUpperCase();
+        const str = String(value).trim();
+        
+        const match24 = str.match(/^(\d{1,2}):(\d{2})$/);
+        if (match24) {
+            return Number(match24[1]) * 60 + Number(match24[2]);
+        }
+        
+        const match12 = str.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+        if (!match12) return Number.MAX_SAFE_INTEGER;
+        let hour = Number(match12[1]) % 12;
+        const minute = Number(match12[2]);
+        const period = match12[3].toUpperCase();
         if (period === "PM") hour += 12;
         return hour * 60 + minute;
     }
@@ -395,11 +411,13 @@ export async function renderExperienceCatalogPage() {
         resetCatalogMessages();
 
         const dateInput = document.getElementById("slotDate");
-        const todayStr = new Date().toISOString().split("T")[0];
-        dateInput.value = slot?.date || exp.slots[0]?.date || todayStr;
-        dateInput.min = todayStr;
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toISOString().split("T")[0];
+        dateInput.value = slot?.date || exp.slots[0]?.date || tomorrowStr;
+        dateInput.min = tomorrowStr;
         
-        document.getElementById("slotTime").value = slot?.time || exp.nextSlot || "10:00 AM";
+        document.getElementById("slotTime").value = slot?.time || "10:00";
         document.getElementById("slotCapacity").value = slot?.capacity || exp.capacity;
 
         openModal("slotsModal");
@@ -423,7 +441,16 @@ export async function renderExperienceCatalogPage() {
     }
 
     function renderCatalog() {
-        container.innerHTML = experiences.map((exp) => `
+        container.innerHTML = experiences.map((exp) => {
+            const nextSlotObj = Array.isArray(exp.slots) && exp.slots.length > 0 
+                ? [...exp.slots].sort((a, b) => new Date(`${a.date}T00:00:00`) - new Date(`${b.date}T00:00:00`))[0]
+                : null;
+            
+            const nextSessionDisplay = nextSlotObj 
+                ? `Next session: ${nextSlotObj.date} at ${nextSlotObj.time} • ${nextSlotObj.booked}/${nextSlotObj.capacity} seats booked`
+                : `No upcoming sessions • 0/${exp.capacity} seats booked`;
+
+            return `
             <article class="card experience-catalog-card">
                 <div class="experience-card-row">
                     ${exp.image ? `<img src="${exp.image}" class="exp-img" alt="${exp.title}" onerror="this.style.display='none'" />` : `<div class="exp-img" style="display:flex; align-items:center; justify-content:center; background:#f5f5f5; color:#999; border-radius:8px; font-size:12px;">No Image</div>`}
@@ -449,7 +476,7 @@ export async function renderExperienceCatalogPage() {
                             </div>
                         </div>
                         <div class="slot-bar">
-                            <span>Next session: ${exp.nextSlot} • ${exp.booked}/${exp.capacity} seats booked</span>
+                            <span>${nextSessionDisplay}</span>
                         </div>
                         <div class="actions catalog-actions">
                             <button class="primary-btn" type="button" data-action="open-slots" data-id="${exp.id}">Manage Slots</button>
@@ -460,7 +487,8 @@ export async function renderExperienceCatalogPage() {
                     </div>
                 </div>
             </article>
-        `).join("");
+        `;
+        }).join("");
     }
 
     ensureExperienceSlots();
@@ -623,7 +651,6 @@ export async function renderExperienceCatalogPage() {
             status: "active",
             image: uploadedImageUrls[selectedThumbnailIndex] || uploadedImageUrls[0],
             images: [...uploadedImageUrls],
-            nextSlot: "",
             booked: 0,
             slots: []
         };

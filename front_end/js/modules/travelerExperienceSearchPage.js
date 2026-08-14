@@ -347,9 +347,7 @@ function getFilteredExperiences(state) {
         includesText(item.destination, destinationTerm) || includesText(item.title, destinationTerm)
     );
 
-    const basePool = exactMatches.length
-        ? { items: exactMatches, matchMode: "destination" }
-        : { items: EXPERIENCE_RESULTS, matchMode: "all" };
+    const basePool = { items: exactMatches, matchMode: "destination" };
 
     const items = basePool.items
         .filter((item) => item.price <= state.maxPrice)

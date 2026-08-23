@@ -220,10 +220,16 @@ export async function renderPageContent(user) {
   } else if (
     (user.role === "guide" ||
       user.role === "hotel" ||
+      user.role === "PARTNER" ||
       user.role === "experience" ||
-      user.role === "EXPERIENCE_PARTNER") &&
+      user.role === "EXPERIENCE_PARTNER" ||
+      user.role === "nontechadmin" ||
+      user.role === "superadmin" ||
+      page === "support.html") &&
     page === "support.html"
   ) {
+    const main = document.getElementById("main");
+    if (main) main.style.display = "block";
     renderSupportPage("main", user);
   } else if (
     (role === "hotel" || role === "PARTNER") &&

@@ -16,8 +16,9 @@ export function getProfile(user) {
         }
     }
 
-    // 2. Hide Support specifically for techadmin, superadmin, and nontechadmin
-    const supportItem = (user && user.role !== 'techadmin' && user.role !== 'superadmin' && user.role !== 'nontechadmin') ? `
+    // 2. Show Support for all user roles (traveller, guide, hotel, experience, nontechadmin, superadmin) except techadmin
+    const isTechAdmin = user && (user.role === 'techadmin' || user.role === 'TECH_ADMIN' || user.role === 'TECHADMIN');
+    const supportItem = (user && !isTechAdmin) ? `
               <div class="dropdown-item" onclick="window.location.href='${supportLink}'">
                 <img src="../components/ui/support.svg" class="dropdown-icon">
                 <span>Support</span>

@@ -29,4 +29,18 @@ export class BookingsController {
   cancel(@Req() req: any) {
     return this.bookingsService.cancelBooking(req.params.id);
   }
+
+  @Patch(':id/check-in')
+  @Roles(Role.PARTNER)
+  @ApiOperation({ summary: 'Hotel partner checks in a booking' })
+  checkIn(@Req() req: any) {
+    return this.bookingsService.checkInBooking(req.params.id, req.user?.userId);
+  }
+
+  @Patch(':id/check-out')
+  @Roles(Role.PARTNER)
+  @ApiOperation({ summary: 'Hotel partner checks out a booking' })
+  checkOut(@Req() req: any) {
+    return this.bookingsService.checkOutBooking(req.params.id, req.user?.userId);
+  }
 }

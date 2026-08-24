@@ -47,6 +47,7 @@ export class BookingsService {
     const totalAmount = dto.totalAmount ?? computedAmount;
 
     const booking = this.bookingsRepository.create({
+      id: dto.id,
       hotelId: hotel.id,
       travellerId,
       guestName: dto.guestName,
@@ -89,6 +90,59 @@ export class BookingsService {
     }
 
     return cancelledBooking;
+  }
+
+  checkInBooking(id: string, partnerId: string | undefined) {
+    if (!partnerId) {
+      throw new ForbiddenException('x-user-id header is required for PARTNER');
+    }
+
+    const booking = this.bookingsRepository.findAll().find(b => b.id === id);
+    if (!booking) {
+      throw new NotFoundException(`Booking ${id} not found`);
+    }
+
+    const hotel = this.hotelsRepository.findById(booking.hotelId);
+    if (!hotel || hotel.partnerId !== partnerId) {
+      throw new ForbiddenException('You do not have permission to check in this booking');
+    }
+
+    if (booking.status !== 'CONFIRMED') {
+      throw new BadRequestException(`Only CONFIRMED bookings can be checked in (current status: ${booking.status})`);
+    }
+
+    return this.bookingsRepository.checkIn(id);
+  }
+
+  checkOutBooking(id: string, partnerId: string | undefined) {
+    if (!partnerId) {
+      throw new ForbiddenException('x-user-id header is required for PARTNER');
+    }
+
+    const booking = this.bookingsRepository.findAll().find(b => b.id === id);
+    if (!booking) {
+      throw new NotFoundException(`Booking ${id} not found`);
+    }
+
+    const hotel = this.hotelsRepository.findById(booking.hotelId);
+    if (!hotel || hotel.partnerId !== partnerId) {
+      throw new ForbiddenException('You do not have permission to check out this booking');
+    }
+
+    if (booking.status !== 'CHECKED_IN') {
+      throw new BadRequestException(`Only CHECKED_IN bookings can be checked out (current status: ${booking.status})`);
+    }
+
+    const checkedOutBooking = this.bookingsRepository.checkOut(id);
+
+    // Make the room available again
+    if (hotel) {
+      this.hotelsRepository.update(hotel.id, {
+        availableRooms: hotel.availableRooms + (booking.rooms || 1),
+      });
+    }
+
+    return checkedOutBooking;
   }
 
   findForPartner(partnerId: string | undefined) {

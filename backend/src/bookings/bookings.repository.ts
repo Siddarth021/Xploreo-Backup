@@ -5,16 +5,17 @@ import { Booking, BookingStatus } from './entities/booking.entity';
 type CreateBookingRecord = Omit<
   Booking,
   'id' | 'status' | 'createdAt' | 'hotel'
->;
+> & { id?: string };
 
 @Injectable()
 export class BookingsRepository {
   private readonly bookings: Booking[] = [];
 
   create(data: CreateBookingRecord): Booking {
+    const { id, ...rest } = data;
     const booking: Booking = {
-      id: randomUUID(),
-      ...data,
+      id: id || randomUUID(),
+      ...rest,
       status: BookingStatus.CONFIRMED,
       createdAt: new Date(),
     };
@@ -31,6 +32,24 @@ export class BookingsRepository {
     const booking = this.bookings.find(b => b.id === id);
     if (booking) {
       booking.status = BookingStatus.CANCELLED;
+      return { ...booking };
+    }
+    return undefined;
+  }
+
+  checkIn(id: string): Booking | undefined {
+    const booking = this.bookings.find(b => b.id === id);
+    if (booking) {
+      booking.status = BookingStatus.CHECKED_IN;
+      return { ...booking };
+    }
+    return undefined;
+  }
+
+  checkOut(id: string): Booking | undefined {
+    const booking = this.bookings.find(b => b.id === id);
+    if (booking) {
+      booking.status = BookingStatus.CHECKED_OUT;
       return { ...booking };
     }
     return undefined;

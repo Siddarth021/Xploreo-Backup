@@ -271,11 +271,13 @@ export async function renderTravelerPackageSearchPage(containerId) {
         });
 
         container.querySelectorAll("[data-package-details]").forEach((button) => {
-            button.addEventListener("click", () => {
+            button.addEventListener("click", (e) => {
+                e.preventDefault();
                 const packageId = button.getAttribute("data-package-details");
-                const selectedPackage = PACKAGE_RESULTS.find((item) => item.id === packageId);
+                const selectedPackage = PACKAGE_RESULTS.find((item) => String(item.id) === String(packageId));
                 if (selectedPackage && typeof localStorage !== "undefined") {
                     localStorage.setItem(SELECTED_PACKAGE_STORAGE_KEY, JSON.stringify(selectedPackage));
+                    localStorage.setItem("traveler_selected_package_id", String(packageId));
                 }
                 window.location.href = `./traveller_booking-details.html?plan=${encodeURIComponent(packageId)}`;
             });

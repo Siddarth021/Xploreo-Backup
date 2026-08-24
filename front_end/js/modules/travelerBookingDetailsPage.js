@@ -467,13 +467,19 @@ export function renderTravelerBookingDetailsPage(containerId) {
 }
 
 function getActiveTravelerPackage() {
-    const planId = new URLSearchParams(window.location.search).get("plan");
+    const urlParams = new URLSearchParams(window.location.search);
+    const planId = urlParams.get("plan") || urlParams.get("planId");
     const catalog = getTravelerPackageCatalog();
 
     if (planId) {
-        const selectedFromUrl = catalog.find((item) => item.id === planId);
+        const selectedFromUrl = catalog.find((item) => String(item.id) === String(planId));
         if (selectedFromUrl) {
             return selectedFromUrl;
+        }
+
+        const storedSelected = getSelectedTravelerPackage();
+        if (storedSelected && (String(storedSelected.id) === String(planId) || String(storedSelected.packageId) === String(planId))) {
+            return storedSelected;
         }
     }
 

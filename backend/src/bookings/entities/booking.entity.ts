@@ -17,7 +17,9 @@ export class Booking {
   guests!: number;
   roomType!: string;
   notes?: string;
+  rooms?: number;
   totalAmount!: number;
+  guestNames?: string[];
   status!: BookingStatus;
   createdAt!: Date;
   hotel?: Hotel;

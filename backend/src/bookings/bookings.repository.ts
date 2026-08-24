@@ -27,6 +27,15 @@ export class BookingsRepository {
     return this.bookings.map((booking) => ({ ...booking }));
   }
 
+  cancel(id: string): Booking | undefined {
+    const booking = this.bookings.find(b => b.id === id);
+    if (booking) {
+      booking.status = BookingStatus.CANCELLED;
+      return { ...booking };
+    }
+    return undefined;
+  }
+
   findByHotelIds(hotelIds: string[]): Booking[] {
     const hotelIdSet = new Set(hotelIds);
     return this.bookings

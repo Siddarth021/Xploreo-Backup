@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Post, Patch, Req } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Role } from '../auth/entities/auth.entity';
 import {
@@ -21,5 +21,12 @@ export class BookingsController {
   @ApiCreateEndpoint(CreateBookingDto)
   create(@Body() dto: CreateBookingDto, @Req() req: any) {
     return this.bookingsService.create(req.user?.userId, dto);
+  }
+
+  @Patch(':id/cancel')
+  @Roles(Role.TRAVELLER_ACTOR)
+  @ApiOperation({ summary: 'Traveller cancels a hotel booking' })
+  cancel(@Req() req: any) {
+    return this.bookingsService.cancelBooking(req.params.id);
   }
 }

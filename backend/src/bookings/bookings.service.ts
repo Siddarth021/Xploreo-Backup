@@ -42,7 +42,9 @@ export class BookingsService {
     const nights = Math.ceil(
       (checkOut.getTime() - checkIn.getTime()) / 86_400_000,
     );
-    const totalAmount = nights * (hotel.pricePerNight + hotel.taxesAndFees);
+    const rooms = dto.rooms || 1;
+    const computedAmount = nights * (hotel.pricePerNight + hotel.taxesAndFees) * rooms;
+    const totalAmount = dto.totalAmount ?? computedAmount;
 
     const booking = this.bookingsRepository.create({
       hotelId: hotel.id,
@@ -55,7 +57,9 @@ export class BookingsService {
       guests: dto.guests,
       roomType: dto.roomType,
       notes: dto.notes,
+      rooms,
       totalAmount,
+      guestNames: dto.guestNames,
     });
 
     this.hotelsRepository.update(hotel.id, {
@@ -63,6 +67,28 @@ export class BookingsService {
     });
 
     return { ...booking, hotel };
+  }
+
+  cancelBooking(id: string) {
+    const booking = this.bookingsRepository.findAll().find(b => b.id === id);
+    if (!booking) {
+      throw new NotFoundException(`Booking ${id} not found`);
+    }
+    if (booking.status === 'CANCELLED') {
+      throw new BadRequestException(`Booking ${id} is already cancelled`);
+    }
+
+    const cancelledBooking = this.bookingsRepository.cancel(id);
+    
+    // Refund the room
+    const hotel = this.hotelsRepository.findById(booking.hotelId);
+    if (hotel) {
+      this.hotelsRepository.update(hotel.id, {
+        availableRooms: hotel.availableRooms + 1,
+      });
+    }
+
+    return cancelledBooking;
   }
 
   findForPartner(partnerId: string | undefined) {

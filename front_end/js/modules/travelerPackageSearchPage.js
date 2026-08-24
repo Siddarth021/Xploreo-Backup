@@ -27,11 +27,61 @@ export async function renderTravelerPackageSearchPage(containerId) {
 
     container.innerHTML = `<div class="traveler-package-empty">Loading packages...</div>`;
     try {
-        const plans = await fetchPlans();
-        PACKAGE_RESULTS = plans.map((plan) => mapPlanToPackage(plan, getSearchValues()));
+        let plans = await fetchPlans();
+        const localPlans = JSON.parse(localStorage.getItem("ntaPlans") || "[]");
+        if (Array.isArray(plans) && localPlans.length) {
+            const planIds = new Set(plans.map(p => String(p.id)));
+            const missing = localPlans.filter(p => !planIds.has(String(p.id))).map(p => ({
+                id: p.id,
+                title: p.name || p.title,
+                description: p.description,
+                pricePerPerson: p.price || p.pricePerPerson,
+                durationNights: parseInt(p.duration) || 3,
+                destination: p.destination,
+                originCity: "Any",
+                hotelStars: 4,
+                includesFlight: true,
+                tags: p.features || [],
+                itinerary: p.itinerary
+            }));
+            plans = [...plans, ...missing];
+        } else if (!plans || !plans.length) {
+            plans = localPlans.map(p => ({
+                id: p.id,
+                title: p.name || p.title,
+                description: p.description,
+                pricePerPerson: p.price || p.pricePerPerson,
+                durationNights: parseInt(p.duration) || 3,
+                destination: p.destination,
+                originCity: "Any",
+                hotelStars: 4,
+                includesFlight: true,
+                tags: p.features || [],
+                itinerary: p.itinerary
+            }));
+        }
+        PACKAGE_RESULTS = (plans || []).map((plan) => mapPlanToPackage(plan, getSearchValues()));
     } catch (error) {
-        container.innerHTML = `<div class="traveler-package-empty">Unable to load packages right now.</div>`;
-        return;
+        const localPlans = JSON.parse(localStorage.getItem("ntaPlans") || "[]");
+        if (localPlans.length) {
+            const plans = localPlans.map(p => ({
+                id: p.id,
+                title: p.name || p.title,
+                description: p.description,
+                pricePerPerson: p.price || p.pricePerPerson,
+                durationNights: parseInt(p.duration) || 3,
+                destination: p.destination,
+                originCity: "Any",
+                hotelStars: 4,
+                includesFlight: true,
+                tags: p.features || [],
+                itinerary: p.itinerary
+            }));
+            PACKAGE_RESULTS = plans.map((plan) => mapPlanToPackage(plan, getSearchValues()));
+        } else {
+            container.innerHTML = `<div class="traveler-package-empty">Unable to load packages right now.</div>`;
+            return;
+        }
     }
 
     function render() {
@@ -346,14 +396,15 @@ function getFilteredPackages(state) {
     const guestCount = Number.parseInt(state.searchValues.guestCount, 10) || 2;
 
     return PACKAGE_RESULTS
-        .filter((item) => !originTerm || normalizeText(item.origin) === "any" || normalizeText(item.origin).includes(originTerm))
+        .filter((item) => !originTerm || normalizeText(item.origin) === "any" || normalizeText(item.origin).includes(originTerm) || !item.origin)
         .filter((item) =>
             !destinationTerm ||
             normalizeText(item.destination).includes(destinationTerm) ||
+            destinationTerm.includes(normalizeText(item.destination)) ||
             normalizeText(item.title).includes(destinationTerm)
         )
         .filter((item) => item.nights >= state.minDuration)
-        .filter((item) => state.flightMode === "with" ? item.withFlight : !item.withFlight)
+        .filter((item) => !state.flightMode || (state.flightMode === "with" ? item.withFlight !== false : !item.withFlight))
         .filter((item) => item.pricePerPerson <= state.maxBudget)
         .filter((item) => !state.selectedBudgets.size || state.selectedBudgets.has(item.budgetBucket))
         .filter((item) => !state.selectedCategories.size || state.selectedCategories.has(String(item.hotelCategory)))

@@ -18,7 +18,7 @@ export class TripsService {
   constructor(
     private readonly tripsRepository: TripsRepository,
     private readonly plansRepository: PlansRepository,
-  ) {}
+  ) { }
 
   create(dto: CreateTripDto) {
     const plan = this.plansRepository.findById(dto.planId);

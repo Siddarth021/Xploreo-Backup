@@ -10,4 +10,4 @@ import { PlansModule } from '../plans/plans.module';
   providers: [TripsService, TripsRepository],
   exports: [TripsService, TripsRepository],
 })
-export class TripsModule {}
+export class TripsModule { }

@@ -184,6 +184,9 @@ function renderHotelCard(hotel) {
                 <p class="traveler-hotel-description">${escapeHtml(hotel.description || "Comfortable stay with curated traveller support.")}</p>
                 <div class="traveler-hotel-divider"></div>
                 <div class="traveler-hotel-bottom">
+                    <div style="font-size: 13px; color: ${hotel.availableRooms <= 5 ? '#e11d48' : '#16a34a'}; font-weight: 600; margin-bottom: 8px;">
+                        ${hotel.availableRooms} rooms available
+                    </div>
                     <div class="traveler-hotel-pricing">
                         <div class="traveler-hotel-old-price"><del>$${Number(hotel.oldPrice || hotel.price).toLocaleString()}</del><span class="traveler-hotel-offer">${escapeHtml(hotel.offer)}</span></div>
                         <div class="traveler-hotel-price-line"><strong>$${Number(hotel.price || 0).toLocaleString()}</strong><span>/ night</span></div>

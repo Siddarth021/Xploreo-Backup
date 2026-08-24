@@ -18,7 +18,7 @@ export function renderEarningsContent(containerId, currentUser) {
         <div class="stats-grid earnings-stats-spacing">
             <div class="stat-card blue">
                 <p class="stat-label">Available Payout</p>
-                <h2 class="stat-value">$1,240</h2>
+                <h2 class="stat-value">₹1,240</h2>
                 <p class="stat-subtext text-emerald">Transfer to bank</p>
             </div>
             <div class="stat-card dark-green">
@@ -28,7 +28,7 @@ export function renderEarningsContent(containerId, currentUser) {
             </div>
             <div class="stat-card orange">
                 <p class="stat-label">Expected Next Month</p>
-                <h2 class="stat-value">$2,100</h2>
+                <h2 class="stat-value">₹2,100</h2>
                 <p class="stat-subtext">Based on bookings</p>
             </div>
         </div>

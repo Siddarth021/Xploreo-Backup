@@ -19,7 +19,9 @@ export function mapHotelToSearchCard(hotel) {
         taxes: Number(hotel.taxesAndFees || 0),
         stars: Number(hotel.stars),
         maxGuests: 4,
-        promoted: Number(hotel.rating) >= 4.7
+        promoted: Number(hotel.rating) >= 4.7,
+        totalRooms: hotel.totalRooms || 10,
+        availableRooms: hotel.availableRooms ?? hotel.totalRooms ?? 10
     };
 }
 

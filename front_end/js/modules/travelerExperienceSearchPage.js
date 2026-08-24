@@ -57,9 +57,9 @@ export async function renderTravelerExperienceSearchPage(containerId) {
                                     <input id="traveler-experience-price" type="range" min="0" max="100000" step="500" value="${state.maxPrice}">
                                 </div>
                                 <div class="traveler-experience-slider-labels">
-                                    <span>$0</span>
+                                    <span>₹0</span>
                                     <span class="active-label">${formatCurrency(state.maxPrice)}</span>
-                                    <span>$100,000</span>
+                                    <span>₹100,000</span>
                                 </div>
                             </div>
 

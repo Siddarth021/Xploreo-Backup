@@ -68,8 +68,8 @@ export function renderTravelerFlightsPage(containerId) {
                                     style="--slider-progress:${(state.filters.price / 2000) * 100}%"
                                 >
                                 <div class="traveler-filter-scale">
-                                    <span>$0</span>
-                                    <span>$2000</span>
+                                    <span>₹0</span>
+                                    <span>₹2000</span>
                                 </div>
                             </div>
 

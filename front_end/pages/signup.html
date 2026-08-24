@@ -288,7 +288,7 @@
                     <div class="form-group" style="width: 100%;">
                         <label>Password</label>
                         <div class="password-wrapper" style="position: relative; width: 100%;">
-                            <input id="password" type="password" placeholder="••••••••" style="width: 100%;">
+                            <input id="password" type="password" placeholder="••••••••" style="width: 100%;" autocomplete="new-password">
                             <button type="button" class="toggle-password" onclick="togglePasswordVisibility('password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #6B7B79;">
                                 <img src="../components/ui/eye-closed.svg" alt="Toggle Password" style="width: 20px; height: 20px;">
                             </button>
@@ -298,7 +298,7 @@
                     <div class="form-group" style="width: 100%;">
                         <label>Confirm Password</label>
                         <div class="password-wrapper" style="position: relative; width: 100%;">
-                            <input id="confirmPassword" type="password" placeholder="••••••••" style="width: 100%;">
+                            <input id="confirmPassword" type="password" placeholder="••••••••" style="width: 100%;" autocomplete="new-password">
                             <button type="button" class="toggle-password" onclick="togglePasswordVisibility('confirmPassword', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #6B7B79;">
                                 <img src="../components/ui/eye-closed.svg" alt="Toggle Password" style="width: 20px; height: 20px;">
                             </button>
@@ -825,79 +825,45 @@
 
                     </div>
 
-                    <!-- Location -->
+                    <!-- GST / Tax ID -->
 
                     <div class="form-group">
 
                         <label>
 
-                            Service Location
+                            GST / Tax ID (Optional)
 
                         </label>
 
                         <input
                             type="text"
-                            id="service-location"
-                            placeholder="City, Country"
+                            id="tax-id"
+                            placeholder="Enter GST or Tax ID"
                         >
 
                     </div>
 
-                    <!-- Operating Hours -->
+                    <!-- Bank Account -->
 
                     <div class="form-group">
 
                         <label>
 
-                            Operating Hours
+                            Payout Bank Account
 
                         </label>
 
-                        <div class="time-range">
-
-                            <input type="time">
-
-                            <span>
-
-                                to
-
-                            </span>
-
-                            <input type="time">
-
-                        </div>
-
-                    </div>
-
-                    <!-- Pricing -->
-
-                    <div class="form-group">
-
-                        <label>
-
-                            Pricing Range (USD)
-
-                        </label>
-
-                        <div class="price-range">
-
-                            <input
-                                type="number"
-                                placeholder="Min"
-                            >
-
-                            <input
-                                type="number"
-                                placeholder="Max"
-                            >
-
-                        </div>
+                        <input
+                            type="text"
+                            id="bank-account"
+                            placeholder="Enter Bank Account Number"
+                        >
 
                     </div>
 
                     <!-- License Upload -->
 
-                    <div class="form-group">
+                    <div class="form-group" style="grid-column: span 2;">
 
                         <label>
 
@@ -921,40 +887,6 @@
                             <small>
 
                                 PDF, JPG or PNG. Max 5MB
-
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                    <!-- Service Photos -->
-
-                    <div class="form-group">
-
-                        <label>
-
-                            Service Photos
-
-                        </label>
-
-                        <div class="upload-box">
-
-                            <input
-                                type="file"
-                                multiple
-                                accept="image/*"
-                            >
-
-                            <span>
-
-                                Upload service photos
-
-                            </span>
-
-                            <small>
-
-                                Upload at least 3 high-quality photos
 
                             </small>
 

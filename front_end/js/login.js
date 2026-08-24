@@ -104,7 +104,8 @@ export function initLogin() {
           window.location.href = "./tech_tickets.html";
         } else if (role === "admin") {
           window.location.href = "./dashboard.html";
-        } else {
+          } 
+        else {
           window.location.href = "./dashboard.html";
         }
       } catch (err) {

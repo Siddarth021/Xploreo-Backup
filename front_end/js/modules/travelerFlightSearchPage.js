@@ -95,7 +95,7 @@ export function renderTravelerFlightSearchPage(containerId) {
                                 style="--range-progress: ${getRangeProgress(priceLimit)}%;"
                             >
                             <div class="filter-range-values">
-                                <span>$0</span>
+                                <span>₹0</span>
                                 <strong>$${priceLimit}</strong>
                             </div>
                         </div>

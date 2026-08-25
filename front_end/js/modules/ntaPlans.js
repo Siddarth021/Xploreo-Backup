@@ -1,6 +1,6 @@
 // Non-Technical Admin - Manage Travel Packages (Full CRUD)
 import { nontechAdminData } from "../api/legacyData.js";
-import { createPlan, updatePlan, deletePlan, fetchPlans } from "../api/services.js";
+import { createPlan, updatePlan, deletePlan, fetchPlans, fetchHotels, fetchExperiences, fetchCities } from "../api/services.js";
 
 let currentEditId = null;
 let currentDeleteId = null;
@@ -22,6 +22,8 @@ export async function initNtaPlans() {
             destination: plan.destination,
             category: plan.category || "Tours",
             features: plan.tags || [],
+            hotelId: plan.itinerary?.day1?.hotel?.hotelId || "",
+            experienceIds: (plan.itinerary?.days || []).flatMap(d => (d.experiences || []).map(e => e.experienceId)).filter(Boolean),
             status: plan.isActive !== false ? "available" : "unavailable",
             createdAt: plan.createdAt || new Date().toISOString()
         }));
@@ -135,10 +137,16 @@ function renderPlansTable(filteredPlans) {
     `;
 }
 
-function openCreateModal() {
+async function openCreateModal() {
     currentEditId = null;
     featuresList = [];
     planUploadedImageUrl = null;
+    const [hotels, experiences, cities] = await Promise.all([
+        fetchHotels().catch(() => []),
+        fetchExperiences().catch(() => []),
+        fetchCities().catch(() => [])
+    ]);
+
     renderPlanModal("Create New Package", {
         name: "",
         description: "",
@@ -147,12 +155,14 @@ function openCreateModal() {
         destination: "",
         category: "",
         features: [],
+        hotelId: "",
+        experienceIds: [],
         status: "available",
         image: ""
-    });
+    }, hotels, experiences, cities);
 }
 
-function openEditModal(planId) {
+async function openEditModal(planId) {
     const plans = JSON.parse(localStorage.getItem("ntaPlans")) || [];
     const plan = plans.find(p => p.id === planId);
     if (!plan) return;
@@ -160,16 +170,29 @@ function openEditModal(planId) {
     currentEditId = planId;
     featuresList = [...(plan.features || [])];
     planUploadedImageUrl = plan.image || null;
-    renderPlanModal("Edit Package", plan);
+
+    const [hotels, experiences, cities] = await Promise.all([
+        fetchHotels().catch(() => []),
+        fetchExperiences().catch(() => []),
+        fetchCities().catch(() => [])
+    ]);
+
+    renderPlanModal("Edit Package", plan, hotels, experiences, cities);
 }
 
-function renderPlanModal(title, plan) {
+function renderPlanModal(title, plan, availableHotels = [], availableExperiences = [], availableCities = []) {
     const modal = document.getElementById("nta-plan-modal");
     if (!modal) return;
 
     featuresList = plan.features || [];
 
     const categories = ["Adventure", "Family", "International", "Weekend Getaway", "Luxury", "Honeymoon", "Pilgrimage"];
+    const allDestinations = [...new Set([
+        ...availableCities.map(c => c.name),
+        ...availableHotels.map(h => h.city),
+        ...availableExperiences.map(e => e.location || e.destination),
+        "Goa", "Mumbai", "Delhi", "Jaipur", "Kerala", "Manali", "Bangalore", "Alleppey"
+    ].filter(Boolean))].sort();
 
     modal.innerHTML = `
         <div class="nta-modal">
@@ -213,8 +236,13 @@ function renderPlanModal(title, plan) {
             <div class="nta-form-row">
                 <div class="nta-form-group">
                     <label for="plan-destination">Destination</label>
-                    <input type="text" id="plan-destination" placeholder="e.g., Manali, Himachal Pradesh" value="${plan.destination || ''}">
-                    <div class="nta-form-hint">Enter the main destination or cities covered.</div>
+                    <select id="plan-destination">
+                        <option value="" disabled ${!plan.destination ? 'selected' : ''}>Select destination</option>
+                        ${allDestinations.map(dest => `
+                            <option value="${dest}" ${plan.destination === dest ? 'selected' : ''}>${dest}</option>
+                        `).join('')}
+                    </select>
+                    <div class="nta-form-hint">Choose destination city for this package.</div>
                 </div>
                 <div class="nta-form-group">
                     <label for="plan-category">Category</label>
@@ -225,6 +253,32 @@ function renderPlanModal(title, plan) {
                         `).join('')}
                     </select>
                 </div>
+            </div>
+
+            <div class="nta-form-group">
+                <label for="plan-hotel">Select Partner Hotel</label>
+                <select id="plan-hotel">
+                    <option value="" disabled ${!plan.hotelId ? 'selected' : ''}>Select an existing hotel</option>
+                    ${availableHotels.map(h => `
+                        <option value="${h.id}" data-city="${h.city || ''}" ${plan.hotelId === h.id ? 'selected' : ''}>
+                            ${h.name} (${h.city}) - ₹${h.pricePerNight}/night [${h.stars}★]
+                        </option>
+                    `).join('')}
+                </select>
+                <div class="nta-form-hint">Choose an active partner hotel to include in this package.</div>
+            </div>
+
+            <div class="nta-form-group">
+                <label>Select Partner Experiences / Guided Activities</label>
+                <div id="plan-experiences-list" style="display:flex; flex-direction:column; gap:6px; max-height:140px; overflow-y:auto; border:1px solid #e5e7eb; padding:8px; border-radius:6px; background:#fafafa;">
+                    ${availableExperiences.length ? availableExperiences.map(e => `
+                        <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:#374151; cursor:pointer;">
+                            <input type="checkbox" name="plan-experience-item" value="${e.id}" data-title="${e.title}" ${(plan.experienceIds || []).includes(e.id) ? 'checked' : ''}>
+                            <span><strong>${e.title}</strong> (${e.location || e.city || 'Standard'}) - ₹${e.price}</span>
+                        </label>
+                    `).join('') : '<p style="font-size:12px; color:#9ca3af; margin:0;">No partner experiences available</p>'}
+                </div>
+                <div class="nta-form-hint">Tick existing partner experiences to include in the itinerary.</div>
             </div>
 
             <div class="nta-form-group">
@@ -274,6 +328,19 @@ function renderPlanModal(title, plan) {
     `;
 
     modal.classList.add("active");
+
+    // Auto-sync destination when hotel is selected
+    const hotelSelect = document.getElementById("plan-hotel");
+    const destSelect = document.getElementById("plan-destination");
+    if (hotelSelect && destSelect) {
+        hotelSelect.addEventListener("change", () => {
+            const selectedOpt = hotelSelect.options[hotelSelect.selectedIndex];
+            const city = selectedOpt?.dataset?.city;
+            if (city && destSelect.querySelector(`option[value="${city}"]`)) {
+                destSelect.value = city;
+            }
+        });
+    }
 
     // Toggle label listener
     const toggleInput = document.getElementById("plan-status");
@@ -352,6 +419,13 @@ function savePlan() {
     const destination = document.getElementById("plan-destination")?.value?.trim();
     const category = document.getElementById("plan-category")?.value;
     const statusChecked = document.getElementById("plan-status")?.checked;
+    const hotelSelect = document.getElementById("plan-hotel");
+    const selectedHotelId = hotelSelect?.value || "";
+    const selectedHotelName = hotelSelect?.options[hotelSelect.selectedIndex]?.text?.split(" (")[0] || "Partner Hotel";
+
+    const selectedExpCheckboxes = Array.from(document.querySelectorAll('input[name="plan-experience-item"]:checked'));
+    const selectedExpIds = selectedExpCheckboxes.map(cb => cb.value);
+    const selectedExpTitles = selectedExpCheckboxes.map(cb => cb.dataset.title || cb.value);
 
     // Validation
     if (!name) { alert("Please enter a package name."); return; }
@@ -360,6 +434,45 @@ function savePlan() {
     if (!duration) { alert("Please select a duration."); return; }
     if (!destination) { alert("Please enter a destination."); return; }
     if (!category) { alert("Please select a category."); return; }
+    if (!selectedHotelId) { alert("Please select a partner hotel."); return; }
+
+    const structuredItinerary = {
+        day1: {
+            flight: null,
+            transport: {
+                id: "trans-1",
+                provider: "Partner Transport",
+                vehicleType: "Cab",
+                pickupLocation: destination,
+                dropoffLocation: destination,
+                pickupAt: "10:00 AM",
+                status: "confirmed"
+            },
+            hotel: {
+                id: `hotel-${selectedHotelId}`,
+                hotelId: selectedHotelId,
+                name: selectedHotelName,
+                checkInDate: "",
+                checkOutDate: "",
+                roomType: "Standard Room",
+                status: "confirmed"
+            }
+        },
+        days: [
+            {
+                dayNumber: 2,
+                experiences: selectedExpIds.map((expId, idx) => ({
+                    id: `exp-${expId}`,
+                    experienceId: expId,
+                    title: selectedExpTitles[idx] || "Guided Activity",
+                    location: destination,
+                    startsAt: "10:00 AM",
+                    endsAt: "01:00 PM",
+                    status: "confirmed"
+                }))
+            }
+        ]
+    };
 
     let plans = JSON.parse(localStorage.getItem("ntaPlans")) || [];
     let activityLog = JSON.parse(localStorage.getItem("ntaActivity")) || [];
@@ -371,6 +484,8 @@ function savePlan() {
             plans[idx] = {
                 ...plans[idx],
                 name, description, price, duration, destination, category,
+                hotelId: selectedHotelId,
+                experienceIds: selectedExpIds,
                 features: [...featuresList],
                 status: statusChecked ? "available" : "unavailable",
                 image: planUploadedImageUrl || ""
@@ -387,7 +502,7 @@ function savePlan() {
                 destination,
                 originCity: "Any",
                 tags: featuresList,
-                itinerary: [{ day: "Day 1", title: "Arrival", detail: "Arrival and check-in" }],
+                itinerary: structuredItinerary,
                 image: planUploadedImageUrl || ""
             }).catch(e => console.warn("Failed to sync plan update to backend", e));
         }
@@ -397,6 +512,8 @@ function savePlan() {
         const newPlan = {
             id: newId,
             name, description, price, duration, destination, category,
+            hotelId: selectedHotelId,
+            experienceIds: selectedExpIds,
             features: [...featuresList],
             status: statusChecked ? "available" : "unavailable",
             createdAt: new Date().toISOString(),
@@ -416,7 +533,7 @@ function savePlan() {
             destination,
             originCity: "Any",
             tags: featuresList,
-            itinerary: [{ day: "Day 1", title: "Arrival", detail: "Arrival and check-in" }],
+            itinerary: structuredItinerary,
             image: planUploadedImageUrl || ""
         }).catch(e => console.warn("Failed to sync plan creation to backend", e));
     }

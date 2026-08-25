@@ -224,12 +224,14 @@ function renderTravelerPackageSearchPage(containerId) {
         });
 
         container.querySelectorAll("[data-package-details]").forEach((button) => {
-            button.addEventListener("click", () => {
-                const selectedPackage = PACKAGE_RESULTS.find((item) => item.id === button.dataset.packageDetails);
-                if (!selectedPackage) return;
-
-                persistSelectedPackage(selectedPackage);
-                window.location.href = "./booking-details.html";
+            button.addEventListener("click", (e) => {
+                e.preventDefault();
+                const packageId = button.dataset.packageDetails;
+                const selectedPackage = PACKAGE_RESULTS.find((item) => String(item.id) === String(packageId));
+                if (selectedPackage) {
+                    persistSelectedPackage(selectedPackage);
+                }
+                window.location.href = `./traveller_booking-details.html?plan=${encodeURIComponent(packageId)}`;
             });
         });
 

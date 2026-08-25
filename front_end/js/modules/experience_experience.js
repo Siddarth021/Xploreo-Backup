@@ -144,7 +144,6 @@ export async function renderExperienceCatalogPage() {
         const description = sanitizeValue(document.getElementById(`${prefix}Description`).value);
         const price = Number(document.getElementById(`${prefix}Price`).value);
         const duration = Number(document.getElementById(`${prefix}Duration`).value);
-        const capacity = Number(document.getElementById(`${prefix}Capacity`).value);
         const category = document.getElementById(`${prefix}Category`).value;
 
         if (!name || name.length < 3) {
@@ -167,12 +166,7 @@ export async function renderExperienceCatalogPage() {
             isValid = false;
         }
 
-        if (!Number.isInteger(capacity) || capacity <= 0) {
-            setFieldError(`${prefix}Capacity`, "Capacity must be a positive integer.");
-            isValid = false;
-        }
-
-        return { isValid, name, description, price, duration, capacity, category };
+        return { isValid, name, description, price, duration, category };
     }
 
     function validateAddImage() {
@@ -422,7 +416,7 @@ export async function renderExperienceCatalogPage() {
         dateInput.min = tomorrowStr;
         
         document.getElementById("slotTime").value = slot?.time || "10:00";
-        document.getElementById("slotCapacity").value = slot?.capacity || exp.capacity;
+        document.getElementById("slotCapacity").value = slot?.capacity || exp.capacity || 10;
 
         openModal("slotsModal");
     }
@@ -478,7 +472,7 @@ export async function renderExperienceCatalogPage() {
                             </div>
                             <div class="exp-detail-item">
                                 <p>Capacity per session</p>
-                                <h3><span class="detail-icon">◌</span>${exp.capacity} guests</h3>
+                                <h3><span class="detail-icon">◌</span>${nextSlotObj ? `${nextSlotObj.capacity} guests` : (exp.capacity ? `${exp.capacity} guests` : "Set in slots")}</h3>
                             </div>
                         </div>
                         <div class="slot-bar">
@@ -521,7 +515,6 @@ export async function renderExperienceCatalogPage() {
             document.getElementById("editDescription").value = selectedExperience.description || selectedExperience.title;
             document.getElementById("editPrice").value = selectedExperience.price;
             document.getElementById("editDuration").value = parseInt(selectedExperience.duration) || 2;
-            document.getElementById("editCapacity").value = selectedExperience.capacity;
             document.getElementById("editCategory").value = selectedExperience.category || "adventure";
             resetCatalogMessages();
             openModal("editModal");
@@ -664,7 +657,7 @@ export async function renderExperienceCatalogPage() {
             description: payload.description,
             price: payload.price,
             duration: `${payload.duration} hours`,
-            capacity: payload.capacity,
+            capacity: 0,
             category: payload.category,
             status: "active",
             image: uploadedImageUrls[selectedThumbnailIndex] || uploadedImageUrls[0],
@@ -685,7 +678,7 @@ export async function renderExperienceCatalogPage() {
             category: payload.category,
             price: Number(payload.price),
             durationHours: parseInt(payload.duration) || 2,
-            capacity: Number(payload.capacity),
+            capacity: 0,
             image: expPayload.image
         }).catch(e => console.warn("Failed to sync experience creation", e));
 
@@ -711,7 +704,6 @@ export async function renderExperienceCatalogPage() {
         exp.description = payload.description;
         exp.price = payload.price;
         exp.duration = `${payload.duration} hours`;
-        exp.capacity = payload.capacity;
         exp.category = payload.category;
 
         persistExperiences();
@@ -724,7 +716,7 @@ export async function renderExperienceCatalogPage() {
             category: payload.category,
             price: Number(payload.price),
             durationHours: parseInt(payload.duration) || 2,
-            capacity: Number(payload.capacity)
+            capacity: exp.capacity || 0
         }).catch(e => console.warn("Failed to sync experience update", e));
 
         closeModal("editModal");

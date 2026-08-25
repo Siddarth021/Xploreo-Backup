@@ -21,7 +21,7 @@ export class ExperiencesRepository {
       availability: data.availability ?? ExperienceAvailability.AVAILABLE,
       price: data.price!,
       durationHours: data.durationHours!,
-      capacity: data.capacity!,
+      capacity: data.capacity ?? 0,
       booked: data.booked ?? 0,
       image: data.image ?? '',
       nextSlot: data.nextSlot ?? '',

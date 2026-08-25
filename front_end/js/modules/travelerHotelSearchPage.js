@@ -188,9 +188,9 @@ function renderHotelCard(hotel) {
                         ${hotel.availableRooms} rooms available
                     </div>
                     <div class="traveler-hotel-pricing">
-                        <div class="traveler-hotel-old-price"><del>$${Number(hotel.oldPrice || hotel.price).toLocaleString()}</del><span class="traveler-hotel-offer">${escapeHtml(hotel.offer)}</span></div>
-                        <div class="traveler-hotel-price-line"><strong>$${Number(hotel.price || 0).toLocaleString()}</strong><span>/ night</span></div>
-                        <div class="traveler-hotel-taxes">+ $${Number(hotel.taxes || 0).toLocaleString()} taxes & fees</div>
+                        <div class="traveler-hotel-old-price"><del>₹${Number(hotel.oldPrice || hotel.price).toLocaleString()}</del><span class="traveler-hotel-offer">${escapeHtml(hotel.offer)}</span></div>
+                        <div class="traveler-hotel-price-line"><strong>₹${Number(hotel.price || 0).toLocaleString()}</strong><span>/ night</span></div>
+                        <div class="traveler-hotel-taxes">+ ₹${Number(hotel.taxes || 0).toLocaleString()} taxes & fees</div>
                     </div>
                     <button class="traveler-hotel-cta" data-hotel-id="${escapeHtmlAttr(hotel.id)}" type="button">View rooms</button>
                 </div>

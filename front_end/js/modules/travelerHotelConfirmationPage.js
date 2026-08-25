@@ -73,6 +73,7 @@ export async function renderTravelerHotelConfirmationPage(containerId) {
                 "x-user-role": "TRAVELLER"
             },
             body: JSON.stringify({
+                id: bookingId,
                 hotelId: hotel.id,
                 guestName: currentTraveler.name || "Guest",
                 email: currentTraveler.email || "guest@example.com",
@@ -81,7 +82,10 @@ export async function renderTravelerHotelConfirmationPage(containerId) {
                 checkOut: searchValues.checkOut,
                 guests: guestCount,
                 roomType: selectedRoom.name,
-                notes: "Booked via Traveller App"
+                notes: "Booked via Traveller App",
+                totalAmount: totalAmount,
+                rooms: roomCount,
+                guestNames: JSON.parse(localStorage.getItem("traveler_booking_guest_details") || "[]").map(g => (g.firstName + " " + g.lastName).trim())
             })
         });
     } catch (err) {

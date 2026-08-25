@@ -23,7 +23,7 @@ export function renderEarningsContent(containerId, currentUser) {
             </div>
             <div class="stat-card dark-green">
                 <p class="stat-label">Total Earnings</p>
-                <h2 class="stat-value">$${totalEarnings.toLocaleString()}</h2>
+                <h2 class="stat-value">₹${totalEarnings.toLocaleString()}</h2>
                 <p class="stat-subtext">Lifetime performance</p>
             </div>
             <div class="stat-card orange">
@@ -64,7 +64,7 @@ export function renderEarningsContent(containerId, currentUser) {
                             <h3 class="transaction-title">${c.title}</h3>
                             <span class="transaction-date">${c.dateTime.split(" | ")[0]} - ${c.customer}</span>
                         </div>
-                        <h3 class="transaction-amount">+$${c.amount}</h3>
+                        <h3 class="transaction-amount">+₹${c.amount}</h3>
                     </div>
                 `).join('') : '<p class="no-data">No earnings history found.</p>'}
             </div>

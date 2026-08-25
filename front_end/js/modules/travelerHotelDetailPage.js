@@ -522,16 +522,16 @@ export async function renderTravelerHotelDetailPage(containerId) {
                             <div class="traveler-hotel-price-breakdown">
                                 <h3>Price Breakdown</h3>
                                 <div class="traveler-hotel-breakdown-row">
-                                    <span>$${selectedRoom.price} x ${stayNights} ${stayNights === 1 ? "night" : "nights"} x ${roomCount} ${roomCount === 1 ? "room" : "rooms"}</span>
-                                    <strong>$${roomSubtotal}</strong>
+                                    <span>₹${selectedRoom.price} x ${stayNights} ${stayNights === 1 ? "night" : "nights"} x ${roomCount} ${roomCount === 1 ? "room" : "rooms"}</span>
+                                    <strong>₹${roomSubtotal}</strong>
                                 </div>
                                 <div class="traveler-hotel-breakdown-row">
                                     <span>Taxes & fees</span>
-                                    <strong>$${taxTotal}</strong>
+                                    <strong>₹${taxTotal}</strong>
                                 </div>
                                 <div class="traveler-hotel-total-row">
                                     <span>Total Amount</span>
-                                    <strong>$${totalAmount}</strong>
+                                    <strong>₹${totalAmount}</strong>
                                 </div>
                             </div>
 
@@ -579,8 +579,8 @@ export async function renderTravelerHotelDetailPage(containerId) {
                                                 </div>
                                             </div>
                                             <div class="traveler-hotel-room-price">
-                                                ${selectedRoom.oldPrice ? `<del>$${selectedRoom.oldPrice}</del>` : ""}
-                                                <strong>$${selectedRoom.price}</strong>
+                                                ${selectedRoom.oldPrice ? `<del>₹${selectedRoom.oldPrice}</del>` : ""}
+                                                <strong>₹${selectedRoom.price}</strong>
                                                 <span>per night</span>
                                             </div>
                                         </div>
@@ -600,8 +600,8 @@ export async function renderTravelerHotelDetailPage(containerId) {
                                                     </div>
                                                 </div>
                                                 <div class="traveler-hotel-room-price">
-                                                    ${room.oldPrice ? `<del>$${room.oldPrice}</del>` : ""}
-                                                    <strong>$${room.price}</strong>
+                                                    ${room.oldPrice ? `<del>₹${room.oldPrice}</del>` : ""}
+                                                    <strong>₹${room.price}</strong>
                                                     <span>per night</span>
                                                 </div>
                                             </div>
@@ -659,7 +659,7 @@ export async function renderTravelerHotelDetailPage(containerId) {
             }
 
             persistSearchValues(state.searchValues);
-            window.location.href = HOTEL_RESULTS_PAGE;
+            render();
         });
 
         container.querySelectorAll("[data-thumb-index]").forEach((button) => {
@@ -740,6 +740,18 @@ export async function renderTravelerHotelDetailPage(containerId) {
                 hotelBookings[hbIndex].status = "Cancelled";
                 localStorage.setItem("hotelBookings", JSON.stringify(hotelBookings));
             }
+
+            const currentTraveler = getCurrentTraveler();
+            const getApiBaseUrl = () => (window.__XPLOREO_API_BASE__ || localStorage.getItem("xploreo_api_base_url") || "http://localhost:3000/api").replace(/\/$/, "");
+
+            fetch(`${getApiBaseUrl()}/bookings/${bookingId}/cancel`, {
+                method: 'PATCH',
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-user-id": currentTraveler?.id || "traveler-fallback",
+                    "x-user-role": "TRAVELLER"
+                }
+            }).catch(e => console.error("Failed to cancel on backend:", e));
 
             showWishlistToast("Booking successfully cancelled.");
             setTimeout(() => {
@@ -1156,7 +1168,6 @@ function escapeHtml(value) {
 function icon(name) {
     const icons = {
         calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg>`,
-        guests: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="10" cy="7" r="3"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 4.13a3 3 0 0 1 0 5.74"></path></svg>`,
         check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>`,
         shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v6c0 5 3.5 8.5 7 9 3.5-.5 7-4 7-9V6l-7-3Z"></path><path d="m9.5 12 1.5 1.5L14.5 10"></path></svg>`,
         clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>`,
@@ -1172,7 +1183,23 @@ function icon(name) {
         chevronDown: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>`,
         chevronLeft: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>`,
         chevronRight: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>`,
-        search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>`
+        search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>`,
+        guests: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`
     };
     return icons[name] || icons.check;
+}
+
+function getCurrentTraveler() {
+    if (typeof localStorage === "undefined") {
+        return { id: "traveler-fallback", name: "Traveler", email: "", phone: "" };
+    }
+    try {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+        if (!currentUser || !currentUser.role) {
+            return { id: "traveler-fallback", name: "Traveler", email: "", phone: "" };
+        }
+        return currentUser;
+    } catch (error) {
+        return { id: "traveler-fallback", name: "Traveler", email: "", phone: "" };
+    }
 }

@@ -44,21 +44,25 @@ export async function renderTravelerHotelBookingPage(containerId) {
                         <section class="traveler-booking-main-card">
                             <h2>Guest Details</h2>
                             <div class="traveler-booking-field-grid">
-                                <div class="traveler-booking-field">
-                                    <label>First Name *</label>
-                                    <div class="traveler-booking-input with-icon">${icon("user")}<input type="text" value="${escapeHtml(guestProfile.firstName)}" placeholder="Enter first name"></div>
-                                </div>
-                                <div class="traveler-booking-field">
-                                    <label>Last Name *</label>
-                                    <div class="traveler-booking-input with-icon">${icon("user")}<input type="text" value="${escapeHtml(guestProfile.lastName)}" placeholder="Enter last name"></div>
-                                </div>
+                                ${Array.from({ length: guestCount }).map((_, index) => `
+                                    <div class="traveler-booking-field-group" style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; grid-column: 1 / -1; margin-bottom: 8px;">
+                                        <div class="traveler-booking-field" style="grid-column: 1 / 2;">
+                                            <label>Guest ${index + 1} First Name *</label>
+                                            <div class="traveler-booking-input with-icon">${icon("user")}<input type="text" data-guest-first-name value="${index === 0 ? escapeHtml(guestProfile.firstName) : ''}" placeholder="Enter first name"></div>
+                                        </div>
+                                        <div class="traveler-booking-field" style="grid-column: 2 / 3;">
+                                            <label>Guest ${index + 1} Last Name *</label>
+                                            <div class="traveler-booking-input with-icon">${icon("user")}<input type="text" data-guest-last-name value="${index === 0 ? escapeHtml(guestProfile.lastName) : ''}" placeholder="Enter last name"></div>
+                                        </div>
+                                    </div>
+                                `).join('')}
                                 <div class="traveler-booking-field full">
-                                    <label>Email Address *</label>
+                                    <label>Primary Email Address *</label>
                                     <div class="traveler-booking-input with-icon">${icon("mail")}<input type="email" value="${escapeHtml(guestProfile.email)}" placeholder="your.email@example.com"></div>
                                     <div class="traveler-booking-help">Booking confirmation will be sent to this email</div>
                                 </div>
                                 <div class="traveler-booking-field full">
-                                    <label>Phone Number *</label>
+                                    <label>Primary Phone Number *</label>
                                     <div class="traveler-booking-input with-icon">${icon("phone")}<input type="text" value="${escapeHtml(guestProfile.phone)}" placeholder="+1 (555) 000-0000"></div>
                                 </div>
                                 <div class="traveler-booking-field full">
@@ -142,16 +146,16 @@ export async function renderTravelerHotelBookingPage(containerId) {
 
                         <div class="traveler-booking-price-rows">
                             <div class="traveler-booking-price-row">
-                                <span>$${selectedRoom.price} × ${stayNights} ${stayNights === 1 ? "night" : "nights"} × ${roomCount} ${roomCount === 1 ? "room" : "rooms"}</span>
-                                <strong>$${roomSubtotal}</strong>
+                                <span>₹${selectedRoom.price} × ${stayNights} ${stayNights === 1 ? "night" : "nights"} × ${roomCount} ${roomCount === 1 ? "room" : "rooms"}</span>
+                                <strong>₹${roomSubtotal}</strong>
                             </div>
                             <div class="traveler-booking-price-row">
                                 <span>Taxes & fees</span>
-                                <strong>$${taxTotal}</strong>
+                                <strong>₹${taxTotal}</strong>
                             </div>
                             <div class="traveler-booking-total-row">
                                 <span>Total Amount</span>
-                                <strong>$${totalAmount}</strong>
+                                <strong>₹${totalAmount}</strong>
                             </div>
                         </div>
 
@@ -173,9 +177,52 @@ export async function renderTravelerHotelBookingPage(containerId) {
 
 function bindEvents() {
     document.querySelector(".traveler-booking-confirm")?.addEventListener("click", () => {
+        const guestFirstNames = Array.from(document.querySelectorAll("[data-guest-first-name]")).map(el => el.value.trim());
+        const guestLastNames = Array.from(document.querySelectorAll("[data-guest-last-name]")).map(el => el.value.trim());
+        const email = document.querySelector('input[type="email"]')?.value.trim();
+        const phone = document.querySelector('input[type="text"][placeholder="+1 (555) 000-0000"]')?.value.trim() || document.querySelector('input[type="tel"]')?.value.trim();
+
+        // Validation logic
+        const hasEmptyName = guestFirstNames.some(name => !name) || guestLastNames.some(name => !name);
+        if (hasEmptyName) {
+            alert("Please fill in all guest names before proceeding.");
+            return;
+        }
+
+        const nameRegex = /^[a-zA-Z\s\-']+$/;
+        const hasInvalidName = guestFirstNames.some(name => !nameRegex.test(name)) || guestLastNames.some(name => !nameRegex.test(name));
+        if (hasInvalidName) {
+            alert("Guest names must only contain letters, spaces, hyphens, and apostrophes.");
+            return;
+        }
+        if (!email) {
+            alert("Please provide a primary email address.");
+            return;
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("Please provide a valid email address.");
+            return;
+        }
+
+        if (!phone) {
+            alert("Please provide a primary phone number.");
+            return;
+        }
+        
+        const phoneRegex = /^\+?[0-9\s\-()]{7,15}$/;
+        if (!phoneRegex.test(phone)) {
+            alert("Please provide a valid phone number.");
+            return;
+        }
+
         const params = new URLSearchParams(window.location.search);
         const hotelId = params.get("hotel") || "grand-luxury";
         const roomId = params.get("room");
+        const guests = guestFirstNames.map((first, i) => ({ firstName: first, lastName: guestLastNames[i] }));
+        localStorage.setItem("traveler_booking_guest_details", JSON.stringify(guests));
+
         const nextUrl = roomId
             ? `${HOTEL_CONFIRMATION_PAGE}?hotel=${encodeURIComponent(hotelId)}&room=${encodeURIComponent(roomId)}`
             : `${HOTEL_CONFIRMATION_PAGE}?hotel=${encodeURIComponent(hotelId)}`;

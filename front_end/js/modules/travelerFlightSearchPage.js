@@ -96,7 +96,7 @@ export function renderTravelerFlightSearchPage(containerId) {
                             >
                             <div class="filter-range-values">
                                 <span>₹0</span>
-                                <strong>$${priceLimit}</strong>
+                                <strong>₹${priceLimit}</strong>
                             </div>
                         </div>
 
@@ -466,7 +466,7 @@ function getNumericPrice(price) {
 }
 
 function formatMoney(price) {
-    return `$${getNumericPrice(price)}`;
+    return `₹${getNumericPrice(price)}`;
 }
 
 function getDurationMinutes(duration) {

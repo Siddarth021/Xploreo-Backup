@@ -63,6 +63,20 @@
           <small class="field-error" data-error-for="expName"></small>
         </label>
 
+        <label class="field-group" for="expCategory">
+          <span>Category</span>
+          <select id="expCategory" name="category" required>
+            <option value="" disabled selected>Select category</option>
+            <option value="adventure">Adventure</option>
+            <option value="culture">Culture</option>
+            <option value="tours">Tours</option>
+            <option value="attraction tickets">Attraction Tickets</option>
+            <option value="water sports">Water Sports</option>
+            <option value="cruises">Cruises</option>
+          </select>
+          <small class="field-error" data-error-for="expCategory"></small>
+        </label>
+
         <label class="field-group field-group-full" for="expDescription">
           <span>Description</span>
           <textarea id="expDescription" name="description" required rows="3" maxlength="300" placeholder="Describe the experience..."></textarea>
@@ -70,14 +84,14 @@
         </label>
 
         <label class="field-group" for="expPrice">
-          <span>Price per Person</span>
+          <span>Base Price ($)</span>
           <input id="expPrice" name="price" type="number" min="1" step="1" required>
           <small class="field-error" data-error-for="expPrice"></small>
         </label>
 
         <label class="field-group" for="expDuration">
-          <span>Duration</span>
-          <input id="expDuration" name="duration" required maxlength="40" placeholder="e.g. 2 hours">
+          <span>Duration (hours)</span>
+          <input id="expDuration" name="duration" type="number" min="1" step="1" required>
           <small class="field-error" data-error-for="expDuration"></small>
         </label>
 
@@ -132,6 +146,20 @@
             <small class="field-error" data-error-for="editName"></small>
           </label>
 
+          <label class="field-group field-group-full" for="editCategory">
+            <span>Category</span>
+            <select id="editCategory" name="category" required>
+              <option value="" disabled selected>Select category</option>
+              <option value="adventure">Adventure</option>
+              <option value="culture">Culture</option>
+              <option value="tours">Tours</option>
+              <option value="attraction tickets">Attraction Tickets</option>
+              <option value="water sports">Water Sports</option>
+              <option value="cruises">Cruises</option>
+            </select>
+            <small class="field-error" data-error-for="editCategory"></small>
+          </label>
+
           <label class="field-group field-group-full" for="editDescription">
             <span>Description</span>
             <textarea id="editDescription" name="description" required rows="3" maxlength="300"></textarea>
@@ -145,8 +173,8 @@
           </label>
 
           <label class="field-group field-group-full" for="editDuration">
-            <span>Duration</span>
-            <input id="editDuration" name="duration" required maxlength="40">
+            <span>Duration (Hours)</span>
+            <input id="editDuration" name="duration" type="number" min="1" step="1" required>
             <small class="field-error" data-error-for="editDuration"></small>
           </label>
 

@@ -8,6 +8,7 @@ export class AuthRepository implements OnModuleInit {
   private users: Auth[] = [];
   private readonly saltRounds = 12;
 
+<<<<<<< Updated upstream
   async onModuleInit() {
     await this.seedUsers();
   }
@@ -91,6 +92,69 @@ export class AuthRepository implements OnModuleInit {
       this.users.push({ ...user, password: hashedPassword });
     }
   }
+=======
+    {
+      userId: '10001',
+      username: 'sreekar_k',
+      password: 'sreekar',
+      role: 'guide' as Auth['role'],
+      name: 'Sreekar',
+      email: 'sreekar@gmail.com',
+      phone: '9876543210',
+      status: 'active',
+    },
+    {
+      userId: '00001',
+      username: 'rahul_v',
+      password: 'rahul@123',
+      role: 'superadmin' as Auth['role'],
+      name: 'Rahul Varma',
+      email: 'rahul@xploreo.com',
+      phone: '9876543210',
+      status: 'active',
+    },
+    {
+      userId: 'TA0001',
+      username: 'techadmin',
+      password: 'rahul@123',
+      role: 'techadmin' as Auth['role'],
+      name: 'Rahul Varma',
+      email: 'rahul@xploreo.com',
+      phone: '9876543210',
+      status: 'active',
+    },
+    {
+      userId: 'NTA0001',
+      username: 'nontech_admin',
+      password: 'admin@123',
+      role: Role.NONTECHADMIN,
+      name: 'Neha Mehra',
+      email: 'nontech.admin@xploreo.com',
+      phone: '9000000003',
+      status: 'active',
+    },
+    {
+      userId: 'partner-1',
+      username: 'hotel_partner',
+      password: 'hotel@123',
+      role: Role.HOTEL,
+      name: 'Xploreo Hotel Partner',
+      email: 'hotel.partner@xploreo.com',
+      phone: '9000000001',
+      status: 'active',
+    },
+    {
+      userId: 'experience-partner-1',
+      username: 'experience_partner',
+      password: 'experience@123',
+      role: Role.EXPERIENCE,
+      name: 'Xploreo Experience Partner',
+      email: 'experience.partner@xploreo.com',
+      phone: '9000000002',
+      status: 'active',
+    },
+  ];
+>>>>>>> Stashed changes
 
   create(data: Partial<Auth>): Auth {
     const user: Auth = {

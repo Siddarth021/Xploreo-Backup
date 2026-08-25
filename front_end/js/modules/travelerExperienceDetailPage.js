@@ -1,5 +1,6 @@
 import { travelerData } from "../api/legacyData.js";
 import { fetchExperience } from "../api/services.js";
+import { showAppAlert } from "./experience_shared.js";
 
 const SELECTED_EXPERIENCE_KEY = "traveler_selected_experience";
 const EXPERIENCE_BOOKING_DRAFT_KEY = "traveler_experience_booking_draft";
@@ -8,8 +9,15 @@ export async function renderTravelerExperienceDetailPage(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    let experience = getSelectedExperience();
-    if (!experience) {
+    const params = new URLSearchParams(window.location.search);
+    const urlId = params.get("experience") || params.get("id");
+    let experienceId = urlId;
+    if (!experienceId) {
+        const stored = readStoredExperience();
+        experienceId = stored?.id;
+    }
+
+    if (!experienceId) {
         container.innerHTML = `
             <main class="traveler-experience-detail-page">
                 <section class="traveler-experience-detail-frame traveler-experience-empty">
@@ -22,14 +30,34 @@ export async function renderTravelerExperienceDetailPage(containerId) {
         return;
     }
 
-    // Fetch the latest slots from the backend
+    let experience = null;
     try {
-        const freshExp = await fetchExperience(experience.id);
+        const freshExp = await fetchExperience(experienceId);
         if (freshExp) {
-            experience.slots = freshExp.slots || [];
+            experience = normalizeExperienceDetail(freshExp);
         }
     } catch (e) {
-        console.warn("Failed to fetch fresh slots from backend", e);
+        console.warn("Failed to fetch experience details from backend", e);
+    }
+
+    if (!experience) {
+        const stored = readStoredExperience();
+        if (stored && String(stored.id) === String(experienceId)) {
+            experience = normalizeExperienceDetail(stored);
+        }
+    }
+
+    if (!experience) {
+        container.innerHTML = `
+            <main class="traveler-experience-detail-page">
+                <section class="traveler-experience-detail-frame traveler-experience-empty">
+                    <h1>Experience not found</h1>
+                    <p>The selected experience could not be loaded. It may have been deleted.</p>
+                    <a href="./traveller_experience-search.html">Go to experiences</a>
+                </section>
+            </main>
+        `;
+        return;
     }
 
     const state = {
@@ -37,7 +65,7 @@ export async function renderTravelerExperienceDetailPage(containerId) {
         activeImage: experience.gallery[0] || experience.image,
         activeTab: "about",
         adults: 2,
-        selectedDate: getDefaultDate(),
+        selectedDate: getDefaultDate(experience),
         selectedSlotId: null,
         selectedOptionId: getDefaultOptionId(experience),
         galleryOpen: false,
@@ -61,8 +89,16 @@ export async function renderTravelerExperienceDetailPage(containerId) {
         state.adults = initialMaxSeats;
     }
 
+    function getTripStatus() {
+        return new URLSearchParams(window.location.search).get("status")?.trim().toLowerCase();
+    }
+
+    function getBackendStatus() {
+        return new URLSearchParams(window.location.search).get("backendStatus")?.trim().toUpperCase();
+    }
+
     function isExperienceCompleted() {
-        const status = new URLSearchParams(window.location.search).get("status")?.trim().toLowerCase();
+        const status = getTripStatus();
         return status === "completed" || status === "upcoming";
     }
 
@@ -139,8 +175,8 @@ export async function renderTravelerExperienceDetailPage(containerId) {
                         <label class="traveler-experience-side-field">
                             <span class="traveler-experience-side-label">${clockIcon()} Select Time Slot</span>
                             <select class="traveler-experience-side-input" id="traveler-experience-time-slot" ${isCompleted ? "disabled" : ""}>
-                                ${(state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available).length ? 
-                                    (state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available).map(slot => `<option value="${slot.id}" ${String(slot.id) === String(state.selectedSlotId) ? "selected" : ""} ${slot.capacity - slot.booked <= 0 ? "disabled" : ""}>${slot.time} ${slot.capacity - slot.booked <= 0 ? "(Full)" : `(${slot.capacity - slot.booked} seats left)`}</option>`).join("") 
+                                ${sortSlots(state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available).length ? 
+                                    sortSlots(state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available).map(slot => `<option value="${slot.id}" ${String(slot.id) === String(state.selectedSlotId) ? "selected" : ""} ${slot.capacity - slot.booked <= 0 ? "disabled" : ""}>${slot.time} ${slot.capacity - slot.booked <= 0 ? "(Full)" : `(${slot.capacity - slot.booked} seats left)`}</option>`).join("") 
                                     : `<option value="" disabled selected>No slots available</option>`
                                 }
                             </select>
@@ -170,7 +206,14 @@ export async function renderTravelerExperienceDetailPage(containerId) {
                             <strong>${formatCurrency(total)}</strong>
                         </div>
 
-                        ${isCompleted ? `<div class="traveler-experience-completed-note">This experience has already been completed. The details are shown for your reference.</div>` : `<button class="traveler-experience-continue-btn" type="button" id="traveler-experience-continue-btn" ${!state.selectedSlotId ? "disabled" : ""}>Continue</button>`}
+                        ${getBackendStatus() === "END_REQUESTED"
+                            ? `<button class="primary-btn" type="button" id="traveler-experience-confirm-btn" style="background-color: #f59e0b; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600; margin-bottom: 16px;">Confirm Request End</button>`
+                            : (isCompleted 
+                                ? (getTripStatus() === "upcoming" 
+                                    ? `<button class="traveler-experience-continue-btn" type="button" id="traveler-experience-cancel-btn" style="background: #ef4444;">Cancel Booking</button>`
+                                    : `<div class="traveler-experience-completed-note">This experience has already been completed. The details are shown for your reference.</div>`) 
+                                : `<button class="traveler-experience-continue-btn" type="button" id="traveler-experience-continue-btn" ${!state.selectedSlotId ? "disabled" : ""}>Continue</button>`)
+                        }
 
                         <ul class="traveler-experience-side-list">
                             <li>${checkCircleIcon()} Free cancellation available</li>
@@ -236,8 +279,8 @@ export async function renderTravelerExperienceDetailPage(containerId) {
         });
 
         container.querySelector("#traveler-experience-date")?.addEventListener("change", (event) => {
-            state.selectedDate = event.target.value || getDefaultDate();
-            const slots = (state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available);
+            state.selectedDate = event.target.value || getDefaultDate(state.experience);
+            const slots = sortSlots(state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available);
             
             const nonFullSlot = slots.find(slot => slot.capacity - slot.booked > 0);
             state.selectedSlotId = nonFullSlot ? nonFullSlot.id : null;
@@ -309,36 +352,106 @@ export async function renderTravelerExperienceDetailPage(containerId) {
 
         if (!isExperienceCompleted()) {
             container.querySelector("#traveler-experience-continue-btn")?.addEventListener("click", () => {
-                const selectedSlot = (state.experience.slots || []).find(s => String(s.id) === String(state.selectedSlotId));
-                
-                if (!state.selectedSlotId || !selectedSlot) {
-                    alert("Please select an available time slot before continuing.");
-                    return;
+                try {
+                    const selectedSlot = (state.experience.slots || []).find(s => String(s.id) === String(state.selectedSlotId));
+                    
+                    if (!state.selectedSlotId || !selectedSlot) {
+                        showAppAlert("Please select an available time slot before continuing.", "Notice");
+                        return;
+                    }
+
+                    if (selectedSlot.capacity - selectedSlot.booked < state.adults) {
+                        showAppAlert(`Only ${selectedSlot.capacity - selectedSlot.booked} seats left for this slot. Please reduce the number of adults or select a different slot/date.`, "Notice");
+                        return;
+                    }
+
+                    const currentOption = getSelectedOption(state);
+
+                    persistBookingDraft({
+                        experienceId: state.experience.id,
+                        experience: state.experience,
+                        option: { ...currentOption },
+                        selectedDate: state.selectedDate,
+                        selectedSlot: selectedSlot || null,
+                        adults: state.adults,
+                        totalPrice: currentOption.price * state.adults
+                    });
+
+                    window.location.href = "./traveller_experience-booking.html";
+                } catch (err) {
+                    console.error("Error in continue click handler:", err);
+                    showAppAlert("An error occurred: " + err.message, "Error");
                 }
-
-                if (selectedSlot.capacity - selectedSlot.booked < state.adults) {
-                    alert(`Only ${selectedSlot.capacity - selectedSlot.booked} seats left for this slot. Please reduce the number of adults or select a different slot/date.`);
-                    return;
+            });
+        } else {
+            container.querySelector("#traveler-experience-cancel-btn")?.addEventListener("click", async () => {
+                if (confirm("Are you sure you want to cancel this booking?")) {
+                    const bookingId = new URLSearchParams(window.location.search).get("booking");
+                    if (!bookingId) {
+                        showAppAlert("Could not find booking ID to cancel.", "Error");
+                        return;
+                    }
+                    try {
+                        const { updateExperienceBookingStatus } = await import("../api/services.js");
+                        await updateExperienceBookingStatus(bookingId, "CANCELLED");
+                        showAppAlert("Booking cancelled successfully.", "Success");
+                        window.location.href = "./traveller_mytrips.html";
+                    } catch (err) {
+                        console.error("Failed to cancel booking:", err);
+                        showAppAlert("Failed to cancel booking. Please try again.", "Error");
+                    }
                 }
+            });
+        }
 
-                const currentOption = getSelectedOption(state);
-
-                persistBookingDraft({
-                    experienceId: state.experience.id,
-                    experience: state.experience,
-                    option: { ...currentOption },
-                    selectedDate: state.selectedDate,
-                    selectedSlot: (state.experience.slots || []).find(s => String(s.id) === String(state.selectedSlotId)) || null,
-                    adults: state.adults,
-                    totalPrice: currentOption.price * state.adults
-                });
-
-                window.location.assign("./traveller_experience-booking.html");
+        const confirmBtn = document.getElementById("traveler-experience-confirm-btn");
+        if (confirmBtn) {
+            confirmBtn.addEventListener("click", async () => {
+                if (confirm("Are you sure you want to confirm the end of this experience?")) {
+                    const bookingId = new URLSearchParams(window.location.search).get("booking");
+                    if (!bookingId) {
+                        showAppAlert("Could not find booking ID.", "Error");
+                        return;
+                    }
+                    try {
+                        const { updateExperienceBookingStatus } = await import("../api/services.js");
+                        await updateExperienceBookingStatus(bookingId, "COMPLETED");
+                        showAppAlert("Experience marked as completed!", "Success");
+                        window.location.href = "./traveller_mytrips.html";
+                    } catch (err) {
+                        console.error("Failed to confirm completion:", err);
+                        showAppAlert("Failed to confirm completion. Please try again.", "Error");
+                    }
+                }
             });
         }
     }
 
     render();
+
+    // Real-time synchronization across tabs
+    if (!window.__travelerExperienceStorageListenerAttached) {
+        window.addEventListener("storage", (e) => {
+            if (e.key === "experienceBookings" || e.key === "tours") {
+                // Fetch fresh status and re-render if needed
+                const bookingId = new URLSearchParams(window.location.search).get("booking");
+                if (bookingId) {
+                    import("../api/services.js").then(async ({ fetchExperiencePartnerBookings }) => {
+                        const bookings = await fetchExperiencePartnerBookings();
+                        const b = bookings.find(item => String(item.id) === String(bookingId));
+                        if (b && String(b.status).toUpperCase() !== getBackendStatus()) {
+                            // Update URL without refreshing page, then re-render
+                            const newUrl = new URL(window.location.href);
+                            newUrl.searchParams.set("backendStatus", b.status);
+                            window.history.replaceState({}, '', newUrl);
+                            render();
+                        }
+                    });
+                }
+            }
+        });
+        window.__travelerExperienceStorageListenerAttached = true;
+    }
 }
 
 function getSelectedExperience() {
@@ -367,6 +480,39 @@ function readStoredExperience() {
     }
 }
 
+function persistBookingDraft(draft) {
+    if (typeof localStorage === "undefined") return;
+
+    // Deep clone to avoid mutating the live state
+    const record = JSON.parse(JSON.stringify(draft));
+
+    // Strip heavy fields to avoid QuotaExceededError
+    if (record && record.experience) {
+        delete record.experience.gallery;
+        delete record.experience.description;
+        delete record.experience.highlights;
+        delete record.experience.expectations;
+        if (record.experience.image && record.experience.image.length > 50000) {
+            record.experience.image = ""; 
+        }
+    }
+
+    try {
+        localStorage.setItem(EXPERIENCE_BOOKING_DRAFT_KEY, JSON.stringify(record));
+    } catch (e) {
+        console.warn("Storage full. Failed to persist booking draft", e);
+        try {
+            // Attempt to clear some space and retry
+            localStorage.removeItem("traveler_selected_experience");
+            localStorage.setItem(EXPERIENCE_BOOKING_DRAFT_KEY, JSON.stringify(record));
+        } catch (err) {
+            console.error("Still failed to save booking draft", err);
+            // Throw so the user gets notified
+            throw new Error("Local storage is full. Please clear your browser cache and try again.");
+        }
+    }
+}
+
 function normalizeExperienceDetail(item) {
     const options = Array.isArray(item?.options) && item.options.length ? item.options : [{
         id: `${item?.id || "experience"}-standard`,
@@ -385,10 +531,10 @@ function normalizeExperienceDetail(item) {
         gallery,
         options,
         location: item?.location || item?.destination || "Experience Location",
-        reviews: Number(item?.reviews) || 120,
-        rating: Number(item?.rating) || 4.7,
+        reviews: Number(item?.reviews) || 0,
+        rating: Number(item?.rating) || 0.0,
         customizable: Boolean(item?.customizable),
-        durationLabel: item?.time || item?.durationLabel || "3 hours",
+        durationLabel: item?.durationHours ? `${item.durationHours} hours` : (item?.time || item?.durationLabel || "3 hours"),
         description: Array.isArray(item?.description) ? item.description : (typeof item?.description === "string" ? [item.description] : [item?.title || ""]),
         audience: Array.isArray(item?.audience) ? item.audience : [],
         expectations: Array.isArray(item?.expectations) ? item.expectations : [],
@@ -517,16 +663,16 @@ function getSelectedOption(state) {
         || state.experience.options[0];
 }
 
-function getDefaultDate() {
+function getDefaultDate(experience) {
+    const availableSlots = sortSlots(experience?.slots || []).filter(slot => slot.available);
+    if (availableSlots.length > 0) {
+        return availableSlots[0].date;
+    }
     const date = new Date();
     date.setDate(date.getDate() + 7);
     return date.toISOString().slice(0, 10);
 }
 
-function persistBookingDraft(draft) {
-    if (typeof localStorage === "undefined") return;
-    localStorage.setItem(EXPERIENCE_BOOKING_DRAFT_KEY, JSON.stringify(draft));
-}
 
 function extractAmount(value) {
     const match = String(value || "").replace(/,/g, "").match(/(\d+)/);
@@ -539,6 +685,27 @@ function formatCurrency(value) {
         currency: "INR",
         maximumFractionDigits: 0
     }).format(Number(value) || 0);
+}
+
+function timeToMinutes(value) {
+    const str = String(value || "").trim();
+    const match24 = str.match(/^(\d{1,2}):(\d{2})$/);
+    if (match24) {
+        return Number(match24[1]) * 60 + Number(match24[2]);
+    }
+    const match12 = str.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+    if (!match12) return Number.MAX_SAFE_INTEGER;
+    let hour = Number(match12[1]) % 12;
+    const minute = Number(match12[2]);
+    if (match12[3].toUpperCase() === "PM") hour += 12;
+    return hour * 60 + minute;
+}
+
+function sortSlots(slots) {
+    return [...slots].sort((a, b) => {
+        if (a.date !== b.date) return (a.date || "").localeCompare(b.date || "");
+        return timeToMinutes(a.time) - timeToMinutes(b.time);
+    });
 }
 
 function isWishlisted(experience) {

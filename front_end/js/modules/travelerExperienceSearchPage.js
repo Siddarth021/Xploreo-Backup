@@ -171,7 +171,7 @@ export async function renderTravelerExperienceSearchPage(containerId) {
                 const item = EXPERIENCE_RESULTS.find((entry) => entry.id === button.dataset.experienceDetails);
                 if (!item) return;
                 persistSelectedExperience(item);
-                window.location.href = "./traveller_experience-detail.html";
+                window.location.href = `./traveller_experience-detail.html?experience=${encodeURIComponent(item.id)}`;
             });
         });
     }
@@ -192,17 +192,28 @@ function attachExperienceSearchAutocomplete(container) {
     });
 }
 
+function getDisplayCategory(backendCategory) {
+    if (!backendCategory) return "Tours";
+    const mapping = {
+        'adventure': 'Adventure',
+        'culture': 'Culture',
+        'culinary': 'Culture',
+        'wellness': 'Culture',
+        'wildlife': 'Adventure',
+        'photography': 'Culture'
+    };
+    const key = String(backendCategory).toLowerCase();
+    return mapping[key] || (backendCategory.charAt(0).toUpperCase() + backendCategory.slice(1));
+}
+
 function normalizeExperience(item, index) {
     const priceValue = extractAmount(item.price);
     const title = String(item.title || "Signature Experience").trim();
     const destination = String(item.destination || "Explore").trim();
-    const category = item.category || inferCategory(title, destination, index);
+    const rawCategory = item.category || inferCategory(title, destination, index);
+    const category = getDisplayCategory(rawCategory);
     const durationHours = item.durationHours ? Number(item.durationHours) : extractDurationHours(item.time);
-    const originalPrice = category.includes("Tickets") || category === "Cruises"
-        ? priceValue + 20
-        : priceValue > 60
-            ? priceValue + 30
-            : 0;
+    const originalPrice = 0;
 
     return {
         id: item.id || `experience-${index + 1}`,
@@ -214,12 +225,12 @@ function normalizeExperience(item, index) {
         durationLabel: item.time || `${durationHours} hours`,
         durationBucket: getDurationBucket(durationHours),
         durationHours,
-        rating: Number(item.rating) || 4.7,
-        reviews: Number(item.reviews) || 180 + index * 67,
+        rating: Number(item.rating) || 0.0,
+        reviews: Number(item.reviews) || 0,
         price: priceValue || 59,
         originalPrice,
-        discount: originalPrice > priceValue ? Math.max(10, Math.round(((originalPrice - priceValue) / originalPrice) * 100)) : 0,
-        category: item.category || category,
+        discount: 0,
+        category: category,
         capacity: Number(item.capacity) || 12,
         perks: Array.isArray(item.perks) && item.perks.length ? item.perks : (item.partnerId === "experience-partner-seed" ? getPerksForCategory(category, title) : []),
         customizable: Boolean(item.customizable),
@@ -258,11 +269,11 @@ function normalizeWorkspaceExperience(booking, activity, bookingIndex, activityI
         durationLabel: `${durationHours} hours`,
         durationBucket: getDurationBucket(durationHours),
         durationHours,
-        rating: 4.6 + ((activityIndex % 3) * 0.1),
-        reviews: 145 + (bookingIndex * 80) + (activityIndex * 44),
+        rating: 0.0,
+        reviews: 0,
         price,
-        originalPrice,
-        discount: Math.max(12, Math.round(((originalPrice - price) / originalPrice) * 100)),
+        originalPrice: price,
+        discount: 0,
         category,
         perks: getPerksForCategory(category, title),
         customizable: true,

@@ -8,33 +8,7 @@ import { createId } from '../common/utils/id';
 
 @Injectable()
 export class ExperiencesRepository {
-  private experiences: Experience[] = [
-    {
-      id: 'exp-1',
-      partnerId: 'experience-partner-seed',
-      title: 'Western Ghats Trek',
-      description: 'A guided trek through the lush Western Ghats forest trail.',
-      destination: 'Coorg',
-      category: ExperienceCategory.ADVENTURE,
-      availability: ExperienceAvailability.AVAILABLE,
-      price: 1800,
-      durationHours: 6,
-      capacity: 15,
-      booked: 4,
-      image: '',
-      nextSlot: '2025-06-15',
-      slots: [
-        {
-          id: 'slot-1',
-          date: '2025-06-15',
-          time: '07:00',
-          booked: 4,
-          capacity: 15,
-          available: true,
-        },
-      ],
-    },
-  ];
+  private experiences: Experience[] = [];
 
   create(partnerId: string, data: Partial<Experience>): Experience {
     const exp: Experience = {

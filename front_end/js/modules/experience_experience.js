@@ -25,6 +25,7 @@ export async function renderExperienceCatalogPage() {
             price: exp.price,
             duration: `${exp.durationHours} hours`,
             capacity: exp.capacity,
+            category: exp.category || "adventure",
             status: "active",
             image: exp.image || "",
             images: exp.images || (exp.image ? [exp.image] : []),
@@ -69,12 +70,14 @@ export async function renderExperienceCatalogPage() {
     function syncExperienceSlots(exp) {
         updateExperience(String(exp.id), {
             title: exp.title,
-            description: exp.title,
-            destination: exp.title,
-            category: "adventure",
+            description: exp.description || exp.title,
+            destination: exp.destination || exp.title,
+            category: exp.category || "adventure",
             price: Number(exp.price),
             durationHours: parseInt(exp.duration) || 2,
             capacity: Number(exp.capacity),
+            booked: Number(exp.booked || 0),
+            nextSlot: exp.nextSlot || "",
             slots: (exp.slots || []).map(s => ({
                 id: String(s.id),
                 date: s.date,
@@ -125,7 +128,7 @@ export async function renderExperienceCatalogPage() {
     }
 
     function getManagedExperience() {
-        return experiences.find((item) => item.id === currentManagedExperienceId) || null;
+        return experiences.find((item) => String(item.id) === String(currentManagedExperienceId)) || null;
     }
 
     function resetCatalogMessages() {
@@ -140,8 +143,9 @@ export async function renderExperienceCatalogPage() {
         const name = sanitizeValue(document.getElementById(`${prefix}Name`).value);
         const description = sanitizeValue(document.getElementById(`${prefix}Description`).value);
         const price = Number(document.getElementById(`${prefix}Price`).value);
-        const duration = sanitizeValue(document.getElementById(`${prefix}Duration`).value);
+        const duration = Number(document.getElementById(`${prefix}Duration`).value);
         const capacity = Number(document.getElementById(`${prefix}Capacity`).value);
+        const category = document.getElementById(`${prefix}Category`).value;
 
         if (!name || name.length < 3) {
             setFieldError(`${prefix}Name`, "Enter a name with at least 3 characters.");
@@ -158,17 +162,17 @@ export async function renderExperienceCatalogPage() {
             isValid = false;
         }
 
-        if (!duration) {
-            setFieldError(`${prefix}Duration`, "Duration is required.");
+        if (!Number.isInteger(duration) || duration <= 0) {
+            setFieldError(`${prefix}Duration`, "Enter a valid duration in hours greater than 0.");
             isValid = false;
         }
 
         if (!Number.isInteger(capacity) || capacity <= 0) {
-            setFieldError(`${prefix}Capacity`, "Capacity must be a whole number above 0.");
+            setFieldError(`${prefix}Capacity`, "Capacity must be a positive integer.");
             isValid = false;
         }
 
-        return { isValid, name, description, price, duration, capacity };
+        return { isValid, name, description, price, duration, capacity, category };
     }
 
     function validateAddImage() {
@@ -209,7 +213,7 @@ export async function renderExperienceCatalogPage() {
         }
 
         if (!Number.isInteger(capacity) || capacity <= 0) {
-            setFieldError("slotCapacity", "Capacity must be a whole number above 0.");
+            setFieldError("slotCapacity", "Capacity must be a positive integer.");
             isValid = false;
         }
 
@@ -396,14 +400,14 @@ export async function renderExperienceCatalogPage() {
     }
 
     function openSlotEditor(mode, expId, slotId = null) {
-        const exp = experiences.find((item) => item.id === expId);
+        const exp = experiences.find((item) => String(item.id) === String(expId));
         if (!exp) return;
 
         currentManagedExperienceId = expId;
         currentSlotId = slotId;
         slotModalMode = mode;
 
-        const slot = exp.slots.find((item) => item.id === slotId);
+        const slot = exp.slots.find((item) => String(item.id) === String(slotId));
         if (slotsModalTitle) slotsModalTitle.textContent = mode === "edit" ? "Edit Slot" : "Add New Slot";
         if (slotsSubmitBtn) {
             slotsSubmitBtn.textContent = mode === "edit" ? "Save Changes" : "Add Slot";
@@ -442,13 +446,15 @@ export async function renderExperienceCatalogPage() {
 
     function renderCatalog() {
         container.innerHTML = experiences.map((exp) => {
-            const nextSlotObj = Array.isArray(exp.slots) && exp.slots.length > 0 
-                ? [...exp.slots].sort((a, b) => new Date(`${a.date}T00:00:00`) - new Date(`${b.date}T00:00:00`))[0]
-                : null;
+            const sortedSlots = Array.isArray(exp.slots) ? sortSlots(exp.slots) : [];
+            const nextSlotObj = sortedSlots.find(s => s.available) || sortedSlots[0] || null;
             
+
             const nextSessionDisplay = nextSlotObj 
                 ? `Next session: ${nextSlotObj.date} at ${nextSlotObj.time} • ${nextSlotObj.booked}/${nextSlotObj.capacity} seats booked`
-                : `No upcoming sessions • 0/${exp.capacity} seats booked`;
+                : exp.slots && exp.slots.length === 0
+                    ? `No slots created yet`
+                    : `No upcoming sessions`;
 
             return `
             <article class="card experience-catalog-card">
@@ -514,8 +520,9 @@ export async function renderExperienceCatalogPage() {
             document.getElementById("editName").value = selectedExperience.title;
             document.getElementById("editDescription").value = selectedExperience.description || selectedExperience.title;
             document.getElementById("editPrice").value = selectedExperience.price;
-            document.getElementById("editDuration").value = selectedExperience.duration;
+            document.getElementById("editDuration").value = parseInt(selectedExperience.duration) || 2;
             document.getElementById("editCapacity").value = selectedExperience.capacity;
+            document.getElementById("editCategory").value = selectedExperience.category || "adventure";
             resetCatalogMessages();
             openModal("editModal");
         }
@@ -552,7 +559,7 @@ export async function renderExperienceCatalogPage() {
             if (!exp) return;
 
             const slotId = actionButton.dataset.slotId;
-            const slot = exp.slots.find((item) => item.id === slotId);
+            const slot = exp.slots.find((item) => String(item.id) === String(slotId));
             if (!slot) return;
 
             if (actionButton.dataset.slotAction === "edit") {
@@ -572,15 +579,25 @@ export async function renderExperienceCatalogPage() {
             if (actionButton.dataset.slotAction === "decrease") {
                 if (slot.capacity > Math.max(1, slot.booked)) {
                     slot.capacity -= 1;
+                    slot.available = slot.booked < slot.capacity;
                 }
             }
 
             if (actionButton.dataset.slotAction === "increase") {
                 slot.capacity += 1;
+                slot.available = slot.booked < slot.capacity;
             }
 
             if (actionButton.dataset.slotAction === "toggle") {
                 slot.available = !slot.available;
+            }
+
+            exp.slots = sortSlots(exp.slots);
+            const nextOpenSlot = exp.slots.find((s) => s.available) || exp.slots[0];
+            if (nextOpenSlot) {
+                exp.nextSlot = nextOpenSlot.time;
+                exp.booked = nextOpenSlot.booked;
+                exp.capacity = nextOpenSlot.capacity;
             }
 
             persistExperiences();
@@ -646,8 +663,9 @@ export async function renderExperienceCatalogPage() {
             title: payload.name,
             description: payload.description,
             price: payload.price,
-            duration: payload.duration,
+            duration: `${payload.duration} hours`,
             capacity: payload.capacity,
+            category: payload.category,
             status: "active",
             image: uploadedImageUrls[selectedThumbnailIndex] || uploadedImageUrls[0],
             images: [...uploadedImageUrls],
@@ -664,7 +682,7 @@ export async function renderExperienceCatalogPage() {
             title: payload.name,
             description: payload.description, 
             destination: payload.name, 
-            category: "adventure",
+            category: payload.category,
             price: Number(payload.price),
             durationHours: parseInt(payload.duration) || 2,
             capacity: Number(payload.capacity),
@@ -686,14 +704,15 @@ export async function renderExperienceCatalogPage() {
             return;
         }
 
-        const exp = experiences.find((item) => item.id === currentEditId);
+        const exp = experiences.find((item) => String(item.id) === String(currentEditId));
         if (!exp) return;
 
         exp.title = payload.name;
         exp.description = payload.description;
         exp.price = payload.price;
-        exp.duration = payload.duration;
+        exp.duration = `${payload.duration} hours`;
         exp.capacity = payload.capacity;
+        exp.category = payload.category;
 
         persistExperiences();
         
@@ -702,7 +721,7 @@ export async function renderExperienceCatalogPage() {
             title: payload.name,
             description: payload.description,
             destination: payload.name,
-            category: "adventure",
+            category: payload.category,
             price: Number(payload.price),
             durationHours: parseInt(payload.duration) || 2,
             capacity: Number(payload.capacity)
@@ -731,12 +750,25 @@ export async function renderExperienceCatalogPage() {
         const exp = getManagedExperience();
         if (!exp) return;
 
+        const isDuplicate = exp.slots.some(
+            (item) => item.date === payload.date && 
+                      item.time === payload.time && 
+                      (slotModalMode === "add" || String(item.id) !== String(currentSlotId))
+        );
+
+        if (isDuplicate) {
+            setFieldError("slotTime", "A session already exists for this date and time.");
+            setFormMessage("slotsMessage", "Please fix the highlighted fields before saving.");
+            return;
+        }
+
         if (slotModalMode === "edit") {
-            const slot = exp.slots.find((item) => item.id === currentSlotId);
+            const slot = exp.slots.find((item) => String(item.id) === String(currentSlotId));
             if (!slot) return;
             slot.date = payload.date;
             slot.time = payload.time;
             slot.capacity = Math.max(slot.booked, payload.capacity);
+            slot.available = slot.booked < slot.capacity;
         } else {
             exp.slots.push({
                 id: `${exp.id}-${Date.now()}`,

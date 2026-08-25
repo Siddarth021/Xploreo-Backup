@@ -136,3 +136,64 @@ export function calculateDashboardStats(catalog, bookings) {
 
     return stats;
 }
+
+export function showAppAlert(message, title = "Notification") {
+    const existing = document.getElementById("custom-app-alert");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "custom-app-alert";
+    Object.assign(overlay.style, {
+        position: "fixed",
+        inset: "0",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backdropFilter: "blur(4px)",
+        zIndex: "9999",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        opacity: "0",
+        transition: "opacity 0.2s ease"
+    });
+
+    const modal = document.createElement("div");
+    Object.assign(modal.style, {
+        background: "white",
+        borderRadius: "12px",
+        padding: "24px",
+        width: "90%",
+        maxWidth: "400px",
+        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+        transform: "scale(0.95)",
+        transition: "transform 0.2s ease",
+        fontFamily: "'Inter', sans-serif"
+    });
+
+    modal.innerHTML = `
+        <h3 style="margin: 0 0 12px 0; font-size: 18px; color: #1e293b; font-weight: 600;">${title}</h3>
+        <p style="margin: 0 0 24px 0; font-size: 15px; color: #475569; line-height: 1.5;">${message}</p>
+        <div style="display: flex; justify-content: flex-end;">
+            <button id="custom-alert-ok" style="background-color: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; transition: background-color 0.2s;">OK</button>
+        </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    requestAnimationFrame(() => {
+        overlay.style.opacity = "1";
+        modal.style.transform = "scale(1)";
+    });
+
+    const closeBtn = modal.querySelector("#custom-alert-ok");
+    closeBtn.focus();
+    
+    closeBtn.onmouseover = () => closeBtn.style.backgroundColor = "#2563eb";
+    closeBtn.onmouseout = () => closeBtn.style.backgroundColor = "#3b82f6";
+    
+    closeBtn.onclick = () => {
+        overlay.style.opacity = "0";
+        modal.style.transform = "scale(0.95)";
+        setTimeout(() => overlay.remove(), 200);
+    };
+}

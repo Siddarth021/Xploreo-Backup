@@ -13,7 +13,7 @@ export class GuideRepository {
       location: 'loc-mumbai-1',
       prof_title: 'Senior Trek Guide',
       years_exp: 7,
-      bio: 'Expert mountain guide with 7+ years experience in Western Ghats',
+      bio: 'Expert mountain guide with 7+ years experience in trekking and outdoor adventures',
       lang_spoken: ['English', 'Hindi', 'Marathi'],
       certifications: ['First Aid', 'Mountain Rescue'],
       bank_name: 'HDFC Bank',

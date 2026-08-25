@@ -81,15 +81,15 @@ function renderTravelerPackageSearchPage(containerId) {
                                     <input id="traveler-package-budget" type="range" min="0" max="10000" step="100" value="${state.maxBudget}">
                                 </div>
                                 <div class="traveler-package-slider-labels traveler-package-budget-labels">
-                                    <span>$0</span>
+                                    <span>₹0</span>
                                     <span class="active">${formatCurrency(state.maxBudget)}</span>
-                                    <span>$10,000</span>
+                                    <span>₹10,000</span>
                                 </div>
                                 <div class="traveler-package-checkbox-list">
-                                    ${renderBudgetCheck("under-500", "Under $500", state.selectedBudgets.has("under-500"))}
-                                    ${renderBudgetCheck("500-1000", "$500 - $1000", state.selectedBudgets.has("500-1000"))}
-                                    ${renderBudgetCheck("1000-2000", "$1000 - $2000", state.selectedBudgets.has("1000-2000"))}
-                                    ${renderBudgetCheck("above-2000", "Above $2000", state.selectedBudgets.has("above-2000"))}
+                                    ${renderBudgetCheck("under-500", "Under ₹500", state.selectedBudgets.has("under-500"))}
+                                    ${renderBudgetCheck("500-1000", "₹500 - ₹1000", state.selectedBudgets.has("500-1000"))}
+                                    ${renderBudgetCheck("1000-2000", "₹1000 - ₹2000", state.selectedBudgets.has("1000-2000"))}
+                                    ${renderBudgetCheck("above-2000", "Above ₹2000", state.selectedBudgets.has("above-2000"))}
                                 </div>
                             </div>
 
@@ -224,12 +224,14 @@ function renderTravelerPackageSearchPage(containerId) {
         });
 
         container.querySelectorAll("[data-package-details]").forEach((button) => {
-            button.addEventListener("click", () => {
-                const selectedPackage = PACKAGE_RESULTS.find((item) => item.id === button.dataset.packageDetails);
-                if (!selectedPackage) return;
-
-                persistSelectedPackage(selectedPackage);
-                window.location.href = "./booking-details.html";
+            button.addEventListener("click", (e) => {
+                e.preventDefault();
+                const packageId = button.dataset.packageDetails;
+                const selectedPackage = PACKAGE_RESULTS.find((item) => String(item.id) === String(packageId));
+                if (selectedPackage) {
+                    persistSelectedPackage(selectedPackage);
+                }
+                window.location.href = `./traveller_booking-details.html?plan=${encodeURIComponent(packageId)}`;
             });
         });
 

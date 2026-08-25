@@ -785,6 +785,7 @@ body.experience-page {
 }
 
 .experience-select-shell select,
+.experience-page select,
 .experience-page input,
 .experience-page textarea {
   width: 100%;
@@ -799,6 +800,7 @@ body.experience-page {
 
 .experience-page input:focus,
 .experience-page textarea:focus,
+.experience-page select:focus,
 .experience-select-shell select:focus {
   outline: none;
   border-color: rgba(47, 111, 237, 0.55);
@@ -1359,8 +1361,36 @@ body.experience-page {
   grid-column: 1 / -1;
 }
 
-#addExperienceForm input {
+#addExperienceForm input,
+.experience-form select {
   width: 100%;
+}
+
+.experience-form select {
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--experience-border);
+  background-color: var(--experience-surface-soft);
+  color: var(--experience-text);
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 12px;
+  font-family: inherit;
+}
+
+.experience-form select:focus {
+  outline: none;
+  border-color: var(--experience-primary);
+  box-shadow: 0 0 0 4px rgba(47, 111, 237, 0.1);
+  background-color: #fff;
+}
+
+.experience-form select:hover {
+  border-color: #cbd5e1;
 }
 
 #addExperienceForm .field-error {

@@ -6,7 +6,7 @@ import { filterByGuide } from "../utils/filterByGuide.js";
 import { monthlyEarnings } from "../utils/monthlyEarnings.js";
 import { formatCurrency } from "../utils/formatCurrency.js";
     
-export function renderStats(containerId, currentUser) {
+export async function renderStats(containerId, currentUser) {
     const container = document.getElementById(containerId);
 
     const allReviews = JSON.parse(localStorage.getItem("reviews")) || [];
@@ -34,12 +34,39 @@ export function renderStats(containerId, currentUser) {
         { label: "Recent Reviews", value: countreview(myReviews), icon: "../components/ui/recentreview.svg", color: "violet" }
     ];
     } else if(currentUser.role === "hotel"){
+       try {
+           const { fetchPartnerHotels, fetchPartnerHotelBookings } = await import("../api/services.js");
+           const hotels = await fetchPartnerHotels().catch(() => []);
+           const bookings = await fetchPartnerHotelBookings().catch(() => []);
+           
+           const totalBookings = bookings.length;
+           const revenue = bookings.reduce((sum, b) => sum + (Number(b.totalAmount) || 0), 0);
+           const upcomingBookings = bookings.filter(b => {
+               const checkIn = new Date(b.checkIn);
+               return checkIn >= new Date();
+           }).length;
+           
+           let sumRatings = 0, countRatings = 0;
+           hotels.forEach(h => {
+               if (h.rating && h.reviewCount) {
+                   sumRatings += Number(h.rating) * Number(h.reviewCount);
+                   countRatings += Number(h.reviewCount);
+               } else if (h.stars) {
+                   sumRatings += Number(h.stars);
+                   countRatings += 1;
+               }
+           });
+           const avgRating = countRatings > 0 ? (sumRatings / countRatings).toFixed(1) : "N/A";
+
           stats = [
-          { label: "Total Bookings", value: "248", icon: "../components/ui/todaytours.svg", color: "blue" },
-          { label: "Revenue This Month", value: "$42,580", icon: "../components/ui/montlyearning.svg", color: "dark-green" },
-          { label: "Upcoming Bookings", value: "32", icon: "../components/ui/upcomingtours.svg", color: "light-green" },
-          { label: "Average Rating", value: "4.8", icon: "../components/ui/avgrating.svg", color: "orange" }
-        ]
+          { label: "Total Bookings", value: totalBookings, icon: "../components/ui/todaytours.svg", color: "blue" },
+          { label: "Revenue This Month", value: formatCurrency(revenue, "₹"), icon: "../components/ui/montlyearning.svg", color: "dark-green" },
+          { label: "Upcoming Bookings", value: upcomingBookings, icon: "../components/ui/upcomingtours.svg", color: "light-green" },
+          { label: "Average Rating", value: avgRating, icon: "../components/ui/avgrating.svg", color: "orange" }
+        ];
+       } catch(err) {
+          stats = [];
+       }
     }
 
     container.innerHTML = stats.map(stat => `

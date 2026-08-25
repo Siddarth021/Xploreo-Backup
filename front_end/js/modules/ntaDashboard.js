@@ -29,6 +29,23 @@ export function renderNtaDashboard(containerId) {
 
     const plans = JSON.parse(localStorage.getItem("ntaPlans")) || [];
     const activity = JSON.parse(localStorage.getItem("ntaActivity")) || [];
+    const ntaBookings = JSON.parse(localStorage.getItem("ntaBookings")) || [];
+    const allTours = JSON.parse(localStorage.getItem("tours")) || [];
+
+    // Consolidate bookings from ntaBookings and unified tours
+    const bookingsList = [...ntaBookings];
+    allTours.forEach(tour => {
+        if (!bookingsList.find(b => String(b.id) === String(tour.id))) {
+            bookingsList.push({
+                id: tour.id,
+                packageName: tour.title,
+                traveller: tour.customer,
+                date: tour.dateTime?.split(" | ")[0] || "Flexible",
+                status: tour.status ? (tour.status.charAt(0).toUpperCase() + tour.status.slice(1)) : "Confirmed",
+                amount: tour.amount
+            });
+        }
+    });
 
     // --- 1. Header ---
     const header = document.getElementById("nta-header");
@@ -45,7 +62,7 @@ export function renderNtaDashboard(containerId) {
     const totalPlans = plans.length;
     const availablePlans = plans.filter(p => p.status === "available").length;
     const unavailablePlans = plans.filter(p => p.status === "unavailable").length;
-    const recentBookings = activity.filter(a => a.type === "booking").length;
+    const recentBookings = bookingsList.length || activity.filter(a => a.type === "booking").length;
 
     const statsContainer = document.getElementById("nta-stats");
     if (statsContainer) {
@@ -123,8 +140,8 @@ export function renderNtaDashboard(containerId) {
                             ${meta.icon}
                         </div>
                         <div class="nta-activity-content">
-                            <p class="nta-activity-action">${item.action}</p>
-                            <p class="nta-activity-detail">${item.detail}</p>
+                            <p class="nta-activity-action">${escapeHtml(item.action)}</p>
+                            <p class="nta-activity-detail">${escapeHtml(item.detail)}</p>
                         </div>
                         <span class="nta-activity-time">${timeAgo}</span>
                     </div>
@@ -133,7 +150,71 @@ export function renderNtaDashboard(containerId) {
         `;
     }
 
-    // --- 5. Package Pricing Chart ---
+    // --- 5. Bookings Visibility Section ---
+    let bookingsContainer = document.getElementById("nta-bookings");
+    if (!bookingsContainer) {
+        const chartElem = document.getElementById("nta-chart");
+        if (chartElem) {
+            bookingsContainer = document.createElement("div");
+            bookingsContainer.id = "nta-bookings";
+            bookingsContainer.className = "nta-plans-card";
+            bookingsContainer.style.marginTop = "20px";
+            chartElem.parentNode.insertBefore(bookingsContainer, chartElem);
+        }
+    }
+
+    if (bookingsContainer) {
+        bookingsContainer.innerHTML = `
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div>
+                    <h2 style="margin: 0 0 4px 0; font-size: 18px; color: #111827;">Recent Package Bookings</h2>
+                    <p style="margin: 0; font-size: 13px; color: #6b7280;">Live bookings across all travel packages</p>
+                </div>
+                <span class="nta-status-pill available">${bookingsList.length} Total Bookings</span>
+            </div>
+            ${bookingsList.length > 0 ? `
+                <div style="overflow-x: auto;">
+                    <table class="nta-plans-table">
+                        <thead>
+                            <tr>
+                                <th>Package Name</th>
+                                <th>Traveller</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${bookingsList.map(b => `
+                                <tr>
+                                    <td>
+                                        <div class="nta-plan-name">${escapeHtml(b.packageName || "Custom Package")}</div>
+                                        <div class="nta-plan-desc">Booking #${escapeHtml(String(b.id))}</div>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 500; color: #111827;">${escapeHtml(b.traveller || "Traveler")}</div>
+                                    </td>
+                                    <td>
+                                        <div class="nta-plan-duration">${escapeHtml(b.date || "Flexible")}</div>
+                                    </td>
+                                    <td>
+                                        <span class="nta-status-pill ${String(b.status).toLowerCase() === 'confirmed' || String(b.status).toLowerCase() === 'active' ? 'available' : 'unavailable'}">
+                                            ${escapeHtml(b.status || "Confirmed")}
+                                        </span>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            ` : `
+                <div class="nta-empty-state">
+                    <p>No package bookings recorded yet.</p>
+                </div>
+            `}
+        `;
+    }
+
+    // --- 6. Package Pricing Chart ---
     const chartContainer = document.getElementById("nta-chart");
     if (chartContainer) {
         const maxPrice = Math.max(...plans.map(p => p.price || 0), 1);
@@ -143,7 +224,7 @@ export function renderNtaDashboard(containerId) {
             <div class="card-header">
                 <div>
                     <h2 style="margin: 0 0 4px 0; font-size: 18px; color: #111827;">Package Pricing</h2>
-                    <p style="margin: 0; font-size: 13px; color: #6b7280;">Price comdelhion across travel packages</p>
+                    <p style="margin: 0; font-size: 13px; color: #6b7280;">Price comparison across travel packages</p>
                 </div>
                 <button class="view-all-btn" onclick="window.location.href='nta_plans.html'">View Packages</button>
             </div>
@@ -161,6 +242,15 @@ export function renderNtaDashboard(containerId) {
             </div>
         `;
     }
+}
+
+function escapeHtml(value) {
+    return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
 }
 
 // Helper: Relative time

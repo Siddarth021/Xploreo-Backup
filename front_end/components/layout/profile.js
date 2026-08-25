@@ -28,7 +28,7 @@ export function getProfile(user) {
 
     // 3. Render the dropdown (Profile is now back for everyone)
     return `
-        <div class="profile" onclick="toggleProfileMenu()">
+        <div class="profile" onclick="fileMenu()">
             <span class="profile-name">${user ? user.name : 'User'}</span>
             <img src="${(user && user.profilePic) ? user.profilePic : '../components/ui/profile.png'}" alt="user" class="profile-img"/>
             <div class="profile-dropdown hidden" id="profile-dropdown">

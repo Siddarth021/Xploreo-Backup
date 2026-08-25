@@ -1,33 +1,14 @@
 export function renderHotelReviews(containerId) {
     const container = document.getElementById(containerId);
+    if (!container) return;
     
-    const reviews = JSON.parse(localStorage.getItem("hotelReviews")) || [];
-    console.log(reviews);
-    const html = `
+    // No reviews yet in the backend, showing empty state
+    container.innerHTML = `
         <div class="hotel-card-header hotel-flex-header">
             <h2>Customer Reviews</h2>
-            <span class="hotel-link">View All Reviews</span>
         </div>
-
-        <div class="hotel-review-grid">
-            ${reviews.map(r => `
-                <div class="hotel-review-box">
-
-                    <div class="hotel-review-header">
-                        <p class="hotel-cust-name">${r.name}</p>
-                        <span class="hotel-sub-text">${r.date}</span>
-                    </div>
-
-                    <p class="hotel-review-text">${r.review}</p>
-
-                    <div class="hotel-stars">
-                        ${"⭐".repeat(r.rating)}
-                    </div>
-
-                </div>
-            `).join("")}
+        <div class="hotel-empty-state" style="padding: 40px 20px; border: 1px dashed #cbd5e1; box-shadow: none;">
+            <p style="color: #64748b; font-size: 15px; margin: 0;">No reviews available yet. When travellers review your hotels, they will appear here.</p>
         </div>
     `;
-    console.log(html);
-    container.innerHTML = html;
 }

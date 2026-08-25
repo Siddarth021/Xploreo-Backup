@@ -1,20 +1,12 @@
 import { travelerData } from "../api/legacyData.js";
-import { getTravelerBookings } from "../utils/travelerWorkspaceState.js";
 import { fetchTripsForGuide, fetchTripsForTraveller, fetchExperienceBookings } from "../api/services.js";
 import { mapTripToLegacyTour } from "../api/adapters.js";
+import { showAppAlert } from "./experience_shared.js";
 
-const CONFIRMED_BOOKING_KEY = "traveler_confirmed_booking";
-const CONFIRMED_BOOKING_SESSION_KEY = "traveler_confirmed_booking_session";
 const MY_TRIPS_FOCUS_KEY = "traveler_mytrips_focus";
 const DEFAULT_TRIP_IMAGE = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800";
-const SELECTED_PLAN_KEY = "traveler_selected_plan";
-const PLAN_SOURCE_KEY = "traveler_plan_source";
 const SELECTED_FLIGHT_KEY = "traveler_selected_flight";
-const SELECTED_EXPERIENCE_KEY = "traveler_selected_experience";
 const SELECTED_PACKAGE_KEY = "traveler_selected_package";
-const SELECTED_HOTEL_KEY = "traveler_selected_hotel";
-const EXPERIENCE_BOOKING_DRAFT_KEY = "traveler_experience_booking_draft";
-const TRAVELER_MY_TRIPS_KEY = "traveler_my_trips";
 
 const calendarSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
 const xCircleSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
@@ -30,15 +22,14 @@ export async function renderTravelerTrips(containerId, user) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    await syncTripsFromApi(user);
-
     const focusStatus = getMyTripsFocusStatus();
     if (focusStatus) {
         activeStatus = focusStatus;
         clearMyTripsFocusStatus();
     }
 
-    const trips = getTravelerTripsData();
+    // Fetch ALL trip data directly from backend — no localStorage
+    const trips = await fetchTripsFromBackend(user);
 
     const upcomingCount = trips.filter(t => t.status === "Upcoming").length;
     const cancelledCount = trips.filter(t => t.status === "Cancelled").length;
@@ -48,7 +39,7 @@ export async function renderTravelerTrips(containerId, user) {
 
     const HTML = `
         <div class="dashboard-container trips-page-container">
-            ${displayedTrips.some(t => t.backendStatus === "END_REQUESTED") ? `
+            ${displayedTrips.some(t => String(t.backendStatus).toUpperCase() === "END_REQUESTED") ? `
                 <div class="end-request-banner" style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 16px; margin-bottom: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between;">
                     <div>
                         <h3 style="margin: 0 0 4px 0; color: #b45309; font-size: 16px;">Action Required</h3>
@@ -102,14 +93,14 @@ export async function renderTravelerTrips(containerId, user) {
                             ` : ''}
                             
                             <div class="trip-actions">
-                                <button class="btn-solid-blue" data-trip-view="${escapeHtml(getTripViewKey(trip))}">View Details</button>
+                                <button class="btn-solid-blue" ${String(trip.backendStatus).toUpperCase() === 'END_REQUESTED' ? 'style="background-color: #f59e0b; border-color: #f59e0b; color: white;"' : ''} data-trip-view="${escapeHtml(getTripViewKey(trip))}">View Details</button>
                                 ${trip.status === 'Completed'
                                     ? `<button class="btn-outline-teal" data-trip-review="${escapeHtml(getTripViewKey(trip))}">Review Trip</button>`
                                     : ``}
-                                ${trip.backendStatus === 'END_REQUESTED'
+                                ${String(trip.backendStatus).toUpperCase() === 'END_REQUESTED'
                                     ? `<button class="primary-btn" style="background-color: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;" data-trip-confirm="${trip.bookingId}">Confirm Completion</button>`
                                     : ``}
-                                ${trip.status !== 'Completed' && trip.backendStatus !== 'END_REQUESTED' && (trip.type.toLowerCase() === 'tour' || trip.type.toLowerCase() === 'experience' || trip.currentStop) 
+                                ${trip.status !== 'Completed' && String(trip.backendStatus).toUpperCase() !== 'END_REQUESTED' && (trip.type.toLowerCase() === 'tour' || trip.type.toLowerCase() === 'experience' || trip.currentStop) 
                                     ? `<button class="btn-outline-blue" data-trip-route="${escapeHtml(getTripViewKey(trip))}">View Live Route</button>`
                                     : ``}
                             </div>
@@ -191,11 +182,11 @@ export async function renderTravelerTrips(containerId, user) {
             try {
                 const { updateExperienceBookingStatus } = await import("../api/services.js");
                 await updateExperienceBookingStatus(bookingId, "COMPLETED");
-                alert("Experience marked as completed!");
+                showAppAlert("Experience marked as completed!", "Success");
                 renderTravelerTrips(containerId, user);
             } catch (error) {
                 console.error("Failed to confirm completion:", error);
-                alert("Failed to confirm completion. Please try again.");
+                showAppAlert("Failed to confirm completion. Please try again.", "Error");
             }
         });
     });
@@ -258,174 +249,85 @@ export async function renderTravelerTrips(containerId, user) {
     function rerender() {
         renderTravelerTrips(containerId, user);
     }
+
+    // Real-time synchronization across tabs
+    if (!window.__travelerTripsStorageListenerAttached) {
+        window.addEventListener("storage", async (e) => {
+            if (e.key === "experienceBookings_trigger") {
+                if (document.getElementById(containerId)) {
+                    renderTravelerTrips(containerId, user);
+                }
+            }
+        });
+        window.__travelerTripsStorageListenerAttached = true;
+    }
 }
 
-async function syncTripsFromApi(user) {
+/**
+ * Fetches ALL trip data directly from the backend APIs.
+ * This is the ONLY data source for My Trips — no localStorage.
+ */
+async function fetchTripsFromBackend(user) {
     const currentUser = user || JSON.parse(localStorage.getItem("currentUser") || "null");
-    if (!currentUser?.id) return;
+    if (!currentUser?.id) return [];
 
+    let allTrips = [];
+
+    // 1. Fetch experience bookings directly from backend
+    if (currentUser.role?.toLowerCase() === "traveller") {
+        try {
+            const expBookings = await fetchExperienceBookings();
+            const expTrips = expBookings.map(b => ({
+                id: String(b.id),
+                bookingId: String(b.id),
+                customerId: String(currentUser.id),
+                customer: currentUser.name || "Traveler",
+                title: b.experience?.title || b.experience?.name || "Experience",
+                location: b.experience?.location || b.experience?.destination || "Experience Location",
+                dateRange: b.date || "Date TBD",
+                status: normalizeTripStatus(b.status),
+                backendStatus: b.status || "CONFIRMED",
+                type: "Experience",
+                experienceId: b.experience?.id || b.experienceId,
+                guests: b.participants,
+                amount: b.totalAmount,
+                duration: b.experience?.durationHours ? `${b.experience.durationHours} hours` : "3 hours",
+                image: b.experience?.image || DEFAULT_TRIP_IMAGE,
+                plan_iternary: [b.experience?.title || "Experience"]
+            }));
+            allTrips.push(...expTrips);
+        } catch (e) {
+            console.warn("Failed to fetch experience bookings from backend", e);
+        }
+    }
+
+    // 2. Fetch regular trips (tours, guide-assigned trips)
     try {
         const trips = currentUser.role === "guide"
             ? await fetchTripsForGuide(currentUser.id)
             : await fetchTripsForTraveller(currentUser.id);
 
-        let legacyTrips = trips.map((trip) => mapTripToLegacyTour(trip, currentUser.role));
-
-        if (currentUser.role.toLowerCase() === "traveller") {
-            try {
-                const expBookings = await fetchExperienceBookings();
-                const expLegacyTrips = expBookings.map(b => ({
-                    id: String(b.id),
-                    bookingId: String(b.id),
-                    customerId: String(currentUser.id),
-                    customer: currentUser.name || "Traveler",
-                    title: b.experience?.title || b.experience?.name || "Experience",
-                    destination: b.experience?.location || b.experience?.destination || "Experience Location",
-                    location: b.experience?.location || b.experience?.destination || "Experience Location",
-                    dateTime: `${b.date} | ${b.time || "09:00 AM"}`,
-                    dateRange: b.date,
-                    status: b.status || "Upcoming",
-                    type: "Experience",
-                    experienceId: b.experience?.id,
-                    guests: b.participants,
-                    amount: b.totalAmount,
-                    duration: b.experience?.durationLabel || "3 hours",
-                    coverImage: b.experience?.image || "",
-                    image: b.experience?.image || "",
-                    plan_iternary: [b.experience?.title || "Experience"]
-                }));
-                legacyTrips = [...legacyTrips, ...expLegacyTrips];
-            } catch (e) {
-                console.warn("Failed to fetch experience bookings", e);
-            }
-        }
-
-        localStorage.setItem("tours", JSON.stringify(legacyTrips));
-    } catch (error) {
-        console.error("Failed to sync trips from backend", error);
-    }
-}
-
-function getTravelerTripsData() {
-    // Get unified bookings from localStorage (filtered by customerId)
-    const unifiedBookings = getTravelerBookings();
-
-    // Also read traveler_my_trips which stores locally confirmed bookings
-    let myTripsRaw = [];
-    try { myTripsRaw = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]"); } catch (e) { myTripsRaw = []; }
-
-    const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
-    if (currentUser && currentUser.id) {
-        myTripsRaw = myTripsRaw.filter(t => String(t.customerId) === String(currentUser.id) || !t.customerId);
+        const legacyTrips = trips.map(trip => {
+            const mapped = mapTripToLegacyTour(trip, currentUser.role);
+            return {
+                ...mapped,
+                title: mapped.title || mapped.name,
+                location: mapped.destination || mapped.location,
+                dateRange: mapped.dateTime ? mapped.dateTime.split(" | ")[0] : (mapped.date || "Date TBD"),
+                bookingId: mapped.id || mapped.bookingId,
+                type: mapped.type || "Tour",
+                status: normalizeTripStatus(mapped.status),
+                backendStatus: mapped.status,
+                image: mapped.coverImage || mapped.image || DEFAULT_TRIP_IMAGE,
+                currentStop: mapped.currentloction,
+            };
+        });
+        allTrips.push(...legacyTrips);
+    } catch (e) {
+        console.warn("Failed to fetch trips from backend", e);
     }
 
-    // Merge: unifiedBookings first, then any myTrips entries not already present
-    const bookingIdsSeen = new Set(unifiedBookings.map(b => String(b.id)));
-    const combined = [...unifiedBookings];
-    for (const b of myTripsRaw) {
-        if (!bookingIdsSeen.has(String(b.id)) && !bookingIdsSeen.has(String(b.bookingId))) {
-            combined.push(b);
-            bookingIdsSeen.add(String(b.id));
-        }
-    }
-
-    // Map combined list to traveler UI format
-    const trips = combined.map(b => ({
-        ...b,
-        title: b.title || b.name,
-        location: b.destination || b.location,
-        dateRange: b.dateTime ? b.dateTime.split(" | ")[0] : (b.date || "Date TBD"),
-        bookingId: b.id || b.bookingId,
-        planId: b.planId || b.id,
-        experienceId: b.experienceId,
-        hotelId: b.hotelId,
-        flightId: b.flightId,
-        type: b.type || "Tour",
-        status: normalizeTripStatus(b.status),
-        image: b.coverImage || b.image || DEFAULT_TRIP_IMAGE,
-        currentStop: b.currentloction,
-        plan_iternary: b.plan_iternary,
-        customer: b.customer
-    }));
-    const confirmedBooking = getConfirmedBooking();
-
-    if (!confirmedBooking) {
-        return trips;
-    }
-
-    const existingIndex = trips.findIndex(trip => String(trip.bookingId) === String(confirmedBooking.bookingId));
-    const confirmedTrip = mapConfirmedBookingToTrip(confirmedBooking);
-
-    if (existingIndex >= 0) {
-        trips[existingIndex] = confirmedTrip;
-        return trips;
-    }
-
-    return [confirmedTrip, ...trips];
-}
-
-function getStoredTravelerTrips() {
-    const fallbackTrips = (travelerData.myTrips || []).map(normalizeTripRecord);
-
-    if (typeof localStorage === "undefined") {
-        return fallbackTrips;
-    }
-
-    try {
-        const stored = JSON.parse(localStorage.getItem(TRAVELER_MY_TRIPS_KEY) || "null");
-        if (Array.isArray(stored) && stored.length) {
-            const mergedTrips = mergeTripCollections(stored.map(normalizeTripRecord), fallbackTrips);
-            localStorage.setItem(TRAVELER_MY_TRIPS_KEY, JSON.stringify(mergedTrips));
-            return mergedTrips;
-        }
-
-        localStorage.setItem(TRAVELER_MY_TRIPS_KEY, JSON.stringify(fallbackTrips));
-        return fallbackTrips;
-    } catch (error) {
-        return fallbackTrips;
-    }
-}
-
-function mergeTripCollections(primaryTrips, fallbackTrips) {
-    const merged = new Map();
-
-    fallbackTrips.forEach((trip) => {
-        merged.set(getTripPersistenceKey(trip), trip);
-    });
-
-    primaryTrips.forEach((trip) => {
-        const key = getTripPersistenceKey(trip);
-        const fallbackTrip = merged.get(key) || {};
-        merged.set(key, normalizeTripRecord({ ...fallbackTrip, ...trip }));
-    });
-
-    return Array.from(merged.values());
-}
-
-function getTripPersistenceKey(trip) {
-    if (trip.bookingId) return `booking:${trip.bookingId}`;
-    if (trip.flightId) return `flight:${trip.flightId}`;
-    if (trip.experienceId) return `experience:${trip.experienceId}`;
-    if (trip.hotelId) return `hotel:${trip.hotelId}`;
-    if (trip.planId) return `plan:${trip.planId}`;
-    return `trip:${normalizeText(trip.title)}`;
-}
-
-function normalizeTripRecord(trip) {
-    const normalizedType = String(trip.type || "").trim();
-    const normalizedTitle = String(trip.title || "").trim();
-    const normalizedLocation = String(trip.location || "").trim();
-    const hotel = resolveHotelForTrip({ ...trip, title: normalizedTitle, location: normalizedLocation });
-
-    return {
-        ...trip,
-        title: normalizedTitle,
-        location: normalizedLocation,
-        type: normalizedType,
-        backendStatus: trip.status,
-        status: normalizeTripStatus(trip.status),
-        hotelId: trip.hotelId || (normalizedType.toLowerCase().includes("hotel") ? hotel?.id || "" : "")
-    };
+    return allTrips;
 }
 
 function normalizeTripStatus(status) {
@@ -435,32 +337,16 @@ function normalizeTripStatus(status) {
         return "Cancelled";
     }
 
-    if (value === "completed" || value === "complete" || value === "end_requested") {
-        return value === "end_requested" ? "Upcoming" : "Completed";
+    if (value === "completed" || value === "complete") {
+        return "Completed";
     }
 
+    if (value === "end_requested") {
+        return "Upcoming";
+    }
+
+    // CONFIRMED, CHECKED_IN, and anything else => Upcoming
     return "Upcoming";
-}
-
-function getConfirmedBooking() {
-    if (typeof sessionStorage !== "undefined") {
-        try {
-            const booking = JSON.parse(sessionStorage.getItem(CONFIRMED_BOOKING_SESSION_KEY) || "null");
-            if (booking) return booking;
-        } catch (error) {
-            console.warn("Unable to read confirmed booking from session storage", error);
-        }
-    }
-
-    if (typeof localStorage !== "undefined") {
-        try {
-            return JSON.parse(localStorage.getItem(CONFIRMED_BOOKING_KEY) || "null");
-        } catch (error) {
-            console.warn("Unable to read confirmed booking from local storage", error);
-        }
-    }
-
-    return null;
 }
 
 function getMyTripsFocusStatus() {
@@ -487,20 +373,6 @@ function clearMyTripsFocusStatus() {
     }
 }
 
-function mapConfirmedBookingToTrip(booking) {
-    return {
-        title: booking.routeLabel,
-        location: booking.toLabel,
-        dateRange: `${formatTripDate(booking.departureDate)} - ${formatTripDate(formatArrivalValue(booking.departureDate, booking.duration))}`,
-        bookingId: Number(booking.bookingId),
-        type: booking.type || "Flight",
-        status: "Upcoming",
-        image: booking.heroImage || "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=800",
-        flightId: booking.id || booking.flightNumber || `flight-${booking.bookingId}`,
-        flightPayload: booking
-    };
-}
-
 function getTripViewKey(trip) {
     if (trip.flightId) return `flight:${trip.flightId}`;
     if (trip.experienceId) return `experience:${trip.experienceId}`;
@@ -514,7 +386,8 @@ function isFlightTrip(trip) {
 }
 
 function isExperienceTrip(trip) {
-    return Boolean(trip.experienceId) || String(trip.type || "").toLowerCase().includes("experience");
+    const typeStr = String(trip.type || "").toLowerCase();
+    return Boolean(trip.experienceId) || typeStr.includes("experience") || typeStr.includes("tour");
 }
 
 function isHotelTrip(trip) {
@@ -531,7 +404,9 @@ function openFlightTrip(trip) {
 
 function openExperienceTrip(trip) {
     const experienceId = trip.experienceId || "1";
-    window.location.href = `./traveller_experience-detail.html?experience=${encodeURIComponent(experienceId)}${getTripStatusParam(trip)}`;
+    const bookingParam = trip.bookingId ? `&booking=${encodeURIComponent(trip.bookingId)}` : '';
+    const backendStatusParam = trip.backendStatus ? `&backendStatus=${encodeURIComponent(trip.backendStatus)}` : '';
+    window.location.href = `./traveller_experience-detail.html?experience=${encodeURIComponent(experienceId)}${getTripStatusParam(trip)}${bookingParam}${backendStatusParam}`;
 }
 
 function openHotelTrip(trip) {

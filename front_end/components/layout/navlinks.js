@@ -39,13 +39,13 @@ const navlinks = [
     name: "Plans",
     path: "../pages/plans.html",
     icon: "../components/ui/operations.png",
-    roles: ["superadmin", "nontechadmin"]
+    roles: ["superadmin"]
   },
   {
     name: "Trips",
     path: "../pages/trips.html",
     icon: "../components/ui/tours.svg",
-    roles: ["superadmin", "nontechadmin"]
+    roles: ["superadmin"]
   },
   {
     name: "Operations & Bookings",

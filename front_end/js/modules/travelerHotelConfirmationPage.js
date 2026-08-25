@@ -61,6 +61,37 @@ export async function renderTravelerHotelConfirmationPage(containerId) {
         coverImage: hotel.image || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800"
     });
 
+    // PUSH BOOKING TO BACKEND SO IT APPEARS FOR THE HOTEL PARTNER
+    try {
+        const getApiBaseUrl = () => (window.__XPLOREO_API_BASE__ || localStorage.getItem("xploreo_api_base_url") || "http://localhost:3000/api").replace(/\/$/, "");
+        
+        await fetch(`${getApiBaseUrl()}/bookings`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-user-id": currentTraveler.id || "traveler-fallback",
+                "x-user-role": "TRAVELLER"
+            },
+            body: JSON.stringify({
+                id: bookingId,
+                hotelId: hotel.id,
+                guestName: currentTraveler.name || "Guest",
+                email: currentTraveler.email || "guest@example.com",
+                phone: currentTraveler.phone || currentTraveler.phno || "0000000000",
+                checkIn: searchValues.checkIn,
+                checkOut: searchValues.checkOut,
+                guests: guestCount,
+                roomType: selectedRoom.name,
+                notes: "Booked via Traveller App",
+                totalAmount: totalAmount,
+                rooms: roomCount,
+                guestNames: JSON.parse(localStorage.getItem("traveler_booking_guest_details") || "[]").map(g => (g.firstName + " " + g.lastName).trim())
+            })
+        });
+    } catch (err) {
+        console.error("Failed to sync booking to backend:", err);
+    }
+
     container.innerHTML = `
         <main class="traveler-hotel-confirmation-page">
             <div class="traveler-hotel-confirmation-frame">

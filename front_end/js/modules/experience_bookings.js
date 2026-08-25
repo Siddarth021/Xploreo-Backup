@@ -5,7 +5,8 @@ import {
     getBookingStatusMeta,
     readStorage,
     setElementText,
-    writeStorage
+    writeStorage,
+    showAppAlert
 } from "./experience_shared.js";
 
 export async function renderExperienceBookingsPage() {
@@ -47,11 +48,11 @@ export async function renderExperienceBookingsPage() {
             });
             experienceBookings = Object.values(grouped);
         } else {
-            experienceBookings = readStorage("experienceBookings", bookingsData);
+            experienceBookings = [];
         }
     } catch (error) {
         console.warn("Failed to fetch experience bookings from backend", error);
-        experienceBookings = readStorage("experienceBookings", bookingsData);
+        experienceBookings = [];
     }
 
     function findBookingById(id) {
@@ -72,7 +73,9 @@ export async function renderExperienceBookingsPage() {
         filterStatus.innerHTML = `
             <option value="all">All Status</option>
             <option value="confirmed">Confirmed</option>
-            <option value="checked">Checked-In</option>
+            <option value="checked_in">Checked-In</option>
+            <option value="end_requested">Pending Confirm</option>
+            <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
         `;
     }
@@ -88,11 +91,25 @@ export async function renderExperienceBookingsPage() {
                 ...exp,
                 users: exp.users.filter((user) => {
                     const experienceMatch = selectedExperience === "all" || exp.title === selectedExperience;
-                    const statusMatch = selectedStatus === "all" || user.status === selectedStatus;
+                    
+                    const uStatus = String(user.status).toLowerCase();
+                    const userStatusGroup = (uStatus === "checked" || uStatus === "checked_in") ? "checked_in" :
+                                            (uStatus === "end_requested") ? "end_requested" :
+                                            (uStatus === "completed") ? "completed" :
+                                            (uStatus === "cancelled") ? "cancelled" :
+                                            "confirmed";
+                                            
+                    const statusMatch = selectedStatus === "all" || userStatusGroup === selectedStatus;
                     return experienceMatch && statusMatch;
                 })
             }))
-            .filter((exp) => exp.users.length);
+            .filter((exp) => exp.users.length)
+            .sort((a, b) => {
+                if (a.date !== b.date) {
+                    return new Date(a.date) - new Date(b.date);
+                }
+                return a.time.localeCompare(b.time);
+            });
 
         container.innerHTML = filteredExperiences.length ? filteredExperiences.map((exp) => {
             const totalGuests = exp.users.reduce((sum, user) => sum + user.seats, 0);
@@ -173,33 +190,27 @@ export async function renderExperienceBookingsPage() {
     async function markCheckIn(id) {
         try {
             await updateExperienceBookingStatus(id, "CHECKED_IN");
-            experienceBookings = experienceBookings.map((exp) => ({
-                ...exp,
-                users: exp.users.map((user) => user.id === id ? { ...user, status: "checked_in" } : user)
-            }));
-
-            writeStorage("experienceBookings", experienceBookings);
-            renderBookings();
+            
+            // Notify traveller tab of the state change
+            writeStorage("experienceBookings_trigger", Date.now().toString());
+            renderExperienceBookingsPage();
         } catch (error) {
             console.error("Failed to check in:", error);
-            alert("Failed to mark check-in. Please try again.");
+            showAppAlert("Failed to mark check-in. Please try again.", "Error");
         }
     }
 
     async function markRequestEnd(id) {
         try {
             await updateExperienceBookingStatus(id, "END_REQUESTED");
-            experienceBookings = experienceBookings.map((exp) => ({
-                ...exp,
-                users: exp.users.map((user) => user.id === id ? { ...user, status: "END_REQUESTED" } : user)
-            }));
-
-            writeStorage("experienceBookings", experienceBookings);
-            renderBookings();
-            alert("End of experience requested. Waiting for traveler confirmation.");
+            
+            // Notify traveller tab of the state change
+            writeStorage("experienceBookings_trigger", Date.now().toString());
+            renderExperienceBookingsPage();
+            showAppAlert("End of experience requested. Waiting for traveler confirmation.", "Success");
         } catch (error) {
             console.error("Failed to request end:", error);
-            alert("Failed to request end of experience. Please try again.");
+            showAppAlert("Failed to request end of experience. Please try again.", "Error");
         }
     }
 
@@ -246,5 +257,17 @@ export async function renderExperienceBookingsPage() {
                 closeModal("bookingModal");
             }
         };
+    }
+
+    if (!window.__hostExperienceStorageListenerAttached) {
+        window.addEventListener("storage", (e) => {
+            if (e.key === "experienceBookings" || e.key === "tours" || e.key === "experienceBookings_trigger") {
+                // Re-fetch backend data and re-render if the container is still present
+                if (document.getElementById("bookingList")) {
+                    renderExperienceBookingsPage();
+                }
+            }
+        });
+        window.__hostExperienceStorageListenerAttached = true;
     }
 }

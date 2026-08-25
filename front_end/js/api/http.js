@@ -36,7 +36,7 @@ async function request(path, options = {}) {
 }
 
 export function apiGet(path) {
-    return request(path);
+    return request(path, { cache: "no-store" });
 }
 
 export function apiPost(path, body) {

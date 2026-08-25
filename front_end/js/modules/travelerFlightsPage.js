@@ -55,7 +55,7 @@ export function renderTravelerFlightsPage(containerId) {
                             <div class="traveler-filter-block">
                                 <div class="traveler-filter-title-row">
                                     <h3>Price</h3>
-                                    <span>$${state.filters.price}</span>
+                                    <span>₹${state.filters.price}</span>
                                 </div>
                                 <input
                                     id="traveler-price-slider"
@@ -68,8 +68,8 @@ export function renderTravelerFlightsPage(containerId) {
                                     style="--slider-progress:${(state.filters.price / 2000) * 100}%"
                                 >
                                 <div class="traveler-filter-scale">
-                                    <span>$0</span>
-                                    <span>$2000</span>
+                                    <span>₹0</span>
+                                    <span>₹2000</span>
                                 </div>
                             </div>
 
@@ -105,7 +105,7 @@ export function renderTravelerFlightsPage(containerId) {
                                         >
                                             <span class="traveler-date-day">${date.day}</span>
                                             <strong>${date.label}</strong>
-                                            <small>from $${date.price}</small>
+                                            <small>from ₹${date.price}</small>
                                         </button>
                                     `).join("")}
                                 </div>
@@ -316,7 +316,7 @@ function renderFlightCard(flight, state) {
 
                 <div class="traveler-flight-price">
                     <span class="traveler-flight-badge">${getFlightBadge(flight)}</span>
-                    <strong>$${flight.price}</strong>
+                    <strong>₹${flight.price}</strong>
                     <small>per person</small>
                     <button type="button" class="traveler-details-button" data-toggle-details="${flight.id}">View Details</button>
                 </div>

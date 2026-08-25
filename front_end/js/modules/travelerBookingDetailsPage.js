@@ -467,13 +467,19 @@ export function renderTravelerBookingDetailsPage(containerId) {
 }
 
 function getActiveTravelerPackage() {
-    const planId = new URLSearchParams(window.location.search).get("plan");
+    const urlParams = new URLSearchParams(window.location.search);
+    const planId = urlParams.get("plan") || urlParams.get("planId");
     const catalog = getTravelerPackageCatalog();
 
     if (planId) {
-        const selectedFromUrl = catalog.find((item) => item.id === planId);
+        const selectedFromUrl = catalog.find((item) => String(item.id) === String(planId));
         if (selectedFromUrl) {
             return selectedFromUrl;
+        }
+
+        const storedSelected = getSelectedTravelerPackage();
+        if (storedSelected && (String(storedSelected.id) === String(planId) || String(storedSelected.packageId) === String(planId))) {
+            return storedSelected;
         }
     }
 
@@ -750,23 +756,23 @@ function getModifyOptions(item) {
     if (item.kind === "transfer") {
         return [
             optionCard("Private AC Sedan", "Standard Transfer • Up to 3 passengers", ["AC Vehicle", "English Speaking Driver", "Airport Pickup"], "Included in package", transferImage, transferIcon(), "Selected"),
-            optionCard("Private AC SUV", "Premium Transfer • Up to 6 passengers", ["Luxury SUV", "Professional Chauffeur", "Complimentary Water"], "+$89 per vehicle", transferImage, transferIcon()),
-            optionCard("Shared Shuttle Service", "Budget Transfer • Shared with other travelers", ["AC Vehicle", "Fixed Schedule", "Airport Pickup"], "+$45 per person", transferImage, transferIcon())
+            optionCard("Private AC SUV", "Premium Transfer • Up to 6 passengers", ["Luxury SUV", "Professional Chauffeur", "Complimentary Water"], "+₹89 per vehicle", transferImage, transferIcon()),
+            optionCard("Shared Shuttle Service", "Budget Transfer • Shared with other travelers", ["AC Vehicle", "Fixed Schedule", "Airport Pickup"], "+₹45 per person", transferImage, transferIcon())
         ];
     }
 
     if (item.kind === "hotel") {
         return [
             optionCard("Grand Mirage Resort & Thalasso Goa (4★)", "Beachfront Stay • Breakfast Included", ["Oceanfront", "Spa Access", "Daily Breakfast"], "Included in package", hotelImage, hotelSmallIcon(), "Selected"),
-            optionCard("Nusa Dua Grand Villas (5★)", "Luxury Villa Stay • Private Pool", ["Private Pool", "Premium Lounge", "Butler Support"], "+$190 per person", hotelImage, hotelSmallIcon()),
-            optionCard("Sanur Breeze Hotel (4★)", "Seaside Stay • Calm Area", ["Beach Access", "Family Friendly", "Breakfast Included"], "+$60 per person", hotelImage, hotelSmallIcon())
+            optionCard("Nusa Dua Grand Villas (5★)", "Luxury Villa Stay • Private Pool", ["Private Pool", "Premium Lounge", "Butler Support"], "+₹190 per person", hotelImage, hotelSmallIcon()),
+            optionCard("Sanur Breeze Hotel (4★)", "Seaside Stay • Calm Area", ["Beach Access", "Family Friendly", "Breakfast Included"], "+₹60 per person", hotelImage, hotelSmallIcon())
         ];
     }
 
     return [
-        optionCard("Private Temple Tour", "Cultural Experience • 4 hours", ["Hotel Pickup", "Guide Included", "Entrance Fees"], "+$75 per person", image, cameraIcon(), "Recommended"),
-        optionCard("Goanese Cooking Class", "Culinary Experience • 3 hours", ["Market Tour", "All Ingredients", "Recipe Book"], "+$65 per person", "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&q=80&w=800", mealIcon()),
-        optionCard("Sunset Dinner Cruise", "Water Activity • 2.5 hours", ["Buffet Dinner", "Live Music", "Transfers"], "+$95 per person", "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&q=80&w=800", wavesIcon())
+        optionCard("Private Temple Tour", "Cultural Experience • 4 hours", ["Hotel Pickup", "Guide Included", "Entrance Fees"], "+₹75 per person", image, cameraIcon(), "Recommended"),
+        optionCard("Goanese Cooking Class", "Culinary Experience • 3 hours", ["Market Tour", "All Ingredients", "Recipe Book"], "+₹65 per person", "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&q=80&w=800", mealIcon()),
+        optionCard("Sunset Dinner Cruise", "Water Activity • 2.5 hours", ["Buffet Dinner", "Live Music", "Transfers"], "+₹95 per person", "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&q=80&w=800", wavesIcon())
     ];
 }
 
@@ -775,16 +781,16 @@ function getAddOptions(destination, dayIndex) {
 
     if (lower.includes("goa")) {
         return [
-            addCard("Private Temple Tour", "Cultural Experience • 4 hours", "4.8", "156", "$75 per person", ["Hotel Pickup", "Guide Included", "Entrance Fees"], "https://images.unsplash.com/photo-1512100356356-de1b84283e18?auto=format&fit=crop&q=80&w=800", cameraIcon()),
-            addCard("Goanese Cooking Class", "Culinary Experience • 3 hours", "4.9", "203", "$65 per person", ["Market Tour", "All Ingredients", "Recipe Book"], "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&q=80&w=800", mealIcon()),
-            addCard("Sunset Dinner Cruise", "Water Activity • 2.5 hours", "4.7", "178", "$95 per person", ["Buffet Dinner", "Live Music", "Transfers"], "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&q=80&w=800", wavesIcon()),
-            addCard(`Leisure Activity for Day ${dayIndex + 1}`, "Flexible Experience • 2 hours", "4.6", "91", "$40 per person", ["Flexible Timing", "Local Support", "Instant Confirmation"], "https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&q=80&w=800", sparkleIcon())
+            addCard("Private Temple Tour", "Cultural Experience • 4 hours", "4.8", "156", "₹75 per person", ["Hotel Pickup", "Guide Included", "Entrance Fees"], "https://images.unsplash.com/photo-1512100356356-de1b84283e18?auto=format&fit=crop&q=80&w=800", cameraIcon()),
+            addCard("Goanese Cooking Class", "Culinary Experience • 3 hours", "4.9", "203", "₹65 per person", ["Market Tour", "All Ingredients", "Recipe Book"], "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&q=80&w=800", mealIcon()),
+            addCard("Sunset Dinner Cruise", "Water Activity • 2.5 hours", "4.7", "178", "₹95 per person", ["Buffet Dinner", "Live Music", "Transfers"], "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&q=80&w=800", wavesIcon()),
+            addCard(`Leisure Activity for Day ${dayIndex + 1}`, "Flexible Experience • 2 hours", "4.6", "91", "₹40 per person", ["Flexible Timing", "Local Support", "Instant Confirmation"], "https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&q=80&w=800", sparkleIcon())
         ];
     }
 
     return [
-        addCard("Guided City Tour", "Sightseeing • 4 hours", "4.8", "124", "$70 per person", ["Guide Included", "Transfers", "Photo Stops"], "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&q=80&w=800", compassIcon()),
-        addCard("Signature Dining Experience", "Dining • 2 hours", "4.7", "89", "$55 per person", ["Reserved Seating", "Chef Special", "Flexible Timing"], "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=800", mealIcon())
+        addCard("Guided City Tour", "Sightseeing • 4 hours", "4.8", "124", "₹70 per person", ["Guide Included", "Transfers", "Photo Stops"], "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&q=80&w=800", compassIcon()),
+        addCard("Signature Dining Experience", "Dining • 2 hours", "4.7", "89", "₹55 per person", ["Reserved Seating", "Chef Special", "Flexible Timing"], "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=800", mealIcon())
     ];
 }
 

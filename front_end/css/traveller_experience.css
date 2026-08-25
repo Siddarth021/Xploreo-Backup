@@ -1009,6 +1009,12 @@
     cursor: pointer;
 }
 
+.traveler-experience-continue-btn:disabled {
+    background: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
 .traveler-experience-gallery-modal {
     position: fixed;
     inset: 0;

@@ -1,4 +1,3 @@
-
 :root {
   --experience-bg: linear-gradient(180deg, #f6f8fc 0%, #eef3f9 100%);
   --experience-surface: #ffffff;
@@ -519,7 +518,7 @@ body.experience-page {
   margin-bottom: 14px;
 }
 
-.experience-card-header-line > :first-child {
+.experience-card-header-line> :first-child {
   flex: 1 1 auto;
   min-width: 0;
 }
@@ -1226,7 +1225,7 @@ body.experience-page {
   align-content: start;
 }
 
-.field-group > span {
+.field-group>span {
   font-size: 0.92rem;
   font-weight: 700;
   color: var(--experience-text);
@@ -1265,20 +1264,22 @@ body.experience-page {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.5);
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 24px;
-  z-index: 999;
+  padding: 40px 24px;
+  z-index: 1050;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .modal-box {
-  width: min(760px, 100%);
-  max-height: 90vh;
-  overflow-y: auto;
+  width: min(540px, 100%);
   background: #fff;
   border-radius: 28px;
   padding: 40px 40px 36px;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+  box-sizing: border-box;
+  margin: auto;
 }
 
 .booking-modal-box {
@@ -1294,9 +1295,6 @@ body.experience-page {
 .edit-modal-box {
   width: min(780px, 100%);
   padding: 0;
-  max-height: 88vh;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .edit-modal-box .modal-header {
@@ -1353,7 +1351,7 @@ body.experience-page {
   width: 100%;
 }
 
-#addExperienceForm .field-group > span {
+#addExperienceForm .field-group>span {
   line-height: 1.3;
 }
 
@@ -1362,8 +1360,10 @@ body.experience-page {
 }
 
 #addExperienceForm input,
-.experience-form select {
+.experience-form select,
+#addExperienceForm textarea {
   width: 100%;
+  box-sizing: border-box;
 }
 
 .experience-form select {
@@ -1418,6 +1418,7 @@ body.experience-page {
   background: #fff;
   display: grid;
   width: 100%;
+  box-sizing: border-box;
   justify-items: center;
   align-content: center;
   gap: 10px;
@@ -1484,7 +1485,7 @@ body.experience-page {
   gap: 8px;
 }
 
-.edit-modal-box .field-group > span em {
+.edit-modal-box .field-group>span em {
   font-style: normal;
   color: var(--experience-muted);
   font-weight: 500;
@@ -1707,8 +1708,8 @@ body.experience-page {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.booking-modal-box .grid-2 > div,
-.booking-modal-box .grid-3 > div {
+.booking-modal-box .grid-2>div,
+.booking-modal-box .grid-3>div {
   padding: 16px 18px;
   border-radius: 18px;
   background: var(--experience-surface-soft);
@@ -1958,7 +1959,7 @@ th {
   color: var(--experience-muted);
 }
 
-.source-item + .source-item {
+.source-item+.source-item {
   margin-top: 24px;
 }
 
@@ -2067,6 +2068,7 @@ th {
 }
 
 @media (max-width: 1100px) {
+
   .experience-grid,
   .experience-bottom-grid,
   .profile-grid,

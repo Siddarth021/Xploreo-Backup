@@ -941,8 +941,9 @@ function initializeSearchState() {
         const cleanValues = (obj) => {
             if (!obj) return {};
             const cleanObj = { ...obj };
+            const scrubWords = ["undefined", "mumbai", "kerala", "goa", "jaipur", "delhi"];
             for (const key in cleanObj) {
-                if (cleanObj[key] === "undefined" || String(cleanObj[key]).toLowerCase() === "mumbai") {
+                if (typeof cleanObj[key] === "string" && scrubWords.includes(cleanObj[key].toLowerCase())) {
                     cleanObj[key] = "";
                 }
             }

@@ -3,31 +3,13 @@ const navlinks = [
     name: "Dashboard",
     path: "../pages/dashboard.html",
     icon: "../components/ui/dashboard.svg",
-    roles: ["techadmin"]
+    roles: ["techadmin", "TECH_ADMIN"]
   },
   {
     name: "Tickets",
     path: "../pages/tech_tickets.html",
     icon: "../components/ui/support.svg",
-    roles: ["techadmin"]
-  },
-  {
-    name: "Activity",
-    path: "../pages/tech_activity.html",
-    icon: "../components/ui/users.png",
-    roles: ["techadmin"]
-  },
-  {
-    name: "System Logs",
-    path: "../pages/tech_logs.html",
-    icon: "../components/ui/operations.png",
-    roles: ["techadmin"]
-  },
-  {
-    name: "Profile",
-    path: "../pages/profile.html",
-    icon: "../components/ui/user.svg",
-    roles: ["techadmin"]
+    roles: ["techadmin", "TECH_ADMIN"]
   },
   {
     name: "Dashboard",
@@ -176,9 +158,10 @@ const navlinks = [
 
 export function getNavLinks(role){
   const currentPage = window.location.pathname.split("/").pop();
+  const normalizedRole = (role || "").toLowerCase().replace(/_/g, "");
 
   return navlinks
-    .filter(link => link.roles.includes(role))
+    .filter(link => link.roles.some(r => r.toLowerCase().replace(/_/g, "") === normalizedRole))
     .map(link => {
       const pageName = link.path.split("/").pop();
       return `

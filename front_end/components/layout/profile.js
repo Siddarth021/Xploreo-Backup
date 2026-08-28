@@ -4,20 +4,21 @@ export function getProfile(user) {
     let supportLink = 'support.html';
     
     if (user) {
-        if (user.role === 'traveller') {
+        const rawRole = (user.role || '').toLowerCase().replace(/_/g, '');
+        if (rawRole === 'traveller') {
             profileLink = 'traveller_profile.html';
             supportLink = 'traveller_support.html';
-        } else if (user.role === 'hotel') {
+        } else if (rawRole === 'hotel') {
             profileLink = 'hotelprofile.html';
-        } else if (user.role === 'superadmin') {
+        } else if (rawRole === 'superadmin') {
             profileLink = 'adminProfile.html'; // <-- Routes superadmin to the new page
-        } else if (user.role === 'experience' || user.role === 'guide' || user.role === 'techadmin' || user.role === 'nontechadmin') {
+        } else if (rawRole === 'experience' || rawRole === 'guide' || rawRole === 'techadmin' || rawRole === 'nontechadmin') {
             profileLink = 'profile.html';
         }
     }
 
     // 2. Show Support for all user roles (traveller, guide, hotel, experience, nontechadmin, superadmin) except techadmin
-    const isTechAdmin = user && (user.role === 'techadmin' || user.role === 'TECH_ADMIN' || user.role === 'TECHADMIN');
+    const isTechAdmin = user && (user.role === 'techadmin' || user.role === 'TECH_ADMIN' || user.role === 'TECHADMIN' || user.role === 'tech_admin');
     const supportItem = (user && !isTechAdmin) ? `
               <div class="dropdown-item" onclick="window.location.href='${supportLink}'">
                 <img src="../components/ui/support.svg" class="dropdown-icon">
@@ -29,7 +30,7 @@ export function getProfile(user) {
     return `
         <div class="profile" onclick="fileMenu()">
             <span class="profile-name">${user ? user.name : 'User'}</span>
-            <img src="../components/ui/profile.png" alt="user" class="profile-img"/>
+            <img src="${(user && user.profilePic) ? user.profilePic : '../components/ui/profile.png'}" alt="user" class="profile-img"/>
             <div class="profile-dropdown hidden" id="profile-dropdown">
               
               <div class="dropdown-item" onclick="window.location.href='${profileLink}'">

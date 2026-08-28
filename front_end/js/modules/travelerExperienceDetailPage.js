@@ -107,43 +107,47 @@ export async function renderTravelerExperienceDetailPage(containerId) {
         const selectedOption = getSelectedOption(state);
         const total = selectedOption.price * state.adults;
 
+        const imgHtml = state.activeImage 
+            ? `<img src="${escapeHtml(state.activeImage)}" alt="${escapeHtml(state.experience.title)}" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100%\\' height=\\'100%\\' viewBox=\\'0 0 800 400\\'%3E%3Crect fill=\\'%23f3f4f6\\' width=\\'800\\' height=\\'400\\'/%3E%3Ctext fill=\\'%239ca3af\\' font-family=\\'sans-serif\\' font-size=\\'20\\' dy=\\'10.5\\' font-weight=\\'bold\\' x=\\'50%\\' y=\\'50%\\' text-anchor=\\'middle\\'%3ENo Image Available%3C/text%3E%3C/svg%3E';">` 
+            : `<div style="height: 100%; display: flex; align-items: center; justify-content: center; background: #eef3fb; color: #999;">No Image Available</div>`;
+
         container.innerHTML = `
             <main class="traveler-experience-detail-page">
-                <section class="traveler-experience-detail-frame traveler-experience-detail-header">
-                    <div class="traveler-experience-detail-top">
-                        <div>
-                            <h1>${escapeHtml(state.experience.title)}</h1>
-                            <div class="traveler-experience-meta">
-                                <strong>${starIcon()} ${Number(state.experience.rating).toFixed(1)}</strong>
-                                <span>(${state.experience.reviews} reviews)</span>
-                                <span>${locationPinIcon()} ${escapeHtml(state.experience.location || state.experience.destination)}</span>
-                                <span>${clockIcon()} ${escapeHtml(state.experience.durationLabel)}</span>
-                            </div>
-                            <div class="traveler-experience-pill-row">
-                                ${state.experience.customizable ? `<span class="traveler-experience-pill traveler-experience-pill-success">${checkCircleIcon()} Customizable</span>` : ""}
-                                <span class="traveler-experience-pill traveler-experience-pill-info">${infoCircleIcon()} Duration: ${escapeHtml(state.experience.durationLabel)}</span>
-                            </div>
-                        </div>
-                        <div class="traveler-experience-header-actions">
-                            <button type="button" id="traveler-experience-favorite-btn" aria-label="Save experience">${heartOutlineIcon()}</button>
-
-                        </div>
-                    </div>
-
-                </section>
-
                 <section class="traveler-experience-detail-layout">
                     <div class="traveler-experience-main">
+                        <div class="traveler-experience-detail-frame traveler-experience-detail-header" style="margin-bottom: 0px; padding: 16px 20px;">
+                            <div class="traveler-experience-detail-top">
+                                <div>
+                                    <h1 style="font-size: 24px;">${escapeHtml(state.experience.title)}</h1>
+                                    <div class="traveler-experience-meta" style="margin-top: 6px; font-size: 13px;">
+                                        <strong>${starIcon()} ${Number(state.experience.rating).toFixed(1)}</strong>
+                                        <span>(${state.experience.reviews} reviews)</span>
+                                        <span>${locationPinIcon()} ${escapeHtml(state.experience.location || state.experience.destination)}</span>
+                                        <span>${clockIcon()} ${escapeHtml(state.experience.durationLabel)}</span>
+                                    </div>
+                                    <div class="traveler-experience-pill-row" style="margin-top: 8px;">
+                                        ${state.experience.customizable ? `<span class="traveler-experience-pill traveler-experience-pill-success" style="padding: 4px 10px; font-size:12px;">${checkCircleIcon()} Customizable</span>` : ""}
+                                        <span class="traveler-experience-pill traveler-experience-pill-info" style="padding: 4px 10px; font-size:12px;">${infoCircleIcon()} Duration: ${escapeHtml(state.experience.durationLabel)}</span>
+                                    </div>
+                                </div>
+                                <div class="traveler-experience-header-actions">
+                                    <button type="button" id="traveler-experience-favorite-btn" aria-label="Save experience" style="width: 36px; height: 36px; padding: 6px;">${heartOutlineIcon()}</button>
+                                </div>
+                            </div>
+                        </div>
+
                         <section class="traveler-experience-gallery-block">
                             <div class="traveler-experience-hero-media traveler-experience-detail-frame">
-                                <img src="${escapeHtml(state.activeImage)}" alt="${escapeHtml(state.experience.title)}">
-                                <button class="traveler-experience-gallery-button" type="button" id="traveler-experience-gallery-btn">
+                                ${imgHtml}
+                                ${state.experience.gallery.length > 0 ? `
+                                <button class="traveler-experience-gallery-button" type="button" id="traveler-experience-gallery-btn" style="padding: 6px 12px; font-size: 12px; bottom: 12px; right: 12px;">
                                     ${galleryIcon()}
                                     <span>View Gallery</span>
                                 </button>
+                                ` : ''}
                             </div>
                             <div class="traveler-experience-thumb-grid">
-                                ${state.experience.gallery.map((image) => `
+                                ${state.experience.gallery.slice(0,3).map((image) => `
                                     <button class="traveler-experience-thumb ${image === state.activeImage ? "active" : ""}" type="button" data-gallery-image="${escapeHtml(image)}">
                                         <img src="${escapeHtml(image)}" alt="${escapeHtml(state.experience.title)} gallery image">
                                     </button>
@@ -152,74 +156,63 @@ export async function renderTravelerExperienceDetailPage(containerId) {
                         </section>
 
                         <section class="traveler-experience-sections">
-                            <div class="traveler-experience-tabs">
+                            <div class="traveler-experience-tabs" style="gap: 8px;">
                                 ${renderTab("about", "About", state.activeTab)}
                                 ${state.experience.highlights && state.experience.highlights.length ? renderTab("highlights", "Highlights", state.activeTab) : ""}
-                                ${state.experience.options && state.experience.options.length > 1 ? renderTab("options", "Activity Options", state.activeTab) : ""}
+                                ${state.experience.options && state.experience.options.length > 1 ? renderTab("options", "Options", state.activeTab) : ""}
                                 ${(state.experience.cancellation && state.experience.cancellation.length) || (state.experience.bring && state.experience.bring.length) || (state.experience.requirements && state.experience.requirements.length) ? renderTab("important", "Important Info", state.activeTab) : ""}
                             </div>
                             ${renderActiveSection(state, selectedOption)}
                         </section>
                     </div>
 
-                    <aside class="traveler-experience-sidebar">
-                        <h3>Starting from (per adult)</h3>
-                        <div class="traveler-experience-price">${formatCurrency(selectedOption.price)}</div>
-                        <div class="traveler-experience-sidebar-note">Free cancellation up to 24 hours</div>
+                    <aside class="traveler-experience-sidebar" style="top: 24px; padding: 22px;">
+                        <h3 style="margin:0; font-size: 15px; color: #617084;">Starting from (per adult)</h3>
+                        <div class="traveler-experience-price" style="margin-top: 6px; font-size: 28px;">${formatCurrency(selectedOption.price)}</div>
+                        <div class="traveler-experience-sidebar-note" style="margin-top: 6px; font-size: 13px;">Free cancellation up to 24 hours</div>
 
-                        <label class="traveler-experience-side-field">
-                            <span class="traveler-experience-side-label">${calendarIcon()} Select Date</span>
-                            <input class="traveler-experience-side-input" type="date" id="traveler-experience-date" value="${escapeHtml(state.selectedDate)}" min="${new Date().toISOString().split('T')[0]}" ${isCompleted ? "disabled" : ""}>
+                        <label class="traveler-experience-side-field" style="margin-top: 20px;">
+                            <span class="traveler-experience-side-label" style="font-size: 14px;">${calendarIcon()} Date</span>
+                            <input class="traveler-experience-side-input" type="date" id="traveler-experience-date" value="${escapeHtml(state.selectedDate)}" min="${new Date().toISOString().split('T')[0]}" ${isCompleted ? "disabled" : ""} style="height: 44px; font-size: 15px;">
                         </label>
 
-                        <label class="traveler-experience-side-field">
-                            <span class="traveler-experience-side-label">${clockIcon()} Select Time Slot</span>
-                            <select class="traveler-experience-side-input" id="traveler-experience-time-slot" ${isCompleted ? "disabled" : ""}>
+                        <label class="traveler-experience-side-field" style="margin-top: 14px;">
+                            <span class="traveler-experience-side-label" style="font-size: 14px;">${clockIcon()} Time Slot</span>
+                            <select class="traveler-experience-side-input" id="traveler-experience-time-slot" ${isCompleted ? "disabled" : ""} style="height: 44px; font-size: 15px;">
                                 ${sortSlots(state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available).length ? 
-                                    sortSlots(state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available).map(slot => `<option value="${slot.id}" ${String(slot.id) === String(state.selectedSlotId) ? "selected" : ""} ${slot.capacity - slot.booked <= 0 ? "disabled" : ""}>${slot.time} ${slot.capacity - slot.booked <= 0 ? "(Full)" : `(${slot.capacity - slot.booked} seats left)`}</option>`).join("") 
+                                    sortSlots(state.experience.slots || []).filter(slot => slot.date === state.selectedDate && slot.available).map(slot => `<option value="${slot.id}" ${String(slot.id) === String(state.selectedSlotId) ? "selected" : ""} ${slot.capacity - slot.booked <= 0 ? "disabled" : ""}>${slot.time} ${slot.capacity - slot.booked <= 0 ? "(Full)" : `(${slot.capacity - slot.booked} left)`}</option>`).join("") 
                                     : `<option value="" disabled selected>No slots available</option>`
                                 }
                             </select>
                         </label>
 
-                        <div class="traveler-experience-side-field">
-                            <span class="traveler-experience-side-label">${usersIcon()} Number of Adults</span>
-                            <div class="traveler-experience-side-stepper">
-                                <button type="button" id="traveler-adults-decrease" ${isCompleted ? "disabled" : ""}>-</button>
-                                <div>${state.adults} ${state.adults === 1 ? "Adult" : "Adults"}</div>
-                                <button type="button" id="traveler-adults-increase" ${isCompleted ? "disabled" : ""}>+</button>
+                        <div class="traveler-experience-side-field" style="margin-top: 14px;">
+                            <span class="traveler-experience-side-label" style="font-size: 14px;">${usersIcon()} Adults</span>
+                            <div class="traveler-experience-side-stepper" style="height: 44px;">
+                                <button type="button" id="traveler-adults-decrease" ${isCompleted ? "disabled" : ""} style="height: 44px;">-</button>
+                                <div style="font-size: 15px;">${state.adults}</div>
+                                <button type="button" id="traveler-adults-increase" ${isCompleted ? "disabled" : ""} style="height: 44px;">+</button>
                             </div>
                         </div>
 
-                        <div class="traveler-experience-selected-option">
-                            <span>Selected Option</span>
-                            <strong>${escapeHtml(selectedOption.title)}</strong>
-                            <p>${(state.experience.slots || []).find(s => String(s.id) === String(state.selectedSlotId))?.time || escapeHtml(selectedOption.time)}</p>
+                        <div class="traveler-experience-selected-option" style="margin-top: 16px; gap: 4px;">
+                            <span style="font-size: 13px;">Option: <strong>${escapeHtml(selectedOption.title)}</strong></span>
+                            <p style="margin:0; font-size: 13px;">${(state.experience.slots || []).find(s => String(s.id) === String(state.selectedSlotId))?.time || escapeHtml(selectedOption.time)}</p>
                         </div>
 
-                        <div class="traveler-experience-side-total-row">
-                            <span>${formatCurrency(selectedOption.price)} × ${state.adults} ${state.adults === 1 ? "adult" : "adults"}</span>
-                            <strong>${formatCurrency(total)}</strong>
-                        </div>
-                        <div class="traveler-experience-side-total">
+                        <div class="traveler-experience-side-total" style="margin-top: 18px; padding-top: 14px; font-size: 16px;">
                             <span>Total Amount</span>
                             <strong>${formatCurrency(total)}</strong>
                         </div>
 
                         ${getBackendStatus() === "END_REQUESTED"
-                            ? `<button class="primary-btn" type="button" id="traveler-experience-confirm-btn" style="background-color: #f59e0b; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600; margin-bottom: 16px;">Confirm Request End</button>`
+                            ? `<button class="primary-btn" type="button" id="traveler-experience-confirm-btn" style="background-color: #f59e0b; color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; width: 100%; font-size: 16px; font-weight: 700; margin-bottom: 12px; margin-top: 16px;">Confirm Request End</button>`
                             : (isCompleted 
                                 ? (getTripStatus() === "upcoming" 
-                                    ? `<button class="traveler-experience-continue-btn" type="button" id="traveler-experience-cancel-btn" style="background: #ef4444;">Cancel Booking</button>`
-                                    : `<div class="traveler-experience-completed-note">This experience has already been completed. The details are shown for your reference.</div>`) 
-                                : `<button class="traveler-experience-continue-btn" type="button" id="traveler-experience-continue-btn" ${!state.selectedSlotId ? "disabled" : ""}>Continue</button>`)
+                                    ? `<button class="traveler-experience-continue-btn" type="button" id="traveler-experience-cancel-btn" style="background: #ef4444; min-height: 48px; border-radius: 12px; font-size: 16px; margin-top: 16px;">Cancel Booking</button>`
+                                    : `<div class="traveler-experience-completed-note" style="margin-top: 16px; font-size: 13px;">This experience is completed.</div>`) 
+                                : `<button class="traveler-experience-continue-btn" type="button" id="traveler-experience-continue-btn" ${!state.selectedSlotId ? "disabled" : ""} style="min-height: 48px; border-radius: 12px; font-size: 16px; margin-top: 16px;">Continue</button>`)
                         }
-
-                        <ul class="traveler-experience-side-list">
-                            <li>${checkCircleIcon()} Free cancellation available</li>
-                            <li>${checkCircleIcon()} Instant confirmation</li>
-                            <li>${checkCircleIcon()} Best price guarantee</li>
-                        </ul>
                     </aside>
                 </section>
 
@@ -327,27 +320,6 @@ export async function renderTravelerExperienceDetailPage(containerId) {
             toggleWishlist(state.experience);
             state.wishlisted = isWishlisted(state.experience);
             showToast(state.wishlisted ? "Added to Wishlist" : "Removed from Wishlist");
-        });
-
-        container.querySelector("#traveler-experience-share-btn")?.addEventListener("click", async () => {
-            const message = `${state.experience.title} in ${state.experience.destination}`;
-
-            if (navigator.share) {
-                try {
-                    await navigator.share({ title: state.experience.title, text: message });
-                } catch (error) {
-                    // User cancelled share; no action needed.
-                }
-                return;
-            }
-
-            if (navigator.clipboard?.writeText) {
-                await navigator.clipboard.writeText(message);
-                showToast("Experience details copied");
-                return;
-            }
-
-            showToast("Share not supported on this device");
         });
 
         if (!isExperienceCompleted()) {
@@ -546,21 +518,20 @@ function normalizeExperienceDetail(item) {
 }
 
 function renderTab(id, label, activeTab) {
-    return `<button class="traveler-experience-tab ${id === activeTab ? "active" : ""}" type="button" data-experience-tab="${id}">${label}</button>`;
+    return `<button class="traveler-experience-tab ${id === activeTab ? "active" : ""}" type="button" data-experience-tab="${id}" style="padding: 8px 14px; font-size: 13px;">${label}</button>`;
 }
 
 function renderActiveSection(state, selectedOption) {
     if (state.activeTab === "highlights") {
         return `
             <article class="traveler-experience-detail-card">
-                <h2>Experience Highlights</h2>
-                <div class="traveler-experience-highlight-grid">
+                <div class="traveler-experience-highlight-grid" style="gap: 12px;">
                     ${state.experience.highlights.map((item) => `
-                        <div class="traveler-experience-highlight-item">
-                            <span class="icon">${renderExperienceIcon(item.icon)}</span>
+                        <div class="traveler-experience-highlight-item" style="padding: 12px; grid-template-columns: 40px minmax(0, 1fr);">
+                            <span class="icon" style="width: 40px; height: 40px;"><svg style="width: 20px; height: 20px;">${renderExperienceIcon(item.icon)}</svg></span>
                             <div>
-                                <h3>${escapeHtml(item.title)}</h3>
-                                <p>${escapeHtml(item.desc)}</p>
+                                <h3 style="font-size: 15px; margin-bottom: 4px;">${escapeHtml(item.title)}</h3>
+                                <p style="font-size: 13px;">${escapeHtml(item.desc)}</p>
                             </div>
                         </div>
                     `).join("")}
@@ -572,21 +543,16 @@ function renderActiveSection(state, selectedOption) {
     if (state.activeTab === "options") {
         return `
             <article class="traveler-experience-detail-card">
-                <h2>Choose Your Experience</h2>
-                <p>Select the option that best fits your timing and preferences.</p>
-                <div class="traveler-experience-option-wrap">
+                <div class="traveler-experience-option-wrap" style="margin-top: 0; gap: 10px;">
                     ${state.experience.options.map((option) => `
-                        <button class="traveler-experience-option-card ${option.id === selectedOption.id ? "selected" : ""}" type="button" data-experience-option="${option.id}">
-                            ${option.popular ? `<span class="traveler-experience-option-badge">Most Popular</span>` : ""}
+                        <button class="traveler-experience-option-card ${option.id === selectedOption.id ? "selected" : ""}" type="button" data-experience-option="${option.id}" style="padding: 14px;">
+                            ${option.popular ? `<span class="traveler-experience-option-badge" style="top: 10px; right: 10px; padding: 4px 8px; font-size: 10px;">Popular</span>` : ""}
                             <div class="traveler-experience-option-top">
                                 <div>
-                                    <h3>${escapeHtml(option.title)}</h3>
-                                    <p class="traveler-experience-option-time">${clockIcon()} ${escapeHtml(option.time)}</p>
+                                    <h3 style="font-size: 16px; margin-bottom: 4px;">${escapeHtml(option.title)}</h3>
+                                    <p class="traveler-experience-option-time" style="font-size: 12px;">${clockIcon()} ${escapeHtml(option.time)}</p>
                                 </div>
-                                <div class="traveler-experience-option-price">${formatCurrency(option.price)}<span>per adult</span></div>
-                            </div>
-                            <div class="traveler-experience-feature-pills">
-                                ${(option.features || []).map((feature) => `<span>${checkCircleIcon()} ${escapeHtml(feature)}</span>`).join("")}
+                                <div class="traveler-experience-option-price" style="font-size: 20px;">${formatCurrency(option.price)}<span style="font-size: 11px;">per adult</span></div>
                             </div>
                         </button>
                     `).join("")}
@@ -597,23 +563,23 @@ function renderActiveSection(state, selectedOption) {
 
     if (state.activeTab === "important") {
         return `
-            <article class="traveler-experience-info-grid">
-                <section class="traveler-experience-detail-card">
-                    <h2>Cancellation Policy</h2>
-                    <ul class="traveler-experience-list">
-                        ${state.experience.cancellation.map((item) => `<li>${infoCircleIcon()} ${escapeHtml(item)}</li>`).join("")}
+            <article class="traveler-experience-info-grid" style="gap: 12px;">
+                <section class="traveler-experience-detail-card" style="padding: 14px;">
+                    <h3 style="font-size: 15px; margin-bottom: 8px;">Cancellation Policy</h3>
+                    <ul class="traveler-experience-list" style="margin-top: 0;">
+                        ${state.experience.cancellation.map((item) => `<li style="font-size: 13px;">${infoCircleIcon()} ${escapeHtml(item)}</li>`).join("")}
                     </ul>
                 </section>
-                <section class="traveler-experience-detail-card traveler-experience-mini-card">
-                    <h2>What to Bring</h2>
-                    <ul>
-                        ${state.experience.bring.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                <section class="traveler-experience-detail-card traveler-experience-mini-card" style="padding: 14px;">
+                    <h3 style="font-size: 15px; margin-bottom: 8px;">What to Bring</h3>
+                    <ul style="margin-top: 0;">
+                        ${state.experience.bring.map((item) => `<li style="font-size: 13px;">${escapeHtml(item)}</li>`).join("")}
                     </ul>
                 </section>
-                <section class="traveler-experience-detail-card traveler-experience-mini-card">
-                    <h2>Restrictions & Requirements</h2>
-                    <ul>
-                        ${state.experience.requirements.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                <section class="traveler-experience-detail-card traveler-experience-mini-card" style="padding: 14px;">
+                    <h3 style="font-size: 15px; margin-bottom: 8px;">Restrictions</h3>
+                    <ul style="margin-top: 0;">
+                        ${state.experience.requirements.map((item) => `<li style="font-size: 13px;">${escapeHtml(item)}</li>`).join("")}
                     </ul>
                 </section>
             </article>
@@ -622,29 +588,28 @@ function renderActiveSection(state, selectedOption) {
 
     return `
         ${state.experience.description.length ? `
-        <article class="traveler-experience-detail-card">
-            <h2>About</h2>
-            ${state.experience.description.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+        <article class="traveler-experience-detail-card" style="padding: 16px;">
+            ${state.experience.description.map((paragraph) => `<p style="margin: 0 0 10px; font-size: 14px; line-height: 1.5; color: #4b5563;">${escapeHtml(paragraph)}</p>`).join("")}
         </article>
         ` : ""}
         ${state.experience.audience.length ? `
-        <article class="traveler-experience-detail-card">
-            <h2>Who It's For</h2>
-            <ul class="traveler-experience-list">
-                ${state.experience.audience.map((item) => `<li>${checkCircleIcon()} ${escapeHtml(item)}</li>`).join("")}
+        <article class="traveler-experience-detail-card" style="padding: 16px;">
+            <h3 style="font-size: 15px; margin-bottom: 8px;">Who It's For</h3>
+            <ul class="traveler-experience-list" style="margin-top:0;">
+                ${state.experience.audience.map((item) => `<li style="font-size: 13px;">${checkCircleIcon()} ${escapeHtml(item)}</li>`).join("")}
             </ul>
         </article>
         ` : ""}
         ${state.experience.expectations.length ? `
-        <article class="traveler-experience-detail-card">
-            <h2>What to Expect</h2>
-            <div class="traveler-experience-highlight-grid">
+        <article class="traveler-experience-detail-card" style="padding: 16px;">
+            <h3 style="font-size: 15px; margin-bottom: 8px;">What to Expect</h3>
+            <div class="traveler-experience-highlight-grid" style="gap: 12px;">
                 ${state.experience.expectations.map((item) => `
-                    <div class="traveler-experience-highlight-item">
-                        <span class="icon">${renderExperienceIcon(item.icon)}</span>
+                    <div class="traveler-experience-highlight-item" style="padding: 12px; grid-template-columns: 40px minmax(0, 1fr);">
+                        <span class="icon" style="width: 40px; height: 40px;"><svg style="width: 20px; height: 20px;">${renderExperienceIcon(item.icon)}</svg></span>
                         <div>
-                            <h3>${escapeHtml(item.title)}</h3>
-                            <p>${escapeHtml(item.desc)}</p>
+                            <h3 style="font-size: 15px; margin-bottom: 4px;">${escapeHtml(item.title)}</h3>
+                            <p style="font-size: 13px;">${escapeHtml(item.desc)}</p>
                         </div>
                     </div>
                 `).join("")}

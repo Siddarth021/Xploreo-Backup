@@ -45,12 +45,12 @@ export async function renderTechAdminDashboard(containerId) {
             { label: "Total Tickets", value: total, icon: "../components/ui/support.svg", color: "blue", path: "tech_tickets.html" },
             { label: "Pending Tickets", value: pendingTicketsCount, icon: "../components/ui/support.svg", color: "orange", path: "tech_tickets.html?status=pending" },
             { label: "Resolved Tickets", value: resolvedTicketsCount, icon: "../components/ui/support.svg", color: "light-green", path: "tech_tickets.html?status=resolved" },
-            { label: "Active Users", value: activeUsersCount || 5, icon: "../components/ui/users.png", color: "violet", path: "tech_activity.html" },
-            { label: "System Alerts", value: criticalAlerts, icon: "../components/ui/operations.png", color: "red", path: "tech_logs.html" }
+            { label: "Active Users", value: activeUsersCount || 5, icon: "../components/ui/users.png", color: "violet" },
+            { label: "System Health", value: "99.9%", icon: "../components/ui/operations.png", color: "light-green" }
         ];
 
         statsContainer.innerHTML = stats.map(stat => `
-            <div class="stat-card ${stat.color}" onclick="window.location.href='${stat.path}'" style="cursor: pointer;">
+            <div class="stat-card ${stat.color}" ${stat.path ? `onclick="window.location.href='${stat.path}'" style="cursor: pointer;"` : `style="cursor: default;"`}>
                 <div class="icon-container">
                     <img src="${stat.icon}" alt="icon" class="icon-img">
                 </div>
@@ -179,7 +179,6 @@ export async function renderTechAdminDashboard(containerId) {
                     </div>
                 `).join('') : '<p style="text-align: center; padding: 20px; font-size: 13px; color: #6B7280;">No recent activity.</p>'}
             </div>
-            <button class="secondary-btn" style="width: 100%; margin-top: 20px; font-size: 13px; height: 40px; cursor: pointer;" onclick="window.location.href='tech_activity.html'">View Full Activity Log</button>
         `;
     }
 }

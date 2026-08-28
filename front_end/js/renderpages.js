@@ -26,8 +26,6 @@ import { renderExperienceProfilePage } from "./modules/experience_profile.js?v=p
 import { initOperations } from "./modules/operations.js";
 import { renderTechAdminDashboard } from "./techAdminDashboard.js";
 import { initTicketManagement } from "./modules/tech_tickets.js?v=phase3-tickets";
-import { initTechActivity } from "./modules/tech_activity.js";
-import { initTechLogs } from "./modules/tech_logs.js";
 import { renderTechTicketDetail } from "./modules/tech_ticket_detail.js";
 import { renderNtaDashboard } from "./modules/ntaDashboard.js";
 import { initNtaPlans } from "./modules/ntaPlans.js";
@@ -189,16 +187,6 @@ export async function renderPageContent(user) {
     page === "tech_ticket_detail.html"
   ) {
     renderTechTicketDetail("main");
-  } else if (
-    (role === "techadmin" || role === "TECH_ADMIN") &&
-    page === "tech_activity.html"
-  ) {
-    initTechActivity();
-  } else if (
-    (role === "techadmin" || role === "TECH_ADMIN") &&
-    page === "tech_logs.html"
-  ) {
-    initTechLogs();
   } else if (user.role === "guide" && page === "tours.html") {
     rendertourpage("main", user);
   } else if (user.role === "guide" && page === "earnings.html") {

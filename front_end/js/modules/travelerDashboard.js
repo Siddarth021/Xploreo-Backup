@@ -19,7 +19,7 @@ const CATEGORY_IMAGE_FALLBACK = "https://images.unsplash.com/photo-1464822759023
 const CONTINUE_IMAGE_FALLBACK = "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?auto=format&fit=crop&q=80&w=800";
 
 const searchState = {
-    activeTab: "flights",
+    activeTab: "hotels",
     tripType: "One Way",
     results: [],
     summary: "",
@@ -81,11 +81,7 @@ export function renderTravelerDashboard(containerId, user) {
         <div class="search-widget-container">
             <div class="search-widget" id="main-search-widget">
                     <div class="search-tabs">
-                        <button class="search-tab active" data-tab="flights">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.2-1.1.7l-1.2 3.3c-.2.5.1 1.1.6 1.4l5.3 3.5-3.5 3.5-3.1-.8c-.4-.1-.8.1-1 .5l-1 2.2c-.3.7.3 1.4 1 1.3l5.5-1.1 5.5-1.1c.7-.1 1.3-.8 1-1.5l-1-2.2c-.2-.4 0-.8.4-1l3.5-3.5 3.5 5.3c.3.5.9.8 1.4.6l3.3-1.2c.5-.2.8-.6.7-1.1z"></path></svg>
-                            Flights
-                        </button>
-                        <button class="search-tab" data-tab="hotels">
+                        <button class="search-tab active" data-tab="hotels">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 22v-6.57"></path><path d="M14 22v-6.57"></path><path d="M22 22H2"></path><path d="M22 15a2 2 0 0 0-2-2h-3"></path><path d="M2 15a2 2 0 0 1 2-2h3"></path><path d="M7 2v10"></path><path d="M17 2v10"></path><path d="M7 12V6a5 5 0 0 1 10 0v6"></path></svg>
                             Hotels
                         </button>
@@ -99,48 +95,7 @@ export function renderTravelerDashboard(containerId, user) {
                         </button>
                     </div>
                     
-                    <div class="search-panel active" id="flights-panel">
-                        <div class="search-inputs-row">
-                            <div class="input-group">
-                                <label>From</label>
-                                <div class="input-wrapper">
-                                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <input type="text" id="flight-from" placeholder="City or airport" value="${searchState.values.flights.from}">
-                                </div>
-                                <span class="search-field-error" id="flight-from-error"></span>
-                            </div>
-                            <div class="input-group">
-                                <label>To</label>
-                                <div class="input-wrapper">
-                                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <input type="text" id="flight-to" placeholder="City or airport" value="${searchState.values.flights.to}">
-                                </div>
-                                <span class="search-field-error" id="flight-to-error"></span>
-                            </div>
-                            <div class="input-group">
-                                <label>Departure</label>
-                                <div class="input-wrapper">
-                                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="date" id="flight-departure" value="${searchState.values.flights.departure}" min="${getTodayDateString()}">
-                                </div>
-                                <span class="search-field-error" id="flight-departure-error"></span>
-                            </div>
-                            <div class="input-group" id="travellers-group">
-                                <label>Travellers</label>
-                                <div class="input-wrapper">
-                                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    <input type="number" id="flight-travellers" min="1" max="12" step="1" inputmode="numeric" value="${parseTravellerCount(searchState.values.flights.travellers)}">
-                                </div>
-                                <span class="search-field-error" id="flight-travellers-error"></span>
-                            </div>
-                        </div>
-                        <button class="search-submit-btn" data-search-submit="flights">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                            SEARCH FLIGHTS
-                        </button>
-                    </div>
-                    
-                    <div class="search-panel" id="hotels-panel">
+                    <div class="search-panel active" id="hotels-panel">
                         <div class="search-inputs-row" style="margin-top: 20px;">
                             <div class="input-group full-width-input">
                                 <label>City</label>

@@ -91,7 +91,6 @@ export async function renderTravelerPackageSearchPage(containerId) {
             <main class="traveler-package-page">
                 <div class="traveler-package-frame">
                     <section class="traveler-package-toolbar">
-                        ${renderTextField("fromCity", "Starting From", state.searchValues.fromCity, "Your city")}
                         ${renderTextField("destination", "Going To", state.searchValues.destination, "Destination")}
                         ${renderDateField("departureDate", "Starting Date", state.searchValues.departureDate)}
                         ${renderOccupancyField(state)}
@@ -290,41 +289,15 @@ export async function renderTravelerPackageSearchPage(containerId) {
 
 function attachPackageSearchAutocomplete(container) {
     const packageData = PACKAGE_RESULTS || [];
-
-    const fromInput = container?.querySelector('[data-package-field="fromCity"]');
     const destInput = container?.querySelector('[data-package-field="destination"]');
 
-    if (!fromInput && !destInput) return;
-
-    if (fromInput && !fromInput.id) fromInput.id = "package-from-search";
+    if (!destInput) return;
     if (destInput && !destInput.id) destInput.id = "package-dest-search";
 
-    // Dynamic supplier for From City:
-    // Only list origins that have at least one package going to the current destination value
-    function getFromSuggestions() {
-        const currentDest = normalizeText(destInput ? destInput.value : "");
-        const filtered = currentDest
-            ? packageData.filter(pkg => normalizeText(pkg.destination).includes(currentDest))
-            : packageData;
-        return [...new Set(filtered.map(pkg => pkg.origin).filter(Boolean))].sort();
-    }
-
-    // Dynamic supplier for Destination:
-    // Only list destinations that have at least one package coming from the current origin value
     function getDestSuggestions() {
-        const currentFrom = normalizeText(fromInput ? fromInput.value : "");
-        const filtered = currentFrom
-            ? packageData.filter(pkg => normalizeText(pkg.origin).includes(currentFrom))
-            : packageData;
-        return [...new Set(filtered.map(pkg => pkg.destination).filter(Boolean))].sort();
+        return [...new Set(packageData.map(pkg => pkg.destination).filter(Boolean))].sort();
     }
 
-    if (fromInput) {
-        attachLocationAutocomplete(fromInput.id, getFromSuggestions, (val) => {
-            fromInput.value = val;
-            fromInput.dispatchEvent(new Event("change", { bubbles: true }));
-        });
-    }
     if (destInput) {
         attachLocationAutocomplete(destInput.id, getDestSuggestions, (val) => {
             destInput.value = val;
@@ -335,8 +308,7 @@ function attachPackageSearchAutocomplete(container) {
 
 function getSearchValues() {
     const fallback = {
-        fromCity: "New Delhi",
-        destination: "Goa",
+        destination: "Kerala",
         departureDate: "",
         rooms: "1",
         guestCount: "2",
@@ -351,7 +323,6 @@ function getSearchValues() {
         const stored = JSON.parse(localStorage.getItem(SEARCH_STORAGE_KEY) || "{}");
         const values = stored.values?.packages || {};
         return normalizeSearchValues({
-            fromCity: values.fromCity || fallback.fromCity,
             destination: values.destination || fallback.destination,
             departureDate: values.departureDate || fallback.departureDate,
             rooms: values.rooms || "1",
@@ -383,7 +354,6 @@ function normalizeSearchValues(values) {
     const rooms = clampCount(values.rooms, 1, 8);
     const guestCount = clampCount(values.guestCount, 1, 8);
     return {
-        fromCity: String(values.fromCity || "").trim(),
         destination: String(values.destination || "").trim(),
         departureDate: values.departureDate || "",
         rooms: String(rooms),
@@ -393,12 +363,10 @@ function normalizeSearchValues(values) {
 }
 
 function getFilteredPackages(state) {
-    const originTerm = normalizeText(state.searchValues.fromCity);
     const destinationTerm = normalizeText(state.searchValues.destination);
     const guestCount = Number.parseInt(state.searchValues.guestCount, 10) || 2;
 
     return PACKAGE_RESULTS
-        .filter((item) => !originTerm || normalizeText(item.origin) === "any" || normalizeText(item.origin).includes(originTerm) || !item.origin)
         .filter((item) =>
             !destinationTerm ||
             normalizeText(item.destination).includes(destinationTerm) ||

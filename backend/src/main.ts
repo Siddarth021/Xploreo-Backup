@@ -26,8 +26,6 @@ async function bootstrap() {
   // Global prefix
   app.setGlobalPrefix('api');
 
-  
-
   // CORS with options
   app.enableCors(corsOptions);
 
@@ -39,8 +37,12 @@ async function bootstrap() {
   const requestIdMiddleware = app.get(RequestIdMiddleware);
   app.use(requestIdMiddleware.use.bind(requestIdMiddleware));
 
-  const requestResponseLoggingMiddleware = app.get(RequestResponseLoggingMiddleware);
-  app.use(requestResponseLoggingMiddleware.use.bind(requestResponseLoggingMiddleware));
+  const requestResponseLoggingMiddleware = app.get(
+    RequestResponseLoggingMiddleware,
+  );
+  app.use(
+    requestResponseLoggingMiddleware.use.bind(requestResponseLoggingMiddleware),
+  );
 
   const apiVersionMiddleware = app.get(ApiVersionMiddleware);
   app.use(apiVersionMiddleware.use.bind(apiVersionMiddleware));

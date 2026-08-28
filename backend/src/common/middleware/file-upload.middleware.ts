@@ -25,12 +25,26 @@ const storage = multer.diskStorage({
   },
 });
 
-const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+const fileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback,
+) => {
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+    'application/pdf',
+  ];
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Invalid file type. Only JPEG, PNG, GIF, WebP, and PDF are allowed.'));
+    cb(
+      new Error(
+        'Invalid file type. Only JPEG, PNG, GIF, WebP, and PDF are allowed.',
+      ),
+    );
   }
 };
 
@@ -51,7 +65,11 @@ export class FileUploadMiddleware implements NestMiddleware {
     const uploadMiddleware = upload.array('files', 5);
     uploadMiddleware(req, res, (err) => {
       if (err instanceof multer.MulterError) {
-        this.logger.error(`Multer error: ${err.message}`, err.stack, 'FileUploadMiddleware');
+        this.logger.error(
+          `Multer error: ${err.message}`,
+          err.stack,
+          'FileUploadMiddleware',
+        );
         return res.status(400).json({
           success: false,
           statusCode: 400,
@@ -59,7 +77,11 @@ export class FileUploadMiddleware implements NestMiddleware {
           timestamp: new Date().toISOString(),
         });
       } else if (err) {
-        this.logger.error(`File upload error: ${err.message}`, err.stack, 'FileUploadMiddleware');
+        this.logger.error(
+          `File upload error: ${err.message}`,
+          err.stack,
+          'FileUploadMiddleware',
+        );
         return res.status(400).json({
           success: false,
           statusCode: 400,

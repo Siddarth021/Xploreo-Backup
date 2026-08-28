@@ -20,4 +20,4 @@ import { ExperiencesModule } from '../experiences/experiences.module';
   providers: [TripsService, TripsRepository],
   exports: [TripsService, TripsRepository],
 })
-export class TripsModule { }
+export class TripsModule {}

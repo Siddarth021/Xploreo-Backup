@@ -26,7 +26,8 @@ export class TicketsRepository {
       travellerName: 'Anjali Sharma',
       subject: 'Hotel booking confirmation not received',
       category: 'Booking',
-      message: 'I completed payment for my hotel booking in Mumbai, but the confirmation voucher did not generate.',
+      message:
+        'I completed payment for my hotel booking in Mumbai, but the confirmation voucher did not generate.',
       priority: TicketPriority.HIGH,
       status: TicketStatus.OPEN,
       createdAt: new Date(Date.now() - 3600 * 1000 * 4),
@@ -40,7 +41,8 @@ export class TicketsRepository {
       travellerName: 'Sreekar',
       subject: 'Schedule availability synchronization error',
       category: 'Technical Issue',
-      message: 'My updated available tour slots for the upcoming weekend are not reflecting on the traveler booking catalog.',
+      message:
+        'My updated available tour slots for the upcoming weekend are not reflecting on the traveler booking catalog.',
       priority: TicketPriority.HIGH,
       status: TicketStatus.OPEN,
       createdAt: new Date(Date.now() - 3600 * 1000 * 12),
@@ -54,7 +56,8 @@ export class TicketsRepository {
       travellerName: 'Xploreo Hotel Partner',
       subject: 'Room inventory update lag during peak hours',
       category: 'Platform Issue',
-      message: 'When updating suite pricing and room availability, changes take over 10 minutes to reflect across the live platform.',
+      message:
+        'When updating suite pricing and room availability, changes take over 10 minutes to reflect across the live platform.',
       priority: TicketPriority.MEDIUM,
       status: TicketStatus.OPEN,
       createdAt: new Date(Date.now() - 3600 * 1000 * 24),
@@ -68,12 +71,14 @@ export class TicketsRepository {
       travellerName: 'Xploreo Experience Partner',
       subject: 'Payout settlement calculation discrepancy',
       category: 'Payment Issue',
-      message: 'The experience booking commission for the Heritage Walk series shows a minor discrepancy in the earnings ledger.',
+      message:
+        'The experience booking commission for the Heritage Walk series shows a minor discrepancy in the earnings ledger.',
       priority: TicketPriority.LOW,
       status: TicketStatus.RESOLVED,
       createdAt: new Date(Date.now() - 3600 * 1000 * 48),
       resolvedAt: new Date(Date.now() - 3600 * 1000 * 6),
-      resolution: 'Ledger synchronization re-indexed and balance reconciled with payment gateway.',
+      resolution:
+        'Ledger synchronization re-indexed and balance reconciled with payment gateway.',
       resolvedBy: 'TA0001',
     },
     {
@@ -85,7 +90,8 @@ export class TicketsRepository {
       travellerName: 'Neha Mehra',
       subject: 'Travel package bulk image asset upload timeout',
       category: 'Technical Issue',
-      message: 'Bulk uploading high-resolution promotional imagery for the South India itinerary intermittently times out.',
+      message:
+        'Bulk uploading high-resolution promotional imagery for the South India itinerary intermittently times out.',
       priority: TicketPriority.MEDIUM,
       status: TicketStatus.OPEN,
       createdAt: new Date(Date.now() - 3600 * 1000 * 2),

@@ -13,7 +13,9 @@ import { AppLoggerService } from '../logger/logger.service';
 @Injectable()
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-  constructor(@Inject(AppLoggerService) private readonly logger: AppLoggerService) {}
+  constructor(
+    @Inject(AppLoggerService) private readonly logger: AppLoggerService,
+  ) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();

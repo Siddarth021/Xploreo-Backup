@@ -43,7 +43,8 @@ export class BookingsService {
       (checkOut.getTime() - checkIn.getTime()) / 86_400_000,
     );
     const rooms = dto.rooms || 1;
-    const computedAmount = nights * (hotel.pricePerNight + hotel.taxesAndFees) * rooms;
+    const computedAmount =
+      nights * (hotel.pricePerNight + hotel.taxesAndFees) * rooms;
     const totalAmount = dto.totalAmount ?? computedAmount;
 
     const booking = this.bookingsRepository.create({
@@ -71,7 +72,7 @@ export class BookingsService {
   }
 
   cancelBooking(id: string) {
-    const booking = this.bookingsRepository.findAll().find(b => b.id === id);
+    const booking = this.bookingsRepository.findAll().find((b) => b.id === id);
     if (!booking) {
       throw new NotFoundException(`Booking ${id} not found`);
     }
@@ -80,7 +81,7 @@ export class BookingsService {
     }
 
     const cancelledBooking = this.bookingsRepository.cancel(id);
-    
+
     // Refund the room
     const hotel = this.hotelsRepository.findById(booking.hotelId);
     if (hotel) {
@@ -97,18 +98,22 @@ export class BookingsService {
       throw new ForbiddenException('x-user-id header is required for PARTNER');
     }
 
-    const booking = this.bookingsRepository.findAll().find(b => b.id === id);
+    const booking = this.bookingsRepository.findAll().find((b) => b.id === id);
     if (!booking) {
       throw new NotFoundException(`Booking ${id} not found`);
     }
 
     const hotel = this.hotelsRepository.findById(booking.hotelId);
     if (!hotel || hotel.partnerId !== partnerId) {
-      throw new ForbiddenException('You do not have permission to check in this booking');
+      throw new ForbiddenException(
+        'You do not have permission to check in this booking',
+      );
     }
 
     if (booking.status !== 'CONFIRMED') {
-      throw new BadRequestException(`Only CONFIRMED bookings can be checked in (current status: ${booking.status})`);
+      throw new BadRequestException(
+        `Only CONFIRMED bookings can be checked in (current status: ${booking.status})`,
+      );
     }
 
     return this.bookingsRepository.checkIn(id);
@@ -119,18 +124,22 @@ export class BookingsService {
       throw new ForbiddenException('x-user-id header is required for PARTNER');
     }
 
-    const booking = this.bookingsRepository.findAll().find(b => b.id === id);
+    const booking = this.bookingsRepository.findAll().find((b) => b.id === id);
     if (!booking) {
       throw new NotFoundException(`Booking ${id} not found`);
     }
 
     const hotel = this.hotelsRepository.findById(booking.hotelId);
     if (!hotel || hotel.partnerId !== partnerId) {
-      throw new ForbiddenException('You do not have permission to check out this booking');
+      throw new ForbiddenException(
+        'You do not have permission to check out this booking',
+      );
     }
 
     if (booking.status !== 'CHECKED_IN') {
-      throw new BadRequestException(`Only CHECKED_IN bookings can be checked out (current status: ${booking.status})`);
+      throw new BadRequestException(
+        `Only CHECKED_IN bookings can be checked out (current status: ${booking.status})`,
+      );
     }
 
     const checkedOutBooking = this.bookingsRepository.checkOut(id);
@@ -159,5 +168,23 @@ export class BookingsService {
         ...booking,
         hotel: hotelById.get(booking.hotelId),
       }));
+  }
+
+  findForTraveller(travellerId: string | undefined) {
+    if (!travellerId) {
+      throw new ForbiddenException(
+        'x-user-id header is required for TRAVELLER',
+      );
+    }
+
+    const bookings = this.bookingsRepository.findByTravellerId(travellerId);
+
+    return bookings.map((booking) => {
+      const hotel = this.hotelsRepository.findById(booking.hotelId);
+      return {
+        ...booking,
+        hotel: hotel,
+      };
+    });
   }
 }

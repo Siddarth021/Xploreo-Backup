@@ -27,11 +27,19 @@ export class ExperienceBookingsController {
   }
 
   @Get()
-  @Roles(Role.TRAVELLER_ACTOR, Role.TRAVELLER, Role.ADMIN, Role.EXPERIENCE_PARTNER)
+  @Roles(
+    Role.TRAVELLER_ACTOR,
+    Role.TRAVELLER,
+    Role.ADMIN,
+    Role.EXPERIENCE_PARTNER,
+  )
   @ApiOperation({ summary: 'View experience bookings' })
   @ApiReadEndpoint()
   findAll(@Req() req: any) {
-    if (req.user?.role === Role.TRAVELLER_ACTOR || req.user?.role === Role.TRAVELLER) {
+    if (
+      req.user?.role === Role.TRAVELLER_ACTOR ||
+      req.user?.role === Role.TRAVELLER
+    ) {
       return this.experienceBookingsService.findForTraveller(req.user?.userId);
     }
     if (req.user?.role === Role.EXPERIENCE_PARTNER) {

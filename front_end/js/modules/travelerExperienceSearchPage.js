@@ -318,7 +318,7 @@ function persistSelectedExperience(item) {
 
 function getSearchValues() {
     const fallback = {
-        destination: "Mumbai",
+        destination: "",
         activityDate: ""
     };
 

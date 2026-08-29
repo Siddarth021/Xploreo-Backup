@@ -50,8 +50,25 @@ export const API_ENDPOINTS = Object.freeze({
   // Location
   location: "/location",
 
+  // Guide (new workflow)
+  guideApplications: "/guide-applications",
+  guideApplicationsByGuide: (guideId) => `/guide-applications/guide/${guideId}`,
+  guideApplicationsByPlan: (planId) => `/guide-applications/plan/${planId}`,
+  guideAvailableForPlan: (planId) => `/guide-applications/plan/${planId}/available`,
+  guideAssignments: "/guide-assignments",
+  guideAssignmentsByGuide: (guideId) => `/guide-assignments/guide/${guideId}`,
+  guideAssignmentsByTraveller: (travellerId) => `/guide-assignments/traveller/${travellerId}`,
+  guideAssignmentConfirm: (id) => `/guide-assignments/${id}/confirm`,
+  guideAssignmentReject: (id) => `/guide-assignments/${id}/reject`,
+  guideAssignmentChangeGuide: (id) => `/guide-assignments/${id}/change-guide`,
+  guideAssignmentCancel: (id) => `/guide-assignments/${id}/cancel`,
+
   // Cities
   cities: "/cities",
+
+  // Reviews
+  reviews: "/reviews",
+  reviewsByTarget: (type, id) => `/reviews?targetType=${type}&targetId=${id}`,
 });
 
 export const API_SESSION_KEY = "xploreo_api_session";

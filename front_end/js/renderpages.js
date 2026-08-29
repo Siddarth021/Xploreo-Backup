@@ -29,6 +29,8 @@ import { initTicketManagement } from "./modules/tech_tickets.js?v=phase3-tickets
 import { renderTechTicketDetail } from "./modules/tech_ticket_detail.js";
 import { renderNtaDashboard } from "./modules/ntaDashboard.js";
 import { initNtaPlans } from "./modules/ntaPlans.js";
+import { renderGuideDashboard } from "./modules/guide_dashboard.js";
+import { initNtaGuideApplications } from "./modules/nta_guide_applications.js";
 
 // Traveler modules
 import { renderTravelerDashboard as renderTravellerDashboard } from "./modules/travelerDashboard.js?v=traveller-ui-6";
@@ -125,14 +127,12 @@ export async function renderPageContent(user) {
       return;
     }
   }
-  if (user.role === "guide" && page === "dashboard.html") {
-    renderdashboard("main", user)
-    const main = document.getElementById("main");
-    const admin = document.getElementById("admin-dashboard");
-    const hotel = document.getElementById("hotel-dashboard");
-    if (main) main.style.display = "block";
-    if (admin) admin.style.display = "none";
-    if (hotel) hotel.style.display = "none";
+  if (user.role === "guide" && (page === "dashboard.html" || page === "guide.html")) {
+    showOnlyDashboard("main");
+    await renderSafely("Render guide dashboard", () =>
+      renderGuideDashboard("main", user),
+    );
+    return;
   } else if (user.role === "superadmin" && page === "dashboard.html") {
     renderAdminDashboard("admin-dashboard");
     const main = document.getElementById("main");
@@ -291,6 +291,13 @@ export async function renderPageContent(user) {
     renderNtaDashboard("nta-dashboard");
   } else if (user.role === "nontechadmin" && page === "nta_plans.html") {
     initNtaPlans();
+  } else if (
+    (user.role === "nontechadmin" || user.role === "superadmin") &&
+    page === "nta_guide_applications.html"
+  ) {
+    const main = document.getElementById("main");
+    if (main) main.style.display = "block";
+    initNtaGuideApplications("main");
   }
 }
 

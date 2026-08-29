@@ -46,4 +46,14 @@ export class CreateTravellerDto {
   @IsArray()
   @IsEnum(Interest, { each: true })
   interests?: Interest[];
+
+  @ApiPropertyOptional({ example: 'Male' })
+  @IsOptional()
+  @IsString()
+  gender?: string;
+
+  @ApiPropertyOptional({ example: '1990-01-01' })
+  @IsOptional()
+  @IsString()
+  dob?: string;
 }

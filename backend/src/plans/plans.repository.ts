@@ -137,6 +137,52 @@ export class PlansRepository {
         },
       ),
     },
+    {
+      id: 'plan-3',
+      title: 'Mumbai City & Bollywood Tour',
+      description: 'Experience the city of dreams with an exclusive Bollywood tour and heritage walk.',
+      originCity: 'Pune',
+      destination: 'Mumbai',
+      durationNights: 3,
+      pricePerPerson: 150,
+      hotelStars: 5,
+      includesFlight: false,
+      image: '',
+      tags: ['City', 'Bollywood', 'Heritage', 'Mumbai'],
+      itinerary: normalizeStructuredItinerary(
+        [
+          {
+            day: 'Day 1',
+            title: 'Arrival in Mumbai & Marine Drive',
+            detail: 'Arrive in Mumbai and check in to your South Mumbai hotel. Evening stroll along Marine Drive.',
+          },
+          {
+            day: 'Day 2',
+            title: 'Bollywood Studio Tour',
+            detail: 'Full day exclusive behind-the-scenes Bollywood studio tour and dance workshop.',
+          },
+          {
+            day: 'Day 3',
+            title: 'Heritage Walk & Shopping',
+            detail: 'Morning heritage walk exploring CST and Colaba. Afternoon shopping at Colaba Causeway.',
+          },
+          {
+            day: 'Day 4',
+            title: 'Departure',
+            detail: 'Check out and depart for your onward journey.',
+          },
+        ],
+        {
+          idPrefix: 'plan-3',
+          originCity: 'Pune',
+          destination: 'Mumbai',
+          startDate: '2026-09-10',
+          endDate: '2026-09-13',
+          includesFlight: false,
+          hotelStars: 5,
+        },
+      ),
+    },
   ];
 
   create(

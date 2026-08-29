@@ -35,6 +35,16 @@ export class AuthRepository implements OnModuleInit {
         status: 'active' as const,
       },
       {
+        userId: '10002',
+        username: 'sidd',
+        password: 'sidd@123',
+        role: 'guide' as Auth['role'],
+        name: 'Aman Sidd',
+        email: 'aman@gmail.com',
+        phone: '9876543211',
+        status: 'active' as const,
+      },
+      {
         userId: '00001',
         username: 'rahul_v',
         password: 'rahul@123',

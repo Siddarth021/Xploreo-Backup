@@ -75,7 +75,22 @@ function getTravelerProfilePreset(user) {
         return clone(presets[user.id]);
     }
 
-    const fallback = clone(travelerWorkspaceSeed.profile);
+    const fallback = clone(travelerWorkspaceSeed.profile || {
+        fullName: "Alex Rivera",
+        email: "alex@xploreo.com",
+        phone: "+91 91234 56789",
+        location: "Mumbai, Maharashtra",
+        language: "English (US)",
+        gender: "Female",
+        dob: "1995-01-01",
+        bio: "Curious explorer...",
+        reputation: "Explorer",
+        level: 1,
+        totalTrips: 0,
+        countries: 0,
+        interestPreferences: [],
+        hobbies: []
+    });
 
     if (!user) {
         return fallback;
@@ -120,7 +135,7 @@ export function seedTravelerWorkspace() {
     const currentUser = ensureTravelerSession();
 
     if (!localStorage.getItem(STORAGE_KEYS.plans)) {
-        localStorage.setItem(STORAGE_KEYS.plans, JSON.stringify(clone(travelerWorkspaceSeed.plans)));
+        localStorage.setItem(STORAGE_KEYS.plans, JSON.stringify(clone(travelerWorkspaceSeed.plans || [])));
     }
 
     // Bookings are now seeded via app.js initializeData into "tours"
@@ -128,6 +143,7 @@ export function seedTravelerWorkspace() {
     const storedProfile = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) || "null");
     const nextProfile = getTravelerProfilePreset(currentUser);
     const hasLegacyDefaultProfile = storedProfile
+        && travelerWorkspaceSeed.profile
         && storedProfile.fullName === travelerWorkspaceSeed.profile.fullName
         && storedProfile.email === travelerWorkspaceSeed.profile.email;
 

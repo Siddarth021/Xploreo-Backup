@@ -192,14 +192,6 @@ export function renderTravelerDashboard(containerId, user) {
                     <div class="search-panel" id="packages-panel">
                         <div class="search-inputs-row" style="margin-top: 20px;">
                             <div class="input-group">
-                                <label>From City</label>
-                                <div class="input-wrapper">
-                                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <input type="text" id="package-from" placeholder="Your city" value="${searchState.values.packages.fromCity}">
-                                </div>
-                                <span class="search-field-error" id="package-from-error"></span>
-                            </div>
-                            <div class="input-group">
                                 <label>Destination</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
@@ -214,14 +206,6 @@ export function renderTravelerDashboard(containerId, user) {
                                     <input type="date" id="package-departure" value="${searchState.values.packages.departureDate}" min="${getTodayDateString()}">
                                 </div>
                                 <span class="search-field-error" id="package-departure-error"></span>
-                            </div>
-                            <div class="input-group">
-                                <label>Rooms</label>
-                                <div class="input-wrapper">
-                                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    <input type="number" id="package-rooms" min="1" max="8" step="1" inputmode="numeric" placeholder="1" value="${searchState.values.packages.rooms || "1"}">
-                                </div>
-                                <span class="search-field-error" id="package-rooms-error"></span>
                             </div>
                             <div class="input-group">
                                 <label>Guests</label>
@@ -622,27 +606,13 @@ function attachDashboardAutocomplete() {
     attachLocationAutocomplete("hotel-city",  hotelCities);
     attachLocationAutocomplete("experience-destination", expDests);
 
-    // Packages — cross-field dynamic filtering so no dead-end suggestions
-    const fromEl = document.getElementById("package-from");
+    // Packages — dynamic filtering so no dead-end suggestions
     const destEl = document.getElementById("package-destination");
 
-    function getPkgFromSuggestions() {
-        const currentDest = (destEl ? destEl.value : "").trim().toLowerCase();
-        const filtered = currentDest
-            ? packages.filter(p => p.destination.toLowerCase().includes(currentDest))
-            : packages;
-        return [...new Set(filtered.map(p => p.origin).filter(Boolean))].sort();
-    }
-
     function getPkgDestSuggestions() {
-        const currentFrom = (fromEl ? fromEl.value : "").trim().toLowerCase();
-        const filtered = currentFrom
-            ? packages.filter(p => p.origin.toLowerCase().includes(currentFrom))
-            : packages;
-        return [...new Set(filtered.map(p => p.destination).filter(Boolean))].sort();
+        return [...new Set(packages.map(p => p.destination).filter(Boolean))].sort();
     }
 
-    attachLocationAutocomplete("package-from",        getPkgFromSuggestions);
     attachLocationAutocomplete("package-destination", getPkgDestSuggestions);
 }
 
@@ -659,7 +629,6 @@ function bindSearchActions() {
     bindIntegerField("flight-travellers", 1, 12);
     bindIntegerField("hotel-rooms", 1, 8);
     bindIntegerField("hotel-guests", 1, 20);
-    bindIntegerField("package-rooms", 1, 8);
     bindIntegerField("package-guests", 1, 20);
     bindDateRangeField("flight-departure", "flight-return");
     bindDateRangeField("hotel-checkin", "hotel-checkout");
@@ -713,7 +682,6 @@ function persistSearchValues() {
     const flightTravellers = readNumericValue("flight-travellers", "1");
     let hotelRooms = Number(readNumericValue("hotel-rooms", "1"));
     let hotelGuests = Number(readNumericValue("hotel-guests", "2"));
-    let packageRooms = Number(readNumericValue("package-rooms", "1"));
     let packageGuests = Number(readNumericValue("package-guests", "2"));
 
     if (hotelGuests > hotelRooms * 4) {
@@ -721,13 +689,6 @@ function persistSearchValues() {
         const roomsEl = document.getElementById("hotel-rooms");
         if (roomsEl) roomsEl.value = hotelRooms;
         showToast(`Rooms adjusted to ${hotelRooms} to accommodate ${hotelGuests} guests (max 4 per room)`);
-    }
-
-    if (packageGuests > packageRooms * 4) {
-        packageRooms = Math.ceil(packageGuests / 4);
-        const roomsEl = document.getElementById("package-rooms");
-        if (roomsEl) roomsEl.value = packageRooms;
-        showToast(`Rooms adjusted to ${packageRooms} to accommodate ${packageGuests} guests (max 4 per room)`);
     }
 
     searchState.values.flights = {
@@ -748,12 +709,10 @@ function persistSearchValues() {
     };
 
     searchState.values.packages = {
-        fromCity: readValue("package-from"),
         destination: readValue("package-destination"),
         departureDate: readValue("package-departure"),
-        rooms: String(packageRooms),
         guestCount: String(packageGuests),
-        guests: formatRoomsGuests(String(packageRooms), String(packageGuests))
+        guests: formatRoomsGuests("1", String(packageGuests))
     };
 
     searchState.values.experiences = {
@@ -817,19 +776,17 @@ function getSearchOutcome(tab) {
         const values = searchState.values.packages;
         const errors = {};
 
-        if (!values.fromCity) errors["package-from-error"] = "Enter a departure city";
         if (!values.destination) errors["package-destination-error"] = "Choose a destination";
         if (!values.departureDate) errors["package-departure-error"] = "Choose a departure date";
-        if (!values.rooms) errors["package-rooms-error"] = "Add rooms";
         if (!values.guestCount) errors["package-guests-error"] = "Add guests";
 
         const results = travelerData.searchCatalog.packages.filter(item =>
-            includesText(item.origin, values.fromCity) && includesText(item.destination, values.destination)
+            includesText(item.destination, values.destination) || includesText(item.title, values.destination)
         );
 
         return {
             errors,
-            summary: `Holiday packages from ${values.fromCity} to ${values.destination}`,
+            summary: `Holiday packages to ${values.destination}`,
             results
         };
     }

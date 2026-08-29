@@ -24,7 +24,7 @@ import { ReviewsService } from './reviews.service';
 
 @ApiTags('Reviews')
 @ApiProtectedResource()
-@Roles(Role.TRAVELLER, Role.GUIDE, Role.SUPERADMIN, Role.NONTECHADMIN)
+@Roles(Role.TRAVELLER, Role.TRAVELLER_ACTOR, Role.GUIDE, Role.SUPERADMIN, Role.NONTECHADMIN)
 @Controller('reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}

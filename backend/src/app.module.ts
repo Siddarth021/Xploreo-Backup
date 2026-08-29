@@ -24,6 +24,8 @@ import { ExperienceBookingsModule } from './experience-bookings/experience-booki
 import { TicketsModule } from './tickets/tickets.module';
 import { LoggerModule } from './common/logger/logger.module';
 import { MiddlewareModule } from './common/middleware/middleware.module';
+import { GuideApplicationsModule } from './guide-applications/guide-applications.module';
+import { GuideAssignmentsModule } from './guide-assignments/guide-assignments.module';
 import { UploadModule } from './upload/upload.module';
 
 @Module({
@@ -55,6 +57,8 @@ import { UploadModule } from './upload/upload.module';
     LocationModule,
     CitiesModule,
     UploadModule,
+    GuideApplicationsModule,
+    GuideAssignmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

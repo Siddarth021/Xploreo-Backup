@@ -346,7 +346,8 @@ function normalizeBookingRecord(record) {
         travelerCount: travelers.length,
         totalPrice: calculateTravelerBookingTotal(packageData, travelers.length || 1),
         updatedAt: record.updatedAt || "",
-        confirmedAt: record.confirmedAt || ""
+        confirmedAt: record.confirmedAt || "",
+        assignedGuide: record.assignedGuide || null
     };
 }
 

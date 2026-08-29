@@ -181,14 +181,7 @@ export async function renderTravelerDashboard(containerId, user) {
                                 </div>
                                 <span class="search-field-error" id="package-departure-error"></span>
                             </div>
-                            <div class="input-group">
-                                <label>Rooms</label>
-                                <div class="input-wrapper">
-                                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    <input type="number" id="package-rooms" min="1" max="8" step="1" inputmode="numeric" placeholder="1" value="${searchState.values.packages.rooms || "1"}">
-                                </div>
-                                <span class="search-field-error" id="package-rooms-error"></span>
-                            </div>
+
                             <div class="input-group">
                                 <label>Guests</label>
                                 <div class="input-wrapper">

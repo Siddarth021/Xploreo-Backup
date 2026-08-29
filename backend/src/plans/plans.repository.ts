@@ -5,7 +5,179 @@ import { normalizeStructuredItinerary } from '../common/utils/itinerary-mapper';
 
 @Injectable()
 export class PlansRepository {
-  private plans: Plan[] = [];
+  private plans: Plan[] = [
+    {
+      id: 'plan-1',
+      title: 'Kerala Backwaters Escape',
+      description:
+        'Relax in the serene backwaters of Alleppey with houseboat stays.',
+      originCity: 'Bangalore',
+      destination: 'Alleppey',
+      durationNights: 5,
+      pricePerPerson: 280,
+      hotelStars: 4,
+      includesFlight: false,
+      image: '',
+      tags: ['Backwaters', 'Relaxation', 'Kerala'],
+      itinerary: normalizeStructuredItinerary(
+        [
+          {
+            day: 'Day 1',
+            title: 'Arrival at COK & Transfer to Alleppey',
+            detail:
+              'Meet your driver at Cochin International Airport (COK). Transfer via NH66 (approx 2.5 hours) to Alleppey. Check in to your premium houseboat by 12:30 PM.',
+          },
+          {
+            day: 'Day 2',
+            title: 'Vembanad Lake Cruise',
+            detail:
+              'Full day serene cruise through the backwater canals. Enjoy traditional Kerala lunch on board.',
+          },
+          {
+            day: 'Day 3',
+            title: 'Kumarakom Village Tour',
+            detail:
+              'Disembark and transfer to Kumarakom. Visit the Kumarakom Bird Sanctuary.',
+          },
+          {
+            day: 'Day 4',
+            title: 'Leisure & Ayurvedic Spa',
+            detail:
+              'Relax at your resort with a complimentary 60-minute Ayurvedic spa session.',
+          },
+          {
+            day: 'Day 5',
+            title: 'Departure Transfer',
+            detail:
+              'Check out at 10:00 AM and transfer back to COK airport for your return flight.',
+          },
+        ],
+        {
+          idPrefix: 'plan-1',
+          originCity: 'Bangalore',
+          destination: 'Alleppey',
+          startDate: '2026-07-01',
+          endDate: '2026-07-06',
+          includesFlight: false,
+          hotelStars: 4,
+        },
+      ),
+    },
+    {
+      id: 'plan-2',
+      title: 'Rajasthan Heritage Tour',
+      description: 'Explore the forts, palaces and culture of the royal state.',
+      originCity: 'Delhi',
+      destination: 'Jaipur',
+      durationNights: 7,
+      pricePerPerson: 450,
+      hotelStars: 5,
+      includesFlight: false,
+      image: '',
+      tags: ['Heritage', 'Culture', 'Rajasthan'],
+      itinerary: normalizeStructuredItinerary(
+        [
+          {
+            day: 'Day 1',
+            title: 'Arrival at Jaipur (JAI)',
+            detail:
+              'Pick up from Jaipur Junction railway station or Jaipur Airport. Transfer to your heritage hotel and check in by 2:00 PM.',
+          },
+          {
+            day: 'Day 2',
+            title: 'Amber Fort & Jal Mahal',
+            detail:
+              'Morning exploration of the grand Amber Fort. Afternoon photo stop at the picturesque Jal Mahal.',
+          },
+          {
+            day: 'Day 3',
+            title: 'City Palace & Hawa Mahal',
+            detail:
+              'Discover the pink city architecture, Jantar Mantar, and shop at the local bazaars.',
+          },
+          {
+            day: 'Day 4',
+            title: 'Drive to Jodhpur',
+            detail:
+              'Check out after breakfast and drive to Jodhpur via NH25 (approx 6 hours). Evening check-in at hotel.',
+          },
+          {
+            day: 'Day 5',
+            title: 'Mehrangarh Fort',
+            detail:
+              'Guided tour of the majestic Mehrangarh Fort and the marble cenotaph at Jaswant Thada.',
+          },
+          {
+            day: 'Day 6',
+            title: 'Bishnoi Village Safari',
+            detail:
+              'Experience authentic local culture and wildlife on a jeep safari through Bishnoi village.',
+          },
+          {
+            day: 'Day 7',
+            title: 'Departure Transfer',
+            detail:
+              'Check out by 11:00 AM. Transfer to Jodhpur Airport (JDH) or Railway Station.',
+          },
+        ],
+        {
+          idPrefix: 'plan-2',
+          originCity: 'Delhi',
+          destination: 'Jaipur',
+          startDate: '2026-08-01',
+          endDate: '2026-08-08',
+          includesFlight: false,
+          hotelStars: 5,
+        },
+      ),
+    },
+    {
+      id: 'plan-3',
+      title: 'Mumbai City & Bollywood Tour',
+      description: 'Experience the city of dreams with an exclusive Bollywood tour and heritage walk.',
+      originCity: 'Pune',
+      destination: 'Mumbai',
+      durationNights: 3,
+      pricePerPerson: 150,
+      hotelStars: 5,
+      includesFlight: false,
+      image: '',
+      tags: ['City', 'Bollywood', 'Heritage', 'Mumbai'],
+      itinerary: normalizeStructuredItinerary(
+        [
+          {
+            day: 'Day 1',
+            title: 'Arrival in Mumbai & Marine Drive',
+            detail: 'Arrive in Mumbai and check in to your South Mumbai hotel. Evening stroll along Marine Drive.',
+          },
+          {
+            day: 'Day 2',
+            title: 'Bollywood Studio Tour',
+            detail: 'Full day exclusive behind-the-scenes Bollywood studio tour and dance workshop.',
+          },
+          {
+            day: 'Day 3',
+            title: 'Heritage Walk & Shopping',
+            detail: 'Morning heritage walk exploring CST and Colaba. Afternoon shopping at Colaba Causeway.',
+          },
+          {
+            day: 'Day 4',
+            title: 'Departure',
+            detail: 'Check out and depart for your onward journey.',
+          },
+        ],
+        {
+          idPrefix: 'plan-3',
+          originCity: 'Pune',
+          destination: 'Mumbai',
+          startDate: '2026-09-10',
+          endDate: '2026-09-13',
+          includesFlight: false,
+          hotelStars: 5,
+        },
+      ),
+    },
+  ];
 
   create(
     data: Partial<Omit<Plan, 'itinerary'>> & { itinerary?: unknown },

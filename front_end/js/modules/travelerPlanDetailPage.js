@@ -1,4 +1,7 @@
 import { travelerData } from "../api/legacyData.js";
+import { fetchAvailableGuidesForPlan, createGuideAssignment, changeGuideOnAssignment, cancelGuideAssignment } from "../api/services.js";
+import { getCurrentUser } from "../api/session.js";
+
 
 const SELECTED_PLAN_KEY = "traveler_selected_plan";
 const SELECTED_FLIGHT_KEY = "traveler_selected_flight";
@@ -388,50 +391,53 @@ function bindEvents(container, state) {
     });
 
     container.querySelector("#plan-detail-confirm-btn")?.addEventListener("click", () => {
-        // Save booking to My Trips
-        try {
-            const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
-            const customerId = currentUser?.id || "traveler-fallback";
-            const plan = state.plan;
-            const bookingId = String(plan.bookingId || plan.id);
+        // Show guide selection popup before confirming booking
+        showGuideSelectionPopup(state.plan, () => {
+            // After popup is resolved (guide selected or skipped), save booking and navigate
+            try {
+                const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+                const customerId = currentUser?.id || "traveler-fallback";
+                const plan = state.plan;
+                const bookingId = String(plan.bookingId || plan.id);
 
-            const tripRecord = {
-                id: bookingId,
-                bookingId,
-                customerId,
-                customer: currentUser?.name || "Traveler",
-                title: plan.title,
-                destination: plan.location,
-                location: plan.location,
-                dateTime: `${plan.startDate} | 09:00 AM`,
-                dateRange: `${plan.startDate} - ${plan.endDate}`,
-                status: "Upcoming",
-                type: "Tour",
-                planId: plan.id,
-                guests: 2,
-                amount: plan.payments?.total || 0,
-                duration: `${plan.days} days`,
-                coverImage: plan.image || "",
-                image: plan.image || "",
-                plan_iternary: plan.tags || []
-            };
+                const tripRecord = {
+                    id: bookingId,
+                    bookingId,
+                    customerId,
+                    customer: currentUser?.name || "Traveler",
+                    title: plan.title,
+                    destination: plan.location,
+                    location: plan.location,
+                    dateTime: `${plan.startDate} | 09:00 AM`,
+                    dateRange: `${plan.startDate} - ${plan.endDate}`,
+                    status: "Upcoming",
+                    type: "Tour",
+                    planId: plan.id,
+                    guests: 2,
+                    amount: plan.payments?.total || 0,
+                    duration: `${plan.days} days`,
+                    coverImage: plan.image || "",
+                    image: plan.image || "",
+                    plan_iternary: plan.tags || []
+                };
 
-            const allTours = JSON.parse(localStorage.getItem("tours") || "[]");
-            if (!allTours.find(t => String(t.id) === bookingId || String(t.bookingId) === bookingId)) {
-                allTours.push(tripRecord);
-                localStorage.setItem("tours", JSON.stringify(allTours));
+                const allTours = JSON.parse(localStorage.getItem("tours") || "[]");
+                if (!allTours.find(t => String(t.id) === bookingId || String(t.bookingId) === bookingId)) {
+                    allTours.push(tripRecord);
+                    localStorage.setItem("tours", JSON.stringify(allTours));
+                }
+
+                const myTrips = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]");
+                if (!myTrips.find(t => String(t.id) === bookingId || String(t.bookingId) === bookingId)) {
+                    myTrips.push(tripRecord);
+                    localStorage.setItem("traveler_my_trips", JSON.stringify(myTrips));
+                }
+            } catch (error) {
+                console.warn("Could not save plan booking to traveler trips", error);
             }
 
-            const myTrips = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]");
-            if (!myTrips.find(t => String(t.id) === bookingId || String(t.bookingId) === bookingId)) {
-                myTrips.push(tripRecord);
-                localStorage.setItem("traveler_my_trips", JSON.stringify(myTrips));
-            }
-        } catch (error) {
-            console.warn("Could not save plan booking to traveler trips", error);
-        }
-
-        window.location.href = `./traveller_booking-confirmation.html?plan=${encodeURIComponent(state.plan.id)}`;
+            window.location.href = `./traveller_booking-confirmation.html?plan=${encodeURIComponent(state.plan.id)}`;
+        });
     });
 
     container.querySelectorAll("[data-top-action]").forEach((button) => {
@@ -1391,4 +1397,150 @@ function breakdown(label, amount, emphasis = false) {
 
 function paymentHistory(title, date, amount, status) {
     return { title, date, amount, status };
+}
+
+async function showGuideSelectionPopup(plan, onComplete, travelerCount = 1) {
+    // 1. Create modal markup
+    const backdrop = document.createElement("div");
+    backdrop.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        font-family: 'Inter', sans-serif;
+    `;
+
+    backdrop.innerHTML = `
+        <div style="background: #fff; border-radius: 16px; padding: 28px; width: 500px; max-width: 90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #1e293b;">Would you like to add a Guide?</h3>
+                <span id="g-close-btn" style="cursor: pointer; font-size: 20px; color: #94a3b8; font-weight: bold;">&times;</span>
+            </div>
+            <p style="margin: 0; font-size: 14px; color: #64748b; line-height: 1.5;">Make your journey memorable by booking a local expert guide. Pricing is per traveller.</p>
+            <div id="g-list-container" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; margin: 10px 0;">
+                <p style="color: #64748b; font-size: 14px;">Loading available guides...</p>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+                <button id="g-btn-skip" style="padding: 10px 18px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-weight: 600; color: #475569; cursor: pointer; transition: background 0.2s;">No, thanks</button>
+                <button id="g-btn-confirm" style="padding: 10px 18px; background: #2563eb; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; color: #fff; cursor: pointer; transition: background 0.2s;" disabled>Select Guide</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(backdrop);
+
+    const listContainer = backdrop.querySelector("#g-list-container");
+    const confirmBtn = backdrop.querySelector("#g-btn-confirm");
+    const skipBtn = backdrop.querySelector("#g-btn-skip");
+    const closeBtn = backdrop.querySelector("#g-close-btn");
+
+    let selectedGuide = null;
+
+    // Fetch available guides from backend
+    try {
+        const guides = await fetchAvailableGuidesForPlan(plan.id);
+        if (!guides || !guides.length) {
+            listContainer.innerHTML = `
+                <div style="text-align: center; padding: 20px; border: 1.5px dashed #e2e8f0; border-radius: 10px; color: #94a3b8; font-size: 14px;">
+                    No guides are currently available for this package's location.
+                </div>
+            `;
+        } else {
+            listContainer.innerHTML = guides.map(g => `
+                <div class="guide-item-card" data-guide-id="${g.guideId}" data-price="${g.guidePricePerPerson}" style="border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 14px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <strong style="font-size: 15px; color: #1e293b;">${g.fname} ${g.lname}</strong>
+                            <span style="font-size: 12px; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 12px; margin-left: 6px; font-weight: 600;">⭐ New</span>
+                        </div>
+                        <strong style="color: #1e293b; font-size: 15px;">₹${g.guidePricePerPerson}</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 12px; color: #64748b; font-style: italic;">"${g.bio}"</p>
+                    <div style="font-size: 12px; color: #475569; display: flex; justify-content: space-between;">
+                        <span>💼 ${g.years_exp} yrs exp</span>
+                        <span>🗣️ ${g.lang_spoken.join(", ")}</span>
+                    </div>
+                </div>
+            `).join("");
+
+            // Add styles to guide card selection
+            const style = document.createElement("style");
+            style.textContent = `
+                .guide-item-card:hover { border-color: #cbd5e1; background: #f8fafc; }
+                .guide-item-card.selected { border-color: #2563eb; background: #f0fdf4; box-shadow: 0 0 0 1px #2563eb; }
+            `;
+            document.head.appendChild(style);
+
+            // Selection listener
+            listContainer.querySelectorAll(".guide-item-card").forEach(card => {
+                card.addEventListener("click", () => {
+                    listContainer.querySelectorAll(".guide-item-card").forEach(c => c.classList.remove("selected"));
+                    card.classList.add("selected");
+                    selectedGuide = {
+                        id: card.dataset.guideId,
+                        price: parseFloat(card.dataset.price)
+                    };
+                    confirmBtn.disabled = false;
+                });
+            });
+        }
+    } catch (e) {
+        console.warn("Error loading guides", e);
+        listContainer.innerHTML = `<p style="color: #dc2626; font-size: 14px;">Error checking available guides. You can proceed without one.</p>`;
+    }
+
+    const cleanup = () => {
+        backdrop.remove();
+    };
+
+    closeBtn.addEventListener("click", () => {
+        cleanup();
+        onComplete();
+    });
+
+    skipBtn.addEventListener("click", () => {
+        cleanup();
+        onComplete();
+    });
+
+    confirmBtn.addEventListener("click", async () => {
+        if (selectedGuide) {
+            try {
+                // Book the guide on backend
+                const currentUser = getCurrentUser();
+                await createGuideAssignment({
+                    planId: plan.id,
+                    guideId: selectedGuide.id,
+                    guidePricePerPerson: selectedGuide.price,
+                    paidAmount: selectedGuide.price,
+                    travelerCount: travelerCount || plan.occupancy?.guestCount || plan.travelers || plan.guestCount || 1,
+                    startDate: plan.startDate || plan.date || new Date().toISOString().split('T')[0],
+                    endDate: plan.endDate || plan.date || new Date().toISOString().split('T')[0]
+                });
+                
+                // Add guide pricing info to plan so detail total is updated
+                plan.payments = plan.payments || {};
+                plan.payments.guideFee = selectedGuide.price;
+                plan.payments.total = (plan.payments.total || plan.pricePerPerson || 0) + selectedGuide.price;
+            } catch (err) {
+                console.error("Failed to assign guide", err);
+                const mHtml = `<div id="gd-err-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000; font-family: 'Inter', sans-serif;">
+                  <div style="background: white; border-radius: 8px; width: 320px; padding: 24px; text-align: center; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
+                    <div style="font-size: 48px; margin-bottom: 16px;">❌</div>
+                    <div style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 8px;">Failed to book guide</div>
+                    <div style="font-size: 14px; color: #4b5563; margin-bottom: 24px;">${err.message || "Please try again."}</div>
+                    <button onclick="document.getElementById('gd-err-modal').remove()" style="background: #dc2626; color: white; border: none; padding: 10px 24px; border-radius: 6px; font-weight: 500; cursor: pointer; width: 100%;">Close</button>
+                  </div>
+                </div>`;
+                document.body.insertAdjacentHTML('beforeend', mHtml);
+                return;
+            }
+        }
+        cleanup();
+        onComplete();
+    });
 }

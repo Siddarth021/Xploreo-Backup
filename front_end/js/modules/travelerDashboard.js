@@ -1,4 +1,5 @@
 import { travelerData } from "../api/legacyData.js";
+import { fetchHotels, fetchExperiences, fetchPlans } from "../api/services.js";
 import { attachLocationAutocomplete, getTodayDateString, extractUniqueLocations, extractFlightOrigins, extractFlightDestinations } from "../utils/locationAutocomplete.js";
 
 // Heart SVG helper
@@ -40,7 +41,6 @@ const searchState = {
             guests: "1 Room, 2 Guests"
         },
         packages: {
-            fromCity: "",
             destination: "",
             departureDate: "",
             rooms: "1",
@@ -64,9 +64,28 @@ function buildFallbackImg(primaryImage, fallbackImage, altText, extraAttributes 
     return `<img src="${primaryImage}" alt="${altText}" onerror="this.onerror=null;this.src='${fallbackImage}';" ${extraAttributes}>`;
 }
 
-export function renderTravelerDashboard(containerId, user) {
+export async function renderTravelerDashboard(containerId, user) {
     const container = document.getElementById(containerId);
     if (!container) return;
+
+    // Fetch dynamic data for the autocomplete catalog
+    try {
+        const [hotels, experiences, packages] = await Promise.all([
+            fetchHotels().catch(() => []),
+            fetchExperiences().catch(() => []),
+            fetchPlans().catch(() => [])
+        ]);
+
+        const catalog = travelerData.searchCatalog || { flights: [], hotels: [], packages: [], experiences: [] };
+        travelerData.searchCatalog = {
+            ...catalog,
+            hotels: hotels || [],
+            experiences: experiences || [],
+            packages: packages || []
+        };
+    } catch (err) {
+        console.warn("Failed to load search catalog data:", err);
+    }
 
     const dashboardHTML = `
         <!-- HERO SECTION -->
@@ -101,7 +120,7 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>City</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <input type="text" id="hotel-city" placeholder="Enter city or hotel name" value="${searchState.values.hotels.city}">
+                                    <input type="text" id="hotel-city" placeholder="Enter city or hotel name" value="${searchState.values.hotels.city || ''}">
                                 </div>
                                 <span class="search-field-error" id="hotel-city-error"></span>
                             </div>
@@ -109,7 +128,7 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>Check-in</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="date" id="hotel-checkin" value="${searchState.values.hotels.checkIn}" min="${getTodayDateString()}">
+                                    <input type="date" id="hotel-checkin" value="${searchState.values.hotels.checkIn || ''}" min="${getTodayDateString()}">
                                 </div>
                                 <span class="search-field-error" id="hotel-checkin-error"></span>
                             </div>
@@ -117,7 +136,7 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>Check-out</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="date" id="hotel-checkout" value="${searchState.values.hotels.checkOut}" min="${getNextDateValue(searchState.values.hotels.checkIn) || getTodayDateString()}">
+                                    <input type="date" id="hotel-checkout" value="${searchState.values.hotels.checkOut || ''}" min="${getNextDateValue(searchState.values.hotels.checkIn) || getTodayDateString()}">
                                 </div>
                                 <span class="search-field-error" id="hotel-checkout-error"></span>
                             </div>
@@ -146,19 +165,11 @@ export function renderTravelerDashboard(containerId, user) {
 
                     <div class="search-panel" id="packages-panel">
                         <div class="search-inputs-row" style="margin-top: 20px;">
-                            <div class="input-group">
-                                <label>From City</label>
-                                <div class="input-wrapper">
-                                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <input type="text" id="package-from" placeholder="Your city" value="${searchState.values.packages.fromCity}">
-                                </div>
-                                <span class="search-field-error" id="package-from-error"></span>
-                            </div>
-                            <div class="input-group">
+                            <div class="input-group" style="flex: 2;">
                                 <label>Destination</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <input type="text" id="package-destination" placeholder="Where to?" value="${searchState.values.packages.destination}">
+                                    <input type="text" id="package-destination" placeholder="Where to?" value="${searchState.values.packages.destination || ''}">
                                 </div>
                                 <span class="search-field-error" id="package-destination-error"></span>
                             </div>
@@ -166,18 +177,11 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>Departure Date</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="date" id="package-departure" value="${searchState.values.packages.departureDate}" min="${getTodayDateString()}">
+                                    <input type="date" id="package-departure" value="${searchState.values.packages.departureDate || ''}" min="${getTodayDateString()}">
                                 </div>
                                 <span class="search-field-error" id="package-departure-error"></span>
                             </div>
-                            <div class="input-group">
-                                <label>Rooms</label>
-                                <div class="input-wrapper">
-                                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    <input type="number" id="package-rooms" min="1" max="8" step="1" inputmode="numeric" placeholder="1" value="${searchState.values.packages.rooms || "1"}">
-                                </div>
-                                <span class="search-field-error" id="package-rooms-error"></span>
-                            </div>
+
                             <div class="input-group">
                                 <label>Guests</label>
                                 <div class="input-wrapper">
@@ -199,7 +203,7 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>Destination</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <input type="text" id="experience-destination" placeholder="Where do you want to explore?" value="${searchState.values.experiences.destination}">
+                                    <input type="text" id="experience-destination" placeholder="Where do you want to explore?" value="${searchState.values.experiences.destination || ''}">
                                 </div>
                                 <span class="search-field-error" id="experience-destination-error"></span>
                             </div>
@@ -207,7 +211,7 @@ export function renderTravelerDashboard(containerId, user) {
                                 <label>Activity Date</label>
                                 <div class="input-wrapper">
                                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    <input type="date" id="experience-date" value="${searchState.values.experiences.activityDate}" min="${getTodayDateString()}">
+                                    <input type="date" id="experience-date" value="${searchState.values.experiences.activityDate || ''}" min="${getTodayDateString()}">
                                 </div>
                                 <span class="search-field-error" id="experience-date-error"></span>
                             </div>
@@ -417,12 +421,12 @@ function attachDashboardEvents() {
     // Search Tabs functionality
     const searchTabs = document.querySelectorAll(".search-tab");
     const searchPanels = document.querySelectorAll(".search-panel");
-    
+
     searchTabs.forEach(tab => {
         tab.addEventListener("click", () => {
             searchTabs.forEach(t => t.classList.remove("active"));
             tab.classList.add("active");
-            
+
             searchPanels.forEach(p => p.classList.remove("active"));
             const tabId = tab.getAttribute("data-tab");
             searchState.activeTab = tabId;
@@ -481,13 +485,13 @@ function attachDashboardEvents() {
             e.preventDefault();
             // Re-fetch wishlist for accuracy
             wishlist = JSON.parse(localStorage.getItem("traveler_wishlist") || "[]");
-            
+
             if (btn.style.color === "rgb(239, 68, 68)" || btn.style.color === "#EF4444") {
                 // Remove
                 btn.style.color = "#9CA3AF";
                 svg.style.fill = "none";
                 showToast("Removed from Wishlist");
-                
+
                 if (itemData.title) {
                     wishlist = wishlist.filter(i => i.title !== itemData.title);
                 }
@@ -496,7 +500,7 @@ function attachDashboardEvents() {
                 btn.style.color = "#EF4444";
                 svg.style.fill = "#EF4444";
                 showToast("Added to Wishlist");
-                
+
                 if (itemData.title && !wishlist.find(i => i.title === itemData.title)) {
                     wishlist.push(itemData);
                 }
@@ -563,7 +567,7 @@ function attachDashboardAutocomplete() {
 
     // Flights: From only gets origins, To only gets destinations — field-specific
     const flightOrigins = extractFlightOrigins(flights);
-    const flightDests   = extractFlightDestinations(flights);
+    const flightDests = extractFlightDestinations(flights);
 
     // Hotels: only hotel city names
     const hotelCities = extractUniqueLocations(travelerData.searchCatalog.hotels, ["city"]);
@@ -573,12 +577,11 @@ function attachDashboardAutocomplete() {
 
     // Flights & Hotels & Experiences — static lists (each field only has one relevant dimension)
     attachLocationAutocomplete("flight-from", flightOrigins.length ? flightOrigins : flightDests);
-    attachLocationAutocomplete("flight-to",   flightDests.length   ? flightDests   : flightOrigins);
-    attachLocationAutocomplete("hotel-city",  hotelCities);
+    attachLocationAutocomplete("flight-to", flightDests.length ? flightDests : flightOrigins);
+    attachLocationAutocomplete("hotel-city", hotelCities);
     attachLocationAutocomplete("experience-destination", expDests);
 
     // Packages — cross-field dynamic filtering so no dead-end suggestions
-    const fromEl = document.getElementById("package-from");
     const destEl = document.getElementById("package-destination");
 
     function getPkgFromSuggestions() {
@@ -597,7 +600,6 @@ function attachDashboardAutocomplete() {
         return [...new Set(filtered.map(p => p.destination).filter(Boolean))].sort();
     }
 
-    attachLocationAutocomplete("package-from",        getPkgFromSuggestions);
     attachLocationAutocomplete("package-destination", getPkgDestSuggestions);
 }
 
@@ -703,7 +705,6 @@ function persistSearchValues() {
     };
 
     searchState.values.packages = {
-        fromCity: readValue("package-from"),
         destination: readValue("package-destination"),
         departureDate: readValue("package-departure"),
         rooms: String(packageRooms),
@@ -772,19 +773,19 @@ function getSearchOutcome(tab) {
         const values = searchState.values.packages;
         const errors = {};
 
-        if (!values.fromCity) errors["package-from-error"] = "Enter a departure city";
+        if (!values.destination) errors["package-destination-error"] = "Enter a destination";
         if (!values.destination) errors["package-destination-error"] = "Choose a destination";
         if (!values.departureDate) errors["package-departure-error"] = "Choose a departure date";
         if (!values.rooms) errors["package-rooms-error"] = "Add rooms";
         if (!values.guestCount) errors["package-guests-error"] = "Add guests";
 
         const results = travelerData.searchCatalog.packages.filter(item =>
-            includesText(item.origin, values.fromCity) && includesText(item.destination, values.destination)
+            includesText(item.destination, values.destination)
         );
 
         return {
             errors,
-            summary: `Holiday packages from ${values.fromCity} to ${values.destination}`,
+            summary: `Holiday packages to ${values.destination}`,
             results
         };
     }
@@ -930,11 +931,24 @@ function initializeSearchState() {
     try {
         const parsed = JSON.parse(stored);
         Object.assign(searchState, parsed);
-        const flightValues = searchState.values?.flights || {};
-        const hotelValues = searchState.values?.hotels || {};
+        const cleanValues = (obj) => {
+            if (!obj) return {};
+            const cleanObj = { ...obj };
+            const scrubWords = ["undefined", "mumbai", "kerala", "goa", "jaipur", "delhi"];
+            for (const key in cleanObj) {
+                if (typeof cleanObj[key] === "string" && scrubWords.includes(cleanObj[key].toLowerCase())) {
+                    cleanObj[key] = "";
+                }
+            }
+            return cleanObj;
+        };
+
+        const flightValues = cleanValues(searchState.values?.flights);
+        const hotelValues = cleanValues(searchState.values?.hotels);
         const parsedHotelOccupancy = parseRoomsGuestsSummary(hotelValues.guests);
-        const packageValues = searchState.values?.packages || {};
+        const packageValues = cleanValues(searchState.values?.packages);
         const parsedPackageOccupancy = parseRoomsGuestsSummary(packageValues.guests);
+        const experienceValues = cleanValues(searchState.values?.experiences);
 
         searchState.values.flights = {
             ...flightValues,
@@ -958,6 +972,7 @@ function initializeSearchState() {
                 packageValues.guestCount || parsedPackageOccupancy.guestCount
             )
         };
+        searchState.values.experiences = experienceValues;
     } catch (error) {
         console.warn("Unable to restore traveler search state", error);
     }
@@ -975,16 +990,16 @@ export function showToast(message) {
         `;
         document.body.appendChild(toast);
     }
-    
+
     document.getElementById("toast-message").textContent = message;
-    
+
     toast.classList.remove("show");
-    
+
     // Force reflow
     void toast.offsetWidth;
-    
+
     toast.classList.add("show");
-    
+
     if (toast.timeoutId) clearTimeout(toast.timeoutId);
     toast.timeoutId = setTimeout(() => {
         toast.classList.remove("show");

@@ -59,15 +59,17 @@ export class ExperiencesService {
 
     const newBooked = dto.booked ?? current.booked;
     const newCapacity = dto.capacity ?? current.capacity;
-    
+
     if (dto.availability === undefined) {
       dto.availability =
         newBooked >= newCapacity
           ? ExperienceAvailability.NOT_AVAILABLE
           : ExperienceAvailability.AVAILABLE;
     }
-    
-    console.log(`[experiences.service] update ${id}: newBooked=${newBooked} (${typeof newBooked}), newCapacity=${newCapacity} (${typeof newCapacity}), dto.availability=${dto.availability}`);
+
+    console.log(
+      `[experiences.service] update ${id}: newBooked=${newBooked} (${typeof newBooked}), newCapacity=${newCapacity} (${typeof newCapacity}), dto.availability=${dto.availability}`,
+    );
 
     const updated = await this.expRepository.update(id, dto);
     return updated;

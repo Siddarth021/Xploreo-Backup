@@ -18,7 +18,7 @@ export async function renderTravelerPackageSearchPage(containerId) {
     const state = {
         searchValues: getSearchValues(),
         minDuration: 1,
-        flightMode: "with",
+        flightMode: "",
         maxBudget: 100000,
         selectedBudgets: new Set(),
         selectedCategories: new Set(),
@@ -91,7 +91,6 @@ export async function renderTravelerPackageSearchPage(containerId) {
             <main class="traveler-package-page">
                 <div class="traveler-package-frame">
                     <section class="traveler-package-toolbar">
-                        ${renderTextField("fromCity", "Starting From", state.searchValues.fromCity, "Your city")}
                         ${renderTextField("destination", "Going To", state.searchValues.destination, "Destination")}
                         ${renderDateField("departureDate", "Starting Date", state.searchValues.departureDate)}
                         ${renderOccupancyField(state)}
@@ -208,7 +207,8 @@ export async function renderTravelerPackageSearchPage(containerId) {
 
         container.querySelectorAll("[data-package-flight]").forEach((button) => {
             button.addEventListener("click", () => {
-                state.flightMode = button.dataset.packageFlight;
+                const mode = button.dataset.packageFlight;
+                state.flightMode = state.flightMode === mode ? "" : mode;
                 render();
             });
         });
@@ -239,15 +239,6 @@ export async function renderTravelerPackageSearchPage(containerId) {
 
         container.querySelector("#traveler-package-occupancy-toggle")?.addEventListener("click", () => {
             state.occupancyOpen = !state.occupancyOpen;
-            render();
-        });
-
-        container.querySelector('[data-package-field="rooms"]')?.addEventListener("change", (event) => {
-            state.searchValues = normalizeSearchValues({
-                ...state.searchValues,
-                rooms: event.target.value
-            });
-            persistSearchValues(state.searchValues);
             render();
         });
 
@@ -290,41 +281,14 @@ export async function renderTravelerPackageSearchPage(containerId) {
 
 function attachPackageSearchAutocomplete(container) {
     const packageData = PACKAGE_RESULTS || [];
-
-    const fromInput = container?.querySelector('[data-package-field="fromCity"]');
     const destInput = container?.querySelector('[data-package-field="destination"]');
-
-    if (!fromInput && !destInput) return;
-
-    if (fromInput && !fromInput.id) fromInput.id = "package-from-search";
+    if (!destInput) return;
     if (destInput && !destInput.id) destInput.id = "package-dest-search";
 
-    // Dynamic supplier for From City:
-    // Only list origins that have at least one package going to the current destination value
-    function getFromSuggestions() {
-        const currentDest = normalizeText(destInput ? destInput.value : "");
-        const filtered = currentDest
-            ? packageData.filter(pkg => normalizeText(pkg.destination).includes(currentDest))
-            : packageData;
-        return [...new Set(filtered.map(pkg => pkg.origin).filter(Boolean))].sort();
-    }
-
-    // Dynamic supplier for Destination:
-    // Only list destinations that have at least one package coming from the current origin value
     function getDestSuggestions() {
-        const currentFrom = normalizeText(fromInput ? fromInput.value : "");
-        const filtered = currentFrom
-            ? packageData.filter(pkg => normalizeText(pkg.origin).includes(currentFrom))
-            : packageData;
-        return [...new Set(filtered.map(pkg => pkg.destination).filter(Boolean))].sort();
+        return [...new Set(packageData.map(pkg => pkg.destination).filter(Boolean))].sort();
     }
 
-    if (fromInput) {
-        attachLocationAutocomplete(fromInput.id, getFromSuggestions, (val) => {
-            fromInput.value = val;
-            fromInput.dispatchEvent(new Event("change", { bubbles: true }));
-        });
-    }
     if (destInput) {
         attachLocationAutocomplete(destInput.id, getDestSuggestions, (val) => {
             destInput.value = val;
@@ -335,12 +299,10 @@ function attachPackageSearchAutocomplete(container) {
 
 function getSearchValues() {
     const fallback = {
-        fromCity: "New Delhi",
-        destination: "Goa",
+        destination: "Kerala",
         departureDate: "",
-        rooms: "1",
         guestCount: "2",
-        guests: "1 Room, 2 Guests"
+        guests: "2 Guests"
     };
 
     if (typeof localStorage === "undefined") {
@@ -351,10 +313,8 @@ function getSearchValues() {
         const stored = JSON.parse(localStorage.getItem(SEARCH_STORAGE_KEY) || "{}");
         const values = stored.values?.packages || {};
         return normalizeSearchValues({
-            fromCity: values.fromCity || fallback.fromCity,
             destination: values.destination || fallback.destination,
             departureDate: values.departureDate || fallback.departureDate,
-            rooms: values.rooms || "1",
             guestCount: values.guestCount || "2",
             guests: values.guests || fallback.guests
         });
@@ -371,7 +331,7 @@ function persistSearchValues(searchValues) {
         stored.values = stored.values || {};
         stored.values.packages = {
             ...searchValues,
-            guests: formatRoomsGuests(searchValues.rooms, searchValues.guestCount)
+            guests: `${searchValues.guestCount} Guest${searchValues.guestCount > 1 ? 's' : ''}`
         };
         localStorage.setItem(SEARCH_STORAGE_KEY, JSON.stringify(stored));
     } catch (error) {
@@ -380,25 +340,20 @@ function persistSearchValues(searchValues) {
 }
 
 function normalizeSearchValues(values) {
-    const rooms = clampCount(values.rooms, 1, 8);
     const guestCount = clampCount(values.guestCount, 1, 8);
     return {
-        fromCity: String(values.fromCity || "").trim(),
         destination: String(values.destination || "").trim(),
         departureDate: values.departureDate || "",
-        rooms: String(rooms),
         guestCount: String(guestCount),
-        guests: formatRoomsGuests(rooms, guestCount)
+        guests: `${guestCount} Guest${guestCount > 1 ? 's' : ''}`
     };
 }
 
 function getFilteredPackages(state) {
-    const originTerm = normalizeText(state.searchValues.fromCity);
     const destinationTerm = normalizeText(state.searchValues.destination);
     const guestCount = Number.parseInt(state.searchValues.guestCount, 10) || 2;
 
     return PACKAGE_RESULTS
-        .filter((item) => !originTerm || normalizeText(item.origin) === "any" || normalizeText(item.origin).includes(originTerm) || !item.origin)
         .filter((item) =>
             !destinationTerm ||
             normalizeText(item.destination).includes(destinationTerm) ||
@@ -443,19 +398,13 @@ function renderDateField(field, label, value) {
 function renderOccupancyField(state) {
     return `
         <div class="traveler-package-toolbar-field traveler-package-occupancy-field ${state.occupancyOpen ? "open" : ""}">
-            <span class="traveler-package-toolbar-label">Rooms & Guests</span>
+            <span class="traveler-package-toolbar-label">Guests</span>
             <button type="button" class="traveler-package-toolbar-row traveler-package-occupancy-toggle" id="traveler-package-occupancy-toggle">
                 ${guestsIcon()}
-                <strong>${formatRoomsGuests(state.searchValues.rooms, state.searchValues.guestCount)}</strong>
+                <strong>${state.searchValues.guestCount} Guest${state.searchValues.guestCount == "1" ? "" : "s"}</strong>
             </button>
             ${state.occupancyOpen ? `
                 <div class="traveler-package-occupancy-panel">
-                    <label>
-                        <span>Rooms</span>
-                        <select data-package-field="rooms">
-                            ${ROOM_OPTIONS.map((option) => `<option value="${option}" ${option === String(state.searchValues.rooms) ? "selected" : ""}>${option} Room${option === "1" ? "" : "s"}</option>`).join("")}
-                        </select>
-                    </label>
                     <label>
                         <span>Guests</span>
                         <select data-package-field="guestCount">

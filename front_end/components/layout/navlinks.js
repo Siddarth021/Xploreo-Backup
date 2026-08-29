@@ -30,6 +30,12 @@ const navlinks = [
     roles: ["nontechadmin"]
   },
   {
+    name: "Guide Applications",
+    path: "../pages/nta_guide_applications.html",
+    icon: "../components/ui/users.png",
+    roles: ["nontechadmin"]
+  },
+  {
     name: "Guides",
     path: "../pages/guide.html",
     icon: "../components/ui/users.png",
@@ -65,18 +71,7 @@ const navlinks = [
     icon: "../components/ui/finance.png",
     roles: ["superadmin"]
   },
-   {
-    name: "Tours",
-    path: "../pages/tours.html",
-    icon: "../components/ui/tours.svg",
-    roles: ["guide"]
-  },
-  {
-    name: "Schedule",
-    path: "../pages/schedule.html",
-    icon: "../components/ui/schedule.svg",
-    roles: ["guide"]
-  },
+
   {
     name: "Earnings",
     path: "../pages/earnings.html",

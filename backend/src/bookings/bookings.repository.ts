@@ -29,7 +29,7 @@ export class BookingsRepository {
   }
 
   cancel(id: string): Booking | undefined {
-    const booking = this.bookings.find(b => b.id === id);
+    const booking = this.bookings.find((b) => b.id === id);
     if (booking) {
       booking.status = BookingStatus.CANCELLED;
       return { ...booking };
@@ -38,7 +38,7 @@ export class BookingsRepository {
   }
 
   checkIn(id: string): Booking | undefined {
-    const booking = this.bookings.find(b => b.id === id);
+    const booking = this.bookings.find((b) => b.id === id);
     if (booking) {
       booking.status = BookingStatus.CHECKED_IN;
       return { ...booking };
@@ -47,7 +47,7 @@ export class BookingsRepository {
   }
 
   checkOut(id: string): Booking | undefined {
-    const booking = this.bookings.find(b => b.id === id);
+    const booking = this.bookings.find((b) => b.id === id);
     if (booking) {
       booking.status = BookingStatus.CHECKED_OUT;
       return { ...booking };
@@ -59,6 +59,12 @@ export class BookingsRepository {
     const hotelIdSet = new Set(hotelIds);
     return this.bookings
       .filter((booking) => hotelIdSet.has(booking.hotelId))
+      .map((booking) => ({ ...booking }));
+  }
+
+  findByTravellerId(travellerId: string): Booking[] {
+    return this.bookings
+      .filter((booking) => booking.travellerId === travellerId)
       .map((booking) => ({ ...booking }));
   }
 }

@@ -7,7 +7,7 @@ import {
   Min,
   MaxLength,
   IsNumber,
-  IsArray
+  IsArray,
 } from 'class-validator';
 
 export class CreateBookingDto {

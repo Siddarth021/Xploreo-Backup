@@ -1,4 +1,8 @@
-import { Injectable, Scope, LoggerService as NestLoggerService } from '@nestjs/common';
+import {
+  Injectable,
+  Scope,
+  LoggerService as NestLoggerService,
+} from '@nestjs/common';
 import * as winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import * as path from 'path';
@@ -95,7 +99,10 @@ export class AppLoggerService implements NestLoggerService {
   }
 
   error(message: any, trace?: string, context?: string) {
-    winstonLogger.error(message, { context: context || this.context, stack: trace });
+    winstonLogger.error(message, {
+      context: context || this.context,
+      stack: trace,
+    });
   }
 
   warn(message: any, context?: string) {

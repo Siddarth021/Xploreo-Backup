@@ -163,6 +163,12 @@ export function fetchPartnerHotelBookings() {
   );
 }
 
+export function fetchTravellerHotelBookings() {
+  return apiGet(API_ENDPOINTS.bookings).then((response) =>
+    Array.isArray(response) ? response : [],
+  );
+}
+
 export function updateHotel(id, payload) {
   return apiPatch(`${API_ENDPOINTS.hotels}/${id}`, payload);
 }
@@ -309,6 +315,22 @@ export function resolveTicket(id, payload = {}) {
 /* ===================================================
    TRIPS
 =================================================== */
+export function fetchUserStats() {
+  return apiGet("/stats/user").then((response) =>
+    response || { bookings: 0, reviews: 0, wishlists: 0 },
+  );
+}
+
+export function submitReview(payload) {
+  return apiPost(API_ENDPOINTS.reviews, payload);
+}
+
+export function fetchReviews() {
+  return apiGet(API_ENDPOINTS.reviews).then((response) =>
+    Array.isArray(response) ? response : [],
+  );
+}
+
 export function fetchAllTrips() {
   return apiGet(API_ENDPOINTS.trips).then((response) =>
     Array.isArray(response) ? response : [],
@@ -371,4 +393,66 @@ export function fetchCity(id) {
 
 export function createCity(payload) {
   return apiPost(API_ENDPOINTS.cities, payload);
+}
+
+/* ===================================================
+   GUIDE APPLICATIONS (new workflow)
+=================================================== */
+export function applyToGuideForPlan(payload) {
+  return apiPost(API_ENDPOINTS.guideApplications, payload);
+}
+
+export function fetchGuideApplicationsByGuide(guideId) {
+  return apiGet(API_ENDPOINTS.guideApplicationsByGuide(guideId));
+}
+
+export function fetchGuideApplicationsByPlan(planId) {
+  return apiGet(API_ENDPOINTS.guideApplicationsByPlan(planId));
+}
+
+export function fetchAvailableGuidesForPlan(planId) {
+  return apiGet(API_ENDPOINTS.guideAvailableForPlan(planId));
+}
+
+export function fetchAllGuideApplications(params = {}) {
+  const qs = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => v !== undefined && v !== ''),
+  ).toString();
+  const url = qs ? `${API_ENDPOINTS.guideApplications}?${qs}` : API_ENDPOINTS.guideApplications;
+  return apiGet(url);
+}
+
+export function updateGuideApplication(id, payload) {
+  return apiPatch(`${API_ENDPOINTS.guideApplications}/${id}`, payload);
+}
+
+/* ===================================================
+   GUIDE ASSIGNMENTS (new workflow)
+=================================================== */
+export function createGuideAssignment(payload) {
+  return apiPost(API_ENDPOINTS.guideAssignments, payload);
+}
+
+export function fetchGuideAssignmentsByGuide(guideId) {
+  return apiGet(API_ENDPOINTS.guideAssignmentsByGuide(guideId));
+}
+
+export function fetchGuideAssignmentsByTraveller(travellerId) {
+  return apiGet(API_ENDPOINTS.guideAssignmentsByTraveller(travellerId));
+}
+
+export function confirmGuideAssignment(id) {
+  return apiPatch(API_ENDPOINTS.guideAssignmentConfirm(id), {});
+}
+
+export function rejectGuideAssignment(id) {
+  return apiPatch(API_ENDPOINTS.guideAssignmentReject(id), {});
+}
+
+export function changeGuideOnAssignment(id, payload) {
+  return apiPatch(API_ENDPOINTS.guideAssignmentChangeGuide(id), payload);
+}
+
+export function cancelGuideAssignment(id) {
+  return apiPatch(API_ENDPOINTS.guideAssignmentCancel(id), {});
 }

@@ -18,7 +18,10 @@ export class TicketsService {
     private readonly authRepository: AuthRepository,
   ) {}
 
-  create(user: { userId?: string; role?: string } | undefined, dto: CreateTicketDto) {
+  create(
+    user: { userId?: string; role?: string } | undefined,
+    dto: CreateTicketDto,
+  ) {
     if (!user || !user.userId) {
       throw new ForbiddenException('x-user-id header is required');
     }
@@ -28,7 +31,9 @@ export class TicketsService {
       this.authRepository.findByUsername(user.userId);
 
     const userName = authUser?.name || user.userId;
-    const userRole = String(user.role || authUser?.role || 'traveller').toLowerCase();
+    const userRole = String(
+      user.role || authUser?.role || 'traveller',
+    ).toLowerCase();
 
     return this.ticketsRepository.create({
       userId: user.userId,

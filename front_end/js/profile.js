@@ -1,4 +1,4 @@
-import { fetchTickets } from "./api/services.js";
+import { fetchTickets, fetchGuide, updateGuideProfile, updateUser } from "./api/services.js";
 
 let profileData = null;
 let currentUser = null;
@@ -26,7 +26,7 @@ export async function renderProfilePage(containerId, user) {
         return;
     }
 
-    renderStandardProfile(container, currentUser);
+    await renderStandardProfile(container, currentUser);
 }
 
 /* =========================================================================
@@ -289,16 +289,40 @@ function setupTechAdminListeners(user) {
 /* =========================================================================
    STANDARD PROFILE (For other roles: Guide, Experience, Non-Tech Admin)
    ========================================================================= */
-function renderStandardProfile(container, user) {
+function escapeHtml(value = "") {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => {
+        const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;",
+        };
+        return entities[char];
+    });
+}
+
+async function renderStandardProfile(container, user) {
+    const isGuide = (user.role || "").toLowerCase() === "guide";
+    let guideData = null;
+
+    if (isGuide) {
+        try {
+            guideData = await fetchGuide(user.id || user.userId);
+        } catch (e) {
+            console.warn("Could not fetch guide data:", e);
+        }
+    }
+
     const profileKey = user ? `profileData_${user.id}` : "profileData";
     profileData = JSON.parse(localStorage.getItem(profileKey)) || JSON.parse(localStorage.getItem("profileData")) || {
-        location: "Mumbai, India",
-        experience: "5+ Years",
-        professionalTitle: "Operations Specialist",
-        bio: "Travel and logistics operations lead.",
-        languages: ["English", "Hindi"],
-        certifications: [],
-        bankDetails: { bankName: "HDFC Bank", accountEnding: "4589", iban: "IN89HDFC000123456789" }
+        location: guideData?.location || "Mumbai, India",
+        experience: guideData?.years_exp ? `${guideData.years_exp} Years` : "5+ Years",
+        professionalTitle: guideData?.prof_title || "Operations Specialist",
+        bio: guideData?.bio || "Travel and logistics operations lead.",
+        languages: guideData?.lang_spoken || ["English", "Hindi"],
+        certifications: guideData?.certifications || [],
+        bankDetails: { bankName: guideData?.bank_name || "HDFC Bank", accountEnding: guideData?.bank_acc_num_end || "4589", iban: guideData?.iban || "IN89HDFC000123456789" }
     };
 
     container.innerHTML = `
@@ -430,22 +454,41 @@ function setupStandardProfileListeners(user) {
 
     const form = document.getElementById("profileForm");
     if (form) {
-        form.onsubmit = (e) => {
+        form.onsubmit = async (e) => {
             e.preventDefault();
-            alert("Profile updated successfully!");
+            const formData = new FormData(form);
+            const isGuide = (user.role || "").toLowerCase() === "guide";
+            
+            try {
+                if (isGuide) {
+                    const guideUpdates = {
+                        location: formData.get("location"),
+                        prof_title: formData.get("professionalTitle"),
+                        years_exp: parseInt(formData.get("experience")) || 0,
+                        bio: formData.get("bio")
+                    };
+                    await updateGuideProfile(user.id || user.userId, guideUpdates);
+                }
+
+                // Update common user data
+                const userUpdates = {
+                    name: (formData.get("firstName") + " " + formData.get("lastName")).trim(),
+                    email: formData.get("email"),
+                    phone: formData.get("phone")
+                };
+                
+                await updateUser(user.id || user.userId, userUpdates);
+                
+                Object.assign(user, userUpdates);
+                localStorage.setItem("currentUser", JSON.stringify(user));
+                
+                alert("Profile updated successfully!");
+                renderProfilePage("main", user);
+            } catch (err) {
+                console.error("Profile update failed", err);
+                alert("Failed to update profile. " + (err.message || ""));
+            }
         };
     }
 }
 
-function escapeHtml(value = "") {
-    return String(value).replace(/[&<>"']/g, (char) => {
-        const entities = {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#039;",
-        };
-        return entities[char];
-    });
-}

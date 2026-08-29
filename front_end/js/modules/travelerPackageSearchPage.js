@@ -283,7 +283,6 @@ function attachPackageSearchAutocomplete(container) {
     const packageData = PACKAGE_RESULTS || [];
     const destInput = container?.querySelector('[data-package-field="destination"]');
     if (!destInput) return;
-    
     if (destInput && !destInput.id) destInput.id = "package-dest-search";
 
     function getDestSuggestions() {
@@ -300,7 +299,7 @@ function attachPackageSearchAutocomplete(container) {
 
 function getSearchValues() {
     const fallback = {
-        destination: "Goa",
+        destination: "Kerala",
         departureDate: "",
         guestCount: "2",
         guests: "2 Guests"

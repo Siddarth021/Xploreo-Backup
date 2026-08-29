@@ -1,5 +1,5 @@
 import { travelerData } from "../api/legacyData.js";
-import { fetchTripsForGuide, fetchTripsForTraveller, fetchExperienceBookings } from "../api/services.js";
+import { fetchTripsForGuide, fetchTripsForTraveller, fetchExperienceBookings, fetchTravellerHotelBookings } from "../api/services.js";
 import { mapTripToLegacyTour } from "../api/adapters.js";
 import { showAppAlert } from "./experience_shared.js";
 
@@ -310,15 +310,43 @@ export async function renderTravelerTrips(containerId, user) {
         rerender();
     });
 
-    container.querySelector("[data-review-submit]")?.addEventListener("click", () => {
+    container.querySelector("[data-review-submit]")?.addEventListener("click", async () => {
         if (!tripReviewState.tripKey || !tripReviewState.rating || !tripReviewState.reviewText.trim()) {
             showTripsToast("Add a rating and a short review before submitting.");
             return;
         }
 
-        resetReviewState();
-        rerender();
-        showTripsToast("Thanks! Your trip review has been submitted.");
+        const [type, targetId] = tripReviewState.tripKey.split(":");
+        let targetType;
+        if (type === "hotel") {
+            targetType = "hotel";
+        } else if (type === "experience") {
+            targetType = "experience";
+        } else {
+            targetType = "guide";
+        }
+
+        const payload = {
+            userId: Number(user.id),
+            targetType: targetType,
+            targetId: targetId,
+            rating: tripReviewState.rating,
+            comment: tripReviewState.reviewText
+        };
+        if (tripReviewState.photoName) {
+            payload.image = tripReviewState.photoName;
+        }
+
+        try {
+            const { submitReview } = await import("../api/services.js");
+            await submitReview(payload);
+            resetReviewState();
+            rerender();
+            showTripsToast("Thanks! Your trip review has been submitted.");
+        } catch (error) {
+            console.error("Failed to submit review:", error);
+            showTripsToast("Failed to submit review. Please try again.");
+        }
     });
 
     function rerender() {
@@ -348,7 +376,7 @@ async function fetchTripsFromBackend(user) {
 
     let allTrips = [];
 
-    // 1. Fetch experience bookings directly from backend
+    // 1. Fetch experience bookings and hotel bookings directly from backend
     if (currentUser.role?.toLowerCase() === "traveller") {
         try {
             const expBookings = await fetchExperienceBookings();
@@ -373,6 +401,31 @@ async function fetchTripsFromBackend(user) {
             allTrips.push(...expTrips);
         } catch (e) {
             console.warn("Failed to fetch experience bookings from backend", e);
+        }
+
+        try {
+            const hotelBookings = await fetchTravellerHotelBookings();
+            const hotelTrips = hotelBookings.map(b => ({
+                id: String(b.id),
+                bookingId: String(b.id),
+                customerId: String(currentUser.id),
+                customer: b.guestName || currentUser.name || "Traveler",
+                title: b.hotel?.name || "Hotel Booking",
+                location: b.hotel?.location || b.hotel?.city || "Hotel Location",
+                dateRange: `${b.checkIn} to ${b.checkOut}`,
+                status: normalizeTripStatus(b.status),
+                backendStatus: b.status || "CONFIRMED",
+                type: "Hotel",
+                hotelId: b.hotelId,
+                guests: b.guests,
+                amount: b.totalAmount,
+                duration: `${Math.ceil((new Date(b.checkOut).getTime() - new Date(b.checkIn).getTime()) / 86400000)} Nights`,
+                image: b.hotel?.image || DEFAULT_TRIP_IMAGE,
+                plan_iternary: [`Check-in: ${b.checkIn}`, `Check-out: ${b.checkOut}`]
+            }));
+            allTrips.push(...hotelTrips);
+        } catch (e) {
+            console.warn("Failed to fetch hotel bookings from backend", e);
         }
     }
 
@@ -458,7 +511,7 @@ function normalizeTripStatus(status) {
         return "Cancelled";
     }
 
-    if (value === "completed" || value === "complete") {
+    if (value === "completed" || value === "complete" || value === "checked_out") {
         return "Completed";
     }
 

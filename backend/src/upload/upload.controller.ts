@@ -33,7 +33,12 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: any) => {
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new BadRequestException('Invalid file type. Only JPEG, PNG, GIF, WebP are allowed.'), false);
+    cb(
+      new BadRequestException(
+        'Invalid file type. Only JPEG, PNG, GIF, WebP are allowed.',
+      ),
+      false,
+    );
   }
 };
 
@@ -54,7 +59,13 @@ export class UploadController {
       },
     },
   })
-  @UseInterceptors(FileInterceptor('file', { storage, fileFilter, limits: { fileSize: 5 * 1024 * 1024 } }))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage,
+      fileFilter,
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
   uploadSingle(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
@@ -89,7 +100,13 @@ export class UploadController {
       },
     },
   })
-  @UseInterceptors(FilesInterceptor('files', 5, { storage, fileFilter, limits: { fileSize: 5 * 1024 * 1024 } }))
+  @UseInterceptors(
+    FilesInterceptor('files', 5, {
+      storage,
+      fileFilter,
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
   uploadMultiple(@UploadedFiles() files: Express.Multer.File[]) {
     if (!files || files.length === 0) {
       throw new BadRequestException('No files uploaded');

@@ -26,8 +26,8 @@ export class LocationRepository {
       cityId: 'city-goa-1',
     },
     {
-      locationId: 'loc-darjeeling-1',
-      locationName: 'Tiger Hill',
+      locationId: 'loc-kerala-1',
+      locationName: 'Munnar',
       cityId: 'city-kerala-1',
     },
   ];

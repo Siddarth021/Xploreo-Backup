@@ -3,7 +3,11 @@ import { LoggerModule } from '../logger/logger.module';
 import { FileUploadMiddleware } from './file-upload.middleware';
 import { SecurityMiddleware } from './security.middleware';
 import { RateLimitMiddleware } from './rate-limit.middleware';
-import { RequestIdMiddleware, RequestResponseLoggingMiddleware, ApiVersionMiddleware } from './router-level.middleware';
+import {
+  RequestIdMiddleware,
+  RequestResponseLoggingMiddleware,
+  ApiVersionMiddleware,
+} from './router-level.middleware';
 import { HttpExceptionFilter } from '../filters/http-exception.filter';
 import { LoggingInterceptor } from '../interceptors/logging.interceptor';
 

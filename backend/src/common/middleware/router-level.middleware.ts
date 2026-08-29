@@ -24,7 +24,7 @@ export class RequestResponseLoggingMiddleware implements NestMiddleware {
 
     this.logger.log(
       `Incoming Request: ${method} ${originalUrl}`,
-      `RequestId: ${requestId}, IP: ${ip}, User-Agent: ${headers['user-agent']}`
+      `RequestId: ${requestId}, IP: ${ip}, User-Agent: ${headers['user-agent']}`,
     );
 
     const originalSend = res.send.bind(res);
@@ -32,15 +32,21 @@ export class RequestResponseLoggingMiddleware implements NestMiddleware {
       const duration = Date.now() - startTime;
       const statusCode = res.statusCode;
       const logLevel = statusCode >= 400 ? 'warn' : 'log';
-      
+
       const message = `Outgoing Response: ${method} ${originalUrl} - ${statusCode} (${duration}ms)`;
-      
+
       if (logLevel === 'warn') {
-        this.logger.warn(message, `RequestId: ${requestId}, Status: ${statusCode}`);
+        this.logger.warn(
+          message,
+          `RequestId: ${requestId}, Status: ${statusCode}`,
+        );
       } else {
-        this.logger.log(message, `RequestId: ${requestId}, Status: ${statusCode}`);
+        this.logger.log(
+          message,
+          `RequestId: ${requestId}, Status: ${statusCode}`,
+        );
       }
-      
+
       return originalSend(body);
     };
 
@@ -57,7 +63,11 @@ export class ApiVersionMiddleware implements NestMiddleware {
   }
 }
 
-export const requestIdMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const requestIdMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const requestId = (req.headers['x-request-id'] as string) || uuidv4();
   req['requestId'] = requestId;
   res.setHeader('X-Request-ID', requestId);
@@ -65,7 +75,10 @@ export const requestIdMiddleware = (req: Request, res: Response, next: NextFunct
 };
 
 export const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void,
+  ) => {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:3001',
@@ -75,9 +88,12 @@ export const corsOptions = {
       'http://127.0.0.1:5500',
       process.env.FRONTEND_URL || 'http://localhost:3000',
     ];
-    
-    const isLocalhost = origin && (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'));
-    
+
+    const isLocalhost =
+      origin &&
+      (origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://127.0.0.1:'));
+
     if (!origin || allowedOrigins.includes(origin) || isLocalhost) {
       callback(null, true);
     } else {
@@ -86,7 +102,18 @@ export const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID', 'X-User-Role', 'X-User-ID'],
-  exposedHeaders: ['X-Request-ID', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Request-ID',
+    'X-User-Role',
+    'X-User-ID',
+  ],
+  exposedHeaders: [
+    'X-Request-ID',
+    'X-RateLimit-Limit',
+    'X-RateLimit-Remaining',
+    'X-RateLimit-Reset',
+  ],
   maxAge: 86400,
 };

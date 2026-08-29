@@ -46,11 +46,15 @@ export class ExperienceBookingsService {
           available: slot.booked + dto.participants < slot.capacity,
         };
       } else if (experience.availability !== ExperienceAvailability.AVAILABLE) {
-        throw new BadRequestException('Experience is not available for booking');
+        throw new BadRequestException(
+          'Experience is not available for booking',
+        );
       }
     } else {
       if (experience.availability !== ExperienceAvailability.AVAILABLE) {
-        throw new BadRequestException('Experience is not available for booking');
+        throw new BadRequestException(
+          'Experience is not available for booking',
+        );
       }
       if (experience.booked + dto.participants > experience.capacity) {
         throw new BadRequestException('Experience capacity exceeded');
@@ -150,42 +154,71 @@ export class ExperienceBookingsService {
     );
 
     if (status === 'COMPLETED') {
-      if ((userRole !== Role.TRAVELLER && userRole !== Role.TRAVELLER_ACTOR) || booking.travellerId !== userId) {
-        throw new ForbiddenException('Only the traveler can complete the booking');
+      if (
+        (userRole !== Role.TRAVELLER && userRole !== Role.TRAVELLER_ACTOR) ||
+        booking.travellerId !== userId
+      ) {
+        throw new ForbiddenException(
+          'Only the traveler can complete the booking',
+        );
       }
     } else if (status === 'CANCELLED') {
-      const isTraveller = (userRole === Role.TRAVELLER || userRole === Role.TRAVELLER_ACTOR) && booking.travellerId === userId;
-      const isHost = userRole === Role.EXPERIENCE_PARTNER && experience && experience.partnerId === userId;
+      const isTraveller =
+        (userRole === Role.TRAVELLER || userRole === Role.TRAVELLER_ACTOR) &&
+        booking.travellerId === userId;
+      const isHost =
+        userRole === Role.EXPERIENCE_PARTNER &&
+        experience &&
+        experience.partnerId === userId;
       if (!isTraveller && !isHost) {
         throw new ForbiddenException('Not authorized to cancel this booking');
       }
     } else {
-      if (userRole !== Role.EXPERIENCE_PARTNER || !experience || experience.partnerId !== userId) {
-        throw new ForbiddenException('Not authorized to update this booking status');
+      if (
+        userRole !== Role.EXPERIENCE_PARTNER ||
+        !experience ||
+        experience.partnerId !== userId
+      ) {
+        throw new ForbiddenException(
+          'Not authorized to update this booking status',
+        );
       }
     }
 
-    if (status === 'CANCELLED' && booking.status !== 'CANCELLED' && experience) {
-      const updatedSlots = experience.slots ? experience.slots.map(slot => {
-        if (slot.id === booking.slotId || (slot.date === booking.date && slot.time === booking.time)) {
-          const newBooked = Math.max(0, slot.booked - booking.participants);
-          return {
-            ...slot,
-            booked: newBooked,
-            available: newBooked < slot.capacity
-          };
-        }
-        return slot;
-      }) : [];
+    if (
+      status === 'CANCELLED' &&
+      booking.status !== 'CANCELLED' &&
+      experience
+    ) {
+      const updatedSlots = experience.slots
+        ? experience.slots.map((slot) => {
+            if (
+              slot.id === booking.slotId ||
+              (slot.date === booking.date && slot.time === booking.time)
+            ) {
+              const newBooked = Math.max(0, slot.booked - booking.participants);
+              return {
+                ...slot,
+                booked: newBooked,
+                available: newBooked < slot.capacity,
+              };
+            }
+            return slot;
+          })
+        : [];
 
-      const newTotalBooked = Math.max(0, experience.booked - booking.participants);
-      
+      const newTotalBooked = Math.max(
+        0,
+        experience.booked - booking.participants,
+      );
+
       this.experiencesRepository.update(experience.id, {
         booked: newTotalBooked,
-        availability: newTotalBooked >= experience.capacity 
-          ? ExperienceAvailability.NOT_AVAILABLE 
-          : ExperienceAvailability.AVAILABLE,
-        slots: updatedSlots
+        availability:
+          newTotalBooked >= experience.capacity
+            ? ExperienceAvailability.NOT_AVAILABLE
+            : ExperienceAvailability.AVAILABLE,
+        slots: updatedSlots,
       });
     }
 

@@ -28,7 +28,8 @@ export class TicketsController {
 
   @Get()
   @ApiOperation({
-    summary: 'View support tickets (all for Technical Admin, user-scoped for other roles)',
+    summary:
+      'View support tickets (all for Technical Admin, user-scoped for other roles)',
   })
   @ApiReadEndpoint()
   findAll(@Req() req: any) {

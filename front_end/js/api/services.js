@@ -163,6 +163,12 @@ export function fetchPartnerHotelBookings() {
   );
 }
 
+export function fetchTravellerHotelBookings() {
+  return apiGet(API_ENDPOINTS.bookings).then((response) =>
+    Array.isArray(response) ? response : [],
+  );
+}
+
 export function updateHotel(id, payload) {
   return apiPatch(`${API_ENDPOINTS.hotels}/${id}`, payload);
 }
@@ -309,6 +315,22 @@ export function resolveTicket(id, payload = {}) {
 /* ===================================================
    TRIPS
 =================================================== */
+export function fetchUserStats() {
+  return apiGet("/stats/user").then((response) =>
+    response || { bookings: 0, reviews: 0, wishlists: 0 },
+  );
+}
+
+export function submitReview(payload) {
+  return apiPost(API_ENDPOINTS.reviews, payload);
+}
+
+export function fetchReviews() {
+  return apiGet(API_ENDPOINTS.reviews).then((response) =>
+    Array.isArray(response) ? response : [],
+  );
+}
+
 export function fetchAllTrips() {
   return apiGet(API_ENDPOINTS.trips).then((response) =>
     Array.isArray(response) ? response : [],

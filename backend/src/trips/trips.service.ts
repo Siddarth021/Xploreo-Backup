@@ -26,7 +26,7 @@ export class TripsService {
     private readonly experienceBookingsRepository: ExperienceBookingsRepository,
     private readonly hotelsRepository: HotelsRepository,
     private readonly experiencesRepository: ExperiencesRepository,
-  ) { }
+  ) {}
 
   create(dto: CreateTripDto) {
     const plan = this.plansRepository.findById(dto.planId);

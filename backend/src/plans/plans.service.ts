@@ -39,6 +39,8 @@ export class PlansService {
       image: dto.image ?? '',
       tags: dto.tags ?? [],
       itinerary: dto.itinerary,
+      isActive: dto.isActive !== undefined ? dto.isActive : (dto.status ? dto.status === 'available' : true),
+      status: dto.status ?? (dto.isActive !== false ? 'available' : 'unavailable'),
     });
   }
 

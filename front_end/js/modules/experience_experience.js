@@ -145,9 +145,15 @@ export async function renderExperienceCatalogPage() {
         const price = Number(document.getElementById(`${prefix}Price`).value);
         const duration = Number(document.getElementById(`${prefix}Duration`).value);
         const category = document.getElementById(`${prefix}Category`).value;
+        const location = document.getElementById(`${prefix}Location`)?.value || "Goa";
 
         if (!name || name.length < 3) {
             setFieldError(`${prefix}Name`, "Enter a name with at least 3 characters.");
+            isValid = false;
+        }
+
+        if (!location) {
+            setFieldError(`${prefix}Location`, "Please select a destination.");
             isValid = false;
         }
 
@@ -166,7 +172,7 @@ export async function renderExperienceCatalogPage() {
             isValid = false;
         }
 
-        return { isValid, name, description, price, duration, category };
+        return { isValid, name, description, price, duration, category, location };
     }
 
     function validateAddImage() {
@@ -529,6 +535,9 @@ export async function renderExperienceCatalogPage() {
             document.getElementById("editPrice").value = selectedExperience.price;
             document.getElementById("editDuration").value = parseInt(selectedExperience.duration) || 2;
             document.getElementById("editCategory").value = selectedExperience.category || "adventure";
+            if (document.getElementById("editLocation")) {
+                document.getElementById("editLocation").value = selectedExperience.destination || selectedExperience.location || "Goa";
+            }
             resetCatalogMessages();
             openModal("editModal");
         }
@@ -672,6 +681,8 @@ export async function renderExperienceCatalogPage() {
             duration: `${payload.duration} hours`,
             capacity: 0,
             category: payload.category,
+            destination: payload.location,
+            location: payload.location,
             status: "active",
             image: uploadedImageUrls[selectedThumbnailIndex] || uploadedImageUrls[0],
             images: [...uploadedImageUrls],
@@ -687,7 +698,7 @@ export async function renderExperienceCatalogPage() {
             id: String(newExperienceId),
             title: payload.name,
             description: payload.description, 
-            destination: payload.name, 
+            destination: payload.location, 
             category: payload.category,
             price: Number(payload.price),
             durationHours: parseInt(payload.duration) || 2,
@@ -718,6 +729,8 @@ export async function renderExperienceCatalogPage() {
         exp.price = payload.price;
         exp.duration = `${payload.duration} hours`;
         exp.category = payload.category;
+        exp.destination = payload.location;
+        exp.location = payload.location;
 
         persistExperiences();
         
@@ -725,7 +738,7 @@ export async function renderExperienceCatalogPage() {
         updateExperience(String(currentEditId), {
             title: payload.name,
             description: payload.description,
-            destination: payload.name,
+            destination: payload.location,
             category: payload.category,
             price: Number(payload.price),
             durationHours: parseInt(payload.duration) || 2,

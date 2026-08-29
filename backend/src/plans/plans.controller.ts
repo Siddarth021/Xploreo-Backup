@@ -101,7 +101,7 @@ export class PlansController {
     return this.plansService.update(id, dto);
   }
 
-  @Roles(Role.SUPERADMIN)
+  @Roles(Role.SUPERADMIN, Role.NONTECHADMIN)
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a plan' })
   @ApiDeleteEndpoint()

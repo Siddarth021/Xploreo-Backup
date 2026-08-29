@@ -331,7 +331,7 @@ function persistSearchValues(searchValues) {
         stored.values = stored.values || {};
         stored.values.packages = {
             ...searchValues,
-            guests: formatRoomsGuests("1", searchValues.guestCount)
+            guests: `${searchValues.guestCount} Guest${searchValues.guestCount > 1 ? 's' : ''}`
         };
         localStorage.setItem(SEARCH_STORAGE_KEY, JSON.stringify(stored));
     } catch (error) {
@@ -345,7 +345,7 @@ function normalizeSearchValues(values) {
         destination: String(values.destination || "").trim(),
         departureDate: values.departureDate || "",
         guestCount: String(guestCount),
-        guests: formatRoomsGuests("1", guestCount)
+        guests: `${guestCount} Guest${guestCount > 1 ? 's' : ''}`
     };
 }
 

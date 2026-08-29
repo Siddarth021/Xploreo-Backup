@@ -479,6 +479,25 @@ export class HotelsRepository {
       amenities: ['Free WiFi', 'Pool', 'Restaurant', 'Gym'].slice(0, Math.floor(Math.random() * 3) + 2),
       status: 'active',
       createdAt: new Date(),
+    },
+    {
+      id: 'mumbai-grand-luxury',
+      partnerId: 'partner-1',
+      name: 'The Grand Luxury Resort',
+      city: 'Mumbai',
+      location: 'Marine Drive, Mumbai',
+      description: 'Experience luxury at its finest at The Grand Luxury Resort with views of the Arabian Sea.',
+      stars: 5,
+      rating: 0,
+      reviewCount: 0,
+      pricePerNight: 850,
+      taxesAndFees: 120,
+      totalRooms: 15,
+      availableRooms: 15,
+      image: 'https://images.unsplash.com/photo-1542314831-c6a4d142104d?auto=format&fit=crop&q=80&w=800',
+      amenities: ['Pool', 'Spa', 'Gym', 'Free WiFi', 'Restaurant'],
+      status: 'active',
+      createdAt: new Date(),
     }
   ];
 

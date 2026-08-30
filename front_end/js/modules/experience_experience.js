@@ -547,7 +547,28 @@ export async function renderExperienceCatalogPage() {
                 document.getElementById("editLocation").value = selectedExperience.destination || selectedExperience.location || "Goa";
             }
             resetCatalogMessages();
-            openModal("editModal");
+            const expLoc = document.getElementById("editLocation");
+        if (expLoc) expLoc.value = getCurrentUser()?.location || getApiSession()?.user?.location || "Goa";
+        
+        // Populate dropzone for edit
+        const urlInput = document.getElementById("editImageUrl");
+        const preview = document.getElementById("editImagePreview");
+        const content = document.getElementById("editDropzoneContent");
+        const changeBtn = document.getElementById("editChangeImageBtn");
+        
+        if (urlInput) urlInput.value = exp.image || "";
+        if (preview && exp.image) {
+            preview.src = exp.image;
+            preview.style.display = "block";
+            if (content) content.style.opacity = "0";
+            if (changeBtn) changeBtn.style.display = "block";
+        } else {
+            if (preview) preview.style.display = "none";
+            if (content) content.style.opacity = "1";
+            if (changeBtn) changeBtn.style.display = "none";
+        }
+
+        openModal("editModal");
         }
 
         if (actionButton.dataset.action === "delete-experience") {
@@ -640,14 +661,79 @@ export async function renderExperienceCatalogPage() {
             resetCatalogMessages();
             uploadedImageUrls = [];
             selectedThumbnailIndex = 0;
+            const expLoc = document.getElementById("expLocation");
+            if (expLoc) expLoc.value = getCurrentUser()?.location || getApiSession()?.user?.location || "Goa";
+            
+            // Reset dropzone
+            const urlInput = document.getElementById("expImageUrl");
+            const preview = document.getElementById("expImagePreview");
+            const content = document.getElementById("expDropzoneContent");
+            const changeBtn = document.getElementById("expChangeImageBtn");
+            if (urlInput) urlInput.value = "";
+            if (preview) preview.style.display = "none";
+            if (content) content.style.opacity = "1";
+            if (changeBtn) changeBtn.style.display = "none";
+            
             refreshImagePreview();
             openModal("addModal");
         };
     }
 
-    if (imageInput) {
-        imageInput.onchange = refreshImagePreview;
+    function bindImageDropzone(inputId, urlId, previewId, dropzoneContentId, changeBtnId, dropzoneId) {
+        const input = document.getElementById(inputId);
+        const urlInput = document.getElementById(urlId);
+        const preview = document.getElementById(previewId);
+        const content = document.getElementById(dropzoneContentId);
+        const changeBtn = document.getElementById(changeBtnId);
+        const dropzone = document.getElementById(dropzoneId);
+
+        const handleFile = (file) => {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const base64Str = ev.target.result;
+                    if(urlInput) urlInput.value = base64Str;
+                    if(preview) {
+                        preview.src = base64Str;
+                        preview.style.display = "block";
+                    }
+                    if(content) content.style.opacity = "0";
+                    if(changeBtn) changeBtn.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        if(input) {
+            input.addEventListener("change", (e) => {
+                handleFile(e.target.files[0]);
+            });
+        }
+
+        if(dropzone) {
+            dropzone.addEventListener("dragover", (e) => {
+                e.preventDefault();
+                dropzone.classList.add("dragover");
+            });
+
+            dropzone.addEventListener("dragleave", (e) => {
+                e.preventDefault();
+                dropzone.classList.remove("dragover");
+            });
+
+            dropzone.addEventListener("drop", (e) => {
+                e.preventDefault();
+                dropzone.classList.remove("dragover");
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    handleFile(e.dataTransfer.files[0]);
+                    if(input) input.files = e.dataTransfer.files;
+                }
+            });
+        }
     }
+
+    bindImageDropzone("expImage", "expImageUrl", "expImagePreview", "expDropzoneContent", "expChangeImageBtn", "expImageDropzone");
+    bindImageDropzone("editImage", "editImageUrl", "editImagePreview", "editDropzoneContent", "editChangeImageBtn", "editImageDropzone");
 
     if (imagePreviewGrid) {
         imagePreviewGrid.onclick = (event) => {
@@ -692,8 +778,8 @@ export async function renderExperienceCatalogPage() {
             destination: payload.location,
             location: payload.location,
             status: "active",
-            image: uploadedImageUrls[selectedThumbnailIndex] || uploadedImageUrls[0],
-            images: [...uploadedImageUrls],
+            image: document.getElementById("expImageUrl")?.value || "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80&w=900",
+            images: document.getElementById("expImageUrl")?.value ? [document.getElementById("expImageUrl").value] : [],
             booked: 0,
             slots: []
         };
@@ -739,6 +825,12 @@ export async function renderExperienceCatalogPage() {
         exp.category = payload.category;
         exp.destination = payload.location;
         exp.location = payload.location;
+        
+        const newImg = document.getElementById("editImageUrl")?.value;
+        if (newImg) {
+            exp.image = newImg;
+            exp.images = [newImg];
+        }
 
         persistExperiences();
 
@@ -750,7 +842,8 @@ export async function renderExperienceCatalogPage() {
             category: payload.category,
             price: Number(payload.price),
             durationHours: parseInt(payload.duration) || 2,
-            capacity: exp.capacity || 0
+            capacity: exp.capacity || 0,
+            image: exp.image
         }).catch(e => console.warn("Failed to sync experience update", e));
 
         closeModal("editModal");

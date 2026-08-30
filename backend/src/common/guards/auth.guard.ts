@@ -49,6 +49,19 @@ export class AuthGuard implements CanActivate {
       throw new ForbiddenException('x-user-role header is required');
     }
 
+    const actorsRequiringLocation = [
+      Role.NONTECHADMIN,
+      Role.GUIDE,
+      Role.EXPERIENCE_PARTNER,
+      Role.PARTNER,
+      Role.HOTEL,
+      Role.EXPERIENCE,
+    ];
+
+    if (actorsRequiringLocation.includes(role) && !location) {
+      throw new ForbiddenException('x-user-location header is required for actors');
+    }
+
     return true;
   }
 }

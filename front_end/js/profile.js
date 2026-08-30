@@ -102,7 +102,6 @@ async function renderTechAdminProfile(container, user) {
 
                 <div class="badges" style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
                     <span class="badge verified" style="background: #DCFCE7; color: #166534; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700;">Authorized</span>
-                    <span class="badge" style="background: #EFF6FF; color: #1E40AF; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700;">Level 1 Access</span>
                 </div>
             </div>
 

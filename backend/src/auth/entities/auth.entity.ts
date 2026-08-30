@@ -33,4 +33,7 @@ export class Auth {
   phone!: string;
   location?: AllowedLocation | string;
   status!: 'active' | 'inactive';
+  businessName?: string;
+  taxId?: string;
+  bankAccount?: string;
 }

@@ -163,6 +163,14 @@ export function fetchPartnerHotelBookings() {
   );
 }
 
+export function checkInHotelBooking(bookingId) {
+  return apiPatch(`${API_ENDPOINTS.bookings}/${bookingId}/check-in`);
+}
+
+export function checkOutHotelBooking(bookingId) {
+  return apiPatch(`${API_ENDPOINTS.bookings}/${bookingId}/check-out`);
+}
+
 export function fetchTravellerHotelBookings() {
   return apiGet(API_ENDPOINTS.bookings).then((response) =>
     Array.isArray(response) ? response : [],

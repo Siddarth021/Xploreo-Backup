@@ -147,7 +147,7 @@ export function initHotelProfile() {
         const emailInput = mainRules.find(r => r.type === 'email')?.node;
 
         if (nameInput) nameInput.value = activeHotel.name || "";
-        if (locInput) locInput.value = activeHotel.address || "";
+        if (locInput) locInput.value = activeHotel.location || "";
         if (phoneInput) phoneInput.value = activeHotel.phno || "";
         if (emailInput) emailInput.value = activeHotel.email || "";
 
@@ -155,7 +155,7 @@ export function initHotelProfile() {
         const displayHotelName = document.querySelector('.profile-hotel-info h2');
         const displayLocation = document.querySelector('.profile-hotel-info .location-text');
         if (displayHotelName) displayHotelName.textContent = activeHotel.name || "";
-        if (displayLocation) displayLocation.innerHTML = `<span class="loc-pin"></span> ${activeHotel.address}`;
+        if (displayLocation) displayLocation.innerHTML = `<span class="loc-pin"></span> ${activeHotel.location || ""}`;
     }
 
     const saveMainBtn = document.getElementById('saveProfileBtn');

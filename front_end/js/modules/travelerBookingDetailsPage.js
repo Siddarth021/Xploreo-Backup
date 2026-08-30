@@ -14,6 +14,7 @@ import {
 } from "../traveler/dashboard.js";
 import { fetchAvailableGuidesForPlan, createGuideAssignment } from "../api/services.js";
 import { getCurrentUser } from "../api/session.js";
+import { createRazorpayOrder, verifyRazorpayPayment, openRazorpayCheckout } from "../api/payments.js";
 
 export function renderTravelerBookingDetailsPage(containerId) {
     const container = document.getElementById(containerId);
@@ -366,7 +367,7 @@ export function renderTravelerBookingDetailsPage(containerId) {
             // Use consistent bookingId
             const bookingIdStr = String(confirmation.bookingId);
 
-            // Show guide selection popup before finishing the booking
+            // Show guide selection popup, then proceed to Razorpay
             showGuideSelectionPopup({ ...state.packageData, bookingId: bookingIdStr }, startDate, endDate, (assignedGuide) => {
                 if (assignedGuide) {
                     draft.packageData.pricePerPerson += assignedGuide.price;
@@ -375,47 +376,122 @@ export function renderTravelerBookingDetailsPage(containerId) {
                     confirmation.totalPrice += (assignedGuide.price * confirmation.travelerCount);
                     confirmation.assignedGuide = assignedGuide;
                 }
-                
+
+                // --- Razorpay payment gate ---
+                // Persist the draft now so the confirmation page can read it.
                 saveTravelerBookingDraft(draft);
-                saveTravelerBookingConfirmation(confirmation);
 
-                const plan = state.packageData;
-                const bookingId = bookingIdStr;
+                const travelerCount = state.travelers.length;
+                const totalPrice = confirmation.totalPrice || calculateTravelerBookingTotal(state.packageData, travelerCount);
 
-                try {
-                    const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
-                    const customerId = currentUser?.id || "traveler-fallback";
-                    const tripRecord = {
-                        id: bookingId,
-                        bookingId: bookingId,
-                        planId: plan.id,
-                        title: plan.title,
-                        destination: plan.destination,
-                        location: plan.location,
-                        image: plan.image,
-                        dateRange: `${startDate} - ${endDate}`,
-                        status: "Upcoming",
-                        guests: state.travelerCount || 2,
-                        amount: draft.totalPrice,
-                        durationLabel: `${plan.days || 6} Days, ${plan.nights || 5} Nights`,
-                        itinerary: plan.itinerary || [],
-                        type: "Tour",
-                        bookedOn: new Date().toISOString(),
-                        assignedGuide: assignedGuide ? { id: assignedGuide.id, name: assignedGuide.name, price: assignedGuide.price } : null
-                    };
-
-                    const allTours = JSON.parse(localStorage.getItem("tours") || "[]");
-                    allTours.push(tripRecord);
-                    localStorage.setItem("tours", JSON.stringify(allTours));
-
-                    const myTrips = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]");
-                    myTrips.push(tripRecord);
-                    localStorage.setItem("traveler_my_trips", JSON.stringify(myTrips));
-                } catch (error) {
-                    console.warn("Could not save plan booking to traveler trips", error);
+                if (!totalPrice || totalPrice <= 0) {
+                    setFeedback("Could not determine a valid booking amount. Please refresh and try again.", true);
+                    return;
                 }
 
-                window.location.href = `./traveller_booking-confirmation.html?plan=${bookingId}`;
+                const btn = container.querySelector("#continue-booking-btn");
+
+                // Prevent duplicate clicks while we talk to Razorpay
+                if (btn && btn.dataset.paymentInProgress === "true") return;
+                if (btn) {
+                    btn.dataset.paymentInProgress = "true";
+                    btn.disabled = true;
+                    btn.textContent = "Creating order\u2026";
+                }
+                setFeedback("", false);
+
+                const resetBtn = () => {
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.textContent = "Continue to confirmation";
+                        btn.dataset.paymentInProgress = "";
+                    }
+                };
+
+                createRazorpayOrder(totalPrice, {
+                    bookingType: "HOLIDAY_PACKAGE",
+                    bookingId: bookingIdStr,
+                    notes: {
+                        packageTitle: String(state.packageData.title || ""),
+                        destination: String(state.packageData.destination || "")
+                    }
+                }).then((orderData) => {
+                    resetBtn(); // modal is now in control — restore button
+
+                    openRazorpayCheckout(
+                        orderData,
+                        `${state.packageData.title} \u2014 ${travelerCount} traveller${travelerCount > 1 ? "s" : ""}`,
+
+                        // \u2705 Payment succeeded in modal \u2014 verify server-side before trusting
+                        async (paymentResponse) => {
+                            setFeedback("Verifying payment\u2026", false);
+                            if (btn) { btn.disabled = true; btn.textContent = "Verifying\u2026"; }
+                            try {
+                                await verifyRazorpayPayment({
+                                    razorpay_order_id:   paymentResponse.razorpay_order_id,
+                                    razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                                    razorpay_signature:  paymentResponse.razorpay_signature
+                                });
+
+                                // Server confirmed the signature \u2014 now save and navigate
+                                saveTravelerBookingConfirmation(confirmation);
+
+                                const plan = state.packageData;
+                                const bookingId = bookingIdStr;
+
+                                try {
+                                    const tripRecord = {
+                                        id: bookingId,
+                                        bookingId: bookingId,
+                                        planId: plan.id,
+                                        title: plan.title,
+                                        destination: plan.destination,
+                                        location: plan.location,
+                                        image: plan.image,
+                                        dateRange: `${startDate} - ${endDate}`,
+                                        status: "Upcoming",
+                                        guests: travelerCount,
+                                        amount: draft.totalPrice,
+                                        durationLabel: `${plan.days || 6} Days, ${plan.nights || 5} Nights`,
+                                        itinerary: plan.itinerary || [],
+                                        type: "Tour",
+                                        bookedOn: new Date().toISOString(),
+                                        assignedGuide: assignedGuide ? { id: assignedGuide.id, name: assignedGuide.name, price: assignedGuide.price } : null
+                                    };
+
+                                    const allTours = JSON.parse(localStorage.getItem("tours") || "[]");
+                                    allTours.push(tripRecord);
+                                    localStorage.setItem("tours", JSON.stringify(allTours));
+
+                                    const myTrips = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]");
+                                    myTrips.push(tripRecord);
+                                    localStorage.setItem("traveler_my_trips", JSON.stringify(myTrips));
+                                } catch (tripErr) {
+                                    console.warn("Could not save plan booking to traveler trips", tripErr);
+                                }
+
+                                window.location.href = `./traveller_booking-confirmation.html?plan=${bookingId}`;
+
+                            } catch (verifyError) {
+                                const msg = verifyError?.message || "Payment verification failed. Please contact support.";
+                                setFeedback(msg, true);
+                                resetBtn();
+                            }
+                        },
+
+                        // \u274c Payment cancelled or failed
+                        (errorMessage) => {
+                            setFeedback(errorMessage, true);
+                            resetBtn();
+                        }
+                    );
+
+                }).catch((orderError) => {
+                    const msg = orderError?.message || "Failed to create payment order. Please try again.";
+                    setFeedback(msg, true);
+                    resetBtn();
+                });
+
             }, false, state.travelerCount || state.travelers.length);
         });
     }

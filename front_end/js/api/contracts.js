@@ -72,6 +72,11 @@ export const API_ENDPOINTS = Object.freeze({
   // Reviews
   reviews: "/reviews",
   reviewsByTarget: (type, id) => `/reviews?targetType=${type}&targetId=${id}`,
+
+  // Payments (Razorpay)
+  paymentsCreateOrder: "/payments/create-order",
+  paymentsVerify: "/payments/verify",
+
 });
 
 export const API_SESSION_KEY = "xploreo_api_session";

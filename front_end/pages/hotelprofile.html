@@ -22,7 +22,7 @@
         </div>
 
         <form id="profileForm" class="profile-layout">
-
+            
             <!-- Profile Card -->
             <div class="hotel-content-card profile-card-top fade-in">
                 <div class="profile-card-left">
@@ -31,7 +31,7 @@
                     </div>
                     <div class="profile-hotel-info">
                         <h2>Grand Plaza Hotel</h2>
-                        <p class="location-text"><span class="loc-pin"></span> </p>
+                        <p class="location-text"><span class="loc-pin"></span> Downtown, Chennai City</p>
                     </div>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                 <div class="hotel-form-grid">
                     <div class="hotel-form-group" style="grid-column: span 2;">
                         <label>Location</label>
-                        <input type="text" name="location" value="" disabled>
+                        <input type="text" name="location" value="Downtown, Chennai City">
                     </div>
                 </div>
                 <div class="block-actions hidden">
@@ -113,7 +113,10 @@
                         <label>Bank Account</label>
                         <input type="text" name="bankAccount" value="*** *** *** 4582" readonly>
                     </div>
-
+                    <div class="hotel-form-group">
+                        <label>Payout Method</label>
+                        <input type="text" name="payoutMethod" value="Wire Transfer">
+                    </div>
                 </div>
                 <div class="block-actions hidden">
                     <button type="button" class="cancel-block-btn">Cancel</button>
@@ -121,10 +124,54 @@
                 </div>
             </div>
 
+            <!-- Policies -->
+            <div class="hotel-content-card section-card slide-up delay-4 block-view-mode" id="block-policies">
+                <div class="section-header-flex">
+                    <h3>Policies</h3>
+                    <button type="button" class="edit-block-btn">✎ Edit</button>
+                </div>
+                <div class="hotel-form-grid">
+                    <div class="hotel-form-group">
+                        <label>Check-in Time</label>
+                        <input type="time" name="checkInTime" value="14:00">
+                    </div>
+                    <div class="hotel-form-group">
+                        <label>Check-out Time</label>
+                        <input type="time" name="checkOutTime" value="11:00">
+                    </div>
+                    <div class="hotel-form-group" style="grid-column: span 2;">
+                        <label>Cancellation Policy</label>
+                        <input type="text" name="cancellationPolicy" value="Free cancellation up to 48 hours before check-in">
+                    </div>
+                </div>
+                <div class="block-actions hidden">
+                    <button type="button" class="cancel-block-btn">Cancel</button>
+                    <button type="button" class="save-block-btn">Save</button>
+                </div>
+            </div>
 
+            <!-- Media Uploads -->
+            <div class="hotel-content-card section-card slide-up delay-5 block-view-mode" id="block-media">
+                <div class="section-header-flex">
+                    <h3>Media Uploads</h3>
+                    <button type="button" class="edit-block-btn">✎ Edit</button>
+                </div>
+                <div class="hotel-upload-container">
+                    <div class="hotel-dashed-upload">
+                        <span class="upload-icon">📁</span>
+                        <p>Upload Profile Logo</p>
+                        <small>Upload at least 1 high-quality photo</small>
+                        <input type="file" accept="image/*">
+                    </div>
+                </div>
+                <div class="block-actions hidden">
+                    <button type="button" class="cancel-block-btn">Cancel</button>
+                    <button type="button" class="save-block-btn">Save</button>
+                </div>
+            </div>
 
             <button type="submit" id="saveProfileBtn" style="display: none;"></button>
-
+            
         </form>
     </main>
 
@@ -154,7 +201,7 @@
                     </div>
                     <div class="input-group">
                         <label>Location</label>
-                        <input type="text" id="modalLocation" class="profile-input" disabled>
+                        <input type="text" id="modalLocation" class="profile-input">
                     </div>
                 </div>
 

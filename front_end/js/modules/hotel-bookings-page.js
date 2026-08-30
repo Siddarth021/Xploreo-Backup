@@ -85,8 +85,18 @@ function attachBookingActionListeners(root) {
     btn.addEventListener('click', async (e) => {
       const bookingId = e.target.dataset.bookingId;
       try {
-        const { checkInHotelBooking } = await import("../api/services.js");
-        await checkInHotelBooking(bookingId);
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const userId = currentUser.id || 'partner-1';
+        const location = currentUser.location || 'Goa';
+        await fetch(`${getApiBaseUrl()}/bookings/${bookingId}/check-in`, {
+          method: 'PATCH',
+          headers: {
+            'x-user-id': userId,
+            'x-user-role': 'PARTNER',
+            'x-user-location': location,
+            'Content-Type': 'application/json'
+          }
+        });
         // Re-render the page to show the new status
         renderBookingsPage(root.id);
       } catch (err) {
@@ -99,8 +109,18 @@ function attachBookingActionListeners(root) {
     btn.addEventListener('click', async (e) => {
       const bookingId = e.target.dataset.bookingId;
       try {
-        const { checkOutHotelBooking } = await import("../api/services.js");
-        await checkOutHotelBooking(bookingId);
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const userId = currentUser.id || 'partner-1';
+        const location = currentUser.location || 'Goa';
+        await fetch(`${getApiBaseUrl()}/bookings/${bookingId}/check-out`, {
+          method: 'PATCH',
+          headers: {
+            'x-user-id': userId,
+            'x-user-role': 'PARTNER',
+            'x-user-location': location,
+            'Content-Type': 'application/json'
+          }
+        });
         // Re-render the page to show the new status
         renderBookingsPage(root.id);
       } catch (err) {

@@ -18,8 +18,7 @@ export async function renderTravelerPackageSearchPage(containerId) {
     const state = {
         searchValues: getSearchValues(),
         minDuration: 1,
-        flightMode: "",
-        maxBudget: 100000,
+        maxBudget: 500000,
         selectedBudgets: new Set(),
         selectedCategories: new Set(),
         occupancyOpen: false
@@ -116,13 +115,6 @@ export async function renderTravelerPackageSearchPage(containerId) {
                                 </div>
                             </div>
 
-                            <div class="traveler-package-filter-group">
-                                <h3>Flights</h3>
-                                <div class="traveler-package-flight-toggle">
-                                    <button type="button" class="${state.flightMode === "with" ? "active" : ""}" data-package-flight="with">With Flight</button>
-                                    <button type="button" class="${state.flightMode === "without" ? "active" : ""}" data-package-flight="without">Without Flight</button>
-                                </div>
-                            </div>
 
                             <div class="traveler-package-filter-group">
                                 <h3>Budget</h3>
@@ -209,13 +201,6 @@ export async function renderTravelerPackageSearchPage(containerId) {
             render();
         });
 
-        container.querySelectorAll("[data-package-flight]").forEach((button) => {
-            button.addEventListener("click", () => {
-                const mode = button.dataset.packageFlight;
-                state.flightMode = state.flightMode === mode ? "" : mode;
-                render();
-            });
-        });
 
         container.querySelectorAll("[data-package-budget]").forEach((input) => {
             input.addEventListener("change", () => {
@@ -365,9 +350,11 @@ function getFilteredPackages(state) {
             normalizeText(item.title).includes(destinationTerm)
         )
         .filter((item) => item.nights >= state.minDuration)
-        .filter((item) => !state.flightMode || (state.flightMode === "with" ? item.withFlight !== false : !item.withFlight))
         .filter((item) => item.pricePerPerson <= state.maxBudget)
-        .filter((item) => !state.selectedBudgets.size || state.selectedBudgets.has(item.budgetBucket))
+        .filter((item) => {
+            if (state.selectedBudgets.size === 0) return true;
+            return state.selectedBudgets.has(item.budgetBucket);
+        })
         .filter((item) => !state.selectedCategories.size || state.selectedCategories.has(String(item.hotelCategory)))
         .map((item) => ({
             ...item,

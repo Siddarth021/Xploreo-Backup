@@ -1030,8 +1030,12 @@ function buildGeneratedHotelDetail(searchHotel) {
 }
 
 function buildGalleryForHotel(searchHotel) {
-    if (searchHotel.images && searchHotel.images.length > 0) {
-        return searchHotel.images;
+    if (Array.isArray(searchHotel.images)) {
+        if (searchHotel.images.length > 0) {
+            return searchHotel.images;
+        } else if (searchHotel.image) {
+            return [searchHotel.image];
+        }
     }
 
     const galleryByCategory = {

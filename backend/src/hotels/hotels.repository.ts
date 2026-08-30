@@ -504,6 +504,7 @@ export class HotelsRepository {
       totalRooms: data.totalRooms,
       availableRooms: data.availableRooms ?? data.totalRooms,
       image: data.image,
+      images: data.images ?? [],
       amenities: data.amenities,
       status: data.status,
       createdAt: new Date(),

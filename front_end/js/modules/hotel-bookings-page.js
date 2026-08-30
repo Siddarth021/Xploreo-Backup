@@ -27,7 +27,7 @@ export async function renderBookingsPage(containerId = "main") {
     <section class="hotel-content-card hotel-summary-strip">
       <div><span>Total Bookings</span><strong>${bookings.length}</strong></div>
       <div><span>Confirmed</span><strong>${bookings.filter((booking) => booking.status === "CONFIRMED").length}</strong></div>
-      <div><span>Revenue</span><strong>₹${bookings.filter(b => String(b.status).toUpperCase() !== "CANCELLED").reduce((sum, booking) => sum + Number(booking.totalAmount || 0), 0).toLocaleString()}</strong></div>
+      <div><span>Revenue</span><strong>₹${bookings.filter(b => String(b.status).toUpperCase() !== "CANCELLED" && String(b.status).toUpperCase() !== "REFUNDED").reduce((sum, booking) => sum + Number(booking.totalAmount || 0), 0).toLocaleString()}</strong></div>
     </section>
     <div id="booking-list">
       ${bookings.length

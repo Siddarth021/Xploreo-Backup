@@ -718,7 +718,7 @@ export async function renderTravelerHotelDetailPage(containerId) {
             }
 
             let myTrips = [];
-            try { myTrips = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]"); } catch (e) {}
+            try { myTrips = JSON.parse(localStorage.getItem("traveler_my_trips") || "[]"); } catch (e) { }
             const tripIndex = myTrips.findIndex(t => String(t.id) === String(bookingId) || String(t.bookingId) === String(bookingId));
             if (tripIndex >= 0) {
                 myTrips[tripIndex].status = "Cancelled";
@@ -726,7 +726,7 @@ export async function renderTravelerHotelDetailPage(containerId) {
             }
 
             let tours = [];
-            try { tours = JSON.parse(localStorage.getItem("tours") || "[]"); } catch (e) {}
+            try { tours = JSON.parse(localStorage.getItem("tours") || "[]"); } catch (e) { }
             const tourIndex = tours.findIndex(t => String(t.id) === String(bookingId) || String(t.bookingId) === String(bookingId));
             if (tourIndex >= 0) {
                 tours[tourIndex].status = "Cancelled";
@@ -734,7 +734,7 @@ export async function renderTravelerHotelDetailPage(containerId) {
             }
 
             let hotelBookings = [];
-            try { hotelBookings = JSON.parse(localStorage.getItem("hotelBookings") || "[]"); } catch (e) {}
+            try { hotelBookings = JSON.parse(localStorage.getItem("hotelBookings") || "[]"); } catch (e) { }
             const hbIndex = hotelBookings.findIndex(b => String(b.id) === String(bookingId));
             if (hbIndex >= 0) {
                 hotelBookings[hbIndex].status = "Cancelled";
@@ -1030,6 +1030,10 @@ function buildGeneratedHotelDetail(searchHotel) {
 }
 
 function buildGalleryForHotel(searchHotel) {
+    if (searchHotel.images && searchHotel.images.length > 0) {
+        return searchHotel.images;
+    }
+
     const galleryByCategory = {
         "Luxury Stays": [
             "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=1400",
@@ -1087,16 +1091,6 @@ function buildGeneratedRooms(searchHotel) {
             price: searchHotel.priceValue,
             oldPrice: searchHotel.oldPriceValue,
             selected: true
-        },
-        {
-            id: `${searchHotel.id}-suite`,
-            name: `${searchHotel.name.split(" ")[0]} Premium Suite`,
-            size: searchHotel.stars >= 5 ? "52 sqm" : "44 sqm",
-            bedding: "1 King Bed + Lounge",
-            guests: inferGuestsRoomLabel(Math.max(searchHotel.maxGuests, 3)),
-            image: buildGalleryForHotel(searchHotel)[1] || searchHotel.image,
-            tags: [...searchHotel.tags.slice(0, 2), "Breakfast Included"],
-            price: Math.round(searchHotel.priceValue * 1.45)
         }
     ];
 }

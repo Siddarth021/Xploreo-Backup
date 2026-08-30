@@ -97,6 +97,12 @@ const navlinks = [
     roles: ["hotel"]
   },
   {
+    name: "Reviews",
+    path: "../pages/hotelReviews.html",
+    icon: "../components/ui/reviews.svg",
+    roles: ["hotel"]
+  },
+  {
     name: "Earnings",
     path: "../pages/hotelEarning.html",
     icon: "../components/ui/earnings.svg",

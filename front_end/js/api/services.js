@@ -456,3 +456,7 @@ export function changeGuideOnAssignment(id, payload) {
 export function cancelGuideAssignment(id) {
   return apiPatch(API_ENDPOINTS.guideAssignmentCancel(id), {});
 }
+
+export function cancelHotelBooking(id) {
+  return apiPatch(API_ENDPOINTS.hotelBookingCancel(id));
+}

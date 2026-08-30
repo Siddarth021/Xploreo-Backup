@@ -65,6 +65,7 @@ export const API_ENDPOINTS = Object.freeze({
   guideAssignmentReject: (id) => `/guide-assignments/${id}/reject`,
   guideAssignmentChangeGuide: (id) => `/guide-assignments/${id}/change-guide`,
   guideAssignmentCancel: (id) => `/guide-assignments/${id}/cancel`,
+  hotelBookingCancel: (id) => `/bookings/${id}/cancel`,
 
   // Cities
   cities: "/cities",

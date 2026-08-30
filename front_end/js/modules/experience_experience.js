@@ -208,7 +208,7 @@ export async function renderExperienceCatalogPage() {
             today.setHours(0, 0, 0, 0);
             const slotDateObj = new Date(date);
             slotDateObj.setHours(0, 0, 0, 0);
-            
+
             if (slotDateObj <= today) {
                 setFieldError("slotDate", "Slots can only be created for tomorrow or later.");
                 isValid = false;
@@ -258,7 +258,7 @@ export async function renderExperienceCatalogPage() {
         const files = Array.from(imageInput?.files || []);
         selectedThumbnailIndex = 0;
         uploadedImageUrls = [];
-        
+
         if (!files.length) {
             renderImagePreviewGrid();
             return;
@@ -280,12 +280,12 @@ export async function renderExperienceCatalogPage() {
 
     function timeToMinutes(value) {
         const str = String(value).trim();
-        
+
         const match24 = str.match(/^(\d{1,2}):(\d{2})$/);
         if (match24) {
             return Number(match24[1]) * 60 + Number(match24[2]);
         }
-        
+
         const match12 = str.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
         if (!match12) return Number.MAX_SAFE_INTEGER;
         let hour = Number(match12[1]) % 12;
@@ -359,10 +359,10 @@ export async function renderExperienceCatalogPage() {
                     <h2 class="slots-day-heading">${slotDateLabel(date)}</h2>
                     <div class="slots-card-grid">
                         ${slots.map((slot) => {
-                            const slotMeta = getSlotMeta(slot);
-                            const percent = slot.capacity ? Math.min(100, (slot.booked / slot.capacity) * 100) : 0;
+                const slotMeta = getSlotMeta(slot);
+                const percent = slot.capacity ? Math.min(100, (slot.booked / slot.capacity) * 100) : 0;
 
-                            return `
+                return `
                                 <article class="slot-card" data-slot-id="${slot.id}">
                                     <div class="slot-card-top">
                                         <h3>${slot.time}</h3>
@@ -400,7 +400,7 @@ export async function renderExperienceCatalogPage() {
                                     </div>
                                 </article>
                             `;
-                        }).join("")}
+            }).join("")}
                     </div>
                 </section>
             `).join("")
@@ -428,7 +428,7 @@ export async function renderExperienceCatalogPage() {
         const tomorrowStr = tomorrow.toISOString().split("T")[0];
         dateInput.value = slot?.date || exp.slots[0]?.date || tomorrowStr;
         dateInput.min = tomorrowStr;
-        
+
         document.getElementById("slotTime").value = slot?.time || "10:00";
         document.getElementById("slotCapacity").value = slot?.capacity || exp.capacity || 10;
 
@@ -469,9 +469,9 @@ export async function renderExperienceCatalogPage() {
         container.innerHTML = experiences.map((exp) => {
             const sortedSlots = Array.isArray(exp.slots) ? sortSlots(exp.slots) : [];
             const nextSlotObj = sortedSlots.find(s => s.available) || sortedSlots[0] || null;
-            
 
-            const nextSessionDisplay = nextSlotObj 
+
+            const nextSessionDisplay = nextSlotObj
                 ? `Next session: ${nextSlotObj.date} at ${nextSlotObj.time} • ${nextSlotObj.booked}/${nextSlotObj.capacity} seats booked`
                 : exp.slots && exp.slots.length === 0
                     ? `No slots created yet`
@@ -560,7 +560,7 @@ export async function renderExperienceCatalogPage() {
 
             persistExperiences();
             renderCatalog();
-            
+
             // Sync to backend
             deleteExperience(expId).catch(e => console.warn("Failed to sync experience deletion", e));
             return;
@@ -700,13 +700,13 @@ export async function renderExperienceCatalogPage() {
         experiences.push(expPayload);
 
         persistExperiences();
-        
+
         // Sync to backend
         createExperience({
             id: String(newExperienceId),
             title: payload.name,
-            description: payload.description, 
-            destination: payload.location, 
+            description: payload.description,
+            destination: payload.location,
             category: payload.category,
             price: Number(payload.price),
             durationHours: parseInt(payload.duration) || 2,
@@ -741,7 +741,7 @@ export async function renderExperienceCatalogPage() {
         exp.location = payload.location;
 
         persistExperiences();
-        
+
         // Sync to backend
         updateExperience(String(currentEditId), {
             title: payload.name,
@@ -777,9 +777,9 @@ export async function renderExperienceCatalogPage() {
         if (!exp) return;
 
         const isDuplicate = exp.slots.some(
-            (item) => item.date === payload.date && 
-                      item.time === payload.time && 
-                      (slotModalMode === "add" || String(item.id) !== String(currentSlotId))
+            (item) => item.date === payload.date &&
+                item.time === payload.time &&
+                (slotModalMode === "add" || String(item.id) !== String(currentSlotId))
         );
 
         if (isDuplicate) {

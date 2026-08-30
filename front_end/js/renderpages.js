@@ -242,8 +242,16 @@ export async function renderPageContent(user) {
     page === "hotelRooms.html"
   ) {
     await renderSafely("Render hotel partner services", () =>
-      renderServicesPage("main", user),
+      renderServicesPage("main"),
     );
+  } else if (
+    (role === "hotel" || role === "PARTNER") &&
+    page === "hotelReviews.html"
+  ) {
+    await renderSafely("Render hotel partner reviews", async () => {
+      const { renderHotelReviews } = await import("./modules/hotel-reviews.js");
+      renderHotelReviews("reviews-section-h");
+    });
   } else if (
     (role === "hotel" || role === "PARTNER") &&
     page === "hotelEarning.html"

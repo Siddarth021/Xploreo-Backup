@@ -38,7 +38,7 @@ export class HotelsService {
       rating: 0,
       reviewCount: 0,
       pricePerNight: dto.pricePerNight,
-      taxesAndFees: dto.taxesAndFees ?? 0,
+      taxesAndFees: Math.round(dto.pricePerNight * 0.05),
       totalRooms: dto.totalRooms ?? 10,
       image: dto.image ?? '',
       amenities: dto.amenities ?? [],
@@ -79,8 +79,26 @@ export class HotelsService {
       }
     }
 
+    if (dto.pricePerNight !== undefined) {
+      dto.taxesAndFees = Math.round(dto.pricePerNight * 0.05);
+    }
+
     const updated = this.hotelsRepository.update(id, dto);
     return updated;
+  }
+
+  addReviewRating(id: string, newRating: number) {
+    const hotel = this.hotelsRepository.findById(id);
+    if (!hotel) throw new NotFoundException(`Hotel ${id} not found`);
+
+    const currentTotalScore = hotel.rating * hotel.reviewCount;
+    const newCount = hotel.reviewCount + 1;
+    const newAverage = (currentTotalScore + newRating) / newCount;
+
+    // Round to 1 decimal place
+    const roundedRating = Math.round(newAverage * 10) / 10;
+
+    this.hotelsRepository.updateRating(id, roundedRating, newCount);
   }
 
   remove(id: string, actorLocation?: string) {

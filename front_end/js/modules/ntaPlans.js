@@ -1,6 +1,7 @@
 // Non-Technical Admin - Manage Travel Packages (Full CRUD)
 import { nontechAdminData } from "../api/legacyData.js";
 import { createPlan, updatePlan, deletePlan, fetchPlans, fetchHotels, fetchExperiences, fetchCities } from "../api/services.js";
+import { getCurrentUser, getApiSession } from "../api/session.js";
 
 let currentEditId = null;
 let currentDeleteId = null;
@@ -46,10 +47,11 @@ export async function initNtaPlans() {
 function renderHeader() {
     const header = document.getElementById("nta-plans-header");
     if (header) {
+        const assignedLocation = getCurrentUser()?.location || getApiSession()?.user?.location || 'Goa';
         header.innerHTML = `
             <div class="nta-page-header">
                 <h1>Manage Travel Packages</h1>
-                <p>Create, edit, and manage your travel packages and experiences.</p>
+                <p>Assigned Region: <span style="display:inline-block; padding:2px 10px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:9999px; font-weight:600; font-size:12px;">${assignedLocation}</span> · Create, edit, and manage your travel packages and experiences.</p>
             </div>
         `;
     }
@@ -242,14 +244,9 @@ function renderPlanModal(title, plan, availableHotels = [], availableExperiences
 
             <div class="nta-form-row">
                 <div class="nta-form-group">
-                    <label for="plan-destination">Destination</label>
-                    <select id="plan-destination">
-                        <option value="" disabled ${!plan.destination ? 'selected' : ''}>Select destination</option>
-                        ${allDestinations.map(dest => `
-                            <option value="${dest}" ${plan.destination === dest ? 'selected' : ''}>${dest}</option>
-                        `).join('')}
-                    </select>
-                    <div class="nta-form-hint">Choose destination city for this package.</div>
+                    <label for="plan-destination">Assigned Destination (Fixed)</label>
+                    <input type="text" id="plan-destination" value="${getCurrentUser()?.location || getApiSession()?.user?.location || plan.destination || 'Mumbai'}" readonly disabled style="background-color: #f1f5f9; cursor: not-allowed; font-weight: 600; color: #1e293b;" />
+                    <div class="nta-form-hint">Package destination is automatically assigned to your operational region.</div>
                 </div>
                 <div class="nta-form-group">
                     <label for="plan-category">Category</label>

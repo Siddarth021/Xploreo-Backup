@@ -16,7 +16,7 @@ import { ExperienceBookingsService } from './experience-bookings.service';
 export class ExperienceBookingsController {
   constructor(
     private readonly experienceBookingsService: ExperienceBookingsService,
-  ) {}
+  ) { }
 
   @Post()
   @Roles(Role.TRAVELLER_ACTOR)
@@ -43,7 +43,10 @@ export class ExperienceBookingsController {
       return this.experienceBookingsService.findForTraveller(req.user?.userId);
     }
     if (req.user?.role === Role.EXPERIENCE_PARTNER) {
-      return this.experienceBookingsService.findForPartner(req.user?.userId);
+      return this.experienceBookingsService.findForPartner(
+        req.user?.userId,
+        req.user?.location,
+      );
     }
 
     return this.experienceBookingsService.findAll();
@@ -62,6 +65,7 @@ export class ExperienceBookingsController {
       id,
       req.user?.userId,
       req.user?.role,
+      req.user?.location,
       dto.status,
     );
   }

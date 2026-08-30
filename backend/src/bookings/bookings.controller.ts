@@ -34,14 +34,18 @@ export class BookingsController {
   @Roles(Role.TRAVELLER_ACTOR)
   @ApiOperation({ summary: 'Traveller cancels a hotel booking' })
   cancel(@Req() req: any) {
-    return this.bookingsService.cancelBooking(req.params.id);
+    return this.bookingsService.cancelBooking(req.params.id, req.user?.userId);
   }
 
   @Patch(':id/check-in')
   @Roles(Role.PARTNER)
   @ApiOperation({ summary: 'Hotel partner checks in a booking' })
   checkIn(@Req() req: any) {
-    return this.bookingsService.checkInBooking(req.params.id, req.user?.userId);
+    return this.bookingsService.checkInBooking(
+      req.params.id,
+      req.user?.userId,
+      req.user?.location,
+    );
   }
 
   @Patch(':id/check-out')
@@ -51,6 +55,7 @@ export class BookingsController {
     return this.bookingsService.checkOutBooking(
       req.params.id,
       req.user?.userId,
+      req.user?.location,
     );
   }
 }

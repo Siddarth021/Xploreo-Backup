@@ -2,6 +2,7 @@ import { fetchPartnerHotels } from "../api/services.js?v=hotel-workflow-2";
 import {
   getApiBaseUrl,
   getApiSession,
+  getCurrentUser,
 } from "../api/session.js?v=hotel-workflow-2";
 
 const DEFAULT_IMAGE =
@@ -32,7 +33,7 @@ function render(root, hotels) {
     <div class="hotel-page-header hotel-flex-header">
       <div>
         <h1>Services</h1>
-        <p>Manage your hotel offerings from the backend catalogue</p>
+        <p>Assigned Region: <span style="display:inline-block; padding:2px 10px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:9999px; font-weight:600; font-size:12px;">${getCurrentUser()?.location || getApiSession()?.user?.location || 'Goa'}</span> · Manage your hotel offerings from the backend catalogue</p>
       </div>
       <button class="btn-blue" id="open-service-modal" type="button">+ Add Hotel</button>
     </div>
@@ -62,7 +63,7 @@ function renderShell(message) {
     <div class="hotel-page-header hotel-flex-header">
       <div>
         <h1>Services</h1>
-        <p>Manage your hotel offerings</p>
+        <p>Assigned Region: <span style="display:inline-block; padding:2px 10px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:9999px; font-weight:600; font-size:12px;">${getCurrentUser()?.location || getApiSession()?.user?.location || 'Goa'}</span> · Manage your hotel offerings</p>
       </div>
     </div>
     <div class="hotel-content-card">${escapeHtml(message)}</div>
@@ -97,6 +98,7 @@ function renderHotelCard(hotel) {
 }
 
 function renderModal() {
+  const assignedLocation = getCurrentUser()?.location || getApiSession()?.user?.location || "Goa";
   return `
     <div id="add-service-modal" class="hotel-modal hidden">
       <div class="hotel-modal-box">
@@ -107,8 +109,8 @@ function renderModal() {
         <form id="hotel-service-form" class="hotel-modal-body" data-hotel-id="" novalidate>
           <div class="hotel-form-grid">
             ${field("hotelName", "Hotel Name", "Xploreo Beach Resort")}
-            ${field("hotelCity", "City", "Goa")}
-            ${field("hotelLocation", "Location", "Calangute Beach, Goa")}
+            ${field("hotelCity", "Assigned Location (Fixed)", assignedLocation, "text", "", "", true)}
+            ${field("hotelLocation", "Area / Landmark", "Calangute Beach")}
             ${field("hotelStars", "Stars", "5", "number", "1", "5")}
             ${field("hotelPrice", "Price per Night", "4800", "number", "0")}
             ${field("hotelTaxes", "Taxes & Fees", "650", "number", "0")}
@@ -143,11 +145,11 @@ function renderModal() {
   `;
 }
 
-function field(id, label, placeholder, type = "text", min = "", max = "") {
+function field(id, label, placeholder, type = "text", min = "", max = "", readonly = false) {
   return `
     <div>
       <label for="${id}">${escapeHtml(label)}</label>
-      <input id="${id}" type="${type}" placeholder="${escapeHtmlAttr(placeholder)}" ${min ? `min="${min}"` : ""} ${max ? `max="${max}"` : ""}>
+      <input id="${id}" type="${type}" placeholder="${escapeHtmlAttr(placeholder)}" ${min ? `min="${min}"` : ""} ${max ? `max="${max}"` : ""} ${readonly ? `readonly disabled style="background-color: #f1f5f9; cursor: not-allowed; font-weight: 600; color: #1e293b;"` : ""}>
     </div>
   `;
 }
@@ -202,6 +204,10 @@ function bindEvents(root) {
   root.querySelector("#open-service-modal")?.addEventListener("click", () => {
     form.reset();
     form.dataset.hotelId = "";
+    const assignedLocation = getCurrentUser()?.location || getApiSession()?.user?.location || "Goa";
+    if (document.getElementById("hotelCity")) {
+      document.getElementById("hotelCity").value = assignedLocation;
+    }
     imageUrlHidden.value = "";
     imagePreview.style.display = "none";
     dropzoneContent.style.opacity = "1";
@@ -225,8 +231,9 @@ function bindEvents(root) {
       const hotel = currentHotels.find(h => (h.id === id || h._id === id));
       if(!hotel) return;
 
+      const assignedLocation = getCurrentUser()?.location || getApiSession()?.user?.location || hotel.city || "Goa";
       document.getElementById("hotelName").value = hotel.name || "";
-      document.getElementById("hotelCity").value = hotel.city || "";
+      document.getElementById("hotelCity").value = assignedLocation;
       document.getElementById("hotelLocation").value = hotel.location || "";
       document.getElementById("hotelStars").value = hotel.stars || 0;
       document.getElementById("hotelPrice").value = hotel.pricePerNight || 0;
@@ -258,85 +265,69 @@ function bindEvents(root) {
   form?.addEventListener("submit", async (event) => {
     event.preventDefault();
     const error = root.querySelector("#hotel-form-error");
-    if (error) error.textContent = "";
+    error.textContent = "";
 
     const payload = readHotelPayload();
     const validationError = validateHotelPayload(payload);
     if (validationError) {
-      if (error) error.textContent = validationError;
+      error.textContent = validationError;
       return;
     }
 
+    const hotelId = form.dataset.hotelId;
     try {
-      const editingId = form.dataset.hotelId;
-      if (editingId) {
-        await updatePartnerHotel(editingId, payload);
+      if (hotelId) {
+        await updateHotel(hotelId, payload);
       } else {
-        await createPartnerHotel(payload);
+        await createHotel(payload);
       }
-      const hotels = await fetchPartnerHotels();
-      currentHotels = hotels;
-      render(root, hotels);
+      modal?.classList.add("hidden");
+      await renderServicesPage(root.id);
     } catch (err) {
-      console.error("Save hotel failed:", err);
-      if (error) error.textContent = err.message || "Unable to save hotel.";
+      error.textContent = err.message || "Failed to save hotel.";
     }
   });
 }
 
-async function createPartnerHotel(payload) {
+async function createHotel(payload) {
   const session = getApiSession();
-  const userId =
-    session?.headers?.["x-user-id"] ||
-    session?.user?.userId ||
-    session?.user?.id;
-  const role =
-    session?.user?.role === "PARTNER" || session?.user?.role === "hotel"
-      ? "PARTNER"
-      : session?.headers?.["x-user-role"];
-
-  const response = await fetch(`${getApiBaseUrl()}/hotels`, {
+  const res = await fetch(`${getApiBaseUrl()}/hotels`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-user-id": userId || "",
-      "x-user-role": role || "PARTNER",
+      "x-user-id": session?.headers?.["x-user-id"] || session?.user?.userId || session?.user?.id || "",
+      "x-user-role": session?.headers?.["x-user-role"] || "PARTNER",
+      "x-user-location": session?.headers?.["x-user-location"] || session?.user?.location || getCurrentUser()?.location || "Goa",
+      ...(session?.token ? { Authorization: `Bearer ${session.token}` } : {}),
     },
     body: JSON.stringify(payload),
   });
 
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const message = body?.message || body?.error || "Unable to save hotel.";
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const message = body?.message || body?.error || "Unable to create hotel.";
     throw new Error(Array.isArray(message) ? message.join(", ") : message);
   }
 
   return Object.prototype.hasOwnProperty.call(body, "data") ? body.data : body;
 }
 
-async function updatePartnerHotel(id, payload) {
+async function updateHotel(id, payload) {
   const session = getApiSession();
-  const userId =
-    session?.headers?.["x-user-id"] ||
-    session?.user?.userId ||
-    session?.user?.id;
-  const role =
-    session?.user?.role === "PARTNER" || session?.user?.role === "hotel"
-      ? "PARTNER"
-      : session?.headers?.["x-user-role"];
-
-  const response = await fetch(`${getApiBaseUrl()}/hotels/${id}`, {
+  const res = await fetch(`${getApiBaseUrl()}/hotels/${encodeURIComponent(id)}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      "x-user-id": userId || "",
-      "x-user-role": role || "PARTNER",
+      "x-user-id": session?.headers?.["x-user-id"] || session?.user?.userId || session?.user?.id || "",
+      "x-user-role": session?.headers?.["x-user-role"] || "PARTNER",
+      "x-user-location": session?.headers?.["x-user-location"] || session?.user?.location || getCurrentUser()?.location || "Goa",
+      ...(session?.token ? { Authorization: `Bearer ${session.token}` } : {}),
     },
     body: JSON.stringify(payload),
   });
 
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) {
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
     const message = body?.message || body?.error || "Unable to update hotel.";
     throw new Error(Array.isArray(message) ? message.join(", ") : message);
   }
@@ -345,10 +336,11 @@ async function updatePartnerHotel(id, payload) {
 }
 
 function readHotelPayload() {
+  const assignedLocation = getCurrentUser()?.location || getApiSession()?.user?.location || "Goa";
   return {
     name: value("hotelName"),
-    city: value("hotelCity"),
-    location: value("hotelLocation"),
+    city: value("hotelLocation") || assignedLocation,
+    location: assignedLocation,
     description: value("hotelDescription"),
     stars: Number(value("hotelStars")),
     pricePerNight: Number(value("hotelPrice")),

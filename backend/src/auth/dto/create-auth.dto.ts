@@ -38,4 +38,8 @@ export class RegisterDto {
   @ApiProperty({ enum: Role, example: Role.TRAVELLER })
   @IsEnum(Role)
   role!: Role;
+
+  @ApiProperty({ example: 'Goa', required: false })
+  @IsString()
+  location?: string;
 }

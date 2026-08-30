@@ -1,4 +1,5 @@
 import { experiences as experienceCatalog } from "../api/legacyData.js";
+import { getCurrentUser, getApiSession } from "../api/session.js";
 import {
     attachModalDismissals,
     clearFieldErrors,
@@ -62,6 +63,14 @@ export async function renderExperienceCatalogPage() {
     let uploadedImageUrls = [];
 
     if (!container) return;
+
+    const actorLocation = getCurrentUser()?.location || getApiSession()?.user?.location || "Goa";
+    if (catalogHeader) {
+        const pTags = catalogHeader.querySelectorAll("p");
+        if (pTags.length >= 2) {
+            pTags[1].innerHTML = `Assigned Region: <span style="display:inline-block; padding:2px 10px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:9999px; font-weight:600; font-size:12px;">${actorLocation}</span> · Manage your experience offerings`;
+        }
+    }
 
     function persistExperiences() {
         writeStorage("experienceCatalog", experiences);
@@ -145,15 +154,14 @@ export async function renderExperienceCatalogPage() {
         const price = Number(document.getElementById(`${prefix}Price`).value);
         const duration = Number(document.getElementById(`${prefix}Duration`).value);
         const category = document.getElementById(`${prefix}Category`).value;
-        const location = document.getElementById(`${prefix}Location`)?.value || "Goa";
+        const actorLocation = getCurrentUser()?.location || getApiSession()?.user?.location || "Goa";
+        const location = actorLocation;
+        if (document.getElementById(`${prefix}Location`)) {
+            document.getElementById(`${prefix}Location`).value = actorLocation;
+        }
 
         if (!name || name.length < 3) {
             setFieldError(`${prefix}Name`, "Enter a name with at least 3 characters.");
-            isValid = false;
-        }
-
-        if (!location) {
-            setFieldError(`${prefix}Location`, "Please select a destination.");
             isValid = false;
         }
 

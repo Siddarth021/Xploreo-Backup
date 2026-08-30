@@ -62,18 +62,9 @@
           <input id="expName" name="title" required maxlength="80">
           <small class="field-error" data-error-for="expName"></small>
         </label>
-
         <label class="field-group" for="expLocation">
-          <span>Location / Destination</span>
-          <select id="expLocation" name="location" required>
-            <option value="" disabled selected>Select destination</option>
-            <option value="Jaipur">Jaipur</option>
-            <option value="Goa">Goa</option>
-            <option value="Mumbai">Mumbai</option>
-            <option value="Delhi">Delhi</option>
-            <option value="Kerala">Kerala</option>
-          </select>
-          <small class="field-error" data-error-for="expLocation"></small>
+          <span>Assigned Location (Fixed)</span>
+          <input id="expLocation" name="location" readonly disabled style="background-color: #f1f5f9; cursor: not-allowed; font-weight: 600; color: #1e293b;">
         </label>
 
         <label class="field-group" for="expCategory">
@@ -94,64 +85,75 @@
           </select>
           <small class="field-error" data-error-for="expCategory"></small>
         </label>
+      </div>
 
-        <label class="field-group field-group-full" for="expDescription">
-          <span>Description</span>
-          <textarea id="expDescription" name="description" required rows="3" maxlength="300" placeholder="Describe the experience..."></textarea>
-          <small class="field-error" data-error-for="expDescription"></small>
-        </label>
-
+      <div class="section form-grid">
         <label class="field-group" for="expPrice">
-          <span>Base Price ($)</span>
-          <input id="expPrice" name="price" type="number" min="1" step="1" required>
+          <span>Price per Person (₹)</span>
+          <input id="expPrice" name="price" type="number" min="0" step="1" required>
           <small class="field-error" data-error-for="expPrice"></small>
         </label>
 
         <label class="field-group" for="expDuration">
           <span>Duration (hours)</span>
-          <input id="expDuration" name="duration" type="number" min="1" step="1" required>
+          <input id="expDuration" name="durationHours" type="number" min="0.5" step="0.5" required>
           <small class="field-error" data-error-for="expDuration"></small>
         </label>
 
-
-        <label class="field-group field-group-full add-upload-field" for="expImage">
-          <span>Experience Image</span>
-          <input type="file" id="expImage" name="image" accept="image/*" multiple class="visually-hidden">
-          <span class="add-upload-group">
-            <span class="edit-upload-icon">⇪</span>
-            <small class="edit-upload-copy">Click to upload or drag and drop</small>
-            <small class="edit-upload-meta">PNG, JPG up to 10MB each</small>
-          </span>
-          <small id="thumbnailHint" class="upload-thumbnail-hint hidden">Click a preview below to choose the thumbnail.</small>
-          <small class="field-error" data-error-for="expImage"></small>
-          <div id="imagePreviewGrid" class="experience-image-preview-grid hidden" aria-live="polite"></div>
+        <label class="field-group" for="expCapacity">
+          <span>Capacity per Slot</span>
+          <input id="expCapacity" name="capacity" type="number" min="1" step="1" required>
+          <small class="field-error" data-error-for="expCapacity"></small>
         </label>
       </div>
 
-      <p id="addExperienceMessage" class="form-message" role="alert"></p>
+      <div class="section form-grid">
+        <label class="field-group field-group-full" for="expImage">
+          <span>Image URL (or Unsplash keyword)</span>
+          <input id="expImage" name="image" placeholder="e.g. scuba diving or https://images.unsplash.com/...">
+          <small class="field-error" data-error-for="expImage"></small>
+        </label>
 
-      <div class="modal-actions">
-        <button type="button" data-close-modal="addModal">Cancel</button>
-        <button class="primary-btn" type="submit">Save</button>
+        <label class="field-group field-group-full" for="expDescription">
+          <span>Short Description</span>
+          <textarea id="expDescription" name="description" rows="3" required maxlength="300"></textarea>
+          <small class="field-error" data-error-for="expDescription"></small>
+        </label>
+      </div>
+
+      <div class="section">
+        <div class="slots-header">
+          <label>Schedule Slots</label>
+          <button type="button" class="btn-secondary btn-sm" id="btnAddSlot">＋ Add Slot</button>
+        </div>
+        <div id="slotsContainer" class="slots-list"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" data-close-modal="addModal">Cancel</button>
+        <button type="submit" class="btn-primary" id="btnSaveExperience">Save Experience</button>
       </div>
     </form>
-
   </div>
 </div>
 
-<!-- ================= EDIT MODAL ================= -->
+<!-- EDIT EXPERIENCE MODAL -->
 <div id="editModal" class="modal">
-  <div class="modal-box edit-modal-box">
-
+  <div class="modal-box">
     <div class="modal-header">
       <h2>Edit Experience</h2>
       <button type="button" class="close" data-close-modal="editModal" aria-label="Close edit experience">✕</button>
     </div>
 
-    <hr class="slots-modal-divider">
-
     <form id="editExperienceForm" class="experience-form" novalidate>
-      <div class="edit-modal-body">
+      <input type="hidden" id="editExpId">
+
+      <div class="modal-tabs">
+        <button type="button" class="tab-btn active" data-edit-tab="details">Details</button>
+        <button type="button" class="tab-btn" data-edit-tab="slots">Slots</button>
+      </div>
+
+      <div id="editTabDetails" class="edit-tab-content active">
         <div class="section form-grid">
           <label class="field-group field-group-full" for="editName">
             <span>Experience Name</span>
@@ -160,16 +162,8 @@
           </label>
 
           <label class="field-group field-group-full" for="editLocation">
-            <span>Location / Destination</span>
-            <select id="editLocation" name="location" required>
-              <option value="" disabled selected>Select destination</option>
-              <option value="Jaipur">Jaipur</option>
-              <option value="Goa">Goa</option>
-              <option value="Mumbai">Mumbai</option>
-              <option value="Delhi">Delhi</option>
-              <option value="Kerala">Kerala</option>
-            </select>
-            <small class="field-error" data-error-for="editLocation"></small>
+            <span>Assigned Location (Fixed)</span>
+            <input id="editLocation" name="location" readonly disabled style="background-color: #f1f5f9; cursor: not-allowed; font-weight: 600; color: #1e293b;">
           </label>
 
           <label class="field-group field-group-full" for="editCategory">

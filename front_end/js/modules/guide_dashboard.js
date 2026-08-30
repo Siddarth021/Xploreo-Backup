@@ -23,6 +23,8 @@ export async function renderGuideDashboard(containerId, user) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
+  const guideLocation = user.location || "Mumbai";
+
   container.innerHTML = `
     <div class="guide-page-wrapper">
       <div class="guide-page-header">
@@ -30,7 +32,7 @@ export async function renderGuideDashboard(containerId, user) {
           <div class="guide-page-avatar">${(user.name || user.username || "G")[0].toUpperCase()}</div>
           <div>
             <h1 class="guide-page-title">Welcome, ${user.name || user.username || "Guide"}!</h1>
-            <p class="guide-page-subtitle">Manage your plan applications and incoming bookings</p>
+            <p class="guide-page-subtitle">Assigned Region: <span style="display:inline-block; padding:2px 10px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:9999px; font-weight:600; font-size:12px;">${guideLocation}</span> · Manage your plan applications and bookings</p>
           </div>
         </div>
         <div class="guide-header-stats" id="gd-stats"></div>
@@ -55,9 +57,11 @@ export async function renderGuideDashboard(containerId, user) {
 
 async function loadData() {
   const guideId = currentUser.id || currentUser.userId;
+  const guideLoc = currentUser.location || "Mumbai";
   try {
     const plansRes = await fetchPlans();
-    allPlans = plansRes.items || plansRes || [];
+    const rawPlans = plansRes.items || plansRes || [];
+    allPlans = rawPlans.filter(p => !p.destination || p.destination.toLowerCase().includes(guideLoc.toLowerCase()) || guideLoc.toLowerCase().includes(p.destination.toLowerCase()));
   } catch (e) {
     console.warn("Failed to load plans", e);
     allPlans = [];

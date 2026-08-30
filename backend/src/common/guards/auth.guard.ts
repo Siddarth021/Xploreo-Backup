@@ -10,7 +10,7 @@ import { Role } from '../../auth/entities/auth.entity';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) { }
 
   canActivate(context: ExecutionContext): boolean {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -29,12 +29,18 @@ export class AuthGuard implements CanActivate {
       request.headers['user-id'] ??
       request.headers['userid'];
 
+    const rawLocation =
+      request.headers['x-user-location'] ??
+      request.headers['user-location'];
+
     const role = normalizeRole(Array.isArray(rawRole) ? rawRole[0] : rawRole);
     const userId = Array.isArray(rawUserId) ? rawUserId[0] : rawUserId;
+    const location = Array.isArray(rawLocation) ? rawLocation[0] : rawLocation;
 
     request.user = {
       userId: userId ? String(userId) : undefined,
       role: role || undefined,
+      location: location ? String(location) : undefined,
     };
 
     if (isPublic) return true;

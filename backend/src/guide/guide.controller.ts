@@ -42,14 +42,14 @@ export class GuideController {
   @ApiCreateEndpoint(CreateGuideDto)
   create(@Req() req: any, @Body() dto: CreateGuideDto) {
     const userId = req.user.userId;
-    return this.guideService.create(userId, dto);
+    return this.guideService.create(userId, dto, req.user?.location);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all guides' })
   @ApiReadEndpoint()
-  findAll() {
-    return this.guideService.findAll();
+  findAll(@Req() req: any) {
+    return this.guideService.findAll(req.user?.role, req.user?.location);
   }
 
   @Get('location/:locationId')
@@ -73,8 +73,9 @@ export class GuideController {
   update(
     @Param('id', NonEmptyStringPipe) id: string,
     @Body() dto: UpdateGuideDto,
+    @Req() req: any,
   ) {
-    return this.guideService.update(id, dto);
+    return this.guideService.update(id, dto, req.user?.location);
   }
 
   @Roles(Role.SUPERADMIN)

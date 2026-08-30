@@ -6,14 +6,26 @@ import {
 import { CreateHotelDto } from './dto/create-hotel.dto';
 import { UpdateHotelDto } from './dto/update-hotel.dto';
 import { HotelsRepository } from './hotels.repository';
+import {
+  assertLocationOwnership,
+  assertActorLocationMatch,
+} from '../common/utils/location-scope';
 
 @Injectable()
 export class HotelsService {
-  constructor(private readonly hotelsRepository: HotelsRepository) {}
+  constructor(private readonly hotelsRepository: HotelsRepository) { }
 
-  create(partnerId: string | undefined, dto: CreateHotelDto) {
+  create(partnerId: string | undefined, actorLocation: string | undefined, dto: CreateHotelDto) {
     if (!partnerId) {
       throw new ForbiddenException('x-user-id header is required for PARTNER');
+    }
+
+    if (actorLocation) {
+      dto.location = assertLocationOwnership(
+        actorLocation,
+        dto.location,
+        'hotel',
+      );
     }
 
     return this.hotelsRepository.create(partnerId, {
@@ -52,15 +64,34 @@ export class HotelsService {
     return hotel;
   }
 
-  update(id: string, dto: UpdateHotelDto) {
+  update(id: string, actorLocation: string | undefined, dto: UpdateHotelDto) {
+    const hotel = this.hotelsRepository.findById(id);
+    if (!hotel) throw new NotFoundException(`Hotel ${id} not found`);
+
+    if (actorLocation) {
+      assertActorLocationMatch(actorLocation, hotel.location, 'hotel');
+      if (dto.location) {
+        dto.location = assertLocationOwnership(
+          actorLocation,
+          dto.location,
+          'hotel',
+        );
+      }
+    }
+
     const updated = this.hotelsRepository.update(id, dto);
-    if (!updated) throw new NotFoundException(`Hotel ${id} not found`);
     return updated;
   }
 
-  remove(id: string) {
+  remove(id: string, actorLocation?: string) {
+    const hotel = this.hotelsRepository.findById(id);
+    if (!hotel) throw new NotFoundException(`Hotel ${id} not found`);
+
+    if (actorLocation) {
+      assertActorLocationMatch(actorLocation, hotel.location, 'hotel');
+    }
+
     const deleted = this.hotelsRepository.delete(id);
-    if (!deleted) throw new NotFoundException(`Hotel ${id} not found`);
     return { message: `Hotel ${id} deleted` };
   }
 }

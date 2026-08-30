@@ -455,8 +455,8 @@ async function createUser(role) {
         "Hotel": "hotel",
         "Experiences": "experience"
     };
-    const mappedRole = roleMap[role] || "traveller";
-    
+    const location = document.getElementById("actorLocation")?.value || "Goa";
+
     const response = await fetch("http://localhost:3000/api/auth/register", {
         method: "POST",
         headers: {
@@ -468,7 +468,8 @@ async function createUser(role) {
             email: email,
             phone: phoneVal,
             password: password,
-            role: mappedRole
+            role: mappedRole,
+            location: location
         })
     });
 

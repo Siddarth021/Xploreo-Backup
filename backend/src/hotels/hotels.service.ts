@@ -9,6 +9,7 @@ import { HotelsRepository } from './hotels.repository';
 import {
   assertLocationOwnership,
   assertActorLocationMatch,
+  validateAllowedLocation,
 } from '../common/utils/location-scope';
 
 @Injectable()
@@ -47,7 +48,11 @@ export class HotelsService {
   }
 
   findAll(location?: string) {
-    return this.hotelsRepository.findAll({ location });
+    let effectiveLocation = location;
+    if (effectiveLocation) {
+      effectiveLocation = validateAllowedLocation(effectiveLocation, 'location');
+    }
+    return this.hotelsRepository.findAll({ location: effectiveLocation });
   }
 
   findForPartner(partnerId: string | undefined) {

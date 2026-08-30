@@ -230,7 +230,7 @@ export async function renderTravelerDashboard(containerId, user) {
             <section class="travel-section">
                 <div class="section-header">
                     <div>
-                        <h2 class="section-title">Trending Destinations</h2>
+                        <h2 class="section-title">Destination</h2>
                         <p class="section-subtitle">Popular places worth exploring right now</p>
                     </div>
                 </div>
@@ -438,6 +438,29 @@ function attachDashboardEvents() {
     hydrateFlightLayout();
     bindSearchActions();
     bindDateMinConstraints();
+
+    // Destination Card Redirection
+    document.querySelectorAll(".destinations-grid .destination-card").forEach(card => {
+        card.style.cursor = "pointer";
+        card.addEventListener("click", (e) => {
+            if (e.target.closest('.heart-btn')) return;
+            const titleEl = card.querySelector("h3");
+            if (titleEl) {
+                const destination = titleEl.textContent.trim();
+                const searchState = JSON.parse(localStorage.getItem("traveler_dashboard_search_state") || "{}");
+                searchState.values = searchState.values || {};
+                searchState.values.packages = searchState.values.packages || {};
+                searchState.values.packages.destination = destination;
+                
+                const nextDay = new Date();
+                nextDay.setDate(nextDay.getDate() + 1);
+                searchState.values.packages.departureDate = nextDay.toISOString().split("T")[0];
+                
+                localStorage.setItem("traveler_dashboard_search_state", JSON.stringify(searchState));
+                window.location.href = "./traveller_package-search.html";
+            }
+        });
+    });
 
     // Initialize Wishlist State
     let wishlist = JSON.parse(localStorage.getItem("traveler_wishlist") || "[]");

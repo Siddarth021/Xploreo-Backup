@@ -91,7 +91,7 @@ export async function renderTravelerPackageSearchPage(containerId) {
             <main class="traveler-package-page">
                 <div class="traveler-package-frame">
                     <section class="traveler-package-toolbar">
-                        ${renderTextField("destination", "Going To", state.searchValues.destination, "Destination")}
+                        ${renderTextField("destination", "Destination", state.searchValues.destination, "Where do you want to explore?")}
                         ${renderDateField("departureDate", "Starting Date", state.searchValues.departureDate)}
                         ${renderOccupancyField(state)}
                         <button class="traveler-package-search-btn" type="button" id="traveler-package-search-btn">
@@ -191,6 +191,10 @@ export async function renderTravelerPackageSearchPage(containerId) {
 
         container.querySelector("#traveler-package-search-btn")?.addEventListener("click", () => {
             state.searchValues = normalizeSearchValues(state.searchValues);
+            if (!state.searchValues.destination) {
+                alert("Please select a destination to search for holiday packages.");
+                return;
+            }
             persistSearchValues(state.searchValues);
             render();
         });
@@ -286,7 +290,7 @@ function attachPackageSearchAutocomplete(container) {
     if (destInput && !destInput.id) destInput.id = "package-dest-search";
 
     function getDestSuggestions() {
-        return [...new Set(packageData.map(pkg => pkg.destination).filter(Boolean))].sort();
+        return ["Jaipur", "Goa", "Delhi", "Mumbai", "Kerala"].sort();
     }
 
     if (destInput) {

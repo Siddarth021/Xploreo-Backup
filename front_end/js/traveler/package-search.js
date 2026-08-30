@@ -242,7 +242,7 @@ function renderTravelerPackageSearchPage(containerId) {
 
 function getSearchValues() {
     const fallback = {
-        fromCity: "New Delhi",
+        fromCity: "Delhi",
         destination: "Goa",
         departureDate: "",
         rooms: "1",

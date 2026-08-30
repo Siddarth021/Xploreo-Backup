@@ -71,16 +71,16 @@ export class PlansService {
     actorLocation?: string,
   ) {
     let effectiveDestination = query.destination;
-    
+
     if (role === Role.NONTECHADMIN || role === Role.GUIDE) {
       if (!actorLocation) {
-         throw new ForbiddenException(`Actor location is required for ${role}`);
+        throw new ForbiddenException(`Actor location is required for ${role}`);
       }
       const normActorLoc = normalizeAllowedLocation(actorLocation);
       if (effectiveDestination) {
         const normDest = normalizeAllowedLocation(effectiveDestination);
         if (normDest !== normActorLoc) {
-           return []; 
+          return [];
         }
       } else {
         effectiveDestination = normActorLoc ?? undefined;
@@ -99,7 +99,7 @@ export class PlansService {
   async findOne(id: string, role?: string, actorLocation?: string) {
     const plan = await this.plansRepository.findById(id);
     if (!plan) throw new NotFoundException(`Plan ${id} not found`);
-    
+
     if (role === Role.NONTECHADMIN && actorLocation) {
       assertActorLocationMatch(actorLocation, plan.destination, 'plan');
     }

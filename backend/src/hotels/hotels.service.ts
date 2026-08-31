@@ -42,6 +42,7 @@ export class HotelsService {
       taxesAndFees: Math.round(dto.pricePerNight * 0.05),
       totalRooms: dto.totalRooms ?? 10,
       image: dto.image ?? '',
+      images: dto.images ?? [],
       amenities: dto.amenities ?? [],
       status: dto.status ?? 'active',
     });

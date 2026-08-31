@@ -102,7 +102,6 @@ async function renderTechAdminProfile(container, user) {
 
                 <div class="badges" style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
                     <span class="badge verified" style="background: #DCFCE7; color: #166534; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700;">Authorized</span>
-                    <span class="badge" style="background: #EFF6FF; color: #1E40AF; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700;">Level 1 Access</span>
                 </div>
             </div>
 
@@ -316,7 +315,7 @@ async function renderStandardProfile(container, user) {
 
     const profileKey = user ? `profileData_${user.id}` : "profileData";
     profileData = JSON.parse(localStorage.getItem(profileKey)) || JSON.parse(localStorage.getItem("profileData")) || {
-        location: user.location || guideData?.location || (user.name && user.name.includes('Experience Partner') ? 'Goa, India' : 'Mumbai, India'),
+        location: user?.location || guideData?.location || "Mumbai",
         experience: guideData?.years_exp ? `${guideData.years_exp} Years` : "5+ Years",
         bio: guideData?.bio || "Travel and logistics operations lead.",
         languages: guideData?.lang_spoken || ["English", "Hindi"]
@@ -342,7 +341,7 @@ async function renderStandardProfile(container, user) {
                     <div class="hero-meta">
                         <div class="meta-item">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                            <span>${escapeHtml(profileData.location || 'India')}</span>
+                            <span>${escapeHtml(profileData.location || 'Mumbai')}</span>
                         </div>
                         <div class="meta-item">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>

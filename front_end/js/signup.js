@@ -484,20 +484,32 @@ async function createUser(role) {
     const mappedRole = roleMap[role] || "traveller";
     const location = document.getElementById("actorLocation")?.value || "Goa";
 
+    const payload = {
+        name: name,
+        username: username,
+        email: email,
+        phone: phoneVal,
+        password: password,
+        role: mappedRole,
+        location: location
+    };
+
+    if (role === "Hotel" || role === "Experiences") {
+        const businessName = document.getElementById("business-name")?.value;
+        const taxId = document.getElementById("tax-id")?.value;
+        const bankAccount = document.getElementById("bank-account")?.value;
+        
+        if (businessName) payload.businessName = businessName;
+        if (taxId) payload.taxId = taxId;
+        if (bankAccount) payload.bankAccount = bankAccount;
+    }
+
     const response = await fetch("http://localhost:3000/api/auth/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-            name: name,
-            username: username,
-            email: email,
-            phone: phoneVal,
-            password: password,
-            role: mappedRole,
-            location: location
-        })
+        body: JSON.stringify(payload)
     });
 
     const data = await response.json();

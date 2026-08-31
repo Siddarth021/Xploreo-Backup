@@ -27,17 +27,16 @@ export async function renderBookingsPage(containerId = "main") {
     <section class="hotel-content-card hotel-summary-strip">
       <div><span>Total Bookings</span><strong>${bookings.length}</strong></div>
       <div><span>Confirmed</span><strong>${bookings.filter((booking) => booking.status === "CONFIRMED").length}</strong></div>
-      <div><span>Revenue</span><strong>₹${bookings.filter(b => String(b.status).toUpperCase() !== "CANCELLED").reduce((sum, booking) => {
+      <div><span>Revenue</span><strong>₹${bookings.filter(b => String(b.status).toUpperCase() !== "CANCELLED" && String(b.status).toUpperCase() !== "REFUNDED").reduce((sum, booking) => {
         const amt = Number(booking.totalAmount || 0);
         return sum + (amt > 14 ? amt - 14 : 0);
       }, 0).toLocaleString()}</strong></div>
     </section>
     <div id="booking-list">
-      ${
-        bookings.length
-          ? bookings.map(renderBookingCard).join("")
-          : `<div class="hotel-empty-state"><h2>No bookings yet</h2><p>Bookings created by travellers for your hotels will appear here immediately.</p></div>`
-      }
+      ${bookings.length
+      ? bookings.map(renderBookingCard).join("")
+      : `<div class="hotel-empty-state"><h2>No bookings yet</h2><p>Bookings created by travellers for your hotels will appear here immediately.</p></div>`
+    }
     </div>
   `;
   attachBookingActionListeners(root);
@@ -46,7 +45,7 @@ export async function renderBookingsPage(containerId = "main") {
 function renderBookingCard(booking) {
   const hotel = booking.hotel || {};
   let actionButton = '';
-  
+
   if (booking.status === 'CONFIRMED') {
     actionButton = `<button class="hotel-action-btn hotel-check-in-btn" data-booking-id="${booking.id}" style="margin-top: 10px; padding: 6px 12px; background-color: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">Check In</button>`;
   } else if (booking.status === 'CHECKED_IN') {
@@ -92,18 +91,20 @@ function attachBookingActionListeners(root) {
       try {
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
         const userId = currentUser.id || 'partner-1';
+        const location = currentUser.location || 'Goa';
         await fetch(`${getApiBaseUrl()}/bookings/${bookingId}/check-in`, {
           method: 'PATCH',
           headers: {
             'x-user-id': userId,
             'x-user-role': 'PARTNER',
+            'x-user-location': location,
             'Content-Type': 'application/json'
           }
         });
         // Re-render the page to show the new status
         renderBookingsPage(root.id);
       } catch (err) {
-        console.error("Failed to check in:", err);
+        console.error("Failed to check-in:", err);
       }
     });
   });
@@ -114,18 +115,20 @@ function attachBookingActionListeners(root) {
       try {
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
         const userId = currentUser.id || 'partner-1';
+        const location = currentUser.location || 'Goa';
         await fetch(`${getApiBaseUrl()}/bookings/${bookingId}/check-out`, {
           method: 'PATCH',
           headers: {
             'x-user-id': userId,
             'x-user-role': 'PARTNER',
+            'x-user-location': location,
             'Content-Type': 'application/json'
           }
         });
         // Re-render the page to show the new status
         renderBookingsPage(root.id);
       } catch (err) {
-        console.error("Failed to check out:", err);
+        console.error("Failed to check-out:", err);
       }
     });
   });

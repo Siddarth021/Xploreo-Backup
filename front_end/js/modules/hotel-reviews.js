@@ -18,9 +18,9 @@ export async function renderHotelReviews(containerId) {
             fetchReviews(),
             fetchPartnerHotels()
         ]);
-        
+
         const partnerHotelIds = new Set(partnerHotels.map(h => h.id));
-        const hotelReviews = allReviews.filter(r => 
+        const hotelReviews = allReviews.filter(r =>
             (r.targetType === "hotel" || r.targetType === "HOTEL") && partnerHotelIds.has(r.targetId)
         );
 

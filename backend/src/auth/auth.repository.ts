@@ -362,6 +362,9 @@ export class AuthRepository implements OnModuleInit {
       phone: data.phone!,
       location: data.location,
       status: data.status ?? 'active',
+      businessName: data.businessName,
+      taxId: data.taxId,
+      bankAccount: data.bankAccount,
     };
     this.users.push(user);
     return user;

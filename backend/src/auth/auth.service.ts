@@ -58,6 +58,9 @@ export class AuthService {
       phone: dto.phone,
       location: location || undefined,
       status: 'active',
+      businessName: dto.businessName,
+      taxId: dto.taxId,
+      bankAccount: dto.bankAccount,
     });
 
     const { password: _pw, ...safe } = user;

@@ -21,8 +21,9 @@ export async function renderBookings(containerId) {
             <div class="hotel-bookings-list">
                 ${upcomingBookings.length ? upcomingBookings.map(b => {
                     const totalAmt = Number(b.totalAmount || 0);
-                    const partnerCut = totalAmt > 14 ? totalAmt - 14 : 0;
-                    const superAdminCut = partnerCut * 0.04;
+                    const partnerBase = totalAmt > 14 ? totalAmt - 14 : 0;
+                    const superAdminCut = partnerBase * 0.04;
+                    const partnerNet = partnerBase - superAdminCut;
                     return `
                     <div class="hotel-booking-row">
                         <div class="hotel-booking-left">
@@ -30,7 +31,7 @@ export async function renderBookings(containerId) {
                             <p class="hotel-sub-text">${b.checkIn} • ${b.roomType || b.hotelId}</p>
                         </div>
                         <div class="hotel-booking-right" style="text-align: right;">
-                            <p style="font-size: 14px; font-weight: 600; margin:0;">Earnings: ₹${partnerCut}</p>
+                            <p style="font-size: 14px; font-weight: 600; margin:0;">Earnings: ₹${partnerNet.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                             <p style="font-size: 11px; color: #64748b; margin:0;">Super Admin Cut (4%): ₹${superAdminCut.toFixed(2)}</p>
                             <span class="hotel-status ${b.status?.toLowerCase() || 'pending'}" style="margin-top: 4px; display: inline-block;">
                                 ${b.status || 'CONFIRMED'}

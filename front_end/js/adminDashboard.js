@@ -7,29 +7,17 @@ import { fetchAllUsers, fetchTravellerHotelBookings, fetchExperienceBookings } f
 
 // TOTAL USERS
 function getTotalUsers(backendUsersCount = 0) {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    return (backendUsersCount + users.length).toLocaleString();
+    return backendUsersCount.toLocaleString();
 }
 
 // TOTAL BOOKINGS (sum of platform bookings + backend bookings)
 function getTotalBookings(backendBookingsCount = 0) {
-    const globalBookings = JSON.parse(localStorage.getItem("allPlatformBookings")) || [];
-    return (globalBookings.length + backendBookingsCount).toLocaleString();
+    return backendBookingsCount.toLocaleString();
 }
 
 // TOTAL REVENUE (platform fees + commission collected)
 function getTotalRevenue(backendRevenue = 0) {
-    const revenue = Number(localStorage.getItem("superAdminRevenue")) || 0;
-    const total = revenue + backendRevenue;
-    return "₹" + total.toLocaleString("en-IN", { maximumFractionDigits: 0 });
-}
-
-// ACTIVE PARTNERS (only top ones)
-function getActivePartners() {
-    const partners = JSON.parse(localStorage.getItem("partners")) || [];
-
-    const active = partners.filter(p => p.bookings > 500);
-    return active.length;
+    return "₹" + backendRevenue.toLocaleString("en-IN", { maximumFractionDigits: 0 });
 }
 
 export async function renderAdminDashboard(containerId) {
@@ -73,22 +61,36 @@ export async function renderAdminDashboard(containerId) {
 
         allBackendBookings.forEach(b => {
             const totalAmount = Number(b.totalAmount || b.amount || 0);
-            let superAdminCut = 0;
             if (totalAmount > 0) {
                 // Partner Earnings = Total Amount - 14 (Platform Fee)
-                // Super Admin Cut = 14 + (Partner Earnings * 4%)
-                const partnerEarnings = totalAmount - 14;
-                superAdminCut = 14 + (partnerEarnings * 0.04);
-                backendRevenue += superAdminCut;
+                const partnerEarnings = totalAmount > 14 ? totalAmount - 14 : 0;
+                const platformFee = 14;
+                const superAdminCut = partnerEarnings * 0.04;
+                
+                backendRevenue += (platformFee + superAdminCut);
+
+                // Row 1: Traveler
+                backendBookingsList.push({
+                    id: b.id || b.bookingId || "BKG-BACKEND",
+                    user: b.guestName || b.customer || b.user || "Traveler",
+                    role: "Traveler",
+                    amount: platformFee.toFixed(2),
+                    type: b.hotelId ? "Hotel" : "Holiday Package",
+                    date: b.bookedOn || b.createdAt || b.date || new Date().toISOString()
+                });
+
+                // Row 2: Partner
+                if (superAdminCut > 0) {
+                    backendBookingsList.push({
+                        id: b.id || b.bookingId || "BKG-BACKEND",
+                        user: b.hotelId || "Partner",
+                        role: b.hotelId ? "Hotel Partner" : "Experience Partner",
+                        amount: superAdminCut.toFixed(2),
+                        type: b.hotelId ? "Hotel" : "Holiday Package",
+                        date: b.bookedOn || b.createdAt || b.date || new Date().toISOString()
+                    });
+                }
             }
-            backendBookingsList.push({
-                id: b.id || b.bookingId || "BKG-BACKEND",
-                user: b.guestName || b.customer || b.user || "Traveler",
-                role: "traveler",
-                amount: superAdminCut.toFixed(2), // Show ONLY super admin cut
-                type: b.hotelId ? "Hotel" : "Holiday Package",
-                date: b.bookedOn || b.createdAt || b.date || new Date().toISOString()
-            });
         });
     } catch (e) {
         console.warn("Could not fetch data from backend:", e);
@@ -142,42 +144,32 @@ export async function renderAdminDashboard(containerId) {
         `).join('');
     }
 
-    // 5. Render Chart and Recent Bookings
-    renderChart("admin-chart");
-    
     const recentBookingsContainer = document.getElementById("admin-recent-bookings");
     if (recentBookingsContainer) {
-        const rawGlobalBookings = JSON.parse(localStorage.getItem("allPlatformBookings")) || [];
-        const globalBookings = rawGlobalBookings.map(b => {
-            const totalAmount = Number(b.amount || 0);
-            const partnerEarnings = totalAmount > 14 ? totalAmount - 14 : 0;
-            const superAdminCut = totalAmount > 0 ? 14 + (partnerEarnings * 0.04) : 0;
-            return {
-                ...b,
-                amount: superAdminCut.toFixed(2)
-            };
-        });
-        
         // Merge localStorage and backend bookings
-        const combinedBookings = [...globalBookings, ...backendBookingsList];
+        const combinedBookings = [...backendBookingsList];
         
         // Deduplicate by ID
         const uniqueMap = new Map();
         combinedBookings.forEach(b => uniqueMap.set(b.id, b));
         const uniqueBookings = Array.from(uniqueMap.values());
 
+        // Render Chart using ALL combined bookings BEFORE slicing for recent
+        renderChart("admin-chart", uniqueBookings);
+        
         // Sort by date (descending) and take top 5
-        const recent = uniqueBookings.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+        const recent = combinedBookings.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
         
         let tableRows = recent.length > 0 ? recent.map(bkg => `
             <tr>
                 <td>${bkg.id}</td>
-                <td><strong>${bkg.user || 'Guest'}</strong><br><small style="color:#6B7280">${bkg.role || 'Traveler'}</small></td>
+                <td><strong>${bkg.user || 'Guest'}</strong></td>
+                <td style="color:#6B7280;font-size:13px;">${bkg.role || 'Traveler'}</td>
                 <td><span style="background:#E0E7FF;color:#3730A3;padding:4px 8px;border-radius:4px;font-size:12px;">${bkg.type}</span></td>
                 <td><strong>₹${bkg.amount}</strong></td>
                 <td style="color:#6B7280">${new Date(bkg.date).toLocaleDateString()}</td>
             </tr>
-        `).join('') : `<tr><td colspan="5" style="text-align:center;padding:20px;color:#6B7280;">No recent bookings found.</td></tr>`;
+        `).join('') : `<tr><td colspan="6" style="text-align:center;padding:20px;color:#6B7280;">No recent bookings found.</td></tr>`;
 
         recentBookingsContainer.innerHTML = `
             <div class="content-card" style="padding: 24px;">
@@ -188,6 +180,7 @@ export async function renderAdminDashboard(containerId) {
                             <tr style="border-bottom:1px solid #E5E7EB;">
                                 <th style="padding:12px 8px;color:#6B7280;font-weight:500;font-size:13px;">BOOKING ID</th>
                                 <th style="padding:12px 8px;color:#6B7280;font-weight:500;font-size:13px;">USER</th>
+                                <th style="padding:12px 8px;color:#6B7280;font-weight:500;font-size:13px;">ROLE</th>
                                 <th style="padding:12px 8px;color:#6B7280;font-weight:500;font-size:13px;">SERVICE</th>
                                 <th style="padding:12px 8px;color:#6B7280;font-weight:500;font-size:13px;">AMOUNT</th>
                                 <th style="padding:12px 8px;color:#6B7280;font-weight:500;font-size:13px;">DATE</th>

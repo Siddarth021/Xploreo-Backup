@@ -89,12 +89,15 @@ export function renderGuideCrudPage(containerId) {
                 <button type="button" id="resetBtn" class="crud-btn">Clear</button>
             </div>
         </form>
-    `, "All Guides");
+    `, "All Guides", `
+        <input type="text" id="guideSearchInput" placeholder="Search guides..." style="padding: 6px 12px; border: 1px solid #dbe2ef; border-radius: 6px; font-size: 14px; width: 100%; max-width: 300px; margin-left: auto;">
+    `);
 
     const form = document.getElementById("crudForm");
     const list = document.getElementById("crudList");
     const message = document.getElementById("crudMessage");
     const formTitle = document.getElementById("formTitle");
+    const searchInput = document.getElementById("guideSearchInput");
     let guides = [];
 
     const guideIdOf = (guide) => guide.userId || guide.id;
@@ -102,7 +105,7 @@ export function renderGuideCrudPage(containerId) {
         fname: document.getElementById("fname").value.trim(),
         lname: document.getElementById("lname").value.trim(),
         email: document.getElementById("email").value.trim(),
-        phone: "+91 " + document.getElementById("phone").value.trim(),
+        phone: Number(document.getElementById("phone").value.trim()),
         location: document.getElementById("location").value.trim(),
         years_exp: Number(document.getElementById("years_exp").value),
         bio: document.getElementById("bio").value.trim(),
@@ -130,9 +133,21 @@ export function renderGuideCrudPage(containerId) {
     };
 
     const render = () => {
-        list.innerHTML = guides.length ? guides.map((guide) => `
-            <article class="crud-card">
-                <h3>${guide.fname || ""} ${guide.lname || ""}</h3>
+        const searchTerm = (searchInput ? searchInput.value.toLowerCase().trim() : "");
+        const filteredGuides = guides.filter(g => {
+            if (!searchTerm) return true;
+            return (g.fname || "").toLowerCase().includes(searchTerm) ||
+                   (g.lname || "").toLowerCase().includes(searchTerm) ||
+                   (g.email || "").toLowerCase().includes(searchTerm) ||
+                   (g.location || "").toLowerCase().includes(searchTerm);
+        });
+
+        const activeGuides = filteredGuides.filter(g => g.status !== 'restricted' && !g.isDeleted);
+        const restrictedGuides = filteredGuides.filter(g => g.status === 'restricted' || g.isDeleted);
+
+        const renderCards = (list) => list.length ? list.map((guide) => `
+            <article class="crud-card ${guide.status === 'restricted' ? 'restricted-card' : ''}" style="${guide.status === 'restricted' ? 'opacity: 0.7; background: #fff1f2; border-color: #fecdd3;' : ''}">
+                <h3>${guide.fname || ""} ${guide.lname || ""} ${guide.status === 'restricted' ? '<span style="color:red;font-size:12px;">(Restricted)</span>' : ''}</h3>
                 <div class="crud-meta">
                     <strong>ID:</strong> ${guideIdOf(guide)}<br>
                     <strong>Email:</strong> ${guide.email || "-"}<br>
@@ -141,11 +156,34 @@ export function renderGuideCrudPage(containerId) {
                 </div>
                 <div class="crud-card-actions">
                     <button class="crud-btn" data-action="edit" data-id="${guideIdOf(guide)}">Edit</button>
-                    <button class="crud-btn crud-danger" data-action="delete" data-id="${guideIdOf(guide)}">Delete</button>
+                    ${guide.status === 'restricted' 
+                        ? `<button class="crud-btn" style="background:#22c55e;color:white;" data-action="restore" data-id="${guideIdOf(guide)}">Restore</button>` 
+                        : `<button class="crud-btn crud-danger" data-action="delete" data-id="${guideIdOf(guide)}">Restrict</button>`
+                    }
                 </div>
             </article>
-        `).join("") : '<p class="crud-meta">No guides found.</p>';
+        `).join("") : '<p class="crud-meta" style="grid-column: 1 / -1;">No guides found in this section.</p>';
+
+        list.classList.remove("crud-grid"); // Remove parent grid to allow sections to span full width
+        
+        list.innerHTML = `
+            <div class="active-guides-section" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                ${renderCards(activeGuides)}
+            </div>
+            ${restrictedGuides.length > 0 ? `
+                <div class="restricted-guides-section" style="margin-top: 40px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+                    <h3 style="color: #ef4444; margin-bottom: 16px;">Restricted Guides</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                        ${renderCards(restrictedGuides)}
+                    </div>
+                </div>
+            ` : ''}
+        `;
     };
+
+    if (searchInput) {
+        searchInput.addEventListener("input", render);
+    }
 
     const load = async () => {
         try {
@@ -179,12 +217,42 @@ export function renderGuideCrudPage(containerId) {
         const guide = guides.find((item) => String(guideIdOf(item)) === String(id));
         if (button.dataset.action === "edit" && guide) fill(guide);
         if (button.dataset.action === "delete") {
-            try {
-                await apiDelete(`/guide/${encodeURIComponent(id)}`);
-                showMessage(message, "Guide deleted successfully.", true);
-                await load();
-            } catch (error) {
-                showMessage(message, error.message);
+            if (confirm("Restrict this guide? They will be unable to access their account.")) {
+                try {
+                    await apiPatch(`/guide/${encodeURIComponent(id)}`, { status: "restricted" });
+                    
+                    // Fallback for localStorage if API doesn't persist
+                    const users = JSON.parse(localStorage.getItem("users")) || [];
+                    const userIndex = users.findIndex(u => u.id === id);
+                    if (userIndex > -1) {
+                        users[userIndex].status = "restricted";
+                        localStorage.setItem("users", JSON.stringify(users));
+                    }
+                    
+                    showMessage(message, "Guide restricted successfully.", true);
+                    await load();
+                } catch (error) {
+                    showMessage(message, error.message);
+                }
+            }
+        }
+        if (button.dataset.action === "restore") {
+            if (confirm("Restore this guide to active status?")) {
+                try {
+                    await apiPatch(`/guide/${encodeURIComponent(id)}`, { status: "active" });
+                    
+                    const users = JSON.parse(localStorage.getItem("users")) || [];
+                    const userIndex = users.findIndex(u => u.id === id);
+                    if (userIndex > -1) {
+                        users[userIndex].status = "active";
+                        localStorage.setItem("users", JSON.stringify(users));
+                    }
+
+                    showMessage(message, "Guide restored successfully.", true);
+                    await load();
+                } catch (error) {
+                    showMessage(message, error.message);
+                }
             }
         }
     };
@@ -496,4 +564,227 @@ export function renderTripsCrudPage(containerId, currentUser = {}) {
     document.getElementById("resetBtn").onclick = reset;
     reset();
     void load();
+}
+
+export function renderTravellerGrid(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="crud-page">
+            <header class="crud-page-header">
+                <div>
+                    <h1>Travelers</h1>
+                    <p>View registered travelers in the system.</p>
+                </div>
+            </header>
+            <section class="crud-panel">
+                <div class="crud-toolbar">
+                    <h2>All Travelers</h2>
+                    <input type="text" id="travellerSearchInput" placeholder="Search travelers..." style="padding: 6px 12px; border: 1px solid #dbe2ef; border-radius: 6px; font-size: 14px; width: 100%; max-width: 300px; margin-left: auto;">
+                </div>
+                <div id="travellerMessage" class="crud-message" hidden></div>
+                <div id="travellerList"></div>
+            </section>
+        </div>
+    `;
+
+    const list = document.getElementById("travellerList");
+    const message = document.getElementById("travellerMessage");
+    const searchInput = document.getElementById("travellerSearchInput");
+    let items = [];
+
+    const render = () => {
+        const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : "";
+        const filtered = items.filter(t => {
+            if (!searchTerm) return true;
+            return (t.fname || "").toLowerCase().includes(searchTerm) ||
+                   (t.lname || "").toLowerCase().includes(searchTerm) ||
+                   (t.email || "").toLowerCase().includes(searchTerm);
+        });
+
+        if (filtered.length === 0) {
+            list.innerHTML = '<p class="crud-meta">No travelers found.</p>';
+            return;
+        }
+
+        list.innerHTML = `<div class="active-guides-section" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+            ${filtered.map(t => `
+                <article class="crud-card">
+                    <h3>${t.fname || ""} ${t.lname || ""}</h3>
+                    <div class="crud-meta">
+                        <strong>ID:</strong> ${t.userId || t.id}<br>
+                        <strong>Email:</strong> ${t.email || "-"}<br>
+                        <strong>Phone:</strong> ${t.phno || "-"}<br>
+                        <strong>Languages:</strong> ${(t.plang || []).join(", ") || "-"}
+                    </div>
+                </article>
+            `).join("")}
+        </div>`;
+    };
+
+    if (searchInput) searchInput.addEventListener("input", render);
+
+    const load = async () => {
+        try {
+            items = await apiGet("/traveller");
+            render();
+        } catch (error) {
+            if (message) {
+                message.textContent = "Error loading travelers: " + error.message;
+                message.className = "crud-message error";
+                message.hidden = false;
+            }
+            list.innerHTML = '<p class="crud-meta">Unable to load travelers.</p>';
+        }
+    };
+    load();
+}
+
+export function renderHotelGrid(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="crud-page">
+            <header class="crud-page-header">
+                <div>
+                    <h1>Hotel Partners</h1>
+                    <p>View registered hotel partners in the system.</p>
+                </div>
+            </header>
+            <section class="crud-panel">
+                <div class="crud-toolbar">
+                    <h2>All Hotels</h2>
+                    <input type="text" id="hotelSearchInput" placeholder="Search hotels..." style="padding: 6px 12px; border: 1px solid #dbe2ef; border-radius: 6px; font-size: 14px; width: 100%; max-width: 300px; margin-left: auto;">
+                </div>
+                <div id="hotelMessage" class="crud-message" hidden></div>
+                <div id="hotelList"></div>
+            </section>
+        </div>
+    `;
+
+    const list = document.getElementById("hotelList");
+    const message = document.getElementById("hotelMessage");
+    const searchInput = document.getElementById("hotelSearchInput");
+    let items = [];
+
+    const render = () => {
+        const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : "";
+        const filtered = items.filter(h => {
+            if (!searchTerm) return true;
+            return (h.hotelName || "").toLowerCase().includes(searchTerm) ||
+                   (h.location || "").toLowerCase().includes(searchTerm);
+        });
+
+        if (filtered.length === 0) {
+            list.innerHTML = '<p class="crud-meta">No hotels found.</p>';
+            return;
+        }
+
+        list.innerHTML = `<div class="active-guides-section" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+            ${filtered.map(h => `
+                <article class="crud-card">
+                    <h3>${h.name || h.hotelName || "Unnamed Hotel"}</h3>
+                    <div class="crud-meta">
+                        <strong>ID:</strong> ${h.id || h.partnerId}<br>
+                        <strong>Location:</strong> ${h.city || h.location || "-"}<br>
+                        <strong>Amenities:</strong> ${Array.isArray(h.amenities) ? h.amenities.slice(0, 3).join(", ") : "-"}<br>
+                        <strong>Capacity:</strong> ${h.totalRooms || h.capacity || 0} rooms
+                    </div>
+                </article>
+            `).join("")}
+        </div>`;
+    };
+
+    if (searchInput) searchInput.addEventListener("input", render);
+
+    const load = async () => {
+        try {
+            items = await apiGet("/hotels");
+            render();
+        } catch (error) {
+            if (message) {
+                message.textContent = "Error loading hotels: " + error.message;
+                message.className = "crud-message error";
+                message.hidden = false;
+            }
+            list.innerHTML = '<p class="crud-meta">Unable to load hotels.</p>';
+        }
+    };
+    load();
+}
+
+export function renderExperienceGrid(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="crud-page">
+            <header class="crud-page-header">
+                <div>
+                    <h1>Experience Partners</h1>
+                    <p>View registered experience providers in the system.</p>
+                </div>
+            </header>
+            <section class="crud-panel">
+                <div class="crud-toolbar">
+                    <h2>All Experiences</h2>
+                    <input type="text" id="expSearchInput" placeholder="Search experiences..." style="padding: 6px 12px; border: 1px solid #dbe2ef; border-radius: 6px; font-size: 14px; width: 100%; max-width: 300px; margin-left: auto;">
+                </div>
+                <div id="expMessage" class="crud-message" hidden></div>
+                <div id="expList"></div>
+            </section>
+        </div>
+    `;
+
+    const list = document.getElementById("expList");
+    const message = document.getElementById("expMessage");
+    const searchInput = document.getElementById("expSearchInput");
+    let items = [];
+
+    const render = () => {
+        const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : "";
+        const filtered = items.filter(e => {
+            if (!searchTerm) return true;
+            return (e.title || "").toLowerCase().includes(searchTerm) ||
+                   (e.location || "").toLowerCase().includes(searchTerm);
+        });
+
+        if (filtered.length === 0) {
+            list.innerHTML = '<p class="crud-meta">No experiences found.</p>';
+            return;
+        }
+
+        list.innerHTML = `<div class="active-guides-section" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+            ${filtered.map(e => `
+                <article class="crud-card">
+                    <h3>${e.title || "Unnamed Experience"}</h3>
+                    <div class="crud-meta">
+                        <strong>ID:</strong> ${e.id || e.partnerId}<br>
+                        <strong>Location:</strong> ${e.destination || e.location || "-"}<br>
+                        <strong>Category:</strong> ${e.category || e.type || "-"}<br>
+                        <strong>Price:</strong> $${e.price || 0} / person
+                    </div>
+                </article>
+            `).join("")}
+        </div>`;
+    };
+
+    if (searchInput) searchInput.addEventListener("input", render);
+
+    const load = async () => {
+        try {
+            items = await apiGet("/experiences");
+            render();
+        } catch (error) {
+            if (message) {
+                message.textContent = "Error loading experiences: " + error.message;
+                message.className = "crud-message error";
+                message.hidden = false;
+            }
+            list.innerHTML = '<p class="crud-meta">Unable to load experiences.</p>';
+        }
+    };
+    load();
 }

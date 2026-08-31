@@ -29,8 +29,9 @@ export async function renderBookingsPage(containerId = "main") {
       <div><span>Confirmed</span><strong>${bookings.filter((booking) => booking.status === "CONFIRMED").length}</strong></div>
       <div><span>Revenue</span><strong>₹${bookings.filter(b => String(b.status).toUpperCase() !== "CANCELLED" && String(b.status).toUpperCase() !== "REFUNDED").reduce((sum, booking) => {
         const amt = Number(booking.totalAmount || 0);
-        return sum + (amt > 14 ? amt - 14 : 0);
-      }, 0).toLocaleString()}</strong></div>
+        const base = amt > 14 ? amt - 14 : 0;
+        return sum + (base * 0.96);
+      }, 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></div>
     </section>
     <div id="booking-list">
       ${bookings.length

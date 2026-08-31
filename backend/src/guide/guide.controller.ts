@@ -42,7 +42,8 @@ export class GuideController {
   @ApiCreateEndpoint(CreateGuideDto)
   create(@Req() req: any, @Body() dto: CreateGuideDto) {
     const userId = req.user.userId;
-    return this.guideService.create(userId, dto, req.user?.location);
+    const actorLocation = req.user.role === Role.SUPERADMIN ? undefined : req.user?.location;
+    return this.guideService.create(userId, dto, actorLocation);
   }
 
   @Get()
@@ -75,7 +76,8 @@ export class GuideController {
     @Body() dto: UpdateGuideDto,
     @Req() req: any,
   ) {
-    return this.guideService.update(id, dto, req.user?.location);
+    const actorLocation = req.user.role === Role.SUPERADMIN ? undefined : req.user?.location;
+    return this.guideService.update(id, dto, actorLocation);
   }
 
   @Roles(Role.SUPERADMIN)

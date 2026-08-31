@@ -29,7 +29,7 @@ export class GuideService {
       email: dto.email,
       phone: dto.phone,
       location: dto.location,
-      prof_title: dto.prof_title,
+      prof_title: dto.prof_title ?? 'Tour Guide',
       years_exp: dto.years_exp,
       bio: dto.bio,
       lang_spoken: dto.lang_spoken,

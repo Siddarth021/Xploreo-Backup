@@ -23,13 +23,18 @@ function renderEarningStats(containerId, bookings) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
+    const getPartnerCut = (b) => {
+        const amt = Number(b.totalAmount || 0);
+        return amt > 14 ? amt - 14 : 0;
+    };
+
     const totalRevenue = bookings
         .filter(b => b.status !== "CANCELLED" && b.status !== "REFUNDED")
-        .reduce((sum, b) => sum + Number(b.totalAmount || 0), 0);
+        .reduce((sum, b) => sum + getPartnerCut(b), 0);
 
     const refunded = bookings
         .filter(b => b.status === "CANCELLED" || b.status === "REFUNDED")
-        .reduce((sum, b) => sum + Number(b.totalAmount || 0), 0);
+        .reduce((sum, b) => sum + getPartnerCut(b), 0);
 
     const validBookings = bookings.filter(b => b.status !== "CANCELLED" && b.status !== "REFUNDED");
     const avgBooking = validBookings.length ? (totalRevenue / validBookings.length) : 0;
@@ -43,7 +48,7 @@ function renderEarningStats(containerId, bookings) {
             const d = new Date(b.checkIn);
             return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
         })
-        .reduce((sum, b) => sum + Number(b.totalAmount || 0), 0); 
+        .reduce((sum, b) => sum + getPartnerCut(b), 0);
 
     const stats = [
         {
@@ -166,14 +171,19 @@ function renderEarningRevenue(containerId, bookings) {
     const el = document.getElementById(containerId);
     if (!el) return;
 
+    const getPartnerCut = (b) => {
+        const amt = Number(b.totalAmount || 0);
+        return amt > 14 ? amt - 14 : 0;
+    };
+
     const valid = bookings.filter(b => b.status !== "CANCELLED");
-    const total = valid.reduce((sum, b) => sum + Number(b.totalAmount || 0), 0);
+    const total = valid.reduce((sum, b) => sum + getPartnerCut(b), 0);
     
     // Group by roomType
     const roomTotals = {};
     valid.forEach(b => {
         const rt = b.roomType || "Unknown Room";
-        roomTotals[rt] = (roomTotals[rt] || 0) + Number(b.totalAmount || 0);
+        roomTotals[rt] = (roomTotals[rt] || 0) + getPartnerCut(b);
     });
 
     const colors = ["blue", "green", "orange", "violet"];
@@ -222,10 +232,15 @@ function renderEarningRefund(containerId, bookings) {
     const el = document.getElementById(containerId);
     if (!el) return;
 
-    const totalRevenue = bookings.reduce((sum, b) => sum + Number(b.totalAmount || 0), 0);
+    const getPartnerCut = (b) => {
+        const amt = Number(b.totalAmount || 0);
+        return amt > 14 ? amt - 14 : 0;
+    };
+
+    const totalRevenue = bookings.reduce((sum, b) => sum + getPartnerCut(b), 0);
     const refunded = bookings
         .filter(b => b.status === "CANCELLED" || b.status === "REFUNDED")
-        .reduce((sum, b) => sum + Number(b.totalAmount || 0), 0);
+        .reduce((sum, b) => sum + getPartnerCut(b), 0);
 
     const percent = totalRevenue ? ((refunded / totalRevenue) * 100).toFixed(1) : 0;
 
@@ -262,13 +277,19 @@ function renderEarningTransactions(containerId, bookings) {
         ${recent.map(b => {
             const isCancelled = b.status === "CANCELLED" || b.status === "REFUNDED";
             const badgeClass = isCancelled ? "badge-red" : "badge-green";
+            const amt = Number(b.totalAmount || 0);
+            const partnerCut = amt > 14 ? amt - 14 : 0;
+            const superAdminCut = partnerCut * 0.04;
             return `
             <div class="hotel-booking-row">
                 <div>
                     <strong>${b.guestName || 'Guest'}</strong><br/>
                     <span class="hotel-sub-text">${b.roomType || 'Room'}</span>
                 </div>
-                <div>₹${Number(b.totalAmount || 0).toLocaleString()}</div>
+                <div style="text-align: right;">
+                    <strong style="display: block;">₹${partnerCut.toLocaleString()}</strong>
+                    <small style="color: #64748b; font-size: 11px;">Admin Cut (4%): ₹${superAdminCut.toFixed(2)}</small>
+                </div>
                 <div>
                     <span class="hotel-status ${badgeClass}" style="padding:4px 10px; font-size:11px; border-radius:12px; background:${isCancelled?'#fee2e2':'#dcfce7'}; color:${isCancelled?'#dc2626':'#16a34a'}">
                         ${b.status || 'COMPLETED'}
@@ -289,7 +310,10 @@ function renderEarningPayout(containerId, bookings) {
 
     const pending = bookings
         .filter(b => b.status === "CONFIRMED")
-        .reduce((sum, b) => sum + Number(b.totalAmount || 0), 0);
+        .reduce((sum, b) => {
+            const amt = Number(b.totalAmount || 0);
+            return sum + (amt > 14 ? amt - 14 : 0);
+        }, 0);
 
     const nextDate = new Date();
     nextDate.setDate(nextDate.getDate() + (7 - nextDate.getDay()) % 7 + 1); // Next Monday

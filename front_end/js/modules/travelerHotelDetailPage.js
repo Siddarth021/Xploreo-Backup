@@ -416,7 +416,8 @@ export async function renderTravelerHotelDetailPage(containerId) {
         const guestCount = Math.max(1, Number.parseInt(state.searchValues.guestCount, 10) || 2);
         const taxTotal = hotel.taxes * roomCount;
         const roomSubtotal = selectedRoom.price * stayNights * roomCount;
-        const totalAmount = roomSubtotal + taxTotal;
+        const PLATFORM_FEE = 14;
+        const totalAmount = roomSubtotal + taxTotal + PLATFORM_FEE;
         const hasMultipleImages = hotel.gallery.length > 1;
         const isWishlisted = getWishlistItems().some((item) => item.title === hotel.title);
 
@@ -529,6 +530,10 @@ export async function renderTravelerHotelDetailPage(containerId) {
                                     <span>Taxes & fees</span>
                                     <strong>₹${taxTotal}</strong>
                                 </div>
+                                <div class="traveler-hotel-breakdown-row">
+                                    <span style="color: #4B5563; font-weight: 500;">Platform Fee</span>
+                                    <strong style="color: #4B5563;">₹14</strong>
+                                </div>
                                 <div class="traveler-hotel-total-row">
                                     <span>Total Amount</span>
                                     <strong>₹${totalAmount}</strong>
@@ -537,7 +542,10 @@ export async function renderTravelerHotelDetailPage(containerId) {
 
                             <div class="traveler-hotel-booking-actions">
                                 ${status === "upcoming" ? `
-                                    <button class="traveler-hotel-danger-btn" type="button" data-cancel-hotel-booking style="background: #ef4444; color: white; padding: 12px; border-radius: 8px; width: 100%; border: none; cursor: pointer; font-weight: 600; margin-bottom: 12px;">Cancel Booking</button>
+                                    <button class="traveler-hotel-danger-btn" type="button" data-cancel-hotel-booking style="background: #ef4444; color: white; padding: 12px; border-radius: 8px; width: 100%; border: none; cursor: pointer; font-weight: 600; margin-bottom: 8px;">Cancel Booking</button>
+                                    <p style="font-size: 12px; color: #6B7280; text-align: center; margin: 0; line-height: 1.4;">If cancelled, Platform Fee and Taxes won't be repaid.</p>
+                                ` : status === "cancelled" ? `
+                                    <p style="font-size: 13px; color: #ef4444; text-align: center; margin: 0; padding: 12px; font-weight: 500; background: #FEF2F2; border-radius: 8px;">Booking Cancelled. Platform Fee and Taxes are non-refundable.</p>
                                 ` : !isCompleted ? `
                                     <button class="traveler-hotel-primary-btn" type="button">Book This Now</button>
                                     <button class="traveler-hotel-secondary-btn" type="button">View All Rooms</button>

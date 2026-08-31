@@ -546,7 +546,7 @@ function formatRoomsGuests(rooms, guests) {
 }
 
 function formatCurrency(value) {
-    return `$${Number(value).toLocaleString("en-US")}`;
+    return `₹${Number(value).toLocaleString("en-US")}`;
 }
 
 function escapeHtml(value) {

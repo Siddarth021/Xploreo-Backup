@@ -41,7 +41,10 @@ export async function renderStats(containerId, currentUser) {
            const activeBookings = bookings.filter(b => String(b.status).toUpperCase() !== "CANCELLED");
            
            const totalBookings = activeBookings.length;
-           const revenue = activeBookings.reduce((sum, b) => sum + (Number(b.totalAmount) || 0), 0);
+           const revenue = activeBookings.reduce((sum, b) => {
+               const amt = Number(b.totalAmount) || 0;
+               return sum + (amt > 14 ? amt - 14 : 0);
+           }, 0);
            const upcomingBookings = activeBookings.filter(b => {
                const checkIn = new Date(b.checkIn);
                return checkIn >= new Date();

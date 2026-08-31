@@ -43,7 +43,9 @@ export function renderTravelerExperienceBookingPage(containerId) {
     };
 
     function render() {
-        const total = Number(state.draft.totalPrice) || 0;
+        const PLATFORM_FEE = 14;
+        const baseTotal = Number(state.draft.totalPrice) || 0;
+        const total = baseTotal + PLATFORM_FEE;
 
         container.innerHTML = `
             <main class="traveler-experience-booking-page">
@@ -174,7 +176,11 @@ export function renderTravelerExperienceBookingPage(containerId) {
                                 <span>Price Details</span>
                                 <div class="traveler-experience-price-line">
                                     <strong>${formatCurrency(state.draft.option.price)} × ${state.draft.adults} ${state.draft.adults === 1 ? "adult" : "adults"}</strong>
-                                    <span>${formatCurrency(total)}</span>
+                                    <span>${formatCurrency(baseTotal)}</span>
+                                </div>
+                                <div class="traveler-experience-price-line">
+                                    <strong style="color: #4B5563;">Platform Fee</strong>
+                                    <span style="color: #4B5563;">₹14</span>
                                 </div>
                             </div>
 
@@ -224,7 +230,9 @@ export function renderTravelerExperienceBookingPage(containerId) {
         });
 
         const confirmBtn = container.querySelector("#traveler-experience-confirm-btn");
-        const total = Number(state.draft.totalPrice) || 0;
+        const PLATFORM_FEE = 14;
+        const baseTotal = Number(state.draft.totalPrice) || 0;
+        const total = baseTotal + PLATFORM_FEE;
 
         const resetButton = () => {
             if (confirmBtn) {
@@ -305,6 +313,22 @@ export function renderTravelerExperienceBookingPage(containerId) {
                             razorpay_signature: paymentResponse.razorpay_signature
                         });
 
+                        const currentAdminRevenue = Number(localStorage.getItem("superAdminRevenue")) || 0;
+                        const commission = total * 0.04;
+                        localStorage.setItem("superAdminRevenue", currentAdminRevenue + 14 + commission);
+
+                        const globalBookings = JSON.parse(localStorage.getItem("allPlatformBookings")) || [];
+                        const currentUser = JSON.parse(localStorage.getItem("currentUser")) || { name: "Guest", role: "traveler" };
+                        globalBookings.push({
+                            id: paymentResponse.razorpay_order_id || "BKG-" + Math.floor(Math.random()*10000),
+                            user: currentUser.name,
+                            role: currentUser.role,
+                            amount: total,
+                            type: "Experience",
+                            date: new Date().toISOString()
+                        });
+                        localStorage.setItem("allPlatformBookings", JSON.stringify(globalBookings));
+
                         // Server signature verification passed — create the backend booking record
                         try {
                             const response = await createExperienceBooking(payload);
@@ -315,6 +339,7 @@ export function renderTravelerExperienceBookingPage(containerId) {
                                 orderId: paymentResponse.razorpay_order_id,
                                 paymentStatus: "PAID",
                                 ...state.draft,
+                                totalPrice: total,
                                 leadTraveler: { ...state.leadTraveler },
                                 travelers: state.travelers.map((traveler) => ({ ...traveler }))
                             };
@@ -336,6 +361,7 @@ export function renderTravelerExperienceBookingPage(containerId) {
                                 orderId: paymentResponse.razorpay_order_id,
                                 paymentStatus: "PAID",
                                 ...state.draft,
+                                totalPrice: total,
                                 leadTraveler: { ...state.leadTraveler },
                                 travelers: state.travelers.map((traveler) => ({ ...traveler }))
                             };

@@ -39,7 +39,9 @@ export function renderTravelerBookingDetailsPage(containerId) {
 
     function render() {
         const travelerCount = state.travelers.length;
-        const totalPrice = calculateTravelerBookingTotal(state.packageData, travelerCount);
+        const PLATFORM_FEE = 14;
+        const baseTotalPrice = calculateTravelerBookingTotal(state.packageData, travelerCount);
+        const totalPrice = baseTotalPrice + PLATFORM_FEE;
         const activeImage = packageView.gallery[state.activeGalleryIndex] || packageView.gallery[0];
         const status = getTripStatusFromUrl();
         const isCompleted = status === "completed" || status === "upcoming";
@@ -190,7 +192,9 @@ export function renderTravelerBookingDetailsPage(containerId) {
                         <section class="traveler-panel traveler-sidebar-panel">
                             <p class="traveler-sidebar-label">Starting from (per person)</p>
                             <div class="traveler-sidebar-price">${formatBookingCurrency(state.packageData.pricePerPerson)}</div>
-                            <p class="traveler-sidebar-total">Total for ${travelerCount} traveler${travelerCount > 1 ? "s" : ""}: ${formatBookingCurrency(totalPrice)}</p>
+                            <p class="traveler-sidebar-total">Subtotal for ${travelerCount} traveler${travelerCount > 1 ? "s" : ""}: ${formatBookingCurrency(baseTotalPrice)}</p>
+                            <p class="traveler-sidebar-total" style="font-weight: 500; color: #4B5563;">Platform Fee: ₹14</p>
+                            <p class="traveler-sidebar-total" style="border-top: 1px solid #E5E7EB; padding-top: 12px; margin-top: 8px;">Total: ${formatBookingCurrency(totalPrice)}</p>
 
                             <label class="traveler-sidebar-field">
                                 <span>Select Date</span>
@@ -382,7 +386,9 @@ export function renderTravelerBookingDetailsPage(containerId) {
                 saveTravelerBookingDraft(draft);
 
                 const travelerCount = state.travelers.length;
-                const totalPrice = confirmation.totalPrice || calculateTravelerBookingTotal(state.packageData, travelerCount);
+                let totalPrice = confirmation.totalPrice || calculateTravelerBookingTotal(state.packageData, travelerCount);
+                totalPrice += 14; // Add Platform Fee
+                confirmation.totalPrice = totalPrice;
 
                 if (!totalPrice || totalPrice <= 0) {
                     setFeedback("Could not determine a valid booking amount. Please refresh and try again.", true);
@@ -433,8 +439,24 @@ export function renderTravelerBookingDetailsPage(containerId) {
                                     razorpay_signature:  paymentResponse.razorpay_signature
                                 });
 
-                                // Server confirmed the signature \u2014 now save and navigate
+                                // Server confirmed the signature — now save and navigate
                                 saveTravelerBookingConfirmation(confirmation);
+
+                                const currentAdminRevenue = Number(localStorage.getItem("superAdminRevenue")) || 0;
+                                const commission = totalPrice * 0.04;
+                                localStorage.setItem("superAdminRevenue", currentAdminRevenue + 14 + commission);
+
+                                const globalBookings = JSON.parse(localStorage.getItem("allPlatformBookings")) || [];
+                                const currentUser = JSON.parse(localStorage.getItem("currentUser")) || { name: "Guest", role: "traveler" };
+                                globalBookings.push({
+                                    id: paymentResponse.razorpay_order_id || "BKG-" + Math.floor(Math.random()*10000),
+                                    user: currentUser.name,
+                                    role: currentUser.role,
+                                    amount: totalPrice,
+                                    type: "Holiday Package",
+                                    date: new Date().toISOString()
+                                });
+                                localStorage.setItem("allPlatformBookings", JSON.stringify(globalBookings));
 
                                 const plan = state.packageData;
                                 const bookingId = bookingIdStr;
@@ -451,7 +473,7 @@ export function renderTravelerBookingDetailsPage(containerId) {
                                         dateRange: `${startDate} - ${endDate}`,
                                         status: "Upcoming",
                                         guests: travelerCount,
-                                        amount: draft.totalPrice,
+                                        amount: totalPrice,
                                         durationLabel: `${plan.days || 6} Days, ${plan.nights || 5} Nights`,
                                         itinerary: plan.itinerary || [],
                                         type: "Tour",

@@ -379,7 +379,8 @@ function renderAssignmentsList(statusFilter) {
           </div>
           <div class="gd-asgn-meta">
             <span>👤 Traveller: <code>${asgn.travellerId}</code></span>
-            <span>💰 Guide Fee: ₹${asgn.guidePricePerPerson}/person</span>
+            <span>💰 Earnings: ₹${asgn.guidePricePerPerson}/person</span>
+            <span>💳 Super Admin Cut (4%): ₹${(asgn.guidePricePerPerson * 0.04).toFixed(2)}/person</span>
             <span>📅 Travel Date: ${new Date(asgn.startDate || asgn.createdAt).toLocaleDateString()}</span>
           </div>
           <div class="gd-asgn-actions">

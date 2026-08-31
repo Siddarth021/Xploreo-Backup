@@ -1320,8 +1320,8 @@ body.experience-page {
 }
 
 #addModal .modal-box {
-  width: min(760px, 100%);
-  padding: 28px 32px;
+  width: min(680px, 100%);
+  padding: 20px 24px;
 }
 
 #addModal .modal-header {
@@ -1334,20 +1334,20 @@ body.experience-page {
 
 #addExperienceForm {
   display: grid;
-  gap: 20px;
+  gap: 12px;
 }
 
 #addExperienceForm .form-grid {
   display: grid;
   grid-template-columns: 1fr;
   column-gap: 0;
-  row-gap: 16px;
+  row-gap: 12px;
 }
 
 #addExperienceForm .field-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   width: 100%;
 }
 
@@ -1364,15 +1364,18 @@ body.experience-page {
 #addExperienceForm textarea {
   width: 100%;
   box-sizing: border-box;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  border-radius: 8px;
 }
 
 .experience-form select {
-  padding: 14px 16px;
-  border-radius: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
   border: 1px solid var(--experience-border);
   background-color: var(--experience-surface-soft);
   color: var(--experience-text);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition: all 0.2s ease;
   appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
@@ -2232,90 +2235,4 @@ th {
     width: 100%;
     min-width: 0;
   }
-}
-.edit-upload-group.dragover {
-    background-color: #f8fafc;
-    border-color: #3b82f6;
-}
-
-.experience-file-dropzone {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    min-height: 160px !important;
-    border: 2px dashed #cbd5e1 !important;
-    border-radius: 16px !important;
-    background: #f8fafc !important;
-    cursor: pointer !important;
-    transition: all 0.3s ease !important;
-    position: relative !important;
-    overflow: hidden !important;
-    margin-bottom: 24px !important;
-}
-
-.experience-file-dropzone:hover, .experience-file-dropzone.dragover {
-    border-color: #3b82f6 !important;
-    background: #eff6ff !important;
-}
-
-.hidden-file-input {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0, 0, 0, 0) !important;
-    white-space: nowrap !important;
-    border: 0 !important;
-}
-
-.dropzone-content {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 12px !important;
-    padding: 24px !important;
-    pointer-events: none !important;
-}
-
-.dropzone-icon {
-    font-size: 32px !important;
-    color: #94a3b8 !important;
-}
-
-.dropzone-text {
-    font-size: 15px !important;
-    font-weight: 600 !important;
-    color: #475569 !important;
-}
-
-.dropzone-subtext {
-    font-size: 13px !important;
-    color: #94a3b8 !important;
-}
-
-.preview-image {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-}
-
-.change-image-btn {
-    position: absolute !important;
-    bottom: 12px !important;
-    right: 12px !important;
-    background: rgba(15, 23, 42, 0.7) !important;
-    color: white !important;
-    padding: 6px 12px !important;
-    border-radius: 6px !important;
-    font-size: 12px !important;
-    font-weight: 500 !important;
-    backdrop-filter: blur(4px) !important;
-    pointer-events: none !important;
 }

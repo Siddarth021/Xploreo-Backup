@@ -27,7 +27,10 @@ export async function renderBookingsPage(containerId = "main") {
     <section class="hotel-content-card hotel-summary-strip">
       <div><span>Total Bookings</span><strong>${bookings.length}</strong></div>
       <div><span>Confirmed</span><strong>${bookings.filter((booking) => booking.status === "CONFIRMED").length}</strong></div>
-      <div><span>Revenue</span><strong>₹${bookings.filter(b => String(b.status).toUpperCase() !== "CANCELLED").reduce((sum, booking) => sum + Number(booking.totalAmount || 0), 0).toLocaleString()}</strong></div>
+      <div><span>Revenue</span><strong>₹${bookings.filter(b => String(b.status).toUpperCase() !== "CANCELLED").reduce((sum, booking) => {
+        const amt = Number(booking.totalAmount || 0);
+        return sum + (amt > 14 ? amt - 14 : 0);
+      }, 0).toLocaleString()}</strong></div>
     </section>
     <div id="booking-list">
       ${
@@ -71,8 +74,9 @@ function renderBookingCard(booking) {
         <div><small>Check-out</small><p>${escapeHtml(booking.checkOut)}</p></div>
         <div class="hotel-badge">${escapeHtml(booking.status)}</div>
       </div>
-      <div class="hotel-booking-right">
-        <h3>₹${Number(booking.totalAmount || 0).toLocaleString()}</h3>
+      <div class="hotel-booking-right" style="text-align: right;">
+        <h3 style="margin-bottom: 2px;">₹${(Number(booking.totalAmount || 0) > 14 ? Number(booking.totalAmount || 0) - 14 : 0).toLocaleString()}</h3>
+        <p style="font-size: 11px; color: #64748b; margin-top: 0; margin-bottom: 8px;">Super Admin Cut (4%): ₹${((Number(booking.totalAmount || 0) > 14 ? Number(booking.totalAmount || 0) - 14 : 0) * 0.04).toFixed(2)}</p>
         <p>${escapeHtml(hotel.name || booking.hotelId)}</p>
         <p>${escapeHtml(booking.roomType)} · ${Number(booking.guests || 1)} guests · ${Number(booking.rooms || 1)} rooms</p>
         ${actionButton}

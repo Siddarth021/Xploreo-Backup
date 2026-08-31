@@ -199,4 +199,15 @@ export class BookingsService {
       };
     });
   }
+
+  findAll() {
+    const bookings = this.bookingsRepository.findAll();
+    return bookings.map((booking) => {
+      const hotel = this.hotelsRepository.findById(booking.hotelId);
+      return {
+        ...booking,
+        hotel: hotel,
+      };
+    });
+  }
 }

@@ -31,6 +31,7 @@ export class ExperienceBookingsController {
     Role.TRAVELLER_ACTOR,
     Role.TRAVELLER,
     Role.ADMIN,
+    Role.SUPERADMIN,
     Role.EXPERIENCE_PARTNER,
   )
   @ApiOperation({ summary: 'View experience bookings' })

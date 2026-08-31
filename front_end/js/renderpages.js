@@ -134,7 +134,7 @@ export async function renderPageContent(user) {
     );
     return;
   } else if (user.role === "superadmin" && page === "dashboard.html") {
-    renderAdminDashboard("admin-dashboard");
+    await renderAdminDashboard("admin-dashboard");
     const main = document.getElementById("main");
     const admin = document.getElementById("admin-dashboard");
     const hotel = document.getElementById("hotel-dashboard");

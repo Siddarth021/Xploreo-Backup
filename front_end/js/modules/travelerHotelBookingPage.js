@@ -18,7 +18,8 @@ export async function renderTravelerHotelBookingPage(containerId) {
     const guestCount = Math.max(1, Number.parseInt(searchValues.guestCount, 10) || 2);
     const roomSubtotal = selectedRoom.price * stayNights * roomCount;
     const taxTotal = hotel.taxes * roomCount;
-    const totalAmount = roomSubtotal + taxTotal;
+    const PLATFORM_FEE = 14;
+    const totalAmount = roomSubtotal + taxTotal + PLATFORM_FEE;
 
     container.innerHTML = `
         <main class="traveler-hotel-booking-page">
@@ -153,6 +154,10 @@ export async function renderTravelerHotelBookingPage(containerId) {
                             <div class="traveler-booking-price-row">
                                 <span>Taxes & fees</span>
                                 <strong>₹${taxTotal}</strong>
+                            </div>
+                            <div class="traveler-booking-price-row">
+                                <span style="color: #4B5563; font-weight: 500;">Platform Fee</span>
+                                <strong style="color: #4B5563;">₹14</strong>
                             </div>
                             <div class="traveler-booking-total-row">
                                 <span>Total Amount</span>
@@ -300,6 +305,22 @@ function bindEvents(container, { hotel, selectedRoom, totalAmount }) {
                         razorpay_payment_id: paymentResponse.razorpay_payment_id,
                         razorpay_signature: paymentResponse.razorpay_signature
                     });
+
+                    const currentAdminRevenue = Number(localStorage.getItem("superAdminRevenue")) || 0;
+                    const commission = totalAmount * 0.04;
+                    localStorage.setItem("superAdminRevenue", currentAdminRevenue + 14 + commission);
+
+                    const globalBookings = JSON.parse(localStorage.getItem("allPlatformBookings")) || [];
+                    const currentUser = JSON.parse(localStorage.getItem("currentUser")) || { name: "Guest", role: "traveler" };
+                    globalBookings.push({
+                        id: paymentResponse.razorpay_order_id || "BKG-" + Math.floor(Math.random()*10000),
+                        user: currentUser.name,
+                        role: currentUser.role,
+                        amount: totalAmount,
+                        type: "Hotel",
+                        date: new Date().toISOString()
+                    });
+                    localStorage.setItem("allPlatformBookings", JSON.stringify(globalBookings));
 
                     // Store guest details & payment metadata in localStorage
                     localStorage.setItem("traveler_booking_guest_details", JSON.stringify(guests));

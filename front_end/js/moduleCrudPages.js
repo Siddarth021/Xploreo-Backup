@@ -71,19 +71,19 @@ export function renderGuideCrudPage(containerId) {
     renderShell(container, "Guides", "Create, update, and manage guide profiles.", `
         <form id="crudForm" class="crud-form">
             <input type="hidden" id="guideId">
-            <label>First name<input id="fname" required></label>
-            <label>Last name<input id="lname" required></label>
+            <label>First name<input id="fname" required minlength="2" pattern="[a-zA-Z ]+" title="First name should only contain letters"></label>
+            <label>Last name<input id="lname" required minlength="1" pattern="[a-zA-Z ]+" title="Last name should only contain letters"></label>
             <label>Email<input id="email" type="email" required></label>
-            <label>Phone<input id="phone" type="number" required></label>
-            <label>Location<input id="location" required></label>
-            <label>Professional title<input id="prof_title" required></label>
-            <label>Years experience<input id="years_exp" type="number" min="0" required></label>
-            <label>Languages<input id="lang_spoken" placeholder="English, Hindi" required></label>
-            <label>Certifications<input id="certifications" placeholder="First Aid, Mountain Rescue"></label>
-            <label class="crud-full">Bio<textarea id="bio" required></textarea></label>
-            <label>Bank name<input id="bank_name"></label>
-            <label>Bank account ending<input id="bank_acc_num_end" type="number"></label>
-            <label>IBAN<input id="iban"></label>
+            <label>Phone
+                <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                    <span style="font-weight: 600; color: #4B5563; padding-left: 8px;">+91</span>
+                    <input id="phone" type="tel" pattern="[6-9][0-9]{9}" maxlength="10" title="Please enter a valid 10-digit Indian mobile number starting with 6-9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required style="flex: 1; margin-top: 0;">
+                </div>
+            </label>
+            <label>Location<input id="location" required minlength="2"></label>
+            <label>Years experience<input id="years_exp" type="number" min="0" step="1" required title="Please enter a whole number" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></label>
+            <label>Languages<input id="lang_spoken" placeholder="English, Hindi" required minlength="2"></label>
+            <label class="crud-full">Bio<textarea id="bio" required minlength="10"></textarea></label>
             <div class="crud-actions crud-full">
                 <button type="submit" class="crud-btn crud-primary">Save Guide</button>
                 <button type="button" id="resetBtn" class="crud-btn">Clear</button>
@@ -102,16 +102,11 @@ export function renderGuideCrudPage(containerId) {
         fname: document.getElementById("fname").value.trim(),
         lname: document.getElementById("lname").value.trim(),
         email: document.getElementById("email").value.trim(),
-        phone: Number(document.getElementById("phone").value),
+        phone: "+91 " + document.getElementById("phone").value.trim(),
         location: document.getElementById("location").value.trim(),
-        prof_title: document.getElementById("prof_title").value.trim(),
         years_exp: Number(document.getElementById("years_exp").value),
         bio: document.getElementById("bio").value.trim(),
-        lang_spoken: splitList(document.getElementById("lang_spoken").value),
-        certifications: splitList(document.getElementById("certifications").value),
-        bank_name: document.getElementById("bank_name").value.trim(),
-        bank_acc_num_end: Number(document.getElementById("bank_acc_num_end").value || 0),
-        iban: document.getElementById("iban").value.trim()
+        lang_spoken: splitList(document.getElementById("lang_spoken").value)
     });
 
     const reset = () => {
@@ -126,16 +121,11 @@ export function renderGuideCrudPage(containerId) {
         document.getElementById("fname").value = guide.fname || "";
         document.getElementById("lname").value = guide.lname || "";
         document.getElementById("email").value = guide.email || "";
-        document.getElementById("phone").value = guide.phone || "";
+        document.getElementById("phone").value = (guide.phone || "").toString().replace(/^\+91\s*/, "");
         document.getElementById("location").value = guide.location || "";
-        document.getElementById("prof_title").value = guide.prof_title || "";
         document.getElementById("years_exp").value = guide.years_exp || 0;
         document.getElementById("bio").value = guide.bio || "";
         document.getElementById("lang_spoken").value = (guide.lang_spoken || []).join(", ");
-        document.getElementById("certifications").value = (guide.certifications || []).join(", ");
-        document.getElementById("bank_name").value = guide.bank_name || "";
-        document.getElementById("bank_acc_num_end").value = guide.bank_acc_num_end || "";
-        document.getElementById("iban").value = guide.iban || "";
         formTitle.textContent = `Edit Guide ${guideIdOf(guide)}`;
     };
 
@@ -145,10 +135,9 @@ export function renderGuideCrudPage(containerId) {
                 <h3>${guide.fname || ""} ${guide.lname || ""}</h3>
                 <div class="crud-meta">
                     <strong>ID:</strong> ${guideIdOf(guide)}<br>
-                    <strong>Title:</strong> ${guide.prof_title || "-"}<br>
                     <strong>Email:</strong> ${guide.email || "-"}<br>
                     <strong>Location:</strong> ${guide.location || "-"}<br>
-                    <strong>Experience:</strong> ${guide.years_exp ?? 0} years
+                    <strong>Languages:</strong> ${(guide.lang_spoken || []).join(", ") || "-"}
                 </div>
                 <div class="crud-card-actions">
                     <button class="crud-btn" data-action="edit" data-id="${guideIdOf(guide)}">Edit</button>

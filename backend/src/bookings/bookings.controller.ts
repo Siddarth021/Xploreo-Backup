@@ -24,10 +24,16 @@ export class BookingsController {
   }
 
   @Get()
-  @Roles(Role.TRAVELLER_ACTOR)
-  @ApiOperation({ summary: 'Traveller gets their hotel bookings' })
-  findForTraveller(@Req() req: any) {
-    return this.bookingsService.findForTraveller(req.user?.userId);
+  @Roles(Role.TRAVELLER_ACTOR, Role.TRAVELLER, Role.ADMIN, Role.SUPERADMIN)
+  @ApiOperation({ summary: 'Traveller gets their hotel bookings, Admin gets all' })
+  findBookings(@Req() req: any) {
+    if (
+      req.user?.role === Role.TRAVELLER_ACTOR ||
+      req.user?.role === Role.TRAVELLER
+    ) {
+      return this.bookingsService.findForTraveller(req.user?.userId);
+    }
+    return this.bookingsService.findAll();
   }
 
   @Patch(':id/cancel')

@@ -40,6 +40,10 @@ export function fetchAllUsers() {
   return apiGet(API_ENDPOINTS.users);
 }
 
+export function fetchAdmins() {
+  return apiGet(API_ENDPOINTS.admins);
+}
+
 export function updateUser(id, payload) {
   return apiPatch(`${API_ENDPOINTS.users}/${id}`, payload);
 }

@@ -31,6 +31,7 @@ import { renderNtaDashboard } from "./modules/ntaDashboard.js";
 import { initNtaPlans } from "./modules/ntaPlans.js";
 import { renderGuideDashboard } from "./modules/guide_dashboard.js";
 import { initNtaGuideApplications } from "./modules/nta_guide_applications.js";
+import { initAdminManagement } from "./modules/adminManagement.js";
 
 // Traveler modules
 import { renderTravelerDashboard as renderTravellerDashboard } from "./modules/travelerDashboard.js?v=traveller-ui-6";
@@ -302,6 +303,10 @@ export async function renderPageContent(user) {
     const main = document.getElementById("main");
     if (main) main.style.display = "block";
     initNtaGuideApplications("main");
+  } else if (user.role === "superadmin" && page === "admins.html") {
+    const main = document.getElementById("main");
+    if (main) main.style.display = "block";
+    await renderSafely("Render admin management", () => initAdminManagement());
   }
 }
 

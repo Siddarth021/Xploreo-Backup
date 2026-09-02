@@ -56,6 +56,15 @@ export class AuthController {
 
   @Roles(Role.SUPERADMIN)
   @ApiProtectedResource()
+  @Get('admins')
+  @ApiOperation({ summary: 'List all admin-role users (SuperAdmin only)' })
+  @ApiReadEndpoint()
+  findAdmins() {
+    return this.authService.findAdmins();
+  }
+
+  @Roles(Role.SUPERADMIN)
+  @ApiProtectedResource()
   @Get('users/:id')
   @ApiOperation({ summary: 'Get a user by ID' })
   @ApiReadEndpoint()

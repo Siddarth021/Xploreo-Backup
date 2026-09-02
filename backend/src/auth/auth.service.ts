@@ -91,6 +91,13 @@ export class AuthService {
     return users.map(({ password: _pw, ...u }) => u);
   }
 
+  async findAdmins() {
+    const users = await this.authRepository.findAll();
+    return users
+      .filter((u) => u.role === 'techadmin' || u.role === 'nontechadmin')
+      .map(({ password: _pw, ...u }) => u);
+  }
+
   async findOne(id: string) {
     const user = await this.authRepository.findById(id);
     if (!user) throw new NotFoundException(`User ${id} not found`);

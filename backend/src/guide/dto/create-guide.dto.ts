@@ -11,6 +11,11 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateGuideDto {
+  @ApiPropertyOptional({ example: 'guide123' })
+  @IsOptional()
+  @IsString()
+  userId?: string;
+
   @ApiProperty({ example: 'Ali' })
   @IsString()
   fname!: string;

@@ -32,11 +32,12 @@ export class HotelsController {
   constructor(private readonly hotelsService: HotelsService) { }
 
   @Post()
-  @Roles(Role.PARTNER)
-  @ApiOperation({ summary: 'Partner creates a hotel' })
+  @Roles(Role.PARTNER, Role.SUPERADMIN)
+  @ApiOperation({ summary: 'Partner or Admin creates a hotel' })
   @ApiCreateEndpoint(CreateHotelDto)
   create(@Body() dto: CreateHotelDto, @Req() req: any) {
-    return this.hotelsService.create(req.user?.userId, req.user?.location, dto);
+    const partnerId = dto.partnerId || req.user?.userId;
+    return this.hotelsService.create(partnerId, req.user?.location, dto);
   }
 
   @Get()

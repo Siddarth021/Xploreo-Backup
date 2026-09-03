@@ -44,7 +44,8 @@ export class HotelsService {
       image: dto.image ?? '',
       images: dto.images ?? [],
       amenities: dto.amenities ?? [],
-      status: dto.status ?? 'active',
+      status: dto.status as 'active' | 'inactive' | 'restricted' ?? 'active',
+      isDeleted: dto.isDeleted ?? false,
     });
   }
 

@@ -17,4 +17,6 @@ export class Traveller {
   interests!: Interest[];
   gender?: string;
   dob?: string;
+  status?: 'active' | 'restricted';
+  isDeleted?: boolean;
 }

@@ -31,7 +31,6 @@ import { renderNtaDashboard } from "./modules/ntaDashboard.js";
 import { initNtaPlans } from "./modules/ntaPlans.js";
 import { renderGuideDashboard } from "./modules/guide_dashboard.js";
 import { initNtaGuideApplications } from "./modules/nta_guide_applications.js";
-import { initAdminManagement } from "./modules/adminManagement.js";
 
 // Traveler modules
 import { renderTravelerDashboard as renderTravellerDashboard } from "./modules/travelerDashboard.js?v=traveller-ui-6";
@@ -143,16 +142,16 @@ export async function renderPageContent(user) {
     if (main) main.style.display = "none";
     if (hotel) hotel.style.display = "none";
     document.getElementById("tech-admin-dash").style.display = "none";
-  } else if ((user.role === "superadmin" || user.role === "nontechadmin") && page === "users.html") {
-    initUsers();
+  } else if ((user.role === "superadmin" || role === "techadmin" || role === "tech_admin") && page === "users.html") {
+    initUsers(user);
 
   } else if (
-    (user.role === "superadmin" || user.role === "nontechadmin") &&
+    (user.role === "nontechadmin") &&
     page === "plans.html"
   ) {
     renderPlansCrudPage("main", user);
   } else if (
-    (user.role === "superadmin" || user.role === "nontechadmin") &&
+    (user.role === "nontechadmin") &&
     page === "trips.html"
   ) {
     renderTripsCrudPage("main", user);
@@ -303,10 +302,6 @@ export async function renderPageContent(user) {
     const main = document.getElementById("main");
     if (main) main.style.display = "block";
     initNtaGuideApplications("main");
-  } else if (user.role === "superadmin" && page === "admins.html") {
-    const main = document.getElementById("main");
-    if (main) main.style.display = "block";
-    await renderSafely("Render admin management", () => initAdminManagement());
   }
 }
 

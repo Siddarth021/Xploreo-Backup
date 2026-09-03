@@ -31,17 +31,18 @@ import {
   Role.GUIDE,
   Role.SUPERADMIN,
   Role.NONTECHADMIN,
+  Role.TECHADMIN,
 )
 @Controller('guide')
 export class GuideController {
   constructor(private readonly guideService: GuideService) {}
 
-  @Roles(Role.SUPERADMIN, Role.NONTECHADMIN)
+  @Roles(Role.SUPERADMIN, Role.NONTECHADMIN, Role.TECHADMIN)
   @Post()
   @ApiOperation({ summary: 'Create a guide profile' })
   @ApiCreateEndpoint(CreateGuideDto)
   create(@Req() req: any, @Body() dto: CreateGuideDto) {
-    const userId = req.user.userId;
+    const userId = dto.userId || req.user.userId;
     const actorLocation = req.user.role === Role.SUPERADMIN ? undefined : req.user?.location;
     return this.guideService.create(userId, dto, actorLocation);
   }

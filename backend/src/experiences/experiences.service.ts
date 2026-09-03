@@ -42,6 +42,8 @@ export class ExperiencesService {
       image: dto.image ?? '',
       nextSlot: dto.nextSlot ?? '',
       slots: dto.slots ?? [],
+      status: dto.status as 'active' | 'inactive' | 'restricted' ?? 'active',
+      isDeleted: dto.isDeleted ?? false,
     });
   }
 

@@ -8,6 +8,7 @@ import {
   IsString,
   Max,
   Min,
+  IsBoolean,
 } from 'class-validator';
 
 export class CreateHotelDto {
@@ -15,6 +16,11 @@ export class CreateHotelDto {
   @IsOptional()
   @IsString()
   id?: string;
+
+  @ApiPropertyOptional({ example: 'partner123' })
+  @IsOptional()
+  @IsString()
+  partnerId?: string;
 
   @ApiProperty({ example: 'Xploreo Beach Resort' })
   @IsString()
@@ -73,8 +79,13 @@ export class CreateHotelDto {
   @IsString({ each: true })
   amenities?: string[];
 
-  @ApiPropertyOptional({ example: 'active', enum: ['active', 'inactive'] })
+  @ApiPropertyOptional({ example: 'active', enum: ['active', 'inactive', 'restricted'] })
   @IsOptional()
-  @IsIn(['active', 'inactive'])
-  status?: 'active' | 'inactive';
+  @IsIn(['active', 'inactive', 'restricted'])
+  status?: 'active' | 'inactive' | 'restricted';
+
+  @ApiPropertyOptional({ example: false })
+  @IsOptional()
+  @IsBoolean()
+  isDeleted?: boolean;
 }

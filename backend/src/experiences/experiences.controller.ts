@@ -56,8 +56,9 @@ export class ExperiencesController {
     description: 'Missing or unauthorized role header',
   })
   create(@Body() dto: CreateExperienceDto, @Req() req: any) {
+    const partnerId = dto.partnerId || req.user?.userId;
     return this.experiencesService.create(
-      req.user?.userId,
+      partnerId,
       req.user?.location,
       dto,
     );

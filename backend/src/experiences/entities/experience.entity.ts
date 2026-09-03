@@ -44,4 +44,6 @@ export class Experience {
     capacity: number;
     available: boolean;
   }>;
+  status?: 'active' | 'inactive' | 'restricted';
+  isDeleted?: boolean;
 }

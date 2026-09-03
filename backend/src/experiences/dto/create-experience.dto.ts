@@ -49,6 +49,11 @@ export class CreateExperienceDto {
   @IsString()
   id?: string;
 
+  @ApiPropertyOptional({ example: 'partner123' })
+  @IsOptional()
+  @IsString()
+  partnerId?: string;
+
   @ApiProperty({ example: 'Sunset Beach Photography Walk' })
   @IsString()
   title!: string;
@@ -119,4 +124,14 @@ export class CreateExperienceDto {
   @ValidateNested({ each: true })
   @Type(() => ExperienceSlotDto)
   slots?: ExperienceSlotDto[];
+
+  @ApiPropertyOptional({ example: 'active', enum: ['active', 'inactive', 'restricted'] })
+  @IsOptional()
+  @IsEnum(['active', 'inactive', 'restricted'])
+  status?: 'active' | 'inactive' | 'restricted';
+
+  @ApiPropertyOptional({ example: false })
+  @IsOptional()
+  @IsBoolean()
+  isDeleted?: boolean;
 }

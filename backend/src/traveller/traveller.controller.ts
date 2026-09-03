@@ -25,7 +25,7 @@ import {
 
 @ApiTags('Traveller')
 @ApiProtectedResource()
-@Roles(Role.TRAVELLER, Role.SUPERADMIN, Role.NONTECHADMIN)
+@Roles(Role.TRAVELLER, Role.SUPERADMIN, Role.NONTECHADMIN, Role.TECHADMIN)
 @Controller('traveller')
 export class TravellerController {
   constructor(private readonly travellerService: TravellerService) {}
@@ -34,11 +34,11 @@ export class TravellerController {
   @ApiOperation({ summary: 'Create a traveller profile' })
   @ApiCreateEndpoint(CreateTravellerDto)
   create(@Req() req: any, @Body() dto: CreateTravellerDto) {
-    const userId = req.user.userId;
+    const userId = dto.userId || req.user.userId;
     return this.travellerService.create(userId, dto);
   }
 
-  @Roles(Role.SUPERADMIN, Role.NONTECHADMIN)
+  @Roles(Role.SUPERADMIN, Role.NONTECHADMIN, Role.TECHADMIN)
   @Get()
   @ApiOperation({ summary: 'Get all travellers (admin only)' })
   @ApiReadEndpoint()
@@ -46,7 +46,7 @@ export class TravellerController {
     return this.travellerService.findAll();
   }
 
-  @Roles(Role.TRAVELLER, Role.SUPERADMIN, Role.NONTECHADMIN, Role.GUIDE)
+  @Roles(Role.TRAVELLER, Role.SUPERADMIN, Role.NONTECHADMIN, Role.GUIDE, Role.TECHADMIN)
   @Get(':id')
   @ApiOperation({ summary: 'Get traveller by ID' })
   @ApiReadEndpoint()

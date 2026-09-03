@@ -15,6 +15,7 @@ export class Hotel {
   image!: string;
   images?: string[];
   amenities!: string[];
-  status!: 'active' | 'inactive';
+  status!: 'active' | 'inactive' | 'restricted';
+  isDeleted?: boolean;
   createdAt!: Date;
 }

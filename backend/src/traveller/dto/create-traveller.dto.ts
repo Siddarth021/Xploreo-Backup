@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsEmail,
   IsEnum,
   IsNumber,
@@ -10,6 +11,11 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Interest } from '../entities/traveller.entity';
 
 export class CreateTravellerDto {
+  @ApiPropertyOptional({ example: 'traveller123' })
+  @IsOptional()
+  @IsString()
+  userId?: string;
+
   @ApiProperty({ example: 'Sara' })
   @IsString()
   fname!: string;
@@ -56,4 +62,14 @@ export class CreateTravellerDto {
   @IsOptional()
   @IsString()
   dob?: string;
+
+  @ApiPropertyOptional({ example: 'restricted' })
+  @IsOptional()
+  @IsString()
+  status?: 'active' | 'restricted';
+
+  @ApiPropertyOptional({ example: false })
+  @IsOptional()
+  @IsBoolean()
+  isDeleted?: boolean;
 }

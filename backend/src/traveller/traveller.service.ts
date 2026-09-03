@@ -19,6 +19,8 @@ export class TravellerService {
       interests: dto.interests ?? [],
       gender: dto.gender,
       dob: dto.dob,
+      status: dto.status as 'active' | 'restricted' ?? 'active',
+      isDeleted: dto.isDeleted ?? false,
     });
   }
 

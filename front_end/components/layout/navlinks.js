@@ -29,19 +29,7 @@ const navlinks = [
     icon: "../components/ui/users.png",
     roles: ["nontechadmin"]
   },
-
-  // {
-  //   name: "Plans",
-  //   path: "../pages/plans.html",
-  //   icon: "../components/ui/operations.png",
-  //   roles: ["superadmin"]
-  // },
-  // {
-    //   name: "Trips",
-    //   path: "../pages/trips.html",
-  //   icon: "../components/ui/tours.svg",
-  //   roles: ["superadmin"]
-  // },
+  
   {
     name: "Operations & Bookings",
     path: "../pages/opsbook.html",
@@ -52,19 +40,7 @@ const navlinks = [
     name: "Users & Partners",
     path: "../pages/users.html",
     icon: "../components/ui/users.png",
-    roles: ["superadmin", "nontechadmin"]
-  },
-  {
-    name: "Admins",
-    path: "../pages/admins.html",
-    icon: "../components/ui/users.png",
-    roles: ["superadmin"]
-  },
-  {
-    name: "Tickets",
-    path: "../pages/tech_tickets.html",
-    icon: "../components/ui/support.svg",
-    roles: ["techadmin", "TECH_ADMIN", "superadmin"]
+    roles: ["superadmin", "techadmin"]
   },
   {
     name: "Finance & Reports",
@@ -72,12 +48,18 @@ const navlinks = [
     icon: "../components/ui/finance.png",
     roles: ["superadmin"]
   },
-
+  
   {
     name: "Earnings",
     path: "../pages/earnings.html",
     icon: "../components/ui/earnings.svg",
     roles: ["guide"]
+  },
+  {
+    name: "Tickets",
+    path: "../pages/tech_tickets.html",
+    icon: "../components/ui/support.svg",
+    roles: ["techadmin", "TECH_ADMIN", "superadmin"]
   },
   {
     name: "Reviews",
@@ -135,6 +117,8 @@ const navlinks = [
   },
 
   
+  
+  
   {
     name: "Explore",
     path: "../pages/traveller_dashboard.html",
@@ -142,14 +126,12 @@ const navlinks = [
     roles: ["traveller"]
   },
   
-   
   {
     name: "Wish List",
     path: "../pages/traveller_wishlist.html",
     icon: "../components/ui/wishlistIcon.jpg",
     roles: ["traveller"]
   },
-
   {
     name: "My Trips",
     path: "../pages/traveller_mytrips.html",
